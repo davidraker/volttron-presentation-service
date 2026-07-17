@@ -70,12 +70,20 @@ class TransformParser:
                     return getattr(transforms, name)(*args)
         return handle_function_call
 
-    def build_transform_from_schema(self, schema):
-        ret_val = {}
-        for k, v in schema.items():
-            self.function_call.set_parse_action(self._make_parse_action(k))
-            ret_val[k] = self.function_call.parse_string(v)[0]
-        return c(ret_val)
+    def build_transform_from_schema(self, schemas):
+        _log.debug('IN BUILD_TRANSFORM_FROM_SCHEMA')
+        _log.debug(f'schema: {schemas}')
+        schemas = schemas if isinstance(schemas, list) else [schemas]
+        pipeline = None
+        for s in schemas:
+            parsed_schema = {}
+            for k, v in s.items():
+                self.function_call.set_parse_action(self._make_parse_action(k))
+                parsed_schema[k] = self.function_call.parse_string(v)[0]
+            _log.debug(f'Placing in pipeline: {parsed_schema}')
+            pipeline = pipeline.pipe(c(parsed_schema)) if pipeline else c(parsed_schema)
+        return pipeline
+
 
 # #trans_schema = {'foo': 'transform(multiple(7), add(9))', 'bar': 'transform(add(9), multiple(7))'}
 # trans_schema = {'foo': 'transform[bar](multiple(7), add(9))', 'bar': 'transform[foo, 0](add(9), multiple(7))'}
