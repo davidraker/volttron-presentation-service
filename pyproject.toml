@@ -17,7 +17,7 @@ show_error_codes = true
 exclude = ['docs/']
 
 [tool.poetry]
-name = "volttron-presentation-service"
+name = "interoperability-service"
 version = "0.2"
 description = ""
 authors = ["David Raker <david.raker@pnnl.gov>"]
@@ -63,7 +63,7 @@ treelib = "1.8.0"
 #sphinx-rtd-theme = "^1.0.0"
 
 [tool.poetry.scripts]
-volttron-presentation-service = "presentation.agent:main"
+interoperability-service = "presentation.agent:main"
 
 [tool.yapf]
 based_on_style = "pep8"

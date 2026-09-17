@@ -12,7 +12,7 @@ except PackageNotFoundError:
     # noinspection PyUnresolvedReferences
     from volttron.platform.agent.utils import vip_main
     # noinspection PyUnresolvedReferences
-    from volttron.platform.vip.agent import Agent, Pubsub, RPC
+    from volttron.platform.vip.agent import Agent, PubSub, RPC
 
 from .transform_registry import TransformRegistry
 from .mapping_engine import  ResourceNode, UAITree
