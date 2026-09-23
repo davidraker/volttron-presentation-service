@@ -72,88 +72,14 @@
         "VRef": "transform[DECP, VRef]()",
         "VRefAutoEna": "transform[DVVR, VRefAdjEna]()",
         "VRefAutoTms": "transform[DVVR, VRefTmms]()",
-        "Crv": {
-          "Pt[#]": {
-            "V": "transform[DVVR, VVArCrv, xVal]()",
-            "Var": "transform[DVVR, VVArCrv, yVal]()"
-          }
-        },
         "RspTms": "transform[DVVR, OpnLoopMax]()"
       },
       "712": {
-        "Ena": "transform[DWVR, ModEna]()",
-        "Crv": {
-          "Pt[#]": {
-            "W": "transform[DWVR, WVArCrv, xVal]()",
-            "Var": "transform[DWVR, WVArCrv, yVal]()"
-          }
-        }
+        "Ena": "transform[DWVR, ModEna]()"
       },
       "706": {
         "Ena": "transform[DVWC, ModEna]()",
-        "Crv": {
-          "Pt[#]": {
-            "V": "transform[DVWC, VWCrv, xVal]()",
-            "W": "transform[DVWC, VWCrv, yVal]()"
-          }
-        },
         "RspTms": "transform[DVWC, OpnLoopMax]()"
-      },
-      "707": {
-        "MustTrip": {
-          "Crv": {
-            "Pt[#]": {
-              "V": "transform[PTOV, TmVCrv, xVal]()",
-              "Tms": "transform[PTOV, TmVCrv, yVal]()"
-            }
-          }
-        },
-        "MomCess": {
-          "Crv": {
-            "Pt[#]": {
-              "V": "transform[PTOV, TmVCrv, xVal]()",
-              "Tms": "transform[PTOV, TmVCrv, yVal]()"
-            }
-          }
-        }
-      },
-      "708": {
-        "MustTrip": {
-          "Crv": {
-            "Pt[#]": {
-              "V": "transform[PTUV, TmVCrv, xVal]()",
-              "Tms": "transform[PTUV, TmVCrv, yVal]()"
-            }
-          }
-        },
-        "MomCess": {
-          "Crv": {
-            "Pt[#]": {
-              "V": "transform[PTUV, TmVCrv, xVal]()",
-              "Tms": "transform[PTUV, TmVCrv, yVal]()"
-            }
-          }
-        }
-      },
-      "709": {
-        "MustTrip": {
-          "Crv": {
-            "Pt[#]": {
-              "Hz": "transform[PTOF, TmVCrv, xVal]()",
-              "Tms": "transform[PTOF, TmVCrv, yVal]()"
-            }
-          }
-        }
-      },
-      "710": {
-        "MustTrip": {
-          "Crv": {
-            "Pt[#]": {
-              "Hz": "transform[PTUF, TmVCrv, xVal]()",
-              "Tms": "transform[PTUF, TmVCrv, yVal]()"
-            }
-          }
-        }
       },
       "711": {
         "Ctl": {

@@ -1,3 +1,4 @@
+import json
 import logging
 import sys
 
@@ -26,26 +27,35 @@ class PresentationService(Agent):
     def __init__(self, **kwargs):
         super(PresentationService, self).__init__(**kwargs)
 
-        # Load known transforms.
-        known_configs = resources.files('interoperability').joinpath('known_configurations')
-
-        known_transforms = []
-        for transform_defs in (c for c in known_configs.joinpath('transforms').iterdir() if
-                               c.is_file() and c.name.endswith(".json")):
-            with open(transform_defs, 'r') as f:
-                known_transforms.extend(json.load(f))
-
-        known_mappings = []
-        for transform_defs in (c for c in known_configs.joinpath('mappings').iterdir() if
-                               c.is_file() and c.name.endswith(".json")):
-            with open(transform_defs, 'r') as f:
-                known_mappings.extend(json.load(f))
+        # Load bundled transforms and mappings as configuration defaults. Only JSON files directly
+        # inside each package directory are loaded; subdirectories (e.g., transforms/unfinished) are not.
+        package_root = resources.files('interoperability')
+        known_transforms = self._load_bundled_definitions(package_root.joinpath('transforms'))
+        known_mappings = self._load_bundled_definitions(package_root.joinpath('mappings'))
 
         self.vip.config.set_default({'mappings': known_mappings, 'transforms': known_transforms})
         self.mapping_engine = UAITree()
         self.transform_registry = TransformRegistry()
 
         self.vip.config.subscribe(self.configure_main, ['NEW', 'UPDATE'], 'config')
+
+    @staticmethod
+    def _load_bundled_definitions(directory) -> list[dict]:
+        definitions = []
+        if not directory.is_dir():
+            return definitions
+        for definition_file in sorted(directory.iterdir(), key=lambda f: f.name):
+            if not (definition_file.is_file() and definition_file.name.endswith('.json')):
+                continue
+            with definition_file.open('r') as f:
+                loaded = json.load(f)
+            if isinstance(loaded, list):
+                definitions.extend(loaded)
+            elif isinstance(loaded, dict):
+                definitions.append(loaded)
+            else:
+                _log.warning(f'Ignoring bundled definition file {definition_file.name}: expected a list or object.')
+        return definitions
 
     def configure_main(self, _, __, contents):
         self.mapping_engine.ingest_mappings(contents.get('mappings', []))

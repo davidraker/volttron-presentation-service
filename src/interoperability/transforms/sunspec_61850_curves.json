@@ -1,0 +1,168 @@
+[
+  {
+    "input_format": "sunspec",
+    "output_format": "61850",
+    "pattern": {
+      "DVVR": {
+        "VVArCrv[#]": {
+          "xVal": "transform[705, Crv, Pt[#], V]()",
+          "yVal": "transform[705, Crv, Pt[#], Var]()"
+        }
+      },
+      "DWVR": {
+        "WVArCrv[#]": {
+          "xVal": "transform[712, Crv, Pt[#], W]()",
+          "yVal": "transform[712, Crv, Pt[#], Var]()"
+        }
+      },
+      "DVWC": {
+        "VWCrv[#]": {
+          "xVal": "transform[706, Crv, Pt[#], V]()",
+          "yVal": "transform[706, Crv, Pt[#], W]()"
+        }
+      },
+      "DHVT": {
+        "TrZnSt": {
+          "PTOV": {
+            "TmVCrv[#]": {
+              "xVal": "transform[707, MustTrip, Crv, Pt[#], V]()",
+              "yVal": "transform[707, MustTrip, Crv, Pt[#], Tms]()"
+            }
+          }
+        },
+        "CeaZnSt": {
+          "PTOV": {
+            "TmVCrv[#]": {
+              "xVal": "transform[707, MomCess, Crv, Pt[#], V]()",
+              "yVal": "transform[707, MomCess, Crv, Pt[#], Tms]()"
+            }
+          }
+        }
+      },
+      "DLVT": {
+        "TrZnSt": {
+          "PTUV": {
+            "TmVCrv[#]": {
+              "xVal": "transform[708, MustTrip, Crv, Pt[#], V]()",
+              "yVal": "transform[708, MustTrip, Crv, Pt[#], Tms]()"
+            }
+          }
+        },
+        "CeaZnSt": {
+          "PTUV": {
+            "TmVCrv[#]": {
+              "xVal": "transform[708, MomCess, Crv, Pt[#], V]()",
+              "yVal": "transform[708, MomCess, Crv, Pt[#], Tms]()"
+            }
+          }
+        }
+      },
+      "DHFT": {
+        "TrZnSt": {
+          "PTOF": {
+            "StrVal[#]": {
+              "xVal": "transform[709, MustTrip, Crv, Pt[#], Hz]()",
+              "yVal": "transform[709, MustTrip, Crv, Pt[#], Tms]()"
+            }
+          }
+        }
+      },
+      "DLFT": {
+        "TrZnSt": {
+          "PTUF": {
+            "StrVal[#]": {
+              "xVal": "transform[710, MustTrip, Crv, Pt[#], Hz]()",
+              "yVal": "transform[710, MustTrip, Crv, Pt[#], Tms]()"
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "input_format": "61850",
+    "output_format": "sunspec",
+    "pattern": {
+      "705": {
+        "Crv": {
+          "Pt[#]": {
+            "V": "transform[DVVR, VVArCrv, xVal]()",
+            "Var": "transform[DVVR, VVArCrv, yVal]()"
+          }
+        }
+      },
+      "712": {
+        "Crv": {
+          "Pt[#]": {
+            "W": "transform[DWVR, WVArCrv, xVal]()",
+            "Var": "transform[DWVR, WVArCrv, yVal]()"
+          }
+        }
+      },
+      "706": {
+        "Crv": {
+          "Pt[#]": {
+            "V": "transform[DVWC, VWCrv, xVal]()",
+            "W": "transform[DVWC, VWCrv, yVal]()"
+          }
+        }
+      },
+      "707": {
+        "MustTrip": {
+          "Crv": {
+            "Pt[#]": {
+              "V": "transform[PTOV, TmVCrv, xVal]()",
+              "Tms": "transform[PTOV, TmVCrv, yVal]()"
+            }
+          }
+        },
+        "MomCess": {
+          "Crv": {
+            "Pt[#]": {
+              "V": "transform[PTOV, TmVCrv, xVal]()",
+              "Tms": "transform[PTOV, TmVCrv, yVal]()"
+            }
+          }
+        }
+      },
+      "708": {
+        "MustTrip": {
+          "Crv": {
+            "Pt[#]": {
+              "V": "transform[PTUV, TmVCrv, xVal]()",
+              "Tms": "transform[PTUV, TmVCrv, yVal]()"
+            }
+          }
+        },
+        "MomCess": {
+          "Crv": {
+            "Pt[#]": {
+              "V": "transform[PTUV, TmVCrv, xVal]()",
+              "Tms": "transform[PTUV, TmVCrv, yVal]()"
+            }
+          }
+        }
+      },
+      "709": {
+        "MustTrip": {
+          "Crv": {
+            "Pt[#]": {
+              "Hz": "transform[PTOF, TmVCrv, xVal]()",
+              "Tms": "transform[PTOF, TmVCrv, yVal]()"
+            }
+          }
+        }
+      },
+      "710": {
+        "MustTrip": {
+          "Crv": {
+            "Pt[#]": {
+              "Hz": "transform[PTUF, TmVCrv, xVal]()",
+              "Tms": "transform[PTUF, TmVCrv, yVal]()"
+            }
+          }
+        }
+      }
+    }
+  }
+]

@@ -73,18 +73,10 @@
         "ModEna": "transform[705, Ena]()",
         "VRefAdjEna": "transform[705, VRefAutoEna]()",
         "VRefTmms": "transform[705, VRefAutoTms]()",
-        "VVArCrv[#]": {
-          "xVal": "transform[705, Crv, Pt[#], V]()",
-          "yVal": "transform[705, Crv, Pt[#], Var]()"
-        },
         "OpnLoopMax": "transform[705, RspTms]()"
       },
       "DWVR": {
-        "ModEna": "transform[712, Ena]()",
-        "WVArCrv[#]": {
-          "xVal": "transform[712, Crv, Pt[#], W]()",
-          "yVal": "transform[712, Crv, Pt[#], Var]()"
-        }
+        "ModEna": "transform[712, Ena]()"
       },
       "DVAR": {
         "ModEna": "transform[704, VarSetEna]()",
@@ -92,67 +84,7 @@
       },
       "DVWC": {
         "ModEna": "transform[706, Ena]()",
-        "VWCrv[#]": {
-          "xVal": "transform[706, Crv, Pt[#], V]()",
-          "yVal": "transform[706, Crv, Pt[#], W]()"
-        },
         "OpnLoopMax": "transform[706, RspTms]()"
-      },
-      "DHVT": {
-        "TrZnSt": {
-          "PTOV": {
-            "TmVCrv[#]": {
-              "xVal": "transform[707, MustTrip, Crv, Pt[#], V]()",
-              "yVal": "transform[707, MustTrip, Crv, Pt[#], Tms]()"
-            }
-          }
-        },
-        "CeaZnSt": {
-          "PTOV": {
-            "TmVCrv[#]": {
-              "xVal": "transform[707, MomCess, Crv, Pt[#], V]()",
-              "yVal": "transform[707, MomCess, Crv, Pt[#], Tms]()"
-            }
-          }
-        }
-      },
-      "DLVT": {
-        "TrZnSt": {
-          "PTUV": {
-            "TmVCrv[#]": {
-              "xVal": "transform[708, MustTrip, Crv, Pt[#], V]()",
-              "yVal": "transform[708, MustTrip, Crv, Pt[#], Tms]()"
-            }
-          }
-        },
-        "CeaZnSt": {
-          "PTUV": {
-            "TmVCrv[#]": {
-              "xVal": "transform[708, MomCess, Crv, Pt[#], V]()",
-              "yVal": "transform[708, MomCess, Crv, Pt[#], Tms]()"
-            }
-          }
-        }
-      },
-      "DHFT": {
-        "TrZnSt": {
-          "PTOF": {
-            "StrVal[#]": {
-              "xVal": "transform[709, MustTrip, Crv, Pt[#], Hz]()",
-              "yVal": "transform[709, MustTrip, Crv, Pt[#], Tms]()"
-            }
-          }
-        }
-      },
-      "DLFT": {
-        "TrZnSt": {
-          "PTUF": {
-            "StrVal[#]": {
-              "xVal": "transform[710, MustTrip, Crv, Pt[#], Hz]()",
-              "yVal": "transform[710, MustTrip, Crv, Pt[#], Tms]()"
-            }
-          }
-        }
       },
       "DHFW": {
         "HzStr": "transform[711, Ctl, DbOf]()",

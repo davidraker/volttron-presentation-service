@@ -15,7 +15,8 @@ class TransformRegistry:
             transform_chain = [self.registry[s][t].get('transform') for s, t in transform_edges]
             # TODO: What if we are missing a transform definition? Should this even be possible?
             return transform_chain
-        except nx.NetworkXNoPath:
+        except (nx.NetworkXNoPath, nx.NodeNotFound):
+            # NodeNotFound is raised when either format has never been registered at all.
             # TODO: What do we actually do where there is not a path? Is it OK to just return the empty list?
             _log.warning(f'No transform path found from format "{input_format}" to target format "{output_format}"')
             return []
