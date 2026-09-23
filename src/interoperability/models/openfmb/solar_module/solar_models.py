@@ -4,7 +4,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from openfmb.openfmb_information_model_regen.common_module.common_types import (
+from ..common_module.common_types import (
     ConductingEquipmentTerminalReading,
     GridConnectMode as GridConnectModeEnum,
     OperatingState as OperatingStateEnum,

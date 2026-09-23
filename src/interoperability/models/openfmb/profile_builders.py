@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from openfmb.openfmb_information_model_regen import *
-from openfmb.openfmb_information_model_regen.common_module import (
+from . import *  # noqa: F401,F403
+from .common_module import (
     ConductingEquipmentTerminalReading,
     PhaseMMTN,
     ReadingMMDC,
@@ -11,7 +11,7 @@ from openfmb.openfmb_information_model_regen.common_module import (
     ReadingMMXU,
     StatusValue,
 )
-from openfmb.openfmb_information_model_regen.solar_module import (
+from .solar_module import (
     SolarEvent,
     SolarEventProfile,
     SolarReading,
