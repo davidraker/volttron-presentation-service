@@ -221,21 +221,36 @@ The format names they use are:
 | `sunspec`         | SunSpec Modbus models, keyed by model number (`1`, `701`, `702`, ...) |
 | `1815.2.inputs`   | IEEE 1815.2 (MESA-DER / DNP3) input points, grouped as `AI` and `BI` |
 | `1815.2.outputs`  | IEEE 1815.2 output points, grouped as `AO` and `BO`                 |
+| `2030.5`          | IEEE 2030.5 resources keyed by resource then attribute (`DERCapability.rtgMaxW`); see below |
+| `1547`            | IEEE 1547.1 function group and parameter names (`Nameplate` / `Active Power (unity)`) |
 
-| File                      | Direction                                                    |
-|---------------------------|--------------------------------------------------------------|
-| `1815.2_to_61850.json`    | `1815.2.inputs` -> `61850` and `1815.2.outputs` -> `61850`   |
-| `61850_to_1815.2.json`    | `61850` -> `1815.2.inputs` and `61850` -> `1815.2.outputs`   |
-| `61850_to_sunspec.json`   | `61850` -> `sunspec`                                         |
-| `sunspec_to_61850.json`   | `sunspec` -> `61850`                                         |
+Every pairing of these formats ships as its own file, named `<input>_to_<output>.json`;
+the 1815.2 files hold two definitions each, one for `1815.2.inputs` and one for
+`1815.2.outputs`. The IEEE 2030.5 and IEEE 1547 files, and the direct SunSpec to 1815.2
+files, were derived from a single cross-reference table so the two directions of each pair
+stay consistent.
 
-The `transforms/unfinished/` directory holds drafts that are not loaded. The
-`1547_related/` drafts map IEEE 1547 functional names to and from each protocol and still
-use human-readable descriptions on the right-hand side rather than transform expressions.
-`sunspec_61850_curves.json` holds the curve-point mappings between SunSpec models 705 to
-712 and the 61850 DER curve nodes, which use a `[#]` "for each point" placeholder the
-language does not support yet. The remaining drafts cover IEEE 2030.5 and direct SunSpec
-to 1815.2 conversions.
+Conventions the 2030.5, 1547 and SunSpec to 1815.2 files rely on, beyond those of the other files:
+
+* `2030.5` messages are keyed by resource name and then attribute, following the parameter
+  names in IEEE 2030.5-2023 Annex E and IEEE 1547.1-2020 Tables 57 to 68. Settings that
+  belong to a curve live under `DERCurve.<curveType>` (for example
+  `DERCurve.opModVoltVar.openLoopTms`), and the curve link attributes of `DERControl`
+  (`opModVoltVar`, `opModHVRTMustTrip`, ...) carry the curve selection. Monitoring values are
+  under `MirrorMeterReading` keyed by the ReadingType unit name (`W`, `var`, `Hz`, and `V`
+  sub-keyed by `PhaseA`, `PhaseB`, `PhaseC`, `PhaseAB`, `PhaseBC`, `PhaseCA`). Multiplier
+  sub-elements of 2030.5 quantities are not applied, just as SunSpec scale factors are not.
+* `1547` messages are grouped by the function group of the 1547.1 mapping tables
+  (`Nameplate`, `Configuration`, `Monitoring`, `Constant PF`, `Volt-VAR`, `Watt-VAR`,
+  `Constant VAR`, `Volt-Watt`, `Voltage Trip`, `Momentary Cessation`, `Frequency Trip`,
+  `Frequency-Watt`, `Enter Service`, `Limit Watt`) and then by parameter name. Curve
+  point arrays are copied whole between the 1547 view and a protocol.
+* DNP3 indices come from the IEEE 1815.2-2025 MESA DER PICS, not the DNP3-AN2018-001
+  numbers printed in IEEE 1547.1-2020, which differ for several points. Only the curve
+  index points (for example AO217 for the active Volt-VAR curve) are mapped; the curve
+  editing block AO244 to AO448 needs a dedicated function.
+* Bitmaps whose bit assignments differ between protocols (`DERCapability.modesSupported`,
+  SunSpec `CtrlModes`, DNP3 BI31 to BI51) are only copied to and from the `1547` view.
 
 At startup the agent loads every JSON file directly inside `transforms/` and `mappings/`
 as configuration defaults. Subdirectories are ignored. Anything supplied through the
@@ -283,7 +298,6 @@ interoperability_service/
   pyproject.toml                  Poetry package metadata (name: interoperability-service)
   setup.py                        Legacy VOLTTRON agent packaging shim
   sample_config.json              Skeleton of the config store entry
-  openfmb_information_model.py    Pydantic models generated from OpenFMBInformationModel.json
   src/interoperability/
     agent.py                      PresentationService agent, RPC and pubsub endpoints
     mapping_engine.py             UAI tree, resource nodes, resolution and alias following
@@ -291,35 +305,54 @@ interoperability_service/
     transform_parser.py           Expression grammar and convtools pipeline builder
     transform_registry.py         networkx graph of transforms between formats
     transforms/                   Bundled transform JSON files and the transform function library
-    transforms/unfinished/        Draft transforms that are not loaded
     mappings/                     Bundled default mappings (currently none)
     models/openfmb/               Hand-organised OpenFMB pydantic models by module, plus profile builders and sample generators
-    scripts/DNP3_and_IEC61850.py  Builds 1815.2 <-> 61850 transform JSON from the MESA DER PICS spreadsheet
-  src/mapping/                    Scratch scripts for deriving mappings from the IEEE 1547 mapping spreadsheet
-  tests/                          pytest suite for the parser, registry, bundled files, and loader
+    models/sunspec/               Generated SunSpec Modbus models (one module per model id), SunSpecDevice container, builders
+    models/ieee1815_2/            Generated IEEE 1815.2 (MESA-DER) point enums, function-group profiles, PointDatabase, builders
+    models/ieee2030_5/            Generated IEEE 2030.5 schema types, enums and builders
+  tests/                          pytest suite for the parser, registry, bundled files, loader, and the generated protocol models
   doc/                            Placeholder, currently empty
 ```
 
-### Generating transform files
+### Where the transform files came from
 
-`src/interoperability/scripts/DNP3_and_IEC61850.py` reads the
-`MESA_DER_PICS_for use in 1815.2 v3.xlsx` workbook (not included in the repository) and
-emits the `1815.2_to_61850.json` and `61850_to_1815.2.json` files. It needs `pandas`,
-`numpy`, and `openpyxl`, which are not runtime dependencies of the service. The scripts in
-`src/mapping/` play a similar role for the IEEE 1547 functional mapping spreadsheet kept
-alongside the `interoperability_agent` project, and `convert_interop_agent.py` converts
-that agent's older mapping dictionaries into transform expressions.
+The `1815.2_to_61850.json` and `61850_to_1815.2.json` files were built from the
+`MESA_DER_PICS_for use in 1815.2 v3.xlsx` workbook, and the IEEE 2030.5, IEEE 1547 and
+SunSpec to 1815.2 files from a cross-reference table of the IEEE 1547.1 mapping tables.
+Neither source nor the scripts that read them are part of this package; edit the JSON files
+directly.
 
 ### OpenFMB models
 
 `models/openfmb/` contains pydantic models for each OpenFMB module (breaker, cap bank,
 ESS, EVSE, generation, interconnection, load, meter, recloser, regulator, reserve,
 resource, solar, switch, and common types). `profile_builders.py` provides keyword-only
-constructors for full profiles and imports the regenerated information model from the
-sibling `openfmb` project in this workspace, so it needs that project importable to run.
-`generate_samples.py` produces example solar reading and status profiles as JSON. These
+constructors for full profiles. The package is self-contained (it is a copy of the
+regenerated information model from the sibling `openfmb` project and uses relative
+imports). `generate_samples.py` produces example solar reading and status profiles as JSON. These
 models are groundwork for an `openfmb` data format and are not yet wired into the
 transform registry.
+
+### SunSpec, IEEE 1815.2 and IEEE 2030.5 models
+
+The sibling packages `models/sunspec/`, `models/ieee1815_2/` and `models/ieee2030_5/` give
+the other three DER protocols the same treatment: pydantic models of every class the
+standard defines plus keyword-only `build_*` constructors in a `profile_builders.py`. All
+three are generated; each package has a `generate_models.py` whose docstring names the
+source and the command. Run the generators as scripts from this directory, for example
+`python src/interoperability/models/sunspec/generate_models.py`, so a broken generated
+module cannot stop regeneration. Hand-written code lives only in each package's
+`common.py` and in the generators.
+
+| Package        | Source                                                                                     | Shape                                                                                                                                                                                                                                       |
+|----------------|--------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `sunspec`      | SunSpec Alliance `models/json/model_*.json` (copy under `1547_standards/SunSpecModbus/`)   | One module per model id (`models/model_701.py`). Group classes mirror the model's groups; repeating groups are lists. `enum16` / `bitfield32` points get `IntEnum` / `IntFlag` classes but also accept plain ints. Point metadata (type, size, units, scale-factor point, access, mandatory) is kept in `json_schema_extra`, and `scaled_value()` applies the scale factor. `SunSpecDevice` is the `{model_id: model}` mapping the `sunspec` transform format uses and dispatches each entry to its class. |
+| `ieee1815_2`   | `full.json` profile of the IEEE 1815.2 test tool (`ieee-std-1815-2-test-tool/data/profiles/`) | `points.py` has an `IntEnum` per point type named by IEC 61850 identifier (`AI.DGEN_WMaxRtg == 4`) and a `POINTS` registry of `PointDefinition` metadata. `profiles.py` has one class per function group (`Nameplate`, `VoltVar`, `Curve`, `Scheduling`, ...) split into `AI` / `AO` / `BI` / `BO` / `CTR` sub-models, plus `Meter`, `Inverter`, `Battery` and `DERUnit` blocks that resolve indexes by instance number. `to_points()` / `from_points()` convert to and from the flat `PointDatabase`, whose `inputs()` and `outputs()` match the `1815.2.inputs` and `1815.2.outputs` formats. |
+| `ieee2030_5`   | Eclipse VOLTTRON's xsdata dataclasses of `sep.xsd` (Apache-2.0, pinned to one commit; downloaded on regeneration) | `sep.py` has all 283 schema types with the schema's inheritance, element and attribute names, descriptions and integer bounds; hex-binary values are hex strings. Every field is optional so partial payloads validate, and `missing_required()` reports what the schema would still demand. `enums.py` carries the enumerations the source defines. Builders are generated for resources, not for `*Link` or `*List` containers. |
+
+The 2030.5 source reflects the 2018 edition of the schema; the 2023 additions are not in
+it. None of these models are wired into the transform registry yet, but their field names
+match what the bundled transform definitions address.
 
 ## Running the tests
 
@@ -328,24 +361,17 @@ pytest tests
 ```
 
 The suite exercises the expression language, checks that every bundled transform
-definition compiles, verifies multi-hop lookups in the registry, and confirms the agent's
-default loader reads the bundled files. The loader test is skipped if VOLTTRON is not
-installed.
+definition compiles, verifies lookups in the registry, confirms the agent's default loader
+reads the bundled files, and instantiates every OpenFMB, SunSpec, IEEE 1815.2 and IEEE
+2030.5 model and builder. The loader test is skipped if VOLTTRON is not installed.
 
 ## Status and known limitations
 
 This is an early-stage service. Things to be aware of:
 
-* **Array and curve mappings are not supported.** There is no way to express "for each
-  element of a list" in a pattern, so curve-point mappings are parked in
-  `transforms/unfinished/`.
 * **Transform weighting.** All transform edges have weight 0, so path selection is by hop
   count only. Weighting by lossiness is a planned improvement.
-* **Inverse transforms** are attached to several functions but reverse pipelines are not
-  yet generated automatically.
-* **No default mappings ship with the package.** The `mappings/` directory is empty, so
-  UAIs must be supplied through the configuration store or the `mapper/update` topic.
-* There are no agent-level tests; the service's RPC and pubsub behaviour is untested.
+* There are no agent-level tests; the service's RPC and pubsub behavior is untested.
 
 ## License
 
