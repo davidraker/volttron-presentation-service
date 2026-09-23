@@ -26,7 +26,7 @@ readme = "README.md"
 #repository = "https://github.com/eclipse-volttron"
 #homepage = "https://github.com/eclipse-volttron/volttron-interoperability"
 keywords = []
-packages = [ { include = "presentation", from = "src"} ]
+packages = [{ include = "interoperability", from = "src" }]
 classifiers = [
     "Programming Language :: Python :: 3 :: Only",
     "Intended Audience :: Science/Research",
