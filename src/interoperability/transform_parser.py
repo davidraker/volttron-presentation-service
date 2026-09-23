@@ -16,7 +16,7 @@ class TransformParser:
         integer = Word("1234567890")
         integer.set_parse_action(common.convert_to_integer)
         string_literal = Suppress('"') + Word(alphanums + " ") + Suppress('"')
-        variable = Word(alphanums + '_')
+        variable = Word(alphanums + '_.')
         expression = Forward()
 
         argument = expression | integer | string_literal | variable  # | integer

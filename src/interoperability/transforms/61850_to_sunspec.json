@@ -4,115 +4,115 @@
     "output_format": "sunspec",
     "pattern": {
       "702": {
-        "WMaxRtg": "DGEN.WMaxRtg",
-        "WOvrExtRtg": "DGEN.WGnOvPFRtg",
-        "WOvrExtRtgPF": "DGEN.OvPFRtg",
-        "WUndExtRtg": "DGEN.WGnUnPFRtg",
-        "WUndExtRtgPF": "DGEN.UnPFRtg",
-        "VAMaxRtg": "DGEN.VAMaxRtg",
-        "NorOpCatRtg": "DGEN.Ieee1547Cat1",
-        "AbnOpCatRtg": "DGEN.Ieee1547Cat2",
-        "VarMaxInjRtg": "DGEN.VarMaxSupRtg",
-        "VarMaxIAbsRtg": "DGEN.VarMaxAbgRtg",
-        "WChaRteMaxRtg": "DSTO.WChaUnPFRtg",
-        "VNomRtg": "DECP.VRef",
-        "VMaxRtg": "DGEN.VMaxRtg",
-        "VMinRtg": "DGEN.VMinRtg",
-        "ReactSusceptRtg": "DGEN.SuscRtg",
-        "Wmax": "DGEN.WMax",
-        "WMaxOvrExt": "DGEN.WGnOvPFRtg",
-        "WOvrExtPF": "DGEN.OvPFRtg",
-        "WMaxUndExt": "DGEN.WGnUnPFRtg",
-        "WUndExtPF": "DGEN.UnPFRtg",
-        "VAMax": "DGEN.VAMax",
-        "IntIslandCat": "DGEN.RegCap",
-        "VarMaxAbsRtg": "DGEN.VarMaxAbgRtg",
-        "WChaRteMax": "DSTO.WChaUnPFRtg",
-        "VAChaRteMax": "DSTO.VAMaxChaRtg",
-        "Vnom": "DECP.VRef"
+        "WMaxRtg": "transform[DGEN, WMaxRtg]()",
+        "WOvrExtRtg": "transform[DGEN, WGnOvPFRtg]()",
+        "WOvrExtRtgPF": "transform[DGEN, OvPFRtg]()",
+        "WUndExtRtg": "transform[DGEN, WGnUnPFRtg]()",
+        "WUndExtRtgPF": "transform[DGEN, UnPFRtg]()",
+        "VAMaxRtg": "transform[DGEN, VAMaxRtg]()",
+        "NorOpCatRtg": "transform[DGEN, Ieee1547Cat1]()",
+        "AbnOpCatRtg": "transform[DGEN, Ieee1547Cat2]()",
+        "VarMaxInjRtg": "transform[DGEN, VarMaxSupRtg]()",
+        "VarMaxIAbsRtg": "transform[DGEN, VarMaxAbgRtg]()",
+        "WChaRteMaxRtg": "transform[DSTO, WChaUnPFRtg]()",
+        "VNomRtg": "transform[DECP, VRef]()",
+        "VMaxRtg": "transform[DGEN, VMaxRtg]()",
+        "VMinRtg": "transform[DGEN, VMinRtg]()",
+        "ReactSusceptRtg": "transform[DGEN, SuscRtg]()",
+        "Wmax": "transform[DGEN, WMax]()",
+        "WMaxOvrExt": "transform[DGEN, WGnOvPFRtg]()",
+        "WOvrExtPF": "transform[DGEN, OvPFRtg]()",
+        "WMaxUndExt": "transform[DGEN, WGnUnPFRtg]()",
+        "WUndExtPF": "transform[DGEN, UnPFRtg]()",
+        "VAMax": "transform[DGEN, VAMax]()",
+        "IntIslandCat": "transform[DGEN, RegCap]()",
+        "VarMaxAbsRtg": "transform[DGEN, VarMaxAbgRtg]()",
+        "WChaRteMax": "transform[DSTO, WChaUnPFRtg]()",
+        "VAChaRteMax": "transform[DSTO, VAMaxChaRtg]()",
+        "Vnom": "transform[DECP, VRef]()"
       },
       "1": {
-        "Mn": "LPHD.PhyNam.vendor",
-        "Md": "LPHD.PhyNam.model",
-        "SN": "LPHD.PhyNam.serNum",
-        "Vr": "LPHD.PhyNam.swRev"
+        "Mn": "transform[LPHD, PhyNam, vendor]()",
+        "Md": "transform[LPHD, PhyNam, model]()",
+        "SN": "transform[LPHD, PhyNam, serNum]()",
+        "Vr": "transform[LPHD, PhyNam, swRev]()"
       },
       "701": {
-        "W": "DECP.MMXU.TotW",
-        "Var": "DECP.MMXU.TotVAr",
-        "LLV": "transform[DECP.MMXU.PPV](mean(phsAB.mag, phsBC.mag, phsCA.mag))",
-        "LNV": "transform[DECP.MMXU.PNV](mean(phsA.mag, phsB.mag, phsC.mag))",
-        "VL1L2": "DECP.MMXU.PPV.phsAB.mag",
-        "VL1": "DECP.MMXU.PhV.phsA.mag",
-        "VL2L3": "DECP.MMXU.PPV.phsBC.mag",
-        "VL2": "DECP.MMXU.PhV.phsB.mag",
-        "VL3L1": "DECP.MMXU.PPV.phsCA.mag",
-        "VL3": "DECP.MMXU.PhV.phsC.mag",
-        "Hz": "DECP.MMXU.Hz",
-        "St": "DGEN.DERState",
-        "ConnSt": "DSTO.DERState.1",
-        "Alrm": "CALH.GrAlm"
+        "W": "transform[DECP, MMXU, TotW]()",
+        "Var": "transform[DECP, MMXU, TotVAr]()",
+        "LLV": "transform[DECP, MMXU, PPV](mean(phsAB.mag, phsBC.mag, phsCA.mag))",
+        "LNV": "transform[DECP, MMXU, PNV](mean(phsA.mag, phsB.mag, phsC.mag))",
+        "VL1L2": "transform[DECP, MMXU, PPV, phsAB, mag]()",
+        "VL1": "transform[DECP, MMXU, PhV, phsA, mag]()",
+        "VL2L3": "transform[DECP, MMXU, PPV, phsBC, mag]()",
+        "VL2": "transform[DECP, MMXU, PhV, phsB, mag]()",
+        "VL3L1": "transform[DECP, MMXU, PPV, phsCA, mag]()",
+        "VL3": "transform[DECP, MMXU, PhV, phsC, mag]()",
+        "Hz": "transform[DECP, MMXU, Hz]()",
+        "St": "transform[DGEN, DERState]()",
+        "ConnSt": "transform[DSTO, DERState, 1]()",
+        "Alrm": "transform[CALH, GrAlm]()"
       },
       "713": {
-        "SoC": "DSTO.SocUsePct"
+        "SoC": "transform[DSTO, SocUsePct]()"
       },
       "704": {
-        "PFWInjEna": "DFPF.ModEna",
+        "PFWInjEna": "transform[DFPF, ModEna]()",
         "PFWInj": {
-          "PF": "DFPF.PFGnTgt, DFPF.PFLodTgt",
-          "Ext": "DFPF.PFExtSet"
+          "PF": "transform[DFPF, PFGnTgt]()",
+          "Ext": "transform[DFPF, PFExtSet]()"
         },
-        "VarSetEna": "DVAR.ModEna",
-        "VarSetPct": "DVAR.VArTgt",
-        "WMaxLimPctEna": "DWMX.ModEna, DWMN.ModEna",
-        "WMaxLimPct": "DWMX.LimW, DWMN.LimW"
+        "VarSetEna": "transform[DVAR, ModEna]()",
+        "VarSetPct": "transform[DVAR, VArTgt]()",
+        "WMaxLimPctEna": "transform[DWMX, ModEna]()",
+        "WMaxLimPct": "transform[DWMX, LimW]()"
       },
       "705": {
-        "Ena": "DVVR.ModEna",
-        "VRef": "DECP.VRef",
-        "VRefAutoEna": "DVVR.VRefAdjEna",
-        "VRefAutoTms": "DVVR.VRefTmms",
+        "Ena": "transform[DVVR, ModEna]()",
+        "VRef": "transform[DECP, VRef]()",
+        "VRefAutoEna": "transform[DVVR, VRefAdjEna]()",
+        "VRefAutoTms": "transform[DVVR, VRefTmms]()",
         "Crv": {
           "Pt[#]": {
-            "V": "DVVR.VVArCrv.xVal",
-            "Var": "DVVR.VVArCrv.yVal"
+            "V": "transform[DVVR, VVArCrv, xVal]()",
+            "Var": "transform[DVVR, VVArCrv, yVal]()"
           }
         },
-        "RspTms": "DVVR.OpnLoopMax"
+        "RspTms": "transform[DVVR, OpnLoopMax]()"
       },
       "712": {
-        "Ena": "DWVR.ModEna",
+        "Ena": "transform[DWVR, ModEna]()",
         "Crv": {
           "Pt[#]": {
-            "W": "DWVR.WVArCrv.xVal",
-            "Var": "DWVR.WVArCrv.yVal"
+            "W": "transform[DWVR, WVArCrv, xVal]()",
+            "Var": "transform[DWVR, WVArCrv, yVal]()"
           }
         }
       },
       "706": {
-        "Ena": "DVWC.ModEna",
+        "Ena": "transform[DVWC, ModEna]()",
         "Crv": {
           "Pt[#]": {
-            "V": "DVWC.VWCrv.xVal",
-            "W": "DVWC.VWCrv.yVal"
+            "V": "transform[DVWC, VWCrv, xVal]()",
+            "W": "transform[DVWC, VWCrv, yVal]()"
           }
         },
-        "RspTms": "DVWC.OpnLoopMax"
+        "RspTms": "transform[DVWC, OpnLoopMax]()"
       },
       "707": {
         "MustTrip": {
           "Crv": {
             "Pt[#]": {
-              "V": "PTOV.TmVCrv.xVal",
-              "Tms": "PTOV.TmVCrv.yVal"
+              "V": "transform[PTOV, TmVCrv, xVal]()",
+              "Tms": "transform[PTOV, TmVCrv, yVal]()"
             }
           }
         },
         "MomCess": {
           "Crv": {
             "Pt[#]": {
-              "V": "PTOV.TmVCrv.xVal",
-              "Tms": "PTOV.TmVCrv.yVal"
+              "V": "transform[PTOV, TmVCrv, xVal]()",
+              "Tms": "transform[PTOV, TmVCrv, yVal]()"
             }
           }
         }
@@ -121,16 +121,16 @@
         "MustTrip": {
           "Crv": {
             "Pt[#]": {
-              "V": "PTUV.TmVCrv.xVal",
-              "Tms": "PTUV.TmVCrv.yVal"
+              "V": "transform[PTUV, TmVCrv, xVal]()",
+              "Tms": "transform[PTUV, TmVCrv, yVal]()"
             }
           }
         },
         "MomCess": {
           "Crv": {
             "Pt[#]": {
-              "V": "PTUV.TmVCrv.xVal",
-              "Tms": "PTUV.TmVCrv.yVal"
+              "V": "transform[PTUV, TmVCrv, xVal]()",
+              "Tms": "transform[PTUV, TmVCrv, yVal]()"
             }
           }
         }
@@ -139,8 +139,8 @@
         "MustTrip": {
           "Crv": {
             "Pt[#]": {
-              "Hz": "PTOF.TmVCrv.xVal",
-              "Tms": "PTOF.TmVCrv.yVal"
+              "Hz": "transform[PTOF, TmVCrv, xVal]()",
+              "Tms": "transform[PTOF, TmVCrv, yVal]()"
             }
           }
         }
@@ -149,30 +149,30 @@
         "MustTrip": {
           "Crv": {
             "Pt[#]": {
-              "Hz": "PTUF.TmVCrv.xVal",
-              "Tms": "PTUF.TmVCrv.yVal"
+              "Hz": "transform[PTUF, TmVCrv, xVal]()",
+              "Tms": "transform[PTUF, TmVCrv, yVal]()"
             }
           }
         }
       },
       "711": {
         "Ctl": {
-          "DbOf": "DHFW.HzStr",
-          "DbUf": "DLFW.HzStr",
-          "KOf": "DHFW.WGra",
-          "Kuf": "DLFW.WGra",
-          "RspTms": "DHFW.OpnLoopMax"
+          "DbOf": "transform[DHFW, HzStr]()",
+          "DbUf": "transform[DLFW, HzStr]()",
+          "KOf": "transform[DHFW, WGra]()",
+          "Kuf": "transform[DLFW, WGra]()",
+          "RspTms": "transform[DHFW, OpnLoopMax]()"
         }
       },
       "703": {
-        "ES": "DCTE.RtnSrvAuth",
-        "ESVHi": "DCTE.VHiLim",
-        "ESVLo": "DCTE.VLoLim",
-        "ESHzHi": "DCTE.HzHiLim",
-        "ESHzLo": "DCTE.HzLoLim",
-        "ESDlyTms": "DCTE.RtnSrvDlyTim",
-        "ESRndTms": "DCTE.RtnSrvDlyTim",
-        "ESRmpTms": "DCTE.RtnSrvRmpTim"
+        "ES": "transform[DCTE, RtnSrvAuth]()",
+        "ESVHi": "transform[DCTE, VHiLim]()",
+        "ESVLo": "transform[DCTE, VLoLim]()",
+        "ESHzHi": "transform[DCTE, HzHiLim]()",
+        "ESHzLo": "transform[DCTE, HzLoLim]()",
+        "ESDlyTms": "transform[DCTE, RtnSrvDlyTim]()",
+        "ESRndTms": "transform[DCTE, RtnSrvDlyTim]()",
+        "ESRmpTms": "transform[DCTE, RtnSrvRmpTim]()"
       }
     }
   }
