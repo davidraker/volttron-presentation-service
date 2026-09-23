@@ -1,0 +1,124 @@
+[
+  {
+    "input_format": "2030.5",
+    "output_format": "1547",
+    "pattern": {
+      "Nameplate": {
+        "Active Power (unity)": "transform[DERCapability, rtgMaxW]()",
+        "Active Power (over-excited)": "transform[DERCapability, rtgOverExcitedW]()",
+        "Power Factor (over-excited)": "transform[DERCapability, rtgOverExcitedPF]()",
+        "Active Power (under-excited)": "transform[DERCapability, rtgUnderExcitedW]()",
+        "Power Factor (under-excited)": "transform[DERCapability, rtgUnderExcitedPF]()",
+        "Apparent Power (Max)": "transform[DERCapability, rtgMaxVA]()",
+        "Normal (operating category)": "transform[DERCapability, rtgNormalCategory]()",
+        "Abnormal (operating category)": "transform[DERCapability, rtgAbnormalCategory]()",
+        "Reactive Power (Max Injected)": "transform[DERCapability, rtgMaxVar]()",
+        "Reactive Power (Max Absorbed)": "transform[DERCapability, rtgMaxVarNeg]()",
+        "Active Power (Max Charge)": "transform[DERCapability, rtgMaxChargeRateW]()",
+        "Apparent Power (Max Charge)": "transform[DERCapability, rtgMaxChargeRateVA]()",
+        "Voltage AC (nominal)": "transform[DERCapability, rtgVNom]()",
+        "Voltage AC (max)": "transform[DERCapability, rtgMaxV]()",
+        "Voltage AC (min)": "transform[DERCapability, rtgMinV]()",
+        "Supported Control Mode Functions": "transform[DERCapability, modesSupported]()",
+        "Reactive Susceptance": "transform[DERCapability, rtgReactiveSusceptance]()",
+        "Manufacturer": "transform[DeviceInformation, mfID]()",
+        "Model": "transform[DeviceInformation, mfModel]()",
+        "Serial Number": "transform[DeviceInformation, mfSerNum]()",
+        "Version": "transform[DeviceInformation, swVer]()",
+        "Storage Capacity": "transform[DERCapability, rtgMaxWh]()"
+      },
+      "Configuration": {
+        "Active Power (unity)": "transform[DERSettings, setMaxW]()",
+        "Active Power (over-excited)": null,
+        "Power Factor (over-excited)": null,
+        "Active Power (under-excited)": null,
+        "Power Factor (under-excited)": null,
+        "Apparent Power (Max)": "transform[DERSettings, setMaxVA]()",
+        "Normal (operating category)": null,
+        "Reactive Power (Max Injected)": "transform[DERSettings, setMaxVar]()",
+        "Reactive Power (Max Absorbed)": "transform[DERSettings, setMaxVarNeg]()",
+        "Active Power (Max Charge)": "transform[DERSettings, setMaxChargeRateW]()",
+        "Apparent Power (Max Charge)": "transform[DERSettings, setMaxChargeRateVA]()",
+        "Voltage AC (nominal)": "transform[DERSettings, setVNom]()",
+        "Voltage AC (max)": "transform[DERSettings, setMaxV]()",
+        "Voltage AC (min)": "transform[DERSettings, setMinV]()"
+      },
+      "Monitoring": {
+        "Active Power": "transform[MirrorMeterReading, W]()",
+        "Reactive Power": "transform[MirrorMeterReading, var]()",
+        "Voltage Phase A": "transform[MirrorMeterReading, V, PhaseA]()",
+        "Voltage Phase B": "transform[MirrorMeterReading, V, PhaseB]()",
+        "Voltage Phase C": "transform[MirrorMeterReading, V, PhaseC]()",
+        "Voltage Phase AB": "transform[MirrorMeterReading, V, PhaseAB]()",
+        "Voltage Phase BC": "transform[MirrorMeterReading, V, PhaseBC]()",
+        "Voltage Phase CA": "transform[MirrorMeterReading, V, PhaseCA]()",
+        "Voltage Average Line-Line": "transform[MirrorMeterReading, V](mean(PhaseAB, PhaseBC, PhaseCA))",
+        "Voltage Average Line-Neutral": "transform[MirrorMeterReading, V](mean(PhaseA, PhaseB, PhaseC))",
+        "Frequency": "transform[MirrorMeterReading, Hz]()",
+        "Operation State": "transform[DERStatus, operationalModeStatus]()",
+        "Connection Status": "transform[DERStatus, connectStatus]()",
+        "Alarm Status": "transform[DERStatus, alarmStatus]()",
+        "Operation SoC": "transform[DERStatus, stateOfChargeStatus]()"
+      },
+      "Constant PF": {
+        "Enable": null,
+        "Injection/Absorption setting": "transform[DERControl, opModFixedPFInjectW, displacement]()",
+        "Excitation setting": "transform[DERControl, opModFixedPFInjectW, excitation]()"
+      },
+      "Volt-VAR": {
+        "Enable": null,
+        "Vref": "transform[DERCurve, opModVoltVar, vRef]()",
+        "Autonomous Vref Adjustment enable": "transform[DERCurve, opModVoltVar, autonomousVRefEnable]()",
+        "Vref Adjustment Time Constant": "transform[DERCurve, opModVoltVar, autonomousVRefTimeConstant]()",
+        "V/Q Curve Points": "transform[DERCurve, opModVoltVar, CurveData]()",
+        "Open Loop Response Time": "transform[DERCurve, opModVoltVar, openLoopTms]()"
+      },
+      "Watt-VAR": {
+        "Enable": null,
+        "P/Q Curve Points": "transform[DERCurve, opModWattVar, CurveData]()"
+      },
+      "Constant VAR": {
+        "Enable": null,
+        "VAR Setting": "transform[DERControl, opModFixedVar]()"
+      },
+      "Volt-Watt": {
+        "Enable": null,
+        "V/P Curve Points": "transform[DERCurve, opModVoltWatt, CurveData]()",
+        "Open Loop Response Time": "transform[DERCurve, opModVoltWatt, openLoopTms]()"
+      },
+      "Voltage Trip": {
+        "HV Trip Curve Points": "transform[DERCurve, opModHVRTMustTrip, CurveData]()",
+        "LV Trip Curve Points": "transform[DERCurve, opModLVRTMustTrip, CurveData]()"
+      },
+      "Momentary Cessation": {
+        "HV Cessation Curve Points": "transform[DERCurve, opModHVRTMomentaryCessation, CurveData]()",
+        "LV Cessation Curve Points": "transform[DERCurve, opModLVRTMomentaryCessation, CurveData]()"
+      },
+      "Frequency Trip": {
+        "HF Trip Curve Points": "transform[DERCurve, opModHFRTMustTrip, CurveData]()",
+        "LF Trip Curve Points": "transform[DERCurve, opModLFRTMustTrip, CurveData]()"
+      },
+      "Frequency-Watt": {
+        "dbof": "transform[DERControl, opModFreqDroop, dBOF]()",
+        "dbuf": "transform[DERControl, opModFreqDroop, dBUF]()",
+        "kof": "transform[DERControl, opModFreqDroop, kOF]()",
+        "kuf": "transform[DERControl, opModFreqDroop, kUF]()",
+        "Open Loop Response Time": "transform[DERControl, opModFreqDroop, openLoopTms]()"
+      },
+      "Enter Service": {
+        "Permit service": "transform[DERControl, opModEnergize]()",
+        "ES Voltage High": "transform[DERSettings, setESHighVolt]()",
+        "ES Voltage Low": "transform[DERSettings, setESLowVolt]()",
+        "ES Frequency High": "transform[DERSettings, setESHighFreq]()",
+        "ES Frequency Low": "transform[DERSettings, setESLowFreq]()",
+        "ES Delay": "transform[DERSettings, setESDelay]()",
+        "ES Randomized Delay": "transform[DERSettings, setESRandomDelay]()",
+        "ES Ramp Time": "transform[DERSettings, setESRampTms]()"
+      },
+      "Limit Watt": {
+        "Enable": null,
+        "Watt Setting": "transform[DERControl, opModMaxLimW]()"
+      }
+    }
+  }
+]

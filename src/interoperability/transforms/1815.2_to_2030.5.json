@@ -1,0 +1,346 @@
+[
+  {
+    "input_format": "1815.2.inputs",
+    "output_format": "2030.5",
+    "pattern": {
+      "DERCapability": {
+        "rtgMaxW": "transform[AI, 4]()",
+        "rtgOverExcitedW": "transform[AI, 6]()",
+        "rtgOverExcitedPF": "transform[AI, 8]()",
+        "rtgUnderExcitedW": "transform[AI, 9]()",
+        "rtgUnderExcitedPF": "transform[AI, 11]()",
+        "rtgMaxVA": "transform[AI, 14]()",
+        "rtgNormalCategory": "transform[AI, 22]()",
+        "rtgAbnormalCategory": "transform[AI, 23]()",
+        "rtgMaxVar": "transform[AI, 12]()",
+        "rtgMaxVarNeg": "transform[AI, 13]()",
+        "rtgMaxChargeRateW": "transform[AI, 5]()",
+        "rtgMaxChargeRateVA": "transform[AI, 15]()",
+        "rtgVNom": "transform[AI, 29]()",
+        "rtgMaxV": "transform[AI, 3]()",
+        "rtgMinV": "transform[AI, 2]()",
+        "rtgMaxA": "transform[AI, 19]()",
+        "modesSupported": null,
+        "rtgReactiveSusceptance": "transform[AI, 21]()",
+        "rtgMaxWh": "transform[AI, 16]()"
+      },
+      "DeviceInformation": {
+        "mfID": null,
+        "mfModel": null,
+        "mfSerNum": null,
+        "swVer": null
+      },
+      "DERSettings": {
+        "setMaxW": "transform[AI, 32]()",
+        "setMaxVA": "transform[AI, 36]()",
+        "setMaxVar": "transform[AI, 34]()",
+        "setMaxVarNeg": "transform[AI, 35]()",
+        "setMaxChargeRateW": "transform[AI, 33]()",
+        "setMaxChargeRateVA": "transform[AI, 37]()",
+        "setVNom": null,
+        "setMaxV": "transform[AI, 39]()",
+        "setMinV": "transform[AI, 38]()",
+        "setVRef": "transform[AI, 29]()",
+        "setVRefOfs": "transform[AI, 30]()",
+        "setESHighVolt": "transform[AI, 50]()",
+        "setESLowVolt": "transform[AI, 51]()",
+        "setESHighFreq": "transform[AI, 52]()",
+        "setESLowFreq": "transform[AI, 53]()",
+        "setESDelay": "transform[AI, 54]()",
+        "setESRandomDelay": "transform[AI, 55]()",
+        "setESRampTms": "transform[AI, 56]()"
+      },
+      "MirrorMeterReading": {
+        "W": "transform[AI, 537]()",
+        "var": "transform[AI, 541]()",
+        "V": {
+          "PhaseA": "transform[AI, 547]()",
+          "PhaseB": "transform[AI, 549]()",
+          "PhaseC": "transform[AI, 551]()",
+          "PhaseAB": null,
+          "PhaseBC": null,
+          "PhaseCA": null
+        },
+        "Hz": "transform[AI, 536]()"
+      },
+      "DERStatus": {
+        "operationalModeStatus": "transform[AI, 49]()",
+        "connectStatus": "transform[BI, 23]()",
+        "alarmStatus": "transform[BI, 1]()",
+        "stateOfChargeStatus": "transform[AI, 48]()"
+      },
+      "DERControl": {
+        "opModFixedPFInjectW": {
+          "displacement": "transform[AI, 288]()",
+          "excitation": "transform[BI, 29]()"
+        },
+        "opModFixedPFAbsorbW": {
+          "displacement": "transform[AI, 289]()",
+          "excitation": "transform[BI, 30]()"
+        },
+        "opModVoltVar": "transform[AI, 297]()",
+        "opModWattVar": "transform[AI, 308]()",
+        "opModFixedVar": "transform[AI, 281]()",
+        "opModTargetVar": null,
+        "opModVoltWatt": "transform[AI, 248]()",
+        "opModHVRTMustTrip": "transform[AI, 73]()",
+        "opModLVRTMustTrip": "transform[AI, 74]()",
+        "opModHVRTMomentaryCessation": "transform[AI, 75]()",
+        "opModLVRTMomentaryCessation": "transform[AI, 76]()",
+        "opModHFRTMustTrip": "transform[AI, 79]()",
+        "opModLFRTMustTrip": "transform[AI, 80]()",
+        "opModFreqDroop": {
+          "dBOF": "transform[AI, 121]()",
+          "dBUF": "transform[AI, 125]()",
+          "kOF": "transform[AI, 123]()",
+          "kUF": "transform[AI, 127]()",
+          "openLoopTms": "transform[AI, 131]()"
+        },
+        "opModEnergize": "transform[BI, 16]()",
+        "opModMaxLimW": "transform[AI, 149]()"
+      },
+      "DERCurve": {
+        "opModVoltVar": {
+          "vRef": "transform[AI, 29]()",
+          "autonomousVRefEnable": "transform[BI, 93]()",
+          "autonomousVRefTimeConstant": "transform[AI, 300]()",
+          "CurveData[#]": {
+            "xvalue": null,
+            "yvalue": null
+          },
+          "openLoopTms": "transform[AI, 298]()"
+        },
+        "opModWattVar": {
+          "CurveData[#]": {
+            "xvalue": null,
+            "yvalue": null
+          }
+        },
+        "opModVoltWatt": {
+          "CurveData[#]": {
+            "xvalue": null,
+            "yvalue": null
+          },
+          "openLoopTms": "transform[AI, 251]()"
+        },
+        "opModHVRTMustTrip": {
+          "CurveData[#]": {
+            "xvalue": null,
+            "yvalue": null
+          }
+        },
+        "opModLVRTMustTrip": {
+          "CurveData[#]": {
+            "xvalue": null,
+            "yvalue": null
+          }
+        },
+        "opModHVRTMomentaryCessation": {
+          "CurveData[#]": {
+            "xvalue": null,
+            "yvalue": null
+          }
+        },
+        "opModLVRTMomentaryCessation": {
+          "CurveData[#]": {
+            "xvalue": null,
+            "yvalue": null
+          }
+        },
+        "opModHFRTMustTrip": {
+          "CurveData[#]": {
+            "xvalue": null,
+            "yvalue": null
+          }
+        },
+        "opModLFRTMustTrip": {
+          "CurveData[#]": {
+            "xvalue": null,
+            "yvalue": null
+          }
+        }
+      },
+      "DefaultDERControl": {
+        "setESHighVolt": "transform[AI, 50]()",
+        "setESLowVolt": "transform[AI, 51]()",
+        "setESHighFreq": "transform[AI, 52]()",
+        "setESLowFreq": "transform[AI, 53]()",
+        "setESDelay": "transform[AI, 54]()",
+        "setESRandomDelay": "transform[AI, 55]()",
+        "setESRampTms": "transform[AI, 56]()"
+      }
+    }
+  },
+  {
+    "input_format": "1815.2.outputs",
+    "output_format": "2030.5",
+    "pattern": {
+      "DERCapability": {
+        "rtgMaxW": null,
+        "rtgOverExcitedW": null,
+        "rtgOverExcitedPF": null,
+        "rtgUnderExcitedW": null,
+        "rtgUnderExcitedPF": null,
+        "rtgMaxVA": null,
+        "rtgNormalCategory": null,
+        "rtgAbnormalCategory": null,
+        "rtgMaxVar": null,
+        "rtgMaxVarNeg": null,
+        "rtgMaxChargeRateW": null,
+        "rtgMaxChargeRateVA": null,
+        "rtgVNom": null,
+        "rtgMaxV": null,
+        "rtgMinV": null,
+        "rtgMaxA": null,
+        "modesSupported": null,
+        "rtgReactiveSusceptance": null,
+        "rtgMaxWh": null
+      },
+      "DeviceInformation": {
+        "mfID": null,
+        "mfModel": null,
+        "mfSerNum": null,
+        "swVer": null
+      },
+      "DERSettings": {
+        "setMaxW": null,
+        "setMaxVA": null,
+        "setMaxVar": null,
+        "setMaxVarNeg": null,
+        "setMaxChargeRateW": null,
+        "setMaxChargeRateVA": null,
+        "setVNom": null,
+        "setMaxV": null,
+        "setMinV": null,
+        "setVRef": "transform[AO, 0]()",
+        "setVRefOfs": "transform[AO, 1]()",
+        "setESHighVolt": "transform[AO, 6]()",
+        "setESLowVolt": "transform[AO, 7]()",
+        "setESHighFreq": "transform[AO, 8]()",
+        "setESLowFreq": "transform[AO, 9]()",
+        "setESDelay": "transform[AO, 10]()",
+        "setESRandomDelay": "transform[AO, 11]()",
+        "setESRampTms": "transform[AO, 12]()"
+      },
+      "MirrorMeterReading": {
+        "W": null,
+        "var": null,
+        "V": {
+          "PhaseA": null,
+          "PhaseB": null,
+          "PhaseC": null,
+          "PhaseAB": null,
+          "PhaseBC": null,
+          "PhaseCA": null
+        },
+        "Hz": null
+      },
+      "DERStatus": {
+        "operationalModeStatus": null,
+        "connectStatus": null,
+        "alarmStatus": null,
+        "stateOfChargeStatus": null
+      },
+      "DERControl": {
+        "opModFixedPFInjectW": {
+          "displacement": "transform[AO, 210]()",
+          "excitation": "transform[BO, 10]()"
+        },
+        "opModFixedPFAbsorbW": {
+          "displacement": "transform[AO, 211]()",
+          "excitation": "transform[BO, 11]()"
+        },
+        "opModVoltVar": "transform[AO, 217]()",
+        "opModWattVar": "transform[AO, 226]()",
+        "opModFixedVar": "transform[AO, 203]()",
+        "opModTargetVar": null,
+        "opModVoltWatt": "transform[AO, 173]()",
+        "opModHVRTMustTrip": "transform[AO, 23]()",
+        "opModLVRTMustTrip": "transform[AO, 24]()",
+        "opModHVRTMomentaryCessation": "transform[AO, 25]()",
+        "opModLVRTMomentaryCessation": "transform[AO, 26]()",
+        "opModHFRTMustTrip": "transform[AO, 28]()",
+        "opModLFRTMustTrip": "transform[AO, 29]()",
+        "opModFreqDroop": {
+          "dBOF": "transform[AO, 62]()",
+          "dBUF": "transform[AO, 66]()",
+          "kOF": "transform[AO, 64]()",
+          "kUF": "transform[AO, 68]()",
+          "openLoopTms": "transform[AO, 72]()"
+        },
+        "opModEnergize": "transform[BO, 3]()",
+        "opModMaxLimW": "transform[AO, 88]()"
+      },
+      "DERCurve": {
+        "opModVoltVar": {
+          "vRef": "transform[AO, 0]()",
+          "autonomousVRefEnable": "transform[BO, 41]()",
+          "autonomousVRefTimeConstant": "transform[AO, 220]()",
+          "CurveData[#]": {
+            "xvalue": null,
+            "yvalue": null
+          },
+          "openLoopTms": "transform[AO, 218]()"
+        },
+        "opModWattVar": {
+          "CurveData[#]": {
+            "xvalue": null,
+            "yvalue": null
+          }
+        },
+        "opModVoltWatt": {
+          "CurveData[#]": {
+            "xvalue": null,
+            "yvalue": null
+          },
+          "openLoopTms": "transform[AO, 175]()"
+        },
+        "opModHVRTMustTrip": {
+          "CurveData[#]": {
+            "xvalue": null,
+            "yvalue": null
+          }
+        },
+        "opModLVRTMustTrip": {
+          "CurveData[#]": {
+            "xvalue": null,
+            "yvalue": null
+          }
+        },
+        "opModHVRTMomentaryCessation": {
+          "CurveData[#]": {
+            "xvalue": null,
+            "yvalue": null
+          }
+        },
+        "opModLVRTMomentaryCessation": {
+          "CurveData[#]": {
+            "xvalue": null,
+            "yvalue": null
+          }
+        },
+        "opModHFRTMustTrip": {
+          "CurveData[#]": {
+            "xvalue": null,
+            "yvalue": null
+          }
+        },
+        "opModLFRTMustTrip": {
+          "CurveData[#]": {
+            "xvalue": null,
+            "yvalue": null
+          }
+        }
+      },
+      "DefaultDERControl": {
+        "setESHighVolt": "transform[AO, 6]()",
+        "setESLowVolt": "transform[AO, 7]()",
+        "setESHighFreq": "transform[AO, 8]()",
+        "setESLowFreq": "transform[AO, 9]()",
+        "setESDelay": "transform[AO, 10]()",
+        "setESRandomDelay": "transform[AO, 11]()",
+        "setESRampTms": "transform[AO, 12]()"
+      }
+    }
+  }
+]

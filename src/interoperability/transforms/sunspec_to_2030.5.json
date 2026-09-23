@@ -1,0 +1,174 @@
+[
+  {
+    "input_format": "sunspec",
+    "output_format": "2030.5",
+    "pattern": {
+      "DERCapability": {
+        "rtgMaxW": "transform[702, WMaxRtg]()",
+        "rtgOverExcitedW": "transform[702, WOvrExtRtg]()",
+        "rtgOverExcitedPF": "transform[702, WOvrExtRtgPF]()",
+        "rtgUnderExcitedW": "transform[702, WUndExtRtg]()",
+        "rtgUnderExcitedPF": "transform[702, WUndExtRtgPF]()",
+        "rtgMaxVA": "transform[702, VAMaxRtg]()",
+        "rtgNormalCategory": "transform[702, NorOpCatRtg]()",
+        "rtgAbnormalCategory": "transform[702, AbnOpCatRtg]()",
+        "rtgMaxVar": "transform[702, VarMaxInjRtg]()",
+        "rtgMaxVarNeg": "transform[702, VarMaxAbsRtg]()",
+        "rtgMaxChargeRateW": "transform[702, WChaRteMaxRtg]()",
+        "rtgMaxChargeRateVA": "transform[702, VAChaRteMaxRtg]()",
+        "rtgVNom": "transform[702, VNomRtg]()",
+        "rtgMaxV": "transform[702, VMaxRtg]()",
+        "rtgMinV": "transform[702, VMinRtg]()",
+        "rtgMaxA": "transform[702, AMaxRtg]()",
+        "modesSupported": "transform[702, CtrlModes]()",
+        "rtgReactiveSusceptance": "transform[702, ReactSusceptRtg]()",
+        "rtgMaxWh": "transform[713, WHRtg]()"
+      },
+      "DeviceInformation": {
+        "mfID": "transform[1, Mn]()",
+        "mfModel": "transform[1, Md]()",
+        "mfSerNum": "transform[1, SN]()",
+        "swVer": "transform[1, Vr]()"
+      },
+      "DERSettings": {
+        "setMaxW": "transform[702, WMax]()",
+        "setMaxVA": "transform[702, VAMax]()",
+        "setMaxVar": "transform[702, VarMaxInj]()",
+        "setMaxVarNeg": "transform[702, VarMaxAbs]()",
+        "setMaxChargeRateW": "transform[702, WChaRteMax]()",
+        "setMaxChargeRateVA": "transform[702, VAChaRteMax]()",
+        "setVNom": "transform[702, VNom]()",
+        "setMaxV": "transform[702, VMax]()",
+        "setMinV": "transform[702, VMin]()",
+        "setVRef": null,
+        "setVRefOfs": null,
+        "setESHighVolt": "transform[703, ESVHi]()",
+        "setESLowVolt": "transform[703, ESVLo]()",
+        "setESHighFreq": "transform[703, ESHzHi]()",
+        "setESLowFreq": "transform[703, ESHzLo]()",
+        "setESDelay": "transform[703, ESDlyTms]()",
+        "setESRandomDelay": "transform[703, ESRndTms]()",
+        "setESRampTms": "transform[703, ESRmpTms]()"
+      },
+      "MirrorMeterReading": {
+        "W": "transform[701, W]()",
+        "var": "transform[701, Var]()",
+        "V": {
+          "PhaseA": "transform[701, VL1]()",
+          "PhaseB": "transform[701, VL2]()",
+          "PhaseC": "transform[701, VL3]()",
+          "PhaseAB": "transform[701, VL1L2]()",
+          "PhaseBC": "transform[701, VL2L3]()",
+          "PhaseCA": "transform[701, VL3L1]()"
+        },
+        "Hz": "transform[701, Hz]()"
+      },
+      "DERStatus": {
+        "operationalModeStatus": "transform[701, St]()",
+        "connectStatus": "transform[701, ConnSt]()",
+        "alarmStatus": "transform[701, Alrm]()",
+        "stateOfChargeStatus": "transform[713, SoC]()"
+      },
+      "DERControl": {
+        "opModFixedPFInjectW": {
+          "displacement": "transform[704, PFWInj, PF]()",
+          "excitation": "transform[704, PFWInj, Ext]()"
+        },
+        "opModFixedPFAbsorbW": {
+          "displacement": "transform[704, PFWAbs, PF]()",
+          "excitation": "transform[704, PFWAbs, Ext]()"
+        },
+        "opModVoltVar": null,
+        "opModWattVar": null,
+        "opModFixedVar": "transform[704, VarSetPct]()",
+        "opModTargetVar": "transform[704, VarSet]()",
+        "opModVoltWatt": null,
+        "opModHVRTMustTrip": null,
+        "opModLVRTMustTrip": null,
+        "opModHVRTMomentaryCessation": null,
+        "opModLVRTMomentaryCessation": null,
+        "opModHFRTMustTrip": null,
+        "opModLFRTMustTrip": null,
+        "opModFreqDroop": {
+          "dBOF": "transform[711, Ctl, DbOf]()",
+          "dBUF": "transform[711, Ctl, DbUf]()",
+          "kOF": "transform[711, Ctl, KOf]()",
+          "kUF": "transform[711, Ctl, KUf]()",
+          "openLoopTms": "transform[711, Ctl, RspTms]()"
+        },
+        "opModEnergize": "transform[703, ES]()",
+        "opModMaxLimW": "transform[704, WMaxLimPct]()"
+      },
+      "DERCurve": {
+        "opModVoltVar": {
+          "vRef": "transform[705, VRef]()",
+          "autonomousVRefEnable": "transform[705, VRefAutoEna]()",
+          "autonomousVRefTimeConstant": "transform[705, VRefAutoTms]()",
+          "CurveData[#]": {
+            "xvalue": "transform[705, Crv, 'Pt[#]', V]()",
+            "yvalue": "transform[705, Crv, 'Pt[#]', Var]()"
+          },
+          "openLoopTms": "transform[705, RspTms]()"
+        },
+        "opModWattVar": {
+          "CurveData[#]": {
+            "xvalue": "transform[712, Crv, 'Pt[#]', W]()",
+            "yvalue": "transform[712, Crv, 'Pt[#]', Var]()"
+          }
+        },
+        "opModVoltWatt": {
+          "CurveData[#]": {
+            "xvalue": "transform[706, Crv, 'Pt[#]', V]()",
+            "yvalue": "transform[706, Crv, 'Pt[#]', W]()"
+          },
+          "openLoopTms": "transform[706, RspTms]()"
+        },
+        "opModHVRTMustTrip": {
+          "CurveData[#]": {
+            "xvalue": "transform[708, Crv, MustTrip, 'Pt[#]', V]()",
+            "yvalue": "transform[708, Crv, MustTrip, 'Pt[#]', Tms]()"
+          }
+        },
+        "opModLVRTMustTrip": {
+          "CurveData[#]": {
+            "xvalue": "transform[707, Crv, MustTrip, 'Pt[#]', V]()",
+            "yvalue": "transform[707, Crv, MustTrip, 'Pt[#]', Tms]()"
+          }
+        },
+        "opModHVRTMomentaryCessation": {
+          "CurveData[#]": {
+            "xvalue": "transform[708, Crv, MomCess, 'Pt[#]', V]()",
+            "yvalue": "transform[708, Crv, MomCess, 'Pt[#]', Tms]()"
+          }
+        },
+        "opModLVRTMomentaryCessation": {
+          "CurveData[#]": {
+            "xvalue": "transform[707, Crv, MomCess, 'Pt[#]', V]()",
+            "yvalue": "transform[707, Crv, MomCess, 'Pt[#]', Tms]()"
+          }
+        },
+        "opModHFRTMustTrip": {
+          "CurveData[#]": {
+            "xvalue": "transform[710, Crv, MustTrip, 'Pt[#]', Hz]()",
+            "yvalue": "transform[710, Crv, MustTrip, 'Pt[#]', Tms]()"
+          }
+        },
+        "opModLFRTMustTrip": {
+          "CurveData[#]": {
+            "xvalue": "transform[709, Crv, MustTrip, 'Pt[#]', Hz]()",
+            "yvalue": "transform[709, Crv, MustTrip, 'Pt[#]', Tms]()"
+          }
+        }
+      },
+      "DefaultDERControl": {
+        "setESHighVolt": "transform[703, ESVHi]()",
+        "setESLowVolt": "transform[703, ESVLo]()",
+        "setESHighFreq": "transform[703, ESHzHi]()",
+        "setESLowFreq": "transform[703, ESHzLo]()",
+        "setESDelay": "transform[703, ESDlyTms]()",
+        "setESRandomDelay": "transform[703, ESRndTms]()",
+        "setESRampTms": "transform[703, ESRmpTms]()"
+      }
+    }
+  }
+]

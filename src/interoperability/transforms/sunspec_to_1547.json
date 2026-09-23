@@ -1,0 +1,124 @@
+[
+  {
+    "input_format": "sunspec",
+    "output_format": "1547",
+    "pattern": {
+      "Nameplate": {
+        "Active Power (unity)": "transform[702, WMaxRtg]()",
+        "Active Power (over-excited)": "transform[702, WOvrExtRtg]()",
+        "Power Factor (over-excited)": "transform[702, WOvrExtRtgPF]()",
+        "Active Power (under-excited)": "transform[702, WUndExtRtg]()",
+        "Power Factor (under-excited)": "transform[702, WUndExtRtgPF]()",
+        "Apparent Power (Max)": "transform[702, VAMaxRtg]()",
+        "Normal (operating category)": "transform[702, NorOpCatRtg]()",
+        "Abnormal (operating category)": "transform[702, AbnOpCatRtg]()",
+        "Reactive Power (Max Injected)": "transform[702, VarMaxInjRtg]()",
+        "Reactive Power (Max Absorbed)": "transform[702, VarMaxAbsRtg]()",
+        "Active Power (Max Charge)": "transform[702, WChaRteMaxRtg]()",
+        "Apparent Power (Max Charge)": "transform[702, VAChaRteMaxRtg]()",
+        "Voltage AC (nominal)": "transform[702, VNomRtg]()",
+        "Voltage AC (max)": "transform[702, VMaxRtg]()",
+        "Voltage AC (min)": "transform[702, VMinRtg]()",
+        "Supported Control Mode Functions": "transform[702, CtrlModes]()",
+        "Reactive Susceptance": "transform[702, ReactSusceptRtg]()",
+        "Manufacturer": "transform[1, Mn]()",
+        "Model": "transform[1, Md]()",
+        "Serial Number": "transform[1, SN]()",
+        "Version": "transform[1, Vr]()",
+        "Storage Capacity": "transform[713, WHRtg]()"
+      },
+      "Configuration": {
+        "Active Power (unity)": "transform[702, WMax]()",
+        "Active Power (over-excited)": "transform[702, WMaxOvrExt]()",
+        "Power Factor (over-excited)": "transform[702, WOvrExtPF]()",
+        "Active Power (under-excited)": "transform[702, WMaxUndExt]()",
+        "Power Factor (under-excited)": "transform[702, WUndExtPF]()",
+        "Apparent Power (Max)": "transform[702, VAMax]()",
+        "Normal (operating category)": "transform[702, IntIslandCat]()",
+        "Reactive Power (Max Injected)": "transform[702, VarMaxInj]()",
+        "Reactive Power (Max Absorbed)": "transform[702, VarMaxAbs]()",
+        "Active Power (Max Charge)": "transform[702, WChaRteMax]()",
+        "Apparent Power (Max Charge)": "transform[702, VAChaRteMax]()",
+        "Voltage AC (nominal)": "transform[702, VNom]()",
+        "Voltage AC (max)": "transform[702, VMax]()",
+        "Voltage AC (min)": "transform[702, VMin]()"
+      },
+      "Monitoring": {
+        "Active Power": "transform[701, W]()",
+        "Reactive Power": "transform[701, Var]()",
+        "Voltage Phase A": "transform[701, VL1]()",
+        "Voltage Phase B": "transform[701, VL2]()",
+        "Voltage Phase C": "transform[701, VL3]()",
+        "Voltage Phase AB": "transform[701, VL1L2]()",
+        "Voltage Phase BC": "transform[701, VL2L3]()",
+        "Voltage Phase CA": "transform[701, VL3L1]()",
+        "Voltage Average Line-Line": "transform[701, LLV]()",
+        "Voltage Average Line-Neutral": "transform[701, LNV]()",
+        "Frequency": "transform[701, Hz]()",
+        "Operation State": "transform[701, St]()",
+        "Connection Status": "transform[701, ConnSt]()",
+        "Alarm Status": "transform[701, Alrm]()",
+        "Operation SoC": "transform[713, SoC]()"
+      },
+      "Constant PF": {
+        "Enable": "transform[704, PFWInjEna]()",
+        "Injection/Absorption setting": "transform[704, PFWInj, PF]()",
+        "Excitation setting": "transform[704, PFWInj, Ext]()"
+      },
+      "Volt-VAR": {
+        "Enable": "transform[705, Ena]()",
+        "Vref": "transform[705, VRef]()",
+        "Autonomous Vref Adjustment enable": "transform[705, VRefAutoEna]()",
+        "Vref Adjustment Time Constant": "transform[705, VRefAutoTms]()",
+        "V/Q Curve Points": "transform[705, Crv, Pt]()",
+        "Open Loop Response Time": "transform[705, RspTms]()"
+      },
+      "Watt-VAR": {
+        "Enable": "transform[712, Ena]()",
+        "P/Q Curve Points": "transform[712, Crv, Pt]()"
+      },
+      "Constant VAR": {
+        "Enable": "transform[704, VarSetEna]()",
+        "VAR Setting": "transform[704, VarSetPct]()"
+      },
+      "Volt-Watt": {
+        "Enable": "transform[706, Ena]()",
+        "V/P Curve Points": "transform[706, Crv, Pt]()",
+        "Open Loop Response Time": "transform[706, RspTms]()"
+      },
+      "Voltage Trip": {
+        "HV Trip Curve Points": "transform[708, Crv, MustTrip, Pt]()",
+        "LV Trip Curve Points": "transform[707, Crv, MustTrip, Pt]()"
+      },
+      "Momentary Cessation": {
+        "HV Cessation Curve Points": "transform[708, Crv, MomCess, Pt]()",
+        "LV Cessation Curve Points": "transform[707, Crv, MomCess, Pt]()"
+      },
+      "Frequency Trip": {
+        "HF Trip Curve Points": "transform[710, Crv, MustTrip, Pt]()",
+        "LF Trip Curve Points": "transform[709, Crv, MustTrip, Pt]()"
+      },
+      "Frequency-Watt": {
+        "dbof": "transform[711, Ctl, DbOf]()",
+        "dbuf": "transform[711, Ctl, DbUf]()",
+        "kof": "transform[711, Ctl, KOf]()",
+        "kuf": "transform[711, Ctl, KUf]()",
+        "Open Loop Response Time": "transform[711, Ctl, RspTms]()"
+      },
+      "Enter Service": {
+        "Permit service": "transform[703, ES]()",
+        "ES Voltage High": "transform[703, ESVHi]()",
+        "ES Voltage Low": "transform[703, ESVLo]()",
+        "ES Frequency High": "transform[703, ESHzHi]()",
+        "ES Frequency Low": "transform[703, ESHzLo]()",
+        "ES Delay": "transform[703, ESDlyTms]()",
+        "ES Randomized Delay": "transform[703, ESRndTms]()",
+        "ES Ramp Time": "transform[703, ESRmpTms]()"
+      },
+      "Limit Watt": {
+        "Enable": "transform[704, WMaxLimPctEna]()",
+        "Watt Setting": "transform[704, WMaxLimPct]()"
+      }
+    }
+  }
+]

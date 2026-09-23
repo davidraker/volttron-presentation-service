@@ -1,0 +1,147 @@
+[
+  {
+    "input_format": "1547",
+    "output_format": "2030.5",
+    "pattern": {
+      "DERCapability": {
+        "rtgMaxW": "transform[Nameplate, 'Active Power (unity)']()",
+        "rtgOverExcitedW": "transform[Nameplate, 'Active Power (over-excited)']()",
+        "rtgOverExcitedPF": "transform[Nameplate, 'Power Factor (over-excited)']()",
+        "rtgUnderExcitedW": "transform[Nameplate, 'Active Power (under-excited)']()",
+        "rtgUnderExcitedPF": "transform[Nameplate, 'Power Factor (under-excited)']()",
+        "rtgMaxVA": "transform[Nameplate, 'Apparent Power (Max)']()",
+        "rtgNormalCategory": "transform[Nameplate, 'Normal (operating category)']()",
+        "rtgAbnormalCategory": "transform[Nameplate, 'Abnormal (operating category)']()",
+        "rtgMaxVar": "transform[Nameplate, 'Reactive Power (Max Injected)']()",
+        "rtgMaxVarNeg": "transform[Nameplate, 'Reactive Power (Max Absorbed)']()",
+        "rtgMaxChargeRateW": "transform[Nameplate, 'Active Power (Max Charge)']()",
+        "rtgMaxChargeRateVA": "transform[Nameplate, 'Apparent Power (Max Charge)']()",
+        "rtgVNom": "transform[Nameplate, 'Voltage AC (nominal)']()",
+        "rtgMaxV": "transform[Nameplate, 'Voltage AC (max)']()",
+        "rtgMinV": "transform[Nameplate, 'Voltage AC (min)']()",
+        "rtgMaxA": null,
+        "modesSupported": "transform[Nameplate, 'Supported Control Mode Functions']()",
+        "rtgReactiveSusceptance": "transform[Nameplate, 'Reactive Susceptance']()",
+        "rtgMaxWh": "transform[Nameplate, 'Storage Capacity']()"
+      },
+      "DeviceInformation": {
+        "mfID": "transform[Nameplate, Manufacturer]()",
+        "mfModel": "transform[Nameplate, Model]()",
+        "mfSerNum": "transform[Nameplate, 'Serial Number']()",
+        "swVer": "transform[Nameplate, Version]()"
+      },
+      "DERSettings": {
+        "setMaxW": "transform[Configuration, 'Active Power (unity)']()",
+        "setMaxVA": "transform[Configuration, 'Apparent Power (Max)']()",
+        "setMaxVar": "transform[Configuration, 'Reactive Power (Max Injected)']()",
+        "setMaxVarNeg": "transform[Configuration, 'Reactive Power (Max Absorbed)']()",
+        "setMaxChargeRateW": "transform[Configuration, 'Active Power (Max Charge)']()",
+        "setMaxChargeRateVA": "transform[Configuration, 'Apparent Power (Max Charge)']()",
+        "setVNom": "transform[Configuration, 'Voltage AC (nominal)']()",
+        "setMaxV": "transform[Configuration, 'Voltage AC (max)']()",
+        "setMinV": "transform[Configuration, 'Voltage AC (min)']()",
+        "setVRef": null,
+        "setVRefOfs": null,
+        "setESHighVolt": "transform['Enter Service', 'ES Voltage High']()",
+        "setESLowVolt": "transform['Enter Service', 'ES Voltage Low']()",
+        "setESHighFreq": "transform['Enter Service', 'ES Frequency High']()",
+        "setESLowFreq": "transform['Enter Service', 'ES Frequency Low']()",
+        "setESDelay": "transform['Enter Service', 'ES Delay']()",
+        "setESRandomDelay": "transform['Enter Service', 'ES Randomized Delay']()",
+        "setESRampTms": "transform['Enter Service', 'ES Ramp Time']()"
+      },
+      "MirrorMeterReading": {
+        "W": "transform[Monitoring, 'Active Power']()",
+        "var": "transform[Monitoring, 'Reactive Power']()",
+        "V": {
+          "PhaseA": "transform[Monitoring, 'Voltage Phase A']()",
+          "PhaseB": "transform[Monitoring, 'Voltage Phase B']()",
+          "PhaseC": "transform[Monitoring, 'Voltage Phase C']()",
+          "PhaseAB": "transform[Monitoring, 'Voltage Phase AB']()",
+          "PhaseBC": "transform[Monitoring, 'Voltage Phase BC']()",
+          "PhaseCA": "transform[Monitoring, 'Voltage Phase CA']()"
+        },
+        "Hz": "transform[Monitoring, Frequency]()"
+      },
+      "DERStatus": {
+        "operationalModeStatus": "transform[Monitoring, 'Operation State']()",
+        "connectStatus": "transform[Monitoring, 'Connection Status']()",
+        "alarmStatus": "transform[Monitoring, 'Alarm Status']()",
+        "stateOfChargeStatus": "transform[Monitoring, 'Operation SoC']()"
+      },
+      "DERControl": {
+        "opModFixedPFInjectW": {
+          "displacement": "transform['Constant PF', 'Injection/Absorption setting']()",
+          "excitation": "transform['Constant PF', 'Excitation setting']()"
+        },
+        "opModFixedPFAbsorbW": {
+          "displacement": null,
+          "excitation": null
+        },
+        "opModVoltVar": null,
+        "opModWattVar": null,
+        "opModFixedVar": "transform['Constant VAR', 'VAR Setting']()",
+        "opModTargetVar": null,
+        "opModVoltWatt": null,
+        "opModHVRTMustTrip": null,
+        "opModLVRTMustTrip": null,
+        "opModHVRTMomentaryCessation": null,
+        "opModLVRTMomentaryCessation": null,
+        "opModHFRTMustTrip": null,
+        "opModLFRTMustTrip": null,
+        "opModFreqDroop": {
+          "dBOF": "transform['Frequency-Watt', dbof]()",
+          "dBUF": "transform['Frequency-Watt', dbuf]()",
+          "kOF": "transform['Frequency-Watt', kof]()",
+          "kUF": "transform['Frequency-Watt', kuf]()",
+          "openLoopTms": "transform['Frequency-Watt', 'Open Loop Response Time']()"
+        },
+        "opModEnergize": "transform['Enter Service', 'Permit service']()",
+        "opModMaxLimW": "transform['Limit Watt', 'Watt Setting']()"
+      },
+      "DERCurve": {
+        "opModVoltVar": {
+          "vRef": "transform['Volt-VAR', Vref]()",
+          "autonomousVRefEnable": "transform['Volt-VAR', 'Autonomous Vref Adjustment enable']()",
+          "autonomousVRefTimeConstant": "transform['Volt-VAR', 'Vref Adjustment Time Constant']()",
+          "CurveData": "transform['Volt-VAR', 'V/Q Curve Points']()",
+          "openLoopTms": "transform['Volt-VAR', 'Open Loop Response Time']()"
+        },
+        "opModWattVar": {
+          "CurveData": "transform['Watt-VAR', 'P/Q Curve Points']()"
+        },
+        "opModVoltWatt": {
+          "CurveData": "transform['Volt-Watt', 'V/P Curve Points']()",
+          "openLoopTms": "transform['Volt-Watt', 'Open Loop Response Time']()"
+        },
+        "opModHVRTMustTrip": {
+          "CurveData": "transform['Voltage Trip', 'HV Trip Curve Points']()"
+        },
+        "opModLVRTMustTrip": {
+          "CurveData": "transform['Voltage Trip', 'LV Trip Curve Points']()"
+        },
+        "opModHVRTMomentaryCessation": {
+          "CurveData": "transform['Momentary Cessation', 'HV Cessation Curve Points']()"
+        },
+        "opModLVRTMomentaryCessation": {
+          "CurveData": "transform['Momentary Cessation', 'LV Cessation Curve Points']()"
+        },
+        "opModHFRTMustTrip": {
+          "CurveData": "transform['Frequency Trip', 'HF Trip Curve Points']()"
+        },
+        "opModLFRTMustTrip": {
+          "CurveData": "transform['Frequency Trip', 'LF Trip Curve Points']()"
+        }
+      },
+      "DefaultDERControl": {
+        "setESHighVolt": "transform['Enter Service', 'ES Voltage High']()",
+        "setESLowVolt": "transform['Enter Service', 'ES Voltage Low']()",
+        "setESHighFreq": "transform['Enter Service', 'ES Frequency High']()",
+        "setESLowFreq": "transform['Enter Service', 'ES Frequency Low']()",
+        "setESDelay": "transform['Enter Service', 'ES Delay']()",
+        "setESRandomDelay": "transform['Enter Service', 'ES Randomized Delay']()",
+        "setESRampTms": "transform['Enter Service', 'ES Ramp Time']()"
+      }
+    }
+  }
+]

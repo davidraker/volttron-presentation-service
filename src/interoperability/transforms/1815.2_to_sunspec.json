@@ -1,0 +1,376 @@
+[
+  {
+    "input_format": "1815.2.inputs",
+    "output_format": "sunspec",
+    "pattern": {
+      "1": {
+        "Mn": null,
+        "Md": null,
+        "SN": null,
+        "Vr": null
+      },
+      "701": {
+        "W": "transform[AI, 537]()",
+        "Var": "transform[AI, 541]()",
+        "VL1": "transform[AI, 547]()",
+        "VL2": "transform[AI, 549]()",
+        "VL3": "transform[AI, 551]()",
+        "VL1L2": null,
+        "VL2L3": null,
+        "VL3L1": null,
+        "LLV": "transform[AI, 553]()",
+        "LNV": null,
+        "Hz": "transform[AI, 536]()",
+        "St": "transform[AI, 49]()",
+        "ConnSt": "transform[BI, 23]()",
+        "Alrm": "transform[BI, 1]()"
+      },
+      "702": {
+        "WMaxRtg": "transform[AI, 4]()",
+        "WOvrExtRtg": "transform[AI, 6]()",
+        "WOvrExtRtgPF": "transform[AI, 8]()",
+        "WUndExtRtg": "transform[AI, 9]()",
+        "WUndExtRtgPF": "transform[AI, 11]()",
+        "VAMaxRtg": "transform[AI, 14]()",
+        "NorOpCatRtg": "transform[AI, 22]()",
+        "AbnOpCatRtg": "transform[AI, 23]()",
+        "VarMaxInjRtg": "transform[AI, 12]()",
+        "VarMaxAbsRtg": "transform[AI, 13]()",
+        "WChaRteMaxRtg": "transform[AI, 5]()",
+        "VAChaRteMaxRtg": "transform[AI, 15]()",
+        "VNomRtg": "transform[AI, 29]()",
+        "VMaxRtg": "transform[AI, 3]()",
+        "VMinRtg": "transform[AI, 2]()",
+        "AMaxRtg": "transform[AI, 19]()",
+        "CtrlModes": null,
+        "ReactSusceptRtg": "transform[AI, 21]()",
+        "WMax": "transform[AI, 32]()",
+        "WMaxOvrExt": null,
+        "WOvrExtPF": null,
+        "WMaxUndExt": null,
+        "WUndExtPF": null,
+        "VAMax": "transform[AI, 36]()",
+        "IntIslandCat": null,
+        "VarMaxInj": "transform[AI, 34]()",
+        "VarMaxAbs": "transform[AI, 35]()",
+        "WChaRteMax": "transform[AI, 33]()",
+        "VAChaRteMax": "transform[AI, 37]()",
+        "VNom": null,
+        "VMax": "transform[AI, 39]()",
+        "VMin": "transform[AI, 38]()"
+      },
+      "703": {
+        "ES": "transform[BI, 16]()",
+        "ESVHi": "transform[AI, 50]()",
+        "ESVLo": "transform[AI, 51]()",
+        "ESHzHi": "transform[AI, 52]()",
+        "ESHzLo": "transform[AI, 53]()",
+        "ESDlyTms": "transform[AI, 54]()",
+        "ESRndTms": "transform[AI, 55]()",
+        "ESRmpTms": "transform[AI, 56]()"
+      },
+      "704": {
+        "PFWInjEna": "transform[BI, 80]()",
+        "PFWInj": {
+          "PF": "transform[AI, 288]()",
+          "Ext": "transform[BI, 29]()"
+        },
+        "PFWAbsEna": null,
+        "PFWAbs": {
+          "PF": "transform[AI, 289]()",
+          "Ext": "transform[BI, 30]()"
+        },
+        "VarSetEna": "transform[BI, 79]()",
+        "VarSetPct": "transform[AI, 281]()",
+        "VarSet": null,
+        "WMaxLimPctEna": "transform[BI, 69]()",
+        "WMaxLimPct": "transform[AI, 149]()"
+      },
+      "705": {
+        "Ena": "transform[BI, 81]()",
+        "VRef": "transform[AI, 29]()",
+        "VRefAutoEna": "transform[BI, 93]()",
+        "VRefAutoTms": "transform[AI, 300]()",
+        "Crv": {
+          "Pt[#]": {
+            "V": null,
+            "Var": null
+          }
+        },
+        "RspTms": "transform[AI, 298]()"
+      },
+      "706": {
+        "Ena": "transform[BI, 77]()",
+        "Crv": {
+          "Pt[#]": {
+            "V": null,
+            "W": null
+          }
+        },
+        "RspTms": "transform[AI, 251]()"
+      },
+      "707": {
+        "Crv": {
+          "MustTrip": {
+            "Pt[#]": {
+              "V": null,
+              "Tms": null
+            }
+          },
+          "MomCess": {
+            "Pt[#]": {
+              "V": null,
+              "Tms": null
+            }
+          }
+        }
+      },
+      "708": {
+        "Crv": {
+          "MustTrip": {
+            "Pt[#]": {
+              "V": null,
+              "Tms": null
+            }
+          },
+          "MomCess": {
+            "Pt[#]": {
+              "V": null,
+              "Tms": null
+            }
+          }
+        }
+      },
+      "709": {
+        "Crv": {
+          "MustTrip": {
+            "Pt[#]": {
+              "Hz": null,
+              "Tms": null
+            }
+          }
+        }
+      },
+      "710": {
+        "Crv": {
+          "MustTrip": {
+            "Pt[#]": {
+              "Hz": null,
+              "Tms": null
+            }
+          }
+        }
+      },
+      "711": {
+        "Ena": "transform[BI, 68]()",
+        "Ctl": {
+          "DbOf": "transform[AI, 121]()",
+          "DbUf": "transform[AI, 125]()",
+          "KOf": "transform[AI, 123]()",
+          "KUf": "transform[AI, 127]()",
+          "RspTms": "transform[AI, 131]()"
+        }
+      },
+      "712": {
+        "Ena": "transform[BI, 82]()",
+        "Crv": {
+          "Pt[#]": {
+            "W": null,
+            "Var": null
+          }
+        }
+      },
+      "713": {
+        "WHRtg": "transform[AI, 16]()",
+        "SoC": "transform[AI, 48]()"
+      }
+    }
+  },
+  {
+    "input_format": "1815.2.outputs",
+    "output_format": "sunspec",
+    "pattern": {
+      "1": {
+        "Mn": null,
+        "Md": null,
+        "SN": null,
+        "Vr": null
+      },
+      "701": {
+        "W": null,
+        "Var": null,
+        "VL1": null,
+        "VL2": null,
+        "VL3": null,
+        "VL1L2": null,
+        "VL2L3": null,
+        "VL3L1": null,
+        "LLV": null,
+        "LNV": null,
+        "Hz": null,
+        "St": null,
+        "ConnSt": null,
+        "Alrm": null
+      },
+      "702": {
+        "WMaxRtg": null,
+        "WOvrExtRtg": null,
+        "WOvrExtRtgPF": null,
+        "WUndExtRtg": null,
+        "WUndExtRtgPF": null,
+        "VAMaxRtg": null,
+        "NorOpCatRtg": null,
+        "AbnOpCatRtg": null,
+        "VarMaxInjRtg": null,
+        "VarMaxAbsRtg": null,
+        "WChaRteMaxRtg": null,
+        "VAChaRteMaxRtg": null,
+        "VNomRtg": null,
+        "VMaxRtg": null,
+        "VMinRtg": null,
+        "AMaxRtg": null,
+        "CtrlModes": null,
+        "ReactSusceptRtg": null,
+        "WMax": null,
+        "WMaxOvrExt": null,
+        "WOvrExtPF": null,
+        "WMaxUndExt": null,
+        "WUndExtPF": null,
+        "VAMax": null,
+        "IntIslandCat": null,
+        "VarMaxInj": null,
+        "VarMaxAbs": null,
+        "WChaRteMax": null,
+        "VAChaRteMax": null,
+        "VNom": null,
+        "VMax": null,
+        "VMin": null
+      },
+      "703": {
+        "ES": "transform[BO, 3]()",
+        "ESVHi": "transform[AO, 6]()",
+        "ESVLo": "transform[AO, 7]()",
+        "ESHzHi": "transform[AO, 8]()",
+        "ESHzLo": "transform[AO, 9]()",
+        "ESDlyTms": "transform[AO, 10]()",
+        "ESRndTms": "transform[AO, 11]()",
+        "ESRmpTms": "transform[AO, 12]()"
+      },
+      "704": {
+        "PFWInjEna": "transform[BO, 28]()",
+        "PFWInj": {
+          "PF": "transform[AO, 210]()",
+          "Ext": "transform[BO, 10]()"
+        },
+        "PFWAbsEna": null,
+        "PFWAbs": {
+          "PF": "transform[AO, 211]()",
+          "Ext": "transform[BO, 11]()"
+        },
+        "VarSetEna": "transform[BO, 27]()",
+        "VarSetPct": "transform[AO, 203]()",
+        "VarSet": null,
+        "WMaxLimPctEna": "transform[BO, 17]()",
+        "WMaxLimPct": "transform[AO, 88]()"
+      },
+      "705": {
+        "Ena": "transform[BO, 29]()",
+        "VRef": "transform[AO, 0]()",
+        "VRefAutoEna": "transform[BO, 41]()",
+        "VRefAutoTms": "transform[AO, 220]()",
+        "Crv": {
+          "Pt[#]": {
+            "V": null,
+            "Var": null
+          }
+        },
+        "RspTms": "transform[AO, 218]()"
+      },
+      "706": {
+        "Ena": "transform[BO, 25]()",
+        "Crv": {
+          "Pt[#]": {
+            "V": null,
+            "W": null
+          }
+        },
+        "RspTms": "transform[AO, 175]()"
+      },
+      "707": {
+        "Crv": {
+          "MustTrip": {
+            "Pt[#]": {
+              "V": null,
+              "Tms": null
+            }
+          },
+          "MomCess": {
+            "Pt[#]": {
+              "V": null,
+              "Tms": null
+            }
+          }
+        }
+      },
+      "708": {
+        "Crv": {
+          "MustTrip": {
+            "Pt[#]": {
+              "V": null,
+              "Tms": null
+            }
+          },
+          "MomCess": {
+            "Pt[#]": {
+              "V": null,
+              "Tms": null
+            }
+          }
+        }
+      },
+      "709": {
+        "Crv": {
+          "MustTrip": {
+            "Pt[#]": {
+              "Hz": null,
+              "Tms": null
+            }
+          }
+        }
+      },
+      "710": {
+        "Crv": {
+          "MustTrip": {
+            "Pt[#]": {
+              "Hz": null,
+              "Tms": null
+            }
+          }
+        }
+      },
+      "711": {
+        "Ena": "transform[BO, 16]()",
+        "Ctl": {
+          "DbOf": "transform[AO, 62]()",
+          "DbUf": "transform[AO, 66]()",
+          "KOf": "transform[AO, 64]()",
+          "KUf": "transform[AO, 68]()",
+          "RspTms": "transform[AO, 72]()"
+        }
+      },
+      "712": {
+        "Ena": "transform[BO, 30]()",
+        "Crv": {
+          "Pt[#]": {
+            "W": null,
+            "Var": null
+          }
+        }
+      },
+      "713": {
+        "WHRtg": null,
+        "SoC": null
+      }
+    }
+  }
+]

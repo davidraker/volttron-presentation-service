@@ -1,0 +1,124 @@
+[
+  {
+    "input_format": "61850",
+    "output_format": "1547",
+    "pattern": {
+      "Nameplate": {
+        "Active Power (unity)": "transform[DGEN, WMaxRtg]()",
+        "Active Power (over-excited)": "transform[DGEN, WGnOvPFRtg]()",
+        "Power Factor (over-excited)": "transform[DGEN, OvPFRtg]()",
+        "Active Power (under-excited)": "transform[DGEN, WGnUnPFRtg]()",
+        "Power Factor (under-excited)": "transform[DGEN, UnPFRtg]()",
+        "Apparent Power (Max)": "transform[DGEN, VAMaxRtg]()",
+        "Normal (operating category)": "transform[DGEN, Ieee1547Cat1]()",
+        "Abnormal (operating category)": "transform[DGEN, Ieee1547Cat2]()",
+        "Reactive Power (Max Injected)": "transform[DGEN, VarMaxSupRtg]()",
+        "Reactive Power (Max Absorbed)": "transform[DGEN, VarMaxAbgRtg]()",
+        "Active Power (Max Charge)": "transform[DSTO, WChaUnPFRtg]()",
+        "Apparent Power (Max Charge)": "transform[DSTO, VAMaxChaRtg]()",
+        "Voltage AC (nominal)": "transform[DECP, VRef]()",
+        "Voltage AC (max)": "transform[DGEN, VMaxRtg]()",
+        "Voltage AC (min)": "transform[DGEN, VMinRtg]()",
+        "Supported Control Mode Functions": null,
+        "Reactive Susceptance": "transform[DGEN, SuscRtg]()",
+        "Manufacturer": "transform[LPHD, PhyNam, vendor]()",
+        "Model": "transform[LPHD, PhyNam, model]()",
+        "Serial Number": "transform[LPHD, PhyNam, serNum]()",
+        "Version": "transform[LPHD, PhyNam, swRev]()",
+        "Storage Capacity": "transform[DSTO, WhRtg]()"
+      },
+      "Configuration": {
+        "Active Power (unity)": "transform[DGEN, WMax]()",
+        "Active Power (over-excited)": null,
+        "Power Factor (over-excited)": null,
+        "Active Power (under-excited)": null,
+        "Power Factor (under-excited)": null,
+        "Apparent Power (Max)": "transform[DGEN, VAMax]()",
+        "Normal (operating category)": "transform[DGEN, RegCap]()",
+        "Reactive Power (Max Injected)": null,
+        "Reactive Power (Max Absorbed)": null,
+        "Active Power (Max Charge)": null,
+        "Apparent Power (Max Charge)": null,
+        "Voltage AC (nominal)": null,
+        "Voltage AC (max)": "transform[DGEN, Vmax]()",
+        "Voltage AC (min)": "transform[DGEN, Vmin]()"
+      },
+      "Monitoring": {
+        "Active Power": "transform[DECP, MMXU, TotW]()",
+        "Reactive Power": "transform[DECP, MMXU, TotVAr]()",
+        "Voltage Phase A": "transform[DECP, MMXU, PhV, phsA, mag]()",
+        "Voltage Phase B": "transform[DECP, MMXU, PhV, phsB, mag]()",
+        "Voltage Phase C": "transform[DECP, MMXU, PhV, phsC, mag]()",
+        "Voltage Phase AB": "transform[DECP, MMXU, PPV, phsAB, mag]()",
+        "Voltage Phase BC": "transform[DECP, MMXU, PPV, phsBC, mag]()",
+        "Voltage Phase CA": "transform[DECP, MMXU, PPV, phsCA, mag]()",
+        "Voltage Average Line-Line": "transform[DECP, MMXU, PPV](mean(phsAB.mag, phsBC.mag, phsCA.mag))",
+        "Voltage Average Line-Neutral": "transform[DECP, MMXU, PhV](mean(phsA.mag, phsB.mag, phsC.mag))",
+        "Frequency": "transform[DECP, MMXU, Hz]()",
+        "Operation State": "transform[DGEN, DERState]()",
+        "Connection Status": "transform[DSTO, DERState, 1]()",
+        "Alarm Status": "transform[CALH, GrAlm]()",
+        "Operation SoC": "transform[DSTO, SocUsePct]()"
+      },
+      "Constant PF": {
+        "Enable": "transform[DFPF, ModEna]()",
+        "Injection/Absorption setting": "transform[DFPF, PFGnTgt]()",
+        "Excitation setting": "transform[DFPF, PFExtSet]()"
+      },
+      "Volt-VAR": {
+        "Enable": "transform[DVVR, ModEna]()",
+        "Vref": null,
+        "Autonomous Vref Adjustment enable": "transform[DVVR, VRefAdjEna]()",
+        "Vref Adjustment Time Constant": "transform[DVVR, VRefTmms]()",
+        "V/Q Curve Points": "transform[DVVR, VVArCrv]()",
+        "Open Loop Response Time": "transform[DVVR, OpnLoopMax]()"
+      },
+      "Watt-VAR": {
+        "Enable": "transform[DWVR, ModEna]()",
+        "P/Q Curve Points": "transform[DWVR, WVArCrv]()"
+      },
+      "Constant VAR": {
+        "Enable": "transform[DVAR, ModEna]()",
+        "VAR Setting": "transform[DVAR, VArTgt]()"
+      },
+      "Volt-Watt": {
+        "Enable": "transform[DVWC, ModEna]()",
+        "V/P Curve Points": "transform[DVWC, VWCrv]()",
+        "Open Loop Response Time": "transform[DVWC, OpnLoopMax]()"
+      },
+      "Voltage Trip": {
+        "HV Trip Curve Points": "transform[DHVT, TrZnSt, PTOV, TmVCrv]()",
+        "LV Trip Curve Points": "transform[DLVT, TrZnSt, PTUV, TmVCrv]()"
+      },
+      "Momentary Cessation": {
+        "HV Cessation Curve Points": "transform[DHVT, CeaZnSt, PTOV, TmVCrv]()",
+        "LV Cessation Curve Points": "transform[DLVT, CeaZnSt, PTUV, TmVCrv]()"
+      },
+      "Frequency Trip": {
+        "HF Trip Curve Points": "transform[DHFT, TrZnSt, PTOF, StrVal]()",
+        "LF Trip Curve Points": "transform[DLFT, TrZnSt, PTUF, StrVal]()"
+      },
+      "Frequency-Watt": {
+        "dbof": "transform[DHFW, HzStr]()",
+        "dbuf": "transform[DLFW, HzStr]()",
+        "kof": "transform[DHFW, WGra]()",
+        "kuf": "transform[DLFW, WGra]()",
+        "Open Loop Response Time": "transform[DHFW, OpnLoopMax]()"
+      },
+      "Enter Service": {
+        "Permit service": "transform[DCTE, RtnSrvAuth]()",
+        "ES Voltage High": "transform[DCTE, VHiLim]()",
+        "ES Voltage Low": "transform[DCTE, VLoLim]()",
+        "ES Frequency High": "transform[DCTE, HzHiLim]()",
+        "ES Frequency Low": "transform[DCTE, HzLoLim]()",
+        "ES Delay": "transform[DCTE, RtnSrvDlyTim]()",
+        "ES Randomized Delay": null,
+        "ES Ramp Time": "transform[DCTE, RtnSrvRmpTim]()"
+      },
+      "Limit Watt": {
+        "Enable": "transform[DWMX, ModEna]()",
+        "Watt Setting": "transform[DWMX, LimW]()"
+      }
+    }
+  }
+]

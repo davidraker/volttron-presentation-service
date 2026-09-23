@@ -1,0 +1,246 @@
+[
+  {
+    "input_format": "1815.2.inputs",
+    "output_format": "1547",
+    "pattern": {
+      "Nameplate": {
+        "Active Power (unity)": "transform[AI, 4]()",
+        "Active Power (over-excited)": "transform[AI, 6]()",
+        "Power Factor (over-excited)": "transform[AI, 8]()",
+        "Active Power (under-excited)": "transform[AI, 9]()",
+        "Power Factor (under-excited)": "transform[AI, 11]()",
+        "Apparent Power (Max)": "transform[AI, 14]()",
+        "Normal (operating category)": "transform[AI, 22]()",
+        "Abnormal (operating category)": "transform[AI, 23]()",
+        "Reactive Power (Max Injected)": "transform[AI, 12]()",
+        "Reactive Power (Max Absorbed)": "transform[AI, 13]()",
+        "Active Power (Max Charge)": "transform[AI, 5]()",
+        "Apparent Power (Max Charge)": "transform[AI, 15]()",
+        "Voltage AC (nominal)": "transform[AI, 29]()",
+        "Voltage AC (max)": "transform[AI, 3]()",
+        "Voltage AC (min)": "transform[AI, 2]()",
+        "Supported Control Mode Functions": null,
+        "Reactive Susceptance": "transform[AI, 21]()",
+        "Manufacturer": null,
+        "Model": null,
+        "Serial Number": null,
+        "Version": null,
+        "Storage Capacity": "transform[AI, 16]()"
+      },
+      "Configuration": {
+        "Active Power (unity)": "transform[AI, 32]()",
+        "Active Power (over-excited)": null,
+        "Power Factor (over-excited)": null,
+        "Active Power (under-excited)": null,
+        "Power Factor (under-excited)": null,
+        "Apparent Power (Max)": "transform[AI, 36]()",
+        "Normal (operating category)": null,
+        "Reactive Power (Max Injected)": "transform[AI, 34]()",
+        "Reactive Power (Max Absorbed)": "transform[AI, 35]()",
+        "Active Power (Max Charge)": "transform[AI, 33]()",
+        "Apparent Power (Max Charge)": "transform[AI, 37]()",
+        "Voltage AC (nominal)": null,
+        "Voltage AC (max)": "transform[AI, 39]()",
+        "Voltage AC (min)": "transform[AI, 38]()"
+      },
+      "Monitoring": {
+        "Active Power": "transform[AI, 537]()",
+        "Reactive Power": "transform[AI, 541]()",
+        "Voltage Phase A": "transform[AI, 547]()",
+        "Voltage Phase B": "transform[AI, 549]()",
+        "Voltage Phase C": "transform[AI, 551]()",
+        "Voltage Phase AB": null,
+        "Voltage Phase BC": null,
+        "Voltage Phase CA": null,
+        "Voltage Average Line-Line": "transform[AI, 553]()",
+        "Voltage Average Line-Neutral": null,
+        "Frequency": "transform[AI, 536]()",
+        "Operation State": "transform[AI, 49]()",
+        "Connection Status": "transform[BI, 23]()",
+        "Alarm Status": "transform[BI, 1]()",
+        "Operation SoC": "transform[AI, 48]()"
+      },
+      "Constant PF": {
+        "Enable": "transform[BI, 80]()",
+        "Injection/Absorption setting": "transform[AI, 288]()",
+        "Excitation setting": "transform[BI, 29]()"
+      },
+      "Volt-VAR": {
+        "Enable": "transform[BI, 81]()",
+        "Vref": "transform[AI, 29]()",
+        "Autonomous Vref Adjustment enable": "transform[BI, 93]()",
+        "Vref Adjustment Time Constant": "transform[AI, 300]()",
+        "V/Q Curve Points": null,
+        "Open Loop Response Time": "transform[AI, 298]()"
+      },
+      "Watt-VAR": {
+        "Enable": "transform[BI, 82]()",
+        "P/Q Curve Points": null
+      },
+      "Constant VAR": {
+        "Enable": "transform[BI, 79]()",
+        "VAR Setting": "transform[AI, 281]()"
+      },
+      "Volt-Watt": {
+        "Enable": "transform[BI, 77]()",
+        "V/P Curve Points": null,
+        "Open Loop Response Time": "transform[AI, 251]()"
+      },
+      "Voltage Trip": {
+        "HV Trip Curve Points": null,
+        "LV Trip Curve Points": null
+      },
+      "Momentary Cessation": {
+        "HV Cessation Curve Points": null,
+        "LV Cessation Curve Points": null
+      },
+      "Frequency Trip": {
+        "HF Trip Curve Points": null,
+        "LF Trip Curve Points": null
+      },
+      "Frequency-Watt": {
+        "dbof": "transform[AI, 121]()",
+        "dbuf": "transform[AI, 125]()",
+        "kof": "transform[AI, 123]()",
+        "kuf": "transform[AI, 127]()",
+        "Open Loop Response Time": "transform[AI, 131]()"
+      },
+      "Enter Service": {
+        "Permit service": "transform[BI, 16]()",
+        "ES Voltage High": "transform[AI, 50]()",
+        "ES Voltage Low": "transform[AI, 51]()",
+        "ES Frequency High": "transform[AI, 52]()",
+        "ES Frequency Low": "transform[AI, 53]()",
+        "ES Delay": "transform[AI, 54]()",
+        "ES Randomized Delay": "transform[AI, 55]()",
+        "ES Ramp Time": "transform[AI, 56]()"
+      },
+      "Limit Watt": {
+        "Enable": "transform[BI, 69]()",
+        "Watt Setting": "transform[AI, 149]()"
+      }
+    }
+  },
+  {
+    "input_format": "1815.2.outputs",
+    "output_format": "1547",
+    "pattern": {
+      "Nameplate": {
+        "Active Power (unity)": null,
+        "Active Power (over-excited)": null,
+        "Power Factor (over-excited)": null,
+        "Active Power (under-excited)": null,
+        "Power Factor (under-excited)": null,
+        "Apparent Power (Max)": null,
+        "Normal (operating category)": null,
+        "Abnormal (operating category)": null,
+        "Reactive Power (Max Injected)": null,
+        "Reactive Power (Max Absorbed)": null,
+        "Active Power (Max Charge)": null,
+        "Apparent Power (Max Charge)": null,
+        "Voltage AC (nominal)": null,
+        "Voltage AC (max)": null,
+        "Voltage AC (min)": null,
+        "Supported Control Mode Functions": null,
+        "Reactive Susceptance": null,
+        "Manufacturer": null,
+        "Model": null,
+        "Serial Number": null,
+        "Version": null,
+        "Storage Capacity": null
+      },
+      "Configuration": {
+        "Active Power (unity)": null,
+        "Active Power (over-excited)": null,
+        "Power Factor (over-excited)": null,
+        "Active Power (under-excited)": null,
+        "Power Factor (under-excited)": null,
+        "Apparent Power (Max)": null,
+        "Normal (operating category)": null,
+        "Reactive Power (Max Injected)": null,
+        "Reactive Power (Max Absorbed)": null,
+        "Active Power (Max Charge)": null,
+        "Apparent Power (Max Charge)": null,
+        "Voltage AC (nominal)": null,
+        "Voltage AC (max)": null,
+        "Voltage AC (min)": null
+      },
+      "Monitoring": {
+        "Active Power": null,
+        "Reactive Power": null,
+        "Voltage Phase A": null,
+        "Voltage Phase B": null,
+        "Voltage Phase C": null,
+        "Voltage Phase AB": null,
+        "Voltage Phase BC": null,
+        "Voltage Phase CA": null,
+        "Voltage Average Line-Line": null,
+        "Voltage Average Line-Neutral": null,
+        "Frequency": null,
+        "Operation State": null,
+        "Connection Status": null,
+        "Alarm Status": null,
+        "Operation SoC": null
+      },
+      "Constant PF": {
+        "Enable": "transform[BO, 28]()",
+        "Injection/Absorption setting": "transform[AO, 210]()",
+        "Excitation setting": "transform[BO, 10]()"
+      },
+      "Volt-VAR": {
+        "Enable": "transform[BO, 29]()",
+        "Vref": "transform[AO, 0]()",
+        "Autonomous Vref Adjustment enable": "transform[BO, 41]()",
+        "Vref Adjustment Time Constant": "transform[AO, 220]()",
+        "V/Q Curve Points": null,
+        "Open Loop Response Time": "transform[AO, 218]()"
+      },
+      "Watt-VAR": {
+        "Enable": "transform[BO, 30]()",
+        "P/Q Curve Points": null
+      },
+      "Constant VAR": {
+        "Enable": "transform[BO, 27]()",
+        "VAR Setting": "transform[AO, 203]()"
+      },
+      "Volt-Watt": {
+        "Enable": "transform[BO, 25]()",
+        "V/P Curve Points": null,
+        "Open Loop Response Time": "transform[AO, 175]()"
+      },
+      "Voltage Trip": {
+        "HV Trip Curve Points": null,
+        "LV Trip Curve Points": null
+      },
+      "Momentary Cessation": {
+        "HV Cessation Curve Points": null,
+        "LV Cessation Curve Points": null
+      },
+      "Frequency Trip": {
+        "HF Trip Curve Points": null,
+        "LF Trip Curve Points": null
+      },
+      "Frequency-Watt": {
+        "dbof": "transform[AO, 62]()",
+        "dbuf": "transform[AO, 66]()",
+        "kof": "transform[AO, 64]()",
+        "kuf": "transform[AO, 68]()",
+        "Open Loop Response Time": "transform[AO, 72]()"
+      },
+      "Enter Service": {
+        "Permit service": "transform[BO, 3]()",
+        "ES Voltage High": "transform[AO, 6]()",
+        "ES Voltage Low": "transform[AO, 7]()",
+        "ES Frequency High": "transform[AO, 8]()",
+        "ES Frequency Low": "transform[AO, 9]()",
+        "ES Delay": "transform[AO, 10]()",
+        "ES Randomized Delay": "transform[AO, 11]()",
+        "ES Ramp Time": "transform[AO, 12]()"
+      },
+      "Limit Watt": {
+        "Enable": "transform[BO, 17]()",
+        "Watt Setting": "transform[AO, 88]()"
+      }
+    }
+  }
+]
