@@ -1,0 +1,179 @@
+[
+  {
+    "input_format": "61850",
+    "output_format": "sunspec",
+    "pattern": {
+      "702": {
+        "WMaxRtg": "DGEN.WMaxRtg",
+        "WOvrExtRtg": "DGEN.WGnOvPFRtg",
+        "WOvrExtRtgPF": "DGEN.OvPFRtg",
+        "WUndExtRtg": "DGEN.WGnUnPFRtg",
+        "WUndExtRtgPF": "DGEN.UnPFRtg",
+        "VAMaxRtg": "DGEN.VAMaxRtg",
+        "NorOpCatRtg": "DGEN.Ieee1547Cat1",
+        "AbnOpCatRtg": "DGEN.Ieee1547Cat2",
+        "VarMaxInjRtg": "DGEN.VarMaxSupRtg",
+        "VarMaxIAbsRtg": "DGEN.VarMaxAbgRtg",
+        "WChaRteMaxRtg": "DSTO.WChaUnPFRtg",
+        "VNomRtg": "DECP.VRef",
+        "VMaxRtg": "DGEN.VMaxRtg",
+        "VMinRtg": "DGEN.VMinRtg",
+        "ReactSusceptRtg": "DGEN.SuscRtg",
+        "Wmax": "DGEN.WMax",
+        "WMaxOvrExt": "DGEN.WGnOvPFRtg",
+        "WOvrExtPF": "DGEN.OvPFRtg",
+        "WMaxUndExt": "DGEN.WGnUnPFRtg",
+        "WUndExtPF": "DGEN.UnPFRtg",
+        "VAMax": "DGEN.VAMax",
+        "IntIslandCat": "DGEN.RegCap",
+        "VarMaxAbsRtg": "DGEN.VarMaxAbgRtg",
+        "WChaRteMax": "DSTO.WChaUnPFRtg",
+        "VAChaRteMax": "DSTO.VAMaxChaRtg",
+        "Vnom": "DECP.VRef"
+      },
+      "1": {
+        "Mn": "LPHD.PhyNam.vendor",
+        "Md": "LPHD.PhyNam.model",
+        "SN": "LPHD.PhyNam.serNum",
+        "Vr": "LPHD.PhyNam.swRev"
+      },
+      "701": {
+        "W": "DECP.MMXU.TotW",
+        "Var": "DECP.MMXU.TotVAr",
+        "LLV": "transform[DECP.MMXU.PPV](mean(phsAB.mag, phsBC.mag, phsCA.mag))",
+        "LNV": "transform[DECP.MMXU.PNV](mean(phsA.mag, phsB.mag, phsC.mag))",
+        "VL1L2": "DECP.MMXU.PPV.phsAB.mag",
+        "VL1": "DECP.MMXU.PhV.phsA.mag",
+        "VL2L3": "DECP.MMXU.PPV.phsBC.mag",
+        "VL2": "DECP.MMXU.PhV.phsB.mag",
+        "VL3L1": "DECP.MMXU.PPV.phsCA.mag",
+        "VL3": "DECP.MMXU.PhV.phsC.mag",
+        "Hz": "DECP.MMXU.Hz",
+        "St": "DGEN.DERState",
+        "ConnSt": "DSTO.DERState.1",
+        "Alrm": "CALH.GrAlm"
+      },
+      "713": {
+        "SoC": "DSTO.SocUsePct"
+      },
+      "704": {
+        "PFWInjEna": "DFPF.ModEna",
+        "PFWInj": {
+          "PF": "DFPF.PFGnTgt, DFPF.PFLodTgt",
+          "Ext": "DFPF.PFExtSet"
+        },
+        "VarSetEna": "DVAR.ModEna",
+        "VarSetPct": "DVAR.VArTgt",
+        "WMaxLimPctEna": "DWMX.ModEna, DWMN.ModEna",
+        "WMaxLimPct": "DWMX.LimW, DWMN.LimW"
+      },
+      "705": {
+        "Ena": "DVVR.ModEna",
+        "VRef": "DECP.VRef",
+        "VRefAutoEna": "DVVR.VRefAdjEna",
+        "VRefAutoTms": "DVVR.VRefTmms",
+        "Crv": {
+          "Pt[#]": {
+            "V": "DVVR.VVArCrv.xVal",
+            "Var": "DVVR.VVArCrv.yVal"
+          }
+        },
+        "RspTms": "DVVR.OpnLoopMax"
+      },
+      "712": {
+        "Ena": "DWVR.ModEna",
+        "Crv": {
+          "Pt[#]": {
+            "W": "DWVR.WVArCrv.xVal",
+            "Var": "DWVR.WVArCrv.yVal"
+          }
+        }
+      },
+      "706": {
+        "Ena": "DVWC.ModEna",
+        "Crv": {
+          "Pt[#]": {
+            "V": "DVWC.VWCrv.xVal",
+            "W": "DVWC.VWCrv.yVal"
+          }
+        },
+        "RspTms": "DVWC.OpnLoopMax"
+      },
+      "707": {
+        "MustTrip": {
+          "Crv": {
+            "Pt[#]": {
+              "V": "PTOV.TmVCrv.xVal",
+              "Tms": "PTOV.TmVCrv.yVal"
+            }
+          }
+        },
+        "MomCess": {
+          "Crv": {
+            "Pt[#]": {
+              "V": "PTOV.TmVCrv.xVal",
+              "Tms": "PTOV.TmVCrv.yVal"
+            }
+          }
+        }
+      },
+      "708": {
+        "MustTrip": {
+          "Crv": {
+            "Pt[#]": {
+              "V": "PTUV.TmVCrv.xVal",
+              "Tms": "PTUV.TmVCrv.yVal"
+            }
+          }
+        },
+        "MomCess": {
+          "Crv": {
+            "Pt[#]": {
+              "V": "PTUV.TmVCrv.xVal",
+              "Tms": "PTUV.TmVCrv.yVal"
+            }
+          }
+        }
+      },
+      "709": {
+        "MustTrip": {
+          "Crv": {
+            "Pt[#]": {
+              "Hz": "PTOF.TmVCrv.xVal",
+              "Tms": "PTOF.TmVCrv.yVal"
+            }
+          }
+        }
+      },
+      "710": {
+        "MustTrip": {
+          "Crv": {
+            "Pt[#]": {
+              "Hz": "PTUF.TmVCrv.xVal",
+              "Tms": "PTUF.TmVCrv.yVal"
+            }
+          }
+        }
+      },
+      "711": {
+        "Ctl": {
+          "DbOf": "DHFW.HzStr",
+          "DbUf": "DLFW.HzStr",
+          "KOf": "DHFW.WGra",
+          "Kuf": "DLFW.WGra",
+          "RspTms": "DHFW.OpnLoopMax"
+        }
+      },
+      "703": {
+        "ES": "DCTE.RtnSrvAuth",
+        "ESVHi": "DCTE.VHiLim",
+        "ESVLo": "DCTE.VLoLim",
+        "ESHzHi": "DCTE.HzHiLim",
+        "ESHzLo": "DCTE.HzLoLim",
+        "ESDlyTms": "DCTE.RtnSrvDlyTim",
+        "ESRndTms": "DCTE.RtnSrvDlyTim",
+        "ESRmpTms": "DCTE.RtnSrvRmpTim"
+      }
+    }
+  }
+]

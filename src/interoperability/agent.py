@@ -1,6 +1,7 @@
 import logging
 import sys
 
+from importlib import resources
 from importlib.metadata import distribution, PackageNotFoundError
 from typing import cast
 
@@ -25,6 +26,22 @@ class PresentationService(Agent):
     def __init__(self, **kwargs):
         super(PresentationService, self).__init__(**kwargs)
 
+        # Load known transforms.
+        known_configs = resources.files('interoperability').joinpath('known_configurations')
+
+        known_transforms = []
+        for transform_defs in (c for c in known_configs.joinpath('transforms').iterdir() if
+                               c.is_file() and c.name.endswith(".json")):
+            with open(transform_defs, 'r') as f:
+                known_transforms.extend(json.load(f))
+
+        known_mappings = []
+        for transform_defs in (c for c in known_configs.joinpath('mappings').iterdir() if
+                               c.is_file() and c.name.endswith(".json")):
+            with open(transform_defs, 'r') as f:
+                known_mappings.extend(json.load(f))
+
+        self.vip.config.set_default({'mappings': known_mappings, 'transforms': known_transforms})
         self.mapping_engine = UAITree()
         self.transform_registry = TransformRegistry()
 

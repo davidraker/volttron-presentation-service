@@ -1,0 +1,197 @@
+[
+  {
+    "input_format": "sunspec",
+    "output_format": "61850",
+    "pattern": {
+      "DGEN": {
+        "WMaxRtg": "transform[702, WMaxRtg]()",
+        "WGnOvPFRtg": "transform[702, WOvrExtRtg]()",
+        "OvPFRtg": "transform[702, WOvrExtRtgPF]()",
+        "WGnUnPFRtg": "transform[702, WUndExtRtg]()",
+        "UnPFRtg": "transform[702, WUndExtRtgPF]()",
+        "VAMaxRtg": "transform[702, VAMaxRtg]()",
+        "Ieee1547Cat1": "transform[702, NorOpCatRtg]()",
+        "Ieee1547Cat2": "transform[702, AbnOpCatRtg]()",
+        "VarMaxSupRtg": "transform[702, VarMaxInjRtg]()",
+        "VarMaxAbgRtg": "transform[702, VarMaxIAbsRtg]()",
+        "VMaxRtg": "transform[702, VMaxRtg]()",
+        "VMinRtg": "transform[702, VMinRtg]()",
+        "SuscRtg": "transform[702, ReactSusceptRtg]()",
+        "WMax": "transform[702, Wmax]()",
+        "VAMax": "transform[702, VAMax]()",
+        "RegCap": "transform[702, IntIslandCat]()",
+        "Vmax": null,
+        "Vmin": null,
+        "DERState": "transform[701, St]()"
+      },
+      "DSTO": {
+        "WChaUnPFRtg": "transform[702, WChaRteMaxRtg]()",
+        "VAMaxChaRtg": "transform[702, WChaRteMaxRtg]()",
+        "WhRtg": null,
+        "DERState": {
+          "1": "transform[701, ConnSt]()"
+        },
+        "SocUsePct": "transform[713, SoC]()"
+      },
+      "DECP": {
+        "VRef": "transform[702, VNomRtg]()",
+        "MMXU": {
+          "TotW": "transform[701, W]()",
+          "TotVAr": "transform[701, Var]()",
+          "PhV": {
+            "phsA": {
+              "mag": "transform[701, VL1]()"
+            },
+            "phsB": {
+              "mag": "transform[701, VL2]()"
+            },
+            "phsC": {
+              "mag": "transform[701, VL3]()"
+            }
+          },
+          "Hz": "transform[701, Hz]()"
+        }
+      },
+      "LPHD": {
+        "PhyNam": {
+          "vendor": "transform[1, Mn]()",
+          "model": "transform[1, Md]()",
+          "serNum": "transform[1, SN]()",
+          "swRev": "transform[1, Vr]()"
+        }
+      },
+      "CALH": {
+        "GrAlm": "transform[701, Alrm]()"
+      },
+      "DFPF": {
+        "ModEna": "transform[704, PFWInjEna]()",
+        "PFGnTgt": "transform[704, PFWInj, PF]()",
+        "PFLodTgt": "transform[704, PFWInj, PF]()",
+        "PFExtSet": "transform[704, PFWInj, Ext]()"
+      },
+      "DVVR": {
+        "ModEna": "transform[705, Ena]()",
+        "VRefAdjEna": "transform[705, VRefAutoEna]()",
+        "VRefTmms": "transform[705, VRefAutoTms]()",
+        "VVArCrv[#]": {
+          "xVal": "transform[705, Crv, Pt[#], V]()",
+          "yVal": "transform[705, Crv, Pt[#], Var]()"
+        },
+        "OpnLoopMax": "transform[705, RspTms]()"
+      },
+      "DWVR": {
+        "ModEna": "transform[712, Ena]()",
+        "WVArCrv[#]": {
+          "xVal": "transform[712, Crv, Pt[#], W]()",
+          "yVal": "transform[712, Crv, Pt[#], Var]()"
+        }
+      },
+      "DVAR": {
+        "ModEna": "transform[704, VarSetEna]()",
+        "VArTgt": "transform[704, VarSetPct]()"
+      },
+      "DVWC": {
+        "ModEna": "transform[706, Ena]()",
+        "VWCrv[#]": {
+          "xVal": "transform[706, Crv, Pt[#], V]()",
+          "yVal": "transform[706, Crv, Pt[#], W]()"
+        },
+        "OpnLoopMax": "transform[706, RspTms]()"
+      },
+      "DHVT": {
+        "TrZnSt": {
+          "PTOV": {
+            "TmVCrv[#]": {
+              "xVal": "transform[707, MustTrip, Crv, Pt[#], V]()",
+              "yVal": "transform[707, MustTrip, Crv, Pt[#], Tms]()"
+            }
+          }
+        },
+        "CeaZnSt": {
+          "PTOV": {
+            "TmVCrv[#]": {
+              "xVal": "transform[707, MomCess, Crv, Pt[#], V]()",
+              "yVal": "transform[707, MomCess, Crv, Pt[#], Tms]()"
+            }
+          }
+        }
+      },
+      "DLVT": {
+        "TrZnSt": {
+          "PTUV": {
+            "TmVCrv[#]": {
+              "xVal": "transform[708, MustTrip, Crv, Pt[#], V]()",
+              "yVal": "transform[708, MustTrip, Crv, Pt[#], Tms]()"
+            }
+          }
+        },
+        "CeaZnSt": {
+          "PTUV": {
+            "TmVCrv[#]": {
+              "xVal": "transform[708, MomCess, Crv, Pt[#], V]()",
+              "yVal": "transform[708, MomCess, Crv, Pt[#], Tms]()"
+            }
+          }
+        }
+      },
+      "DHFT": {
+        "TrZnSt": {
+          "PTOF": {
+            "StrVal[#]": {
+              "xVal": "transform[709, MustTrip, Crv, Pt[#], Hz]()",
+              "yVal": "transform[709, MustTrip, Crv, Pt[#], Tms]()"
+            }
+          }
+        }
+      },
+      "DLFT": {
+        "TrZnSt": {
+          "PTUF": {
+            "StrVal[#]": {
+              "xVal": "transform[710, MustTrip, Crv, Pt[#], Hz]()",
+              "yVal": "transform[710, MustTrip, Crv, Pt[#], Tms]()"
+            }
+          }
+        }
+      },
+      "DHFW": {
+        "HzStr": "transform[711, Ctl, DbOf]()",
+        "WGra": "transform[711, Ctl, KOf]()",
+        "OpnLoopMax": {
+          "DLFW": {
+            "OpnLoopMax": "transform[711, Ctl, RspTms]()"
+          }
+        }
+      },
+      "DLFW": {
+        "HzStr": "transform[711, Ctl, DbUf]()",
+        "WGra": "transform[711, Ctl, Kuf]()"
+      },
+      "DCTE": {
+        "RtnSrvAuto": {
+          "DCTE": {
+            "RtnSrvAuth": "transform[703, ES]()"
+          }
+        },
+        "VHiLim": "transform[703, ESVHi]()",
+        "VLoLim": "transform[703, ESVLo]()",
+        "HzHiLim": "transform[703, ESHzHi]()",
+        "HzLoLim": "transform[703, ESHzLo]()",
+        "RtnSrvDlyTim": "transform[703, ESDlyTms]()",
+        "RtnSrvRmpTim": "transform[703, ESRmpTms]()"
+      },
+      "DWMX": {
+        "ModEna": {
+          "DWMN": {
+            "ModEna": "transform[704, WMaxLimPctEna]()"
+          }
+        },
+        "LimW": {
+          "DWMN": {
+            "LimW": "transform[704, WMaxLimPct]()"
+          }
+        }
+      }
+    }
+  }
+]
