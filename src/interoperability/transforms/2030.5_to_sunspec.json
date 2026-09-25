@@ -88,75 +88,89 @@
       },
       "705": {
         "Ena": null,
-        "VRef": "transform[DERCurve, opModVoltVar, vRef]()",
-        "VRefAutoEna": "transform[DERCurve, opModVoltVar, autonomousVRefEnable]()",
-        "VRefAutoTms": "transform[DERCurve, opModVoltVar, autonomousVRefTimeConstant]()",
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform[DERCurve, opModVoltVar](as_list())",
+          "ActPt": "transform[#, CurveData](count())",
+          "VRef": "transform[#, vRef]()",
+          "VRefAutoEna": "transform[#, autonomousVRefEnable]()",
+          "VRefAutoTms": "transform[#, autonomousVRefTimeConstant]()",
+          "RspTms": "transform[#, openLoopTms]()",
           "Pt[#]": {
-            "V": "transform[DERCurve, opModVoltVar, 'CurveData[#]', xvalue]()",
-            "Var": "transform[DERCurve, opModVoltVar, 'CurveData[#]', yvalue]()"
+            "V": "transform[#, CurveData[#], xvalue]()",
+            "Var": "transform[#, CurveData[#], yvalue]()"
           }
-        },
-        "RspTms": "transform[DERCurve, opModVoltVar, openLoopTms]()"
+        }
       },
       "706": {
         "Ena": null,
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform[DERCurve, opModVoltWatt](as_list())",
+          "ActPt": "transform[#, CurveData](count())",
+          "RspTms": "transform[#, openLoopTms]()",
           "Pt[#]": {
-            "V": "transform[DERCurve, opModVoltWatt, 'CurveData[#]', xvalue]()",
-            "W": "transform[DERCurve, opModVoltWatt, 'CurveData[#]', yvalue]()"
+            "V": "transform[#, CurveData[#], xvalue]()",
+            "W": "transform[#, CurveData[#], yvalue]()"
           }
-        },
-        "RspTms": "transform[DERCurve, opModVoltWatt, openLoopTms]()"
+        }
       },
       "707": {
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform[DERCurve](as_list())",
           "MustTrip": {
+            "ActPt": "transform[#, opModLVRTMustTrip, CurveData](count())",
             "Pt[#]": {
-              "V": "transform[DERCurve, opModLVRTMustTrip, 'CurveData[#]', xvalue]()",
-              "Tms": "transform[DERCurve, opModLVRTMustTrip, 'CurveData[#]', yvalue]()"
+              "V": "transform[#, opModLVRTMustTrip, CurveData[#], xvalue]()",
+              "Tms": "transform[#, opModLVRTMustTrip, CurveData[#], yvalue]()"
             }
           },
           "MomCess": {
+            "ActPt": "transform[#, opModLVRTMomentaryCessation, CurveData](count())",
             "Pt[#]": {
-              "V": "transform[DERCurve, opModLVRTMomentaryCessation, 'CurveData[#]', xvalue]()",
-              "Tms": "transform[DERCurve, opModLVRTMomentaryCessation, 'CurveData[#]', yvalue]()"
+              "V": "transform[#, opModLVRTMomentaryCessation, CurveData[#], xvalue]()",
+              "Tms": "transform[#, opModLVRTMomentaryCessation, CurveData[#], yvalue]()"
             }
           }
         }
       },
       "708": {
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform[DERCurve](as_list())",
           "MustTrip": {
+            "ActPt": "transform[#, opModHVRTMustTrip, CurveData](count())",
             "Pt[#]": {
-              "V": "transform[DERCurve, opModHVRTMustTrip, 'CurveData[#]', xvalue]()",
-              "Tms": "transform[DERCurve, opModHVRTMustTrip, 'CurveData[#]', yvalue]()"
+              "V": "transform[#, opModHVRTMustTrip, CurveData[#], xvalue]()",
+              "Tms": "transform[#, opModHVRTMustTrip, CurveData[#], yvalue]()"
             }
           },
           "MomCess": {
+            "ActPt": "transform[#, opModHVRTMomentaryCessation, CurveData](count())",
             "Pt[#]": {
-              "V": "transform[DERCurve, opModHVRTMomentaryCessation, 'CurveData[#]', xvalue]()",
-              "Tms": "transform[DERCurve, opModHVRTMomentaryCessation, 'CurveData[#]', yvalue]()"
+              "V": "transform[#, opModHVRTMomentaryCessation, CurveData[#], xvalue]()",
+              "Tms": "transform[#, opModHVRTMomentaryCessation, CurveData[#], yvalue]()"
             }
           }
         }
       },
       "709": {
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform[DERCurve](as_list())",
           "MustTrip": {
+            "ActPt": "transform[#, opModLFRTMustTrip, CurveData](count())",
             "Pt[#]": {
-              "Hz": "transform[DERCurve, opModLFRTMustTrip, 'CurveData[#]', xvalue]()",
-              "Tms": "transform[DERCurve, opModLFRTMustTrip, 'CurveData[#]', yvalue]()"
+              "Hz": "transform[#, opModLFRTMustTrip, CurveData[#], xvalue]()",
+              "Tms": "transform[#, opModLFRTMustTrip, CurveData[#], yvalue]()"
             }
           }
         }
       },
       "710": {
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform[DERCurve](as_list())",
           "MustTrip": {
+            "ActPt": "transform[#, opModHFRTMustTrip, CurveData](count())",
             "Pt[#]": {
-              "Hz": "transform[DERCurve, opModHFRTMustTrip, 'CurveData[#]', xvalue]()",
-              "Tms": "transform[DERCurve, opModHFRTMustTrip, 'CurveData[#]', yvalue]()"
+              "Hz": "transform[#, opModHFRTMustTrip, CurveData[#], xvalue]()",
+              "Tms": "transform[#, opModHFRTMustTrip, CurveData[#], yvalue]()"
             }
           }
         }
@@ -173,10 +187,12 @@
       },
       "712": {
         "Ena": null,
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform[DERCurve, opModWattVar](as_list())",
+          "ActPt": "transform[#, CurveData](count())",
           "Pt[#]": {
-            "W": "transform[DERCurve, opModWattVar, 'CurveData[#]', xvalue]()",
-            "Var": "transform[DERCurve, opModWattVar, 'CurveData[#]', yvalue]()"
+            "W": "transform[#, CurveData[#], xvalue]()",
+            "Var": "transform[#, CurveData[#], yvalue]()"
           }
         }
       },

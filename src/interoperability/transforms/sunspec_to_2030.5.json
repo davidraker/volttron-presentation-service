@@ -101,62 +101,71 @@
       },
       "DERCurve": {
         "opModVoltVar": {
-          "vRef": "transform[705, VRef]()",
-          "autonomousVRefEnable": "transform[705, VRefAutoEna]()",
-          "autonomousVRefTimeConstant": "transform[705, VRefAutoTms]()",
+          "vRef": "transform[705, Crv, 0, VRef]()",
+          "autonomousVRefEnable": "transform[705, Crv, 0, VRefAutoEna]()",
+          "autonomousVRefTimeConstant": "transform[705, Crv, 0, VRefAutoTms]()",
           "CurveData[#]": {
-            "xvalue": "transform[705, Crv, 'Pt[#]', V]()",
-            "yvalue": "transform[705, Crv, 'Pt[#]', Var]()"
+            "#": "transform(take('705.Crv.0.ActPt'))",
+            "xvalue": "transform[705, Crv, 0, Pt[#], V]()",
+            "yvalue": "transform[705, Crv, 0, Pt[#], Var]()"
           },
-          "openLoopTms": "transform[705, RspTms]()"
+          "openLoopTms": "transform[705, Crv, 0, RspTms]()"
         },
         "opModWattVar": {
           "CurveData[#]": {
-            "xvalue": "transform[712, Crv, 'Pt[#]', W]()",
-            "yvalue": "transform[712, Crv, 'Pt[#]', Var]()"
+            "#": "transform(take('712.Crv.0.ActPt'))",
+            "xvalue": "transform[712, Crv, 0, Pt[#], W]()",
+            "yvalue": "transform[712, Crv, 0, Pt[#], Var]()"
           }
         },
         "opModVoltWatt": {
           "CurveData[#]": {
-            "xvalue": "transform[706, Crv, 'Pt[#]', V]()",
-            "yvalue": "transform[706, Crv, 'Pt[#]', W]()"
+            "#": "transform(take('706.Crv.0.ActPt'))",
+            "xvalue": "transform[706, Crv, 0, Pt[#], V]()",
+            "yvalue": "transform[706, Crv, 0, Pt[#], W]()"
           },
-          "openLoopTms": "transform[706, RspTms]()"
+          "openLoopTms": "transform[706, Crv, 0, RspTms]()"
         },
         "opModHVRTMustTrip": {
           "CurveData[#]": {
-            "xvalue": "transform[708, Crv, MustTrip, 'Pt[#]', V]()",
-            "yvalue": "transform[708, Crv, MustTrip, 'Pt[#]', Tms]()"
+            "#": "transform(take('708.Crv.0.MustTrip.ActPt'))",
+            "xvalue": "transform[708, Crv, 0, MustTrip, Pt[#], V]()",
+            "yvalue": "transform[708, Crv, 0, MustTrip, Pt[#], Tms]()"
           }
         },
         "opModLVRTMustTrip": {
           "CurveData[#]": {
-            "xvalue": "transform[707, Crv, MustTrip, 'Pt[#]', V]()",
-            "yvalue": "transform[707, Crv, MustTrip, 'Pt[#]', Tms]()"
+            "#": "transform(take('707.Crv.0.MustTrip.ActPt'))",
+            "xvalue": "transform[707, Crv, 0, MustTrip, Pt[#], V]()",
+            "yvalue": "transform[707, Crv, 0, MustTrip, Pt[#], Tms]()"
           }
         },
         "opModHVRTMomentaryCessation": {
           "CurveData[#]": {
-            "xvalue": "transform[708, Crv, MomCess, 'Pt[#]', V]()",
-            "yvalue": "transform[708, Crv, MomCess, 'Pt[#]', Tms]()"
+            "#": "transform(take('708.Crv.0.MomCess.ActPt'))",
+            "xvalue": "transform[708, Crv, 0, MomCess, Pt[#], V]()",
+            "yvalue": "transform[708, Crv, 0, MomCess, Pt[#], Tms]()"
           }
         },
         "opModLVRTMomentaryCessation": {
           "CurveData[#]": {
-            "xvalue": "transform[707, Crv, MomCess, 'Pt[#]', V]()",
-            "yvalue": "transform[707, Crv, MomCess, 'Pt[#]', Tms]()"
+            "#": "transform(take('707.Crv.0.MomCess.ActPt'))",
+            "xvalue": "transform[707, Crv, 0, MomCess, Pt[#], V]()",
+            "yvalue": "transform[707, Crv, 0, MomCess, Pt[#], Tms]()"
           }
         },
         "opModHFRTMustTrip": {
           "CurveData[#]": {
-            "xvalue": "transform[710, Crv, MustTrip, 'Pt[#]', Hz]()",
-            "yvalue": "transform[710, Crv, MustTrip, 'Pt[#]', Tms]()"
+            "#": "transform(take('710.Crv.0.MustTrip.ActPt'))",
+            "xvalue": "transform[710, Crv, 0, MustTrip, Pt[#], Hz]()",
+            "yvalue": "transform[710, Crv, 0, MustTrip, Pt[#], Tms]()"
           }
         },
         "opModLFRTMustTrip": {
           "CurveData[#]": {
-            "xvalue": "transform[709, Crv, MustTrip, 'Pt[#]', Hz]()",
-            "yvalue": "transform[709, Crv, MustTrip, 'Pt[#]', Tms]()"
+            "#": "transform(take('709.Crv.0.MustTrip.ActPt'))",
+            "xvalue": "transform[709, Crv, 0, MustTrip, Pt[#], Hz]()",
+            "yvalue": "transform[709, Crv, 0, MustTrip, Pt[#], Tms]()"
           }
         }
       },

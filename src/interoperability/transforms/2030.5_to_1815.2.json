@@ -83,6 +83,96 @@
         "81": null,
         "82": null,
         "93": "transform[DERCurve, opModVoltVar, autonomousVRefEnable]()"
+      },
+      "sequence[#] opModVoltVar": {
+        "#": "transform[DERCurve, opModVoltVar](as_list())",
+        "AI": {
+          "328": "transform[#](const(1))",
+          "329": "transform[#](const(2))",
+          "330": "transform[#, CurveData](count())",
+          "*points": "transform[#, CurveData](unpairs(333, xvalue, yvalue))",
+          "297": "transform[#](const(1))"
+        }
+      },
+      "sequence[#] opModWattVar": {
+        "#": "transform[DERCurve, opModWattVar](as_list())",
+        "AI": {
+          "328": "transform[#](const(2))",
+          "329": "transform[#](const(4))",
+          "330": "transform[#, CurveData](count())",
+          "*points": "transform[#, CurveData](unpairs(333, xvalue, yvalue))",
+          "308": "transform[#](const(2))"
+        }
+      },
+      "sequence[#] opModVoltWatt": {
+        "#": "transform[DERCurve, opModVoltWatt](as_list())",
+        "AI": {
+          "328": "transform[#](const(3))",
+          "329": "transform[#](const(5))",
+          "330": "transform[#, CurveData](count())",
+          "*points": "transform[#, CurveData](unpairs(333, xvalue, yvalue))",
+          "248": "transform[#](const(3))"
+        }
+      },
+      "sequence[#] opModHVRTMustTrip": {
+        "#": "transform[DERCurve, opModHVRTMustTrip](as_list())",
+        "AI": {
+          "328": "transform[#](const(4))",
+          "329": "transform[#](const(9))",
+          "330": "transform[#, CurveData](count())",
+          "*points": "transform[#, CurveData](unpairs(333, xvalue, yvalue))",
+          "73": "transform[#](const(4))"
+        }
+      },
+      "sequence[#] opModHVRTMomentaryCessation": {
+        "#": "transform[DERCurve, opModHVRTMomentaryCessation](as_list())",
+        "AI": {
+          "328": "transform[#](const(5))",
+          "329": "transform[#](const(10))",
+          "330": "transform[#, CurveData](count())",
+          "*points": "transform[#, CurveData](unpairs(333, xvalue, yvalue))",
+          "75": "transform[#](const(5))"
+        }
+      },
+      "sequence[#] opModLVRTMustTrip": {
+        "#": "transform[DERCurve, opModLVRTMustTrip](as_list())",
+        "AI": {
+          "328": "transform[#](const(6))",
+          "329": "transform[#](const(11))",
+          "330": "transform[#, CurveData](count())",
+          "*points": "transform[#, CurveData](unpairs(333, xvalue, yvalue))",
+          "74": "transform[#](const(6))"
+        }
+      },
+      "sequence[#] opModLVRTMomentaryCessation": {
+        "#": "transform[DERCurve, opModLVRTMomentaryCessation](as_list())",
+        "AI": {
+          "328": "transform[#](const(7))",
+          "329": "transform[#](const(12))",
+          "330": "transform[#, CurveData](count())",
+          "*points": "transform[#, CurveData](unpairs(333, xvalue, yvalue))",
+          "76": "transform[#](const(7))"
+        }
+      },
+      "sequence[#] opModHFRTMustTrip": {
+        "#": "transform[DERCurve, opModHFRTMustTrip](as_list())",
+        "AI": {
+          "328": "transform[#](const(8))",
+          "329": "transform[#](const(13))",
+          "330": "transform[#, CurveData](count())",
+          "*points": "transform[#, CurveData](unpairs(333, xvalue, yvalue))",
+          "79": "transform[#](const(8))"
+        }
+      },
+      "sequence[#] opModLFRTMustTrip": {
+        "#": "transform[DERCurve, opModLFRTMustTrip](as_list())",
+        "AI": {
+          "328": "transform[#](const(9))",
+          "329": "transform[#](const(15))",
+          "330": "transform[#, CurveData](count())",
+          "*points": "transform[#, CurveData](unpairs(333, xvalue, yvalue))",
+          "80": "transform[#](const(9))"
+        }
       }
     }
   },
@@ -134,6 +224,96 @@
         "29": null,
         "30": null,
         "41": "transform[DERCurve, opModVoltVar, autonomousVRefEnable]()"
+      },
+      "sequence[#] opModVoltVar": {
+        "#": "transform[DERCurve, opModVoltVar](as_list())",
+        "AO": {
+          "244": "transform[#](const(1))",
+          "245": "transform[#](const(2))",
+          "246": "transform[#, CurveData](count())",
+          "*points": "transform[#, CurveData](unpairs(249, xvalue, yvalue))",
+          "217": "transform[#](const(1))"
+        }
+      },
+      "sequence[#] opModWattVar": {
+        "#": "transform[DERCurve, opModWattVar](as_list())",
+        "AO": {
+          "244": "transform[#](const(2))",
+          "245": "transform[#](const(4))",
+          "246": "transform[#, CurveData](count())",
+          "*points": "transform[#, CurveData](unpairs(249, xvalue, yvalue))",
+          "226": "transform[#](const(2))"
+        }
+      },
+      "sequence[#] opModVoltWatt": {
+        "#": "transform[DERCurve, opModVoltWatt](as_list())",
+        "AO": {
+          "244": "transform[#](const(3))",
+          "245": "transform[#](const(5))",
+          "246": "transform[#, CurveData](count())",
+          "*points": "transform[#, CurveData](unpairs(249, xvalue, yvalue))",
+          "173": "transform[#](const(3))"
+        }
+      },
+      "sequence[#] opModHVRTMustTrip": {
+        "#": "transform[DERCurve, opModHVRTMustTrip](as_list())",
+        "AO": {
+          "244": "transform[#](const(4))",
+          "245": "transform[#](const(9))",
+          "246": "transform[#, CurveData](count())",
+          "*points": "transform[#, CurveData](unpairs(249, xvalue, yvalue))",
+          "23": "transform[#](const(4))"
+        }
+      },
+      "sequence[#] opModHVRTMomentaryCessation": {
+        "#": "transform[DERCurve, opModHVRTMomentaryCessation](as_list())",
+        "AO": {
+          "244": "transform[#](const(5))",
+          "245": "transform[#](const(10))",
+          "246": "transform[#, CurveData](count())",
+          "*points": "transform[#, CurveData](unpairs(249, xvalue, yvalue))",
+          "25": "transform[#](const(5))"
+        }
+      },
+      "sequence[#] opModLVRTMustTrip": {
+        "#": "transform[DERCurve, opModLVRTMustTrip](as_list())",
+        "AO": {
+          "244": "transform[#](const(6))",
+          "245": "transform[#](const(11))",
+          "246": "transform[#, CurveData](count())",
+          "*points": "transform[#, CurveData](unpairs(249, xvalue, yvalue))",
+          "24": "transform[#](const(6))"
+        }
+      },
+      "sequence[#] opModLVRTMomentaryCessation": {
+        "#": "transform[DERCurve, opModLVRTMomentaryCessation](as_list())",
+        "AO": {
+          "244": "transform[#](const(7))",
+          "245": "transform[#](const(12))",
+          "246": "transform[#, CurveData](count())",
+          "*points": "transform[#, CurveData](unpairs(249, xvalue, yvalue))",
+          "26": "transform[#](const(7))"
+        }
+      },
+      "sequence[#] opModHFRTMustTrip": {
+        "#": "transform[DERCurve, opModHFRTMustTrip](as_list())",
+        "AO": {
+          "244": "transform[#](const(8))",
+          "245": "transform[#](const(13))",
+          "246": "transform[#, CurveData](count())",
+          "*points": "transform[#, CurveData](unpairs(249, xvalue, yvalue))",
+          "28": "transform[#](const(8))"
+        }
+      },
+      "sequence[#] opModLFRTMustTrip": {
+        "#": "transform[DERCurve, opModLFRTMustTrip](as_list())",
+        "AO": {
+          "244": "transform[#](const(9))",
+          "245": "transform[#](const(15))",
+          "246": "transform[#, CurveData](count())",
+          "*points": "transform[#, CurveData](unpairs(249, xvalue, yvalue))",
+          "29": "transform[#](const(9))"
+        }
       }
     }
   }

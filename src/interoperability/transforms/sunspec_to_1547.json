@@ -67,15 +67,15 @@
       },
       "Volt-VAR": {
         "Enable": "transform[705, Ena]()",
-        "Vref": "transform[705, VRef]()",
-        "Autonomous Vref Adjustment enable": "transform[705, VRefAutoEna]()",
-        "Vref Adjustment Time Constant": "transform[705, VRefAutoTms]()",
-        "V/Q Curve Points": "transform[705, Crv, Pt]()",
-        "Open Loop Response Time": "transform[705, RspTms]()"
+        "Vref": "transform[705, Crv, 0, VRef]()",
+        "Autonomous Vref Adjustment enable": "transform[705, Crv, 0, VRefAutoEna]()",
+        "Vref Adjustment Time Constant": "transform[705, Crv, 0, VRefAutoTms]()",
+        "V/Q Curve Points": "transform[705, Crv, 0, Pt](take('705.Crv.0.ActPt'))",
+        "Open Loop Response Time": "transform[705, Crv, 0, RspTms]()"
       },
       "Watt-VAR": {
         "Enable": "transform[712, Ena]()",
-        "P/Q Curve Points": "transform[712, Crv, Pt]()"
+        "P/Q Curve Points": "transform[712, Crv, 0, Pt](take('712.Crv.0.ActPt'))"
       },
       "Constant VAR": {
         "Enable": "transform[704, VarSetEna]()",
@@ -83,20 +83,20 @@
       },
       "Volt-Watt": {
         "Enable": "transform[706, Ena]()",
-        "V/P Curve Points": "transform[706, Crv, Pt]()",
-        "Open Loop Response Time": "transform[706, RspTms]()"
+        "V/P Curve Points": "transform[706, Crv, 0, Pt](take('706.Crv.0.ActPt'))",
+        "Open Loop Response Time": "transform[706, Crv, 0, RspTms]()"
       },
       "Voltage Trip": {
-        "HV Trip Curve Points": "transform[708, Crv, MustTrip, Pt]()",
-        "LV Trip Curve Points": "transform[707, Crv, MustTrip, Pt]()"
+        "HV Trip Curve Points": "transform[708, Crv, 0, MustTrip, Pt](take('708.Crv.0.MustTrip.ActPt'))",
+        "LV Trip Curve Points": "transform[707, Crv, 0, MustTrip, Pt](take('707.Crv.0.MustTrip.ActPt'))"
       },
       "Momentary Cessation": {
-        "HV Cessation Curve Points": "transform[708, Crv, MomCess, Pt]()",
-        "LV Cessation Curve Points": "transform[707, Crv, MomCess, Pt]()"
+        "HV Cessation Curve Points": "transform[708, Crv, 0, MomCess, Pt](take('708.Crv.0.MomCess.ActPt'))",
+        "LV Cessation Curve Points": "transform[707, Crv, 0, MomCess, Pt](take('707.Crv.0.MomCess.ActPt'))"
       },
       "Frequency Trip": {
-        "HF Trip Curve Points": "transform[710, Crv, MustTrip, Pt]()",
-        "LF Trip Curve Points": "transform[709, Crv, MustTrip, Pt]()"
+        "HF Trip Curve Points": "transform[710, Crv, 0, MustTrip, Pt](take('710.Crv.0.MustTrip.ActPt'))",
+        "LF Trip Curve Points": "transform[709, Crv, 0, MustTrip, Pt](take('709.Crv.0.MustTrip.ActPt'))"
       },
       "Frequency-Watt": {
         "dbof": "transform[711, Ctl, DbOf]()",
