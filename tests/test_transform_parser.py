@@ -1,11 +1,12 @@
 """Tests for the transform expression language and the bundled transform definitions."""
 import json
+import logging
 from importlib import resources
 
 import pytest
 
 from interoperability.transform_parser import TransformParser
-from interoperability.transform_registry import TransformRegistry
+from interoperability.transform_registry import TransformNotFoundError, TransformRegistry
 
 
 @pytest.fixture
@@ -135,7 +136,8 @@ def test_registry_finds_direct_chains_between_bundled_formats():
     # Every pairing ships as its own file now, so lookups are single hops.
     chain = registry.lookup('sunspec', '1815.2.outputs')
     assert len(chain) == 1
-    assert registry.lookup('sunspec', 'no_such_format') == []
+    with pytest.raises(TransformNotFoundError, match='"no_such_format" has no registered transforms'):
+        registry.lookup('sunspec', 'no_such_format')
 
 
 def test_registry_finds_multi_hop_chain():
@@ -146,7 +148,48 @@ def test_registry_finds_multi_hop_chain():
     ])
     chain = registry.lookup('a', 'c')
     assert [list(step) for step in chain] == [['y'], ['z']]      # a -> b -> c
-    assert registry.lookup('c', 'a') == []
+    with pytest.raises(TransformNotFoundError, match='no sequence of registered transforms connects them') as info:
+        registry.lookup('c', 'a')
+    assert (info.value.input_format, info.value.output_format) == ('c', 'a')
+
+
+def test_registry_distinguishes_no_transform_needed_from_none_existing(parser):
+    registry = TransformRegistry()
+    registry.register('a', 'b', {'y': 'transform[x]()'})
+    assert registry.lookup('a', 'a') == []                       # same format: nothing to do
+    assert registry.lookup('never_seen', 'never_seen') == []     # identity needs no registration
+    with pytest.raises(TransformNotFoundError, match='"never_seen" has no registered transforms'):
+        registry.lookup('a', 'never_seen')
+    assert isinstance(TransformNotFoundError('a', 'b', 'why'), LookupError)
+    # An empty chain compiles to the identity, so a resource already in the wanted format passes through.
+    assert parser.build_transform_from_schema([]).execute({'x': 1}) == {'x': 1}
+
+
+def test_registry_keeps_existing_transform_unless_told_to_update(caplog):
+    registry = TransformRegistry()
+    first, second = {'y': 'transform[x]()'}, {'y': 'transform[x](add(1))'}
+    assert registry.register('a', 'b', first) is True
+    assert registry.register('a', 'b', first) is False           # same pattern again: silent no-op
+    with caplog.at_level(logging.WARNING, logger='interoperability.transform_registry'):
+        assert registry.register('a', 'b', second) is False
+    assert 'already registered; keeping it' in caplog.text
+    assert registry.lookup('a', 'b') == [first]
+    assert registry.register('a', 'b', second, update=True) is True
+    assert registry.lookup('a', 'b') == [second]
+
+
+def test_update_registry_replaces_earlier_configuration_but_reports_duplicates_within_one(caplog):
+    registry = TransformRegistry()
+    assert registry.update_registry([{'input_format': 'a', 'output_format': 'b', 'pattern': {'v': 1}}]) == 1
+    with caplog.at_level(logging.WARNING, logger='interoperability.transform_registry'):
+        changed = registry.update_registry([
+            {'input_format': 'a', 'output_format': 'b', 'pattern': {'v': 2}},   # reload: replaces v=1
+            {'input_format': 'a', 'output_format': 'b', 'pattern': {'v': 3}},   # duplicate within the config
+            {'input_format': 'b', 'output_format': 'c', 'pattern': {'v': 4}},
+        ])
+    assert changed == 2
+    assert 'defined more than once' in caplog.text
+    assert registry.lookup('a', 'c') == [{'v': 2}, {'v': 4}]
 
 
 def test_agent_loads_bundled_definitions(tmp_path):

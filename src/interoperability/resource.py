@@ -5,7 +5,20 @@ from typing import Callable
 
 from .transform_parser import TransformParser
 
+try:
+    from volttron.utils.jsonrpc import RemoteError
+except ImportError:  # pragma: no cover - the parser and models are usable without a VOLTTRON client.
+    class RemoteError(Exception):
+        """Stand-in so ResourceData.lookup can be imported without VOLTTRON; never raised."""
+        exc_info: dict = {}
+
 _log = logging.getLogger(__name__)
+
+
+def _is_transform_not_found(error: RemoteError) -> bool:
+    """Whether a RemoteError from the presentation service reports a TransformNotFoundError."""
+    exc_info = getattr(error, 'exc_info', None) or {}
+    return 'TransformNotFoundError' in str(exc_info.get('exc_type', '')) or 'TransformNotFoundError' in str(error)
 
 class Resource(BaseModel):
     model_config = ConfigDict(validate_assignment=True, populate_by_name=True)
@@ -40,7 +53,9 @@ class ResourceData:
         self.agent = agent
         self.local_topic = local_topic
         self.resource_def = resource_def
-        self.transform = TransformParser().build_transform_from_schema(self.resource_def['transform'])
+        # No 'transform' (resolved without a target format) or an empty chain means the resource is already
+        # in the wanted format; both compile to the identity.
+        self.transform = TransformParser().build_transform_from_schema(self.resource_def.get('transform') or [])
         # TODO: One step further, make actual Resource (or include all this in Resource?).
         #   This version, however, does not contain all the fields of canonical nor aliased resources.
         # self.resource = Resource(**resource_def)
@@ -66,6 +81,14 @@ class ResourceData:
             return None
         else:
             uai = local_topic
-        resource_def = agent.vip.rpc.call('platform.presentation', 'resolve', uai).get()
+        try:
+            resource_def = agent.vip.rpc.call('platform.presentation', 'resolve', uai).get()
+        except RemoteError as e:
+            if not _is_transform_not_found(e):
+                raise
+            # The topic resolves to a resource, but nothing can convert it into the format the alias asks
+            # for. Treat it like an unknown resource so the caller drops the message with a warning.
+            _log.warning(f'Resource {local_topic} cannot be provided in the requested format: {e.message}')
+            return None
         _log.debug(f'@@@@@@@@ RESOURCE DEF: {resource_def}')
         return cls(agent, local_topic, resource_def) if resource_def else None

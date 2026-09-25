@@ -1,0 +1,33 @@
+{
+  "mappings": [
+    {
+      "uai": [""],
+      "resource_type": "canonical",
+      "resource": {
+        "data_format": "",
+        "owner": "",
+        "publication_topic": "",
+        "rpc_topic": ""
+      }
+    },
+    {
+      "uai": [""],
+      "resource_type": "alias",
+      "resource": {
+        "data_format": "",
+        "owner": "",
+        "references": [""]
+      }
+    }
+  ],
+  "transforms": [
+    {
+      "input_format": "",
+      "output_format": "",
+      "pattern": {
+        "foo": "transform[bar](multiple(7), add(9))",
+        "bar": "transform[foo, 0](add(9), multiple(7))"
+      }
+    }
+  ]
+}

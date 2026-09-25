@@ -476,6 +476,7 @@ class TransformParser:
     def build_transform_from_schema(self, schemas):
         _log.debug(f'Building transform from schema: {schemas}')
         schemas = schemas if isinstance(schemas, list) else [schemas]
+        # An empty chain (no transform needed, see TransformRegistry.lookup) compiles to the identity.
         pipeline = None
         for s in schemas:
             parsed_schema = self._parse_pattern(s)
@@ -483,4 +484,4 @@ class TransformParser:
             stage = (c.this.pipe(self._build(parsed_schema, 0), label_input=_level_label(0))
                      .pipe(c.call_func(drop_missing, c.this)))
             pipeline = pipeline.pipe(stage) if pipeline else stage
-        return pipeline
+        return pipeline if pipeline is not None else c.this.pipe(c.this)

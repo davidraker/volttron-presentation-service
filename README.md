@@ -346,9 +346,9 @@ RPC methods exported by the service:
 
 | Method                                              | Returns                  | Description                                                                                                   |
 |-----------------------------------------------------|--------------------------|---------------------------------------------------------------------------------------------------------------|
-| `resolve(uai, as_format=None, strict=False)`        | dict                     | Resolve a UAI to its canonical resource. When `as_format` is given, the result also includes `target_format` and `transform`, the ordered list of transform patterns from the resource's `data_format` to `as_format`. Returns `{}` if nothing canonical is found. |
-| `lookup_transform(input_format, output_format)`     | list of pattern dicts    | The transform chain between two formats, or `[]` if there is no path.                                         |
-| `register_transform(input_format, output_format, pattern)` | none              | Add a transform edge at runtime.                                                                              |
+| `resolve(uai, as_format=None, strict=False)`        | dict                     | Resolve a UAI to its canonical resource. When `as_format` is given, the result also includes `target_format` and `transform`, the ordered list of transform patterns from the resource's `data_format` to `as_format` (empty when they are the same format). Returns `{}` if nothing canonical is found, and fails with a `TransformNotFoundError` if the resource cannot be converted to `as_format`. |
+| `lookup_transform(input_format, output_format)`     | list of pattern dicts    | The transform chain between two formats. An empty list means no transform is needed (same format). When no chain exists the call fails with a `TransformNotFoundError` saying whether a format is unknown or the formats are simply not connected. |
+| `register_transform(input_format, output_format, pattern, update=False)` | bool | Add a transform edge at runtime. If the pair already has a different transform it is kept, with a warning, unless `update` is true. Registering the same pattern again is a no-op. Returns whether the registry changed. |
 
 Pubsub subscriptions:
 
@@ -373,7 +373,11 @@ if resource:
     resource.subscribe(on_data)
 ```
 
-`lookup` accepts a tuple, a list, or a delimited string (default delimiter `/`).
+`lookup` accepts a tuple, a list, or a delimited string (default delimiter `/`). It returns
+`None` when the UAI does not resolve to a canonical resource, and also when it does resolve
+but no transform can convert the resource into the format the alias asks for; the reason is
+logged as a warning. A resource that is already in the requested format is delivered
+unchanged. Other RPC failures, such as the service being unreachable, are raised.
 
 ## Repository layout
 

@@ -62,12 +62,17 @@ class PresentationService(Agent):
         self.transform_registry.update_registry(contents.get('transforms', []))
 
     @RPC.export
-    def lookup_transform(self, input_format: str, output_format: str) -> dict[str, str]:
+    def lookup_transform(self, input_format: str, output_format: str) -> list[dict]:
+        """The transform chain between two formats: an empty list when they are the same format, or a
+        TransformNotFoundError (delivered to the caller as an RPC error) when no chain exists."""
         return self.transform_registry.lookup(input_format, output_format)
 
     @RPC.export
-    def register_transform(self, input_format: str, output_format: str, pattern: dict[str, str]):
-        self.transform_registry.register(input_format, output_format, pattern)
+    def register_transform(self, input_format: str, output_format: str, pattern: dict | list,
+                           update: bool = False) -> bool:
+        """Add a transform edge at runtime. An existing, different transform for the pair is kept (with a
+        warning) unless ``update`` is true. Returns whether the registry changed."""
+        return self.transform_registry.register(input_format, output_format, pattern, update=update)
 
     @PubSub.subscribe('pubsub', 'mapper/update')
     def ingest_mappings(self, _, __, ___, ____, _____, message):
@@ -83,7 +88,8 @@ class PresentationService(Agent):
         if node and node.is_canonical:
             resource_dict = cast(ResourceNode, node).resource.model_dump()
             if as_format:
-                # Add the target data format & transform definition to the response.
+                # Add the target data format & transform definition to the response. An empty chain means the
+                # resource is already in that format; a missing chain raises TransformNotFoundError to the caller.
                 resource_dict['target_format'] = as_format
                 resource_dict['transform'] = self.transform_registry.lookup(resource_dict['data_format'], as_format)
             _log.info(f'Returning canonical node: {node}, with transform {resource_dict["data_format"]} -> {as_format}')
