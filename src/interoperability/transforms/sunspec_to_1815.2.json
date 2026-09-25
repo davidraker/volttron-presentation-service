@@ -53,13 +53,13 @@
         "131": "transform[711, Ctl, RspTms]()",
         "149": "transform[704, WMaxLimPct]()",
         "248": null,
-        "251": "transform[706, RspTms]()",
+        "251": "transform[706, Crv, 0, RspTms]()",
         "281": "transform[704, VarSetPct]()",
         "288": "transform[704, PFWInj, PF]()",
         "289": "transform[704, PFWAbs, PF]()",
         "297": null,
-        "298": "transform[705, RspTms]()",
-        "300": "transform[705, VRefAutoTms]()",
+        "298": "transform[705, Crv, 0, RspTms]()",
+        "300": "transform[705, Crv, 0, VRefAutoTms]()",
         "308": null,
         "536": "transform[701, Hz]()",
         "537": "transform[701, W]()",
@@ -82,7 +82,97 @@
         "80": "transform[704, PFWInjEna]()",
         "81": "transform[705, Ena]()",
         "82": "transform[712, Ena]()",
-        "93": "transform[705, VRefAutoEna]()"
+        "93": "transform[705, Crv, 0, VRefAutoEna]()"
+      },
+      "sequence[#] opModVoltVar": {
+        "#": "transform[705, Crv, 0](as_list())",
+        "AI": {
+          "328": "transform[#](const(1))",
+          "329": "transform[#](const(2))",
+          "330": "transform[#, ActPt]()",
+          "*points": "transform[#, Pt](take('ActPt'), unpairs(333, V, Var))",
+          "297": "transform[#](const(1))"
+        }
+      },
+      "sequence[#] opModWattVar": {
+        "#": "transform[712, Crv, 0](as_list())",
+        "AI": {
+          "328": "transform[#](const(2))",
+          "329": "transform[#](const(4))",
+          "330": "transform[#, ActPt]()",
+          "*points": "transform[#, Pt](take('ActPt'), unpairs(333, W, Var))",
+          "308": "transform[#](const(2))"
+        }
+      },
+      "sequence[#] opModVoltWatt": {
+        "#": "transform[706, Crv, 0](as_list())",
+        "AI": {
+          "328": "transform[#](const(3))",
+          "329": "transform[#](const(5))",
+          "330": "transform[#, ActPt]()",
+          "*points": "transform[#, Pt](take('ActPt'), unpairs(333, V, W))",
+          "248": "transform[#](const(3))"
+        }
+      },
+      "sequence[#] opModHVRTMustTrip": {
+        "#": "transform[708, Crv, 0, MustTrip](as_list())",
+        "AI": {
+          "328": "transform[#](const(4))",
+          "329": "transform[#](const(9))",
+          "330": "transform[#, ActPt]()",
+          "*points": "transform[#, Pt](take('ActPt'), unpairs(333, V, Tms))",
+          "73": "transform[#](const(4))"
+        }
+      },
+      "sequence[#] opModHVRTMomentaryCessation": {
+        "#": "transform[708, Crv, 0, MomCess](as_list())",
+        "AI": {
+          "328": "transform[#](const(5))",
+          "329": "transform[#](const(10))",
+          "330": "transform[#, ActPt]()",
+          "*points": "transform[#, Pt](take('ActPt'), unpairs(333, V, Tms))",
+          "75": "transform[#](const(5))"
+        }
+      },
+      "sequence[#] opModLVRTMustTrip": {
+        "#": "transform[707, Crv, 0, MustTrip](as_list())",
+        "AI": {
+          "328": "transform[#](const(6))",
+          "329": "transform[#](const(11))",
+          "330": "transform[#, ActPt]()",
+          "*points": "transform[#, Pt](take('ActPt'), unpairs(333, V, Tms))",
+          "74": "transform[#](const(6))"
+        }
+      },
+      "sequence[#] opModLVRTMomentaryCessation": {
+        "#": "transform[707, Crv, 0, MomCess](as_list())",
+        "AI": {
+          "328": "transform[#](const(7))",
+          "329": "transform[#](const(12))",
+          "330": "transform[#, ActPt]()",
+          "*points": "transform[#, Pt](take('ActPt'), unpairs(333, V, Tms))",
+          "76": "transform[#](const(7))"
+        }
+      },
+      "sequence[#] opModHFRTMustTrip": {
+        "#": "transform[710, Crv, 0, MustTrip](as_list())",
+        "AI": {
+          "328": "transform[#](const(8))",
+          "329": "transform[#](const(13))",
+          "330": "transform[#, ActPt]()",
+          "*points": "transform[#, Pt](take('ActPt'), unpairs(333, Hz, Tms))",
+          "79": "transform[#](const(8))"
+        }
+      },
+      "sequence[#] opModLFRTMustTrip": {
+        "#": "transform[709, Crv, 0, MustTrip](as_list())",
+        "AI": {
+          "328": "transform[#](const(9))",
+          "329": "transform[#](const(15))",
+          "330": "transform[#, ActPt]()",
+          "*points": "transform[#, Pt](take('ActPt'), unpairs(333, Hz, Tms))",
+          "80": "transform[#](const(9))"
+        }
       }
     }
   },
@@ -91,7 +181,7 @@
     "output_format": "1815.2.outputs",
     "pattern": {
       "AO": {
-        "0": "transform[705, VRef]()",
+        "0": "transform[705, Crv, 0, VRef]()",
         "1": null,
         "6": "transform[703, ESVHi]()",
         "7": "transform[703, ESVLo]()",
@@ -113,13 +203,13 @@
         "72": "transform[711, Ctl, RspTms]()",
         "88": "transform[704, WMaxLimPct]()",
         "173": null,
-        "175": "transform[706, RspTms]()",
+        "175": "transform[706, Crv, 0, RspTms]()",
         "203": "transform[704, VarSetPct]()",
         "210": "transform[704, PFWInj, PF]()",
         "211": "transform[704, PFWAbs, PF]()",
         "217": null,
-        "218": "transform[705, RspTms]()",
-        "220": "transform[705, VRefAutoTms]()",
+        "218": "transform[705, Crv, 0, RspTms]()",
+        "220": "transform[705, Crv, 0, VRefAutoTms]()",
         "226": null
       },
       "BO": {
@@ -133,7 +223,97 @@
         "28": "transform[704, PFWInjEna]()",
         "29": "transform[705, Ena]()",
         "30": "transform[712, Ena]()",
-        "41": "transform[705, VRefAutoEna]()"
+        "41": "transform[705, Crv, 0, VRefAutoEna]()"
+      },
+      "sequence[#] opModVoltVar": {
+        "#": "transform[705, Crv, 0](as_list())",
+        "AO": {
+          "244": "transform[#](const(1))",
+          "245": "transform[#](const(2))",
+          "246": "transform[#, ActPt]()",
+          "*points": "transform[#, Pt](take('ActPt'), unpairs(249, V, Var))",
+          "217": "transform[#](const(1))"
+        }
+      },
+      "sequence[#] opModWattVar": {
+        "#": "transform[712, Crv, 0](as_list())",
+        "AO": {
+          "244": "transform[#](const(2))",
+          "245": "transform[#](const(4))",
+          "246": "transform[#, ActPt]()",
+          "*points": "transform[#, Pt](take('ActPt'), unpairs(249, W, Var))",
+          "226": "transform[#](const(2))"
+        }
+      },
+      "sequence[#] opModVoltWatt": {
+        "#": "transform[706, Crv, 0](as_list())",
+        "AO": {
+          "244": "transform[#](const(3))",
+          "245": "transform[#](const(5))",
+          "246": "transform[#, ActPt]()",
+          "*points": "transform[#, Pt](take('ActPt'), unpairs(249, V, W))",
+          "173": "transform[#](const(3))"
+        }
+      },
+      "sequence[#] opModHVRTMustTrip": {
+        "#": "transform[708, Crv, 0, MustTrip](as_list())",
+        "AO": {
+          "244": "transform[#](const(4))",
+          "245": "transform[#](const(9))",
+          "246": "transform[#, ActPt]()",
+          "*points": "transform[#, Pt](take('ActPt'), unpairs(249, V, Tms))",
+          "23": "transform[#](const(4))"
+        }
+      },
+      "sequence[#] opModHVRTMomentaryCessation": {
+        "#": "transform[708, Crv, 0, MomCess](as_list())",
+        "AO": {
+          "244": "transform[#](const(5))",
+          "245": "transform[#](const(10))",
+          "246": "transform[#, ActPt]()",
+          "*points": "transform[#, Pt](take('ActPt'), unpairs(249, V, Tms))",
+          "25": "transform[#](const(5))"
+        }
+      },
+      "sequence[#] opModLVRTMustTrip": {
+        "#": "transform[707, Crv, 0, MustTrip](as_list())",
+        "AO": {
+          "244": "transform[#](const(6))",
+          "245": "transform[#](const(11))",
+          "246": "transform[#, ActPt]()",
+          "*points": "transform[#, Pt](take('ActPt'), unpairs(249, V, Tms))",
+          "24": "transform[#](const(6))"
+        }
+      },
+      "sequence[#] opModLVRTMomentaryCessation": {
+        "#": "transform[707, Crv, 0, MomCess](as_list())",
+        "AO": {
+          "244": "transform[#](const(7))",
+          "245": "transform[#](const(12))",
+          "246": "transform[#, ActPt]()",
+          "*points": "transform[#, Pt](take('ActPt'), unpairs(249, V, Tms))",
+          "26": "transform[#](const(7))"
+        }
+      },
+      "sequence[#] opModHFRTMustTrip": {
+        "#": "transform[710, Crv, 0, MustTrip](as_list())",
+        "AO": {
+          "244": "transform[#](const(8))",
+          "245": "transform[#](const(13))",
+          "246": "transform[#, ActPt]()",
+          "*points": "transform[#, Pt](take('ActPt'), unpairs(249, Hz, Tms))",
+          "28": "transform[#](const(8))"
+        }
+      },
+      "sequence[#] opModLFRTMustTrip": {
+        "#": "transform[709, Crv, 0, MustTrip](as_list())",
+        "AO": {
+          "244": "transform[#](const(9))",
+          "245": "transform[#](const(15))",
+          "246": "transform[#, ActPt]()",
+          "*points": "transform[#, Pt](take('ActPt'), unpairs(249, Hz, Tms))",
+          "29": "transform[#](const(9))"
+        }
       }
     }
   }

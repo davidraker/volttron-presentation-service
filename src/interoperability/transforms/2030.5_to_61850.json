@@ -87,17 +87,23 @@
         "ModEna": null,
         "VRefAdjEna": "transform[DERCurve, opModVoltVar, autonomousVRefEnable]()",
         "VRefTmms": "transform[DERCurve, opModVoltVar, autonomousVRefTimeConstant]()",
-        "VVArCrv[#]": {
-          "xVal": "transform[DERCurve, opModVoltVar, 'CurveData[#]', xvalue]()",
-          "yVal": "transform[DERCurve, opModVoltVar, 'CurveData[#]', yvalue]()"
+        "VVArCrv": {
+          "numPts": "transform[DERCurve, opModVoltVar, CurveData](count())",
+          "crvPts[#]": {
+            "xVal": "transform[DERCurve, opModVoltVar, CurveData[#], xvalue]()",
+            "yVal": "transform[DERCurve, opModVoltVar, CurveData[#], yvalue]()"
+          }
         },
         "OpnLoopMax": "transform[DERCurve, opModVoltVar, openLoopTms]()"
       },
       "DWVR": {
         "ModEna": null,
-        "WVArCrv[#]": {
-          "xVal": "transform[DERCurve, opModWattVar, 'CurveData[#]', xvalue]()",
-          "yVal": "transform[DERCurve, opModWattVar, 'CurveData[#]', yvalue]()"
+        "WVArCrv": {
+          "numPts": "transform[DERCurve, opModWattVar, CurveData](count())",
+          "crvPts[#]": {
+            "xVal": "transform[DERCurve, opModWattVar, CurveData[#], xvalue]()",
+            "yVal": "transform[DERCurve, opModWattVar, CurveData[#], yvalue]()"
+          }
         }
       },
       "DVAR": {
@@ -106,26 +112,35 @@
       },
       "DVWC": {
         "ModEna": null,
-        "VWCrv[#]": {
-          "xVal": "transform[DERCurve, opModVoltWatt, 'CurveData[#]', xvalue]()",
-          "yVal": "transform[DERCurve, opModVoltWatt, 'CurveData[#]', yvalue]()"
+        "VWCrv": {
+          "numPts": "transform[DERCurve, opModVoltWatt, CurveData](count())",
+          "crvPts[#]": {
+            "xVal": "transform[DERCurve, opModVoltWatt, CurveData[#], xvalue]()",
+            "yVal": "transform[DERCurve, opModVoltWatt, CurveData[#], yvalue]()"
+          }
         },
         "OpnLoopMax": "transform[DERCurve, opModVoltWatt, openLoopTms]()"
       },
       "DHVT": {
         "TrZnSt": {
           "PTOV": {
-            "TmVCrv[#]": {
-              "xVal": "transform[DERCurve, opModHVRTMustTrip, 'CurveData[#]', xvalue]()",
-              "yVal": "transform[DERCurve, opModHVRTMustTrip, 'CurveData[#]', yvalue]()"
+            "TmVCrv": {
+              "numPts": "transform[DERCurve, opModHVRTMustTrip, CurveData](count())",
+              "crvPts[#]": {
+                "xVal": "transform[DERCurve, opModHVRTMustTrip, CurveData[#], xvalue]()",
+                "yVal": "transform[DERCurve, opModHVRTMustTrip, CurveData[#], yvalue]()"
+              }
             }
           }
         },
         "CeaZnSt": {
           "PTOV": {
-            "TmVCrv[#]": {
-              "xVal": "transform[DERCurve, opModHVRTMomentaryCessation, 'CurveData[#]', xvalue]()",
-              "yVal": "transform[DERCurve, opModHVRTMomentaryCessation, 'CurveData[#]', yvalue]()"
+            "TmVCrv": {
+              "numPts": "transform[DERCurve, opModHVRTMomentaryCessation, CurveData](count())",
+              "crvPts[#]": {
+                "xVal": "transform[DERCurve, opModHVRTMomentaryCessation, CurveData[#], xvalue]()",
+                "yVal": "transform[DERCurve, opModHVRTMomentaryCessation, CurveData[#], yvalue]()"
+              }
             }
           }
         }
@@ -133,17 +148,23 @@
       "DLVT": {
         "TrZnSt": {
           "PTUV": {
-            "TmVCrv[#]": {
-              "xVal": "transform[DERCurve, opModLVRTMustTrip, 'CurveData[#]', xvalue]()",
-              "yVal": "transform[DERCurve, opModLVRTMustTrip, 'CurveData[#]', yvalue]()"
+            "TmVCrv": {
+              "numPts": "transform[DERCurve, opModLVRTMustTrip, CurveData](count())",
+              "crvPts[#]": {
+                "xVal": "transform[DERCurve, opModLVRTMustTrip, CurveData[#], xvalue]()",
+                "yVal": "transform[DERCurve, opModLVRTMustTrip, CurveData[#], yvalue]()"
+              }
             }
           }
         },
         "CeaZnSt": {
           "PTUV": {
-            "TmVCrv[#]": {
-              "xVal": "transform[DERCurve, opModLVRTMomentaryCessation, 'CurveData[#]', xvalue]()",
-              "yVal": "transform[DERCurve, opModLVRTMomentaryCessation, 'CurveData[#]', yvalue]()"
+            "TmVCrv": {
+              "numPts": "transform[DERCurve, opModLVRTMomentaryCessation, CurveData](count())",
+              "crvPts[#]": {
+                "xVal": "transform[DERCurve, opModLVRTMomentaryCessation, CurveData[#], xvalue]()",
+                "yVal": "transform[DERCurve, opModLVRTMomentaryCessation, CurveData[#], yvalue]()"
+              }
             }
           }
         }
@@ -151,9 +172,12 @@
       "DHFT": {
         "TrZnSt": {
           "PTOF": {
-            "StrVal[#]": {
-              "xVal": "transform[DERCurve, opModHFRTMustTrip, 'CurveData[#]', xvalue]()",
-              "yVal": "transform[DERCurve, opModHFRTMustTrip, 'CurveData[#]', yvalue]()"
+            "TmHzCrv": {
+              "numPts": "transform[DERCurve, opModHFRTMustTrip, CurveData](count())",
+              "crvPts[#]": {
+                "xVal": "transform[DERCurve, opModHFRTMustTrip, CurveData[#], xvalue]()",
+                "yVal": "transform[DERCurve, opModHFRTMustTrip, CurveData[#], yvalue]()"
+              }
             }
           }
         }
@@ -161,9 +185,12 @@
       "DLFT": {
         "TrZnSt": {
           "PTUF": {
-            "StrVal[#]": {
-              "xVal": "transform[DERCurve, opModLFRTMustTrip, 'CurveData[#]', xvalue]()",
-              "yVal": "transform[DERCurve, opModLFRTMustTrip, 'CurveData[#]', yvalue]()"
+            "TmHzCrv": {
+              "numPts": "transform[DERCurve, opModLFRTMustTrip, CurveData](count())",
+              "crvPts[#]": {
+                "xVal": "transform[DERCurve, opModLFRTMustTrip, CurveData[#], xvalue]()",
+                "yVal": "transform[DERCurve, opModLFRTMustTrip, CurveData[#], yvalue]()"
+              }
             }
           }
         }

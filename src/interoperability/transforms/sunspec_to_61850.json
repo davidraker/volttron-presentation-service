@@ -34,7 +34,7 @@
         "SocUsePct": "transform[713, SoC]()"
       },
       "DECP": {
-        "VRef": "transform[702, VNomRtg]()",
+        "VRef": "transform[705, Crv, 0, VRef]()",
         "MMXU": {
           "TotW": "transform[701, W]()",
           "TotVAr": "transform[701, Var]()",
@@ -71,12 +71,28 @@
       },
       "DVVR": {
         "ModEna": "transform[705, Ena]()",
-        "VRefAdjEna": "transform[705, VRefAutoEna]()",
-        "VRefTmms": "transform[705, VRefAutoTms]()",
-        "OpnLoopMax": "transform[705, RspTms]()"
+        "VRefAdjEna": "transform[705, Crv, 0, VRefAutoEna]()",
+        "VRefTmms": "transform[705, Crv, 0, VRefAutoTms]()",
+        "VVArCrv": {
+          "numPts": "transform[705, Crv, 0, ActPt]()",
+          "crvPts[#]": {
+            "#": "transform(take('705.Crv.0.ActPt'))",
+            "xVal": "transform[705, Crv, 0, Pt[#], V]()",
+            "yVal": "transform[705, Crv, 0, Pt[#], Var]()"
+          }
+        },
+        "OpnLoopMax": "transform[705, Crv, 0, RspTms]()"
       },
       "DWVR": {
-        "ModEna": "transform[712, Ena]()"
+        "ModEna": "transform[712, Ena]()",
+        "WVArCrv": {
+          "numPts": "transform[712, Crv, 0, ActPt]()",
+          "crvPts[#]": {
+            "#": "transform(take('712.Crv.0.ActPt'))",
+            "xVal": "transform[712, Crv, 0, Pt[#], W]()",
+            "yVal": "transform[712, Crv, 0, Pt[#], Var]()"
+          }
+        }
       },
       "DVAR": {
         "ModEna": "transform[704, VarSetEna]()",
@@ -84,7 +100,95 @@
       },
       "DVWC": {
         "ModEna": "transform[706, Ena]()",
-        "OpnLoopMax": "transform[706, RspTms]()"
+        "VWCrv": {
+          "numPts": "transform[706, Crv, 0, ActPt]()",
+          "crvPts[#]": {
+            "#": "transform(take('706.Crv.0.ActPt'))",
+            "xVal": "transform[706, Crv, 0, Pt[#], V]()",
+            "yVal": "transform[706, Crv, 0, Pt[#], W]()"
+          }
+        },
+        "OpnLoopMax": "transform[706, Crv, 0, RspTms]()"
+      },
+      "DHVT": {
+        "TrZnSt": {
+          "PTOV": {
+            "TmVCrv": {
+              "numPts": "transform[708, Crv, 0, MustTrip, ActPt]()",
+              "crvPts[#]": {
+                "#": "transform(take('708.Crv.0.MustTrip.ActPt'))",
+                "xVal": "transform[708, Crv, 0, MustTrip, Pt[#], V]()",
+                "yVal": "transform[708, Crv, 0, MustTrip, Pt[#], Tms]()"
+              }
+            }
+          }
+        },
+        "CeaZnSt": {
+          "PTOV": {
+            "TmVCrv": {
+              "numPts": "transform[708, Crv, 0, MomCess, ActPt]()",
+              "crvPts[#]": {
+                "#": "transform(take('708.Crv.0.MomCess.ActPt'))",
+                "xVal": "transform[708, Crv, 0, MomCess, Pt[#], V]()",
+                "yVal": "transform[708, Crv, 0, MomCess, Pt[#], Tms]()"
+              }
+            }
+          }
+        }
+      },
+      "DLVT": {
+        "TrZnSt": {
+          "PTUV": {
+            "TmVCrv": {
+              "numPts": "transform[707, Crv, 0, MustTrip, ActPt]()",
+              "crvPts[#]": {
+                "#": "transform(take('707.Crv.0.MustTrip.ActPt'))",
+                "xVal": "transform[707, Crv, 0, MustTrip, Pt[#], V]()",
+                "yVal": "transform[707, Crv, 0, MustTrip, Pt[#], Tms]()"
+              }
+            }
+          }
+        },
+        "CeaZnSt": {
+          "PTUV": {
+            "TmVCrv": {
+              "numPts": "transform[707, Crv, 0, MomCess, ActPt]()",
+              "crvPts[#]": {
+                "#": "transform(take('707.Crv.0.MomCess.ActPt'))",
+                "xVal": "transform[707, Crv, 0, MomCess, Pt[#], V]()",
+                "yVal": "transform[707, Crv, 0, MomCess, Pt[#], Tms]()"
+              }
+            }
+          }
+        }
+      },
+      "DHFT": {
+        "TrZnSt": {
+          "PTOF": {
+            "TmHzCrv": {
+              "numPts": "transform[710, Crv, 0, MustTrip, ActPt]()",
+              "crvPts[#]": {
+                "#": "transform(take('710.Crv.0.MustTrip.ActPt'))",
+                "xVal": "transform[710, Crv, 0, MustTrip, Pt[#], Hz]()",
+                "yVal": "transform[710, Crv, 0, MustTrip, Pt[#], Tms]()"
+              }
+            }
+          }
+        }
+      },
+      "DLFT": {
+        "TrZnSt": {
+          "PTUF": {
+            "TmHzCrv": {
+              "numPts": "transform[709, Crv, 0, MustTrip, ActPt]()",
+              "crvPts[#]": {
+                "#": "transform(take('709.Crv.0.MustTrip.ActPt'))",
+                "xVal": "transform[709, Crv, 0, MustTrip, Pt[#], Hz]()",
+                "yVal": "transform[709, Crv, 0, MustTrip, Pt[#], Tms]()"
+              }
+            }
+          }
+        }
       },
       "DHFW": {
         "HzStr": "transform[711, Ctl, DbOf]()",

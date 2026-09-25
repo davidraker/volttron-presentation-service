@@ -69,17 +69,103 @@
       },
       "705": {
         "Ena": "transform[DVVR, ModEna]()",
-        "VRef": "transform[DECP, VRef]()",
-        "VRefAutoEna": "transform[DVVR, VRefAdjEna]()",
-        "VRefAutoTms": "transform[DVVR, VRefTmms]()",
-        "RspTms": "transform[DVVR, OpnLoopMax]()"
+        "Crv[#]": {
+          "#": "transform[DVVR](as_list())",
+          "ActPt": "transform[#, VVArCrv, crvPts](count())",
+          "VRef": "transform[DECP, VRef]()",
+          "VRefAutoEna": "transform[#, VRefAdjEna]()",
+          "VRefAutoTms": "transform[#, VRefTmms]()",
+          "RspTms": "transform[#, OpnLoopMax]()",
+          "Pt[#]": {
+            "V": "transform[#, VVArCrv, crvPts[#], xVal]()",
+            "Var": "transform[#, VVArCrv, crvPts[#], yVal]()"
+          }
+        }
       },
       "712": {
-        "Ena": "transform[DWVR, ModEna]()"
+        "Ena": "transform[DWVR, ModEna]()",
+        "Crv[#]": {
+          "#": "transform[DWVR](as_list())",
+          "ActPt": "transform[#, WVArCrv, crvPts](count())",
+          "Pt[#]": {
+            "W": "transform[#, WVArCrv, crvPts[#], xVal]()",
+            "Var": "transform[#, WVArCrv, crvPts[#], yVal]()"
+          }
+        }
       },
       "706": {
         "Ena": "transform[DVWC, ModEna]()",
-        "RspTms": "transform[DVWC, OpnLoopMax]()"
+        "Crv[#]": {
+          "#": "transform[DVWC](as_list())",
+          "ActPt": "transform[#, VWCrv, crvPts](count())",
+          "RspTms": "transform[#, OpnLoopMax]()",
+          "Pt[#]": {
+            "V": "transform[#, VWCrv, crvPts[#], xVal]()",
+            "W": "transform[#, VWCrv, crvPts[#], yVal]()"
+          }
+        }
+      },
+      "708": {
+        "Crv[#]": {
+          "#": "transform[DHVT](as_list())",
+          "MustTrip": {
+            "ActPt": "transform[#, TrZnSt, PTOV, TmVCrv, crvPts](count())",
+            "Pt[#]": {
+              "V": "transform[#, TrZnSt, PTOV, TmVCrv, crvPts[#], xVal]()",
+              "Tms": "transform[#, TrZnSt, PTOV, TmVCrv, crvPts[#], yVal]()"
+            }
+          },
+          "MomCess": {
+            "ActPt": "transform[#, CeaZnSt, PTOV, TmVCrv, crvPts](count())",
+            "Pt[#]": {
+              "V": "transform[#, CeaZnSt, PTOV, TmVCrv, crvPts[#], xVal]()",
+              "Tms": "transform[#, CeaZnSt, PTOV, TmVCrv, crvPts[#], yVal]()"
+            }
+          }
+        }
+      },
+      "707": {
+        "Crv[#]": {
+          "#": "transform[DLVT](as_list())",
+          "MustTrip": {
+            "ActPt": "transform[#, TrZnSt, PTUV, TmVCrv, crvPts](count())",
+            "Pt[#]": {
+              "V": "transform[#, TrZnSt, PTUV, TmVCrv, crvPts[#], xVal]()",
+              "Tms": "transform[#, TrZnSt, PTUV, TmVCrv, crvPts[#], yVal]()"
+            }
+          },
+          "MomCess": {
+            "ActPt": "transform[#, CeaZnSt, PTUV, TmVCrv, crvPts](count())",
+            "Pt[#]": {
+              "V": "transform[#, CeaZnSt, PTUV, TmVCrv, crvPts[#], xVal]()",
+              "Tms": "transform[#, CeaZnSt, PTUV, TmVCrv, crvPts[#], yVal]()"
+            }
+          }
+        }
+      },
+      "710": {
+        "Crv[#]": {
+          "#": "transform[DHFT](as_list())",
+          "MustTrip": {
+            "ActPt": "transform[#, TrZnSt, PTOF, TmHzCrv, crvPts](count())",
+            "Pt[#]": {
+              "Hz": "transform[#, TrZnSt, PTOF, TmHzCrv, crvPts[#], xVal]()",
+              "Tms": "transform[#, TrZnSt, PTOF, TmHzCrv, crvPts[#], yVal]()"
+            }
+          }
+        }
+      },
+      "709": {
+        "Crv[#]": {
+          "#": "transform[DLFT](as_list())",
+          "MustTrip": {
+            "ActPt": "transform[#, TrZnSt, PTUF, TmHzCrv, crvPts](count())",
+            "Pt[#]": {
+              "Hz": "transform[#, TrZnSt, PTUF, TmHzCrv, crvPts[#], xVal]()",
+              "Tms": "transform[#, TrZnSt, PTUF, TmHzCrv, crvPts[#], yVal]()"
+            }
+          }
+        }
       },
       "711": {
         "Ctl": {

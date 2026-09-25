@@ -105,58 +105,67 @@
           "autonomousVRefEnable": "transform[BI, 93]()",
           "autonomousVRefTimeConstant": "transform[AI, 300]()",
           "CurveData[#]": {
-            "xvalue": null,
-            "yvalue": null
+            "#": "transform[AI](when_equal('AI.328', 'AI.297'), pairs(333, 100, xvalue, yvalue), take('AI.330'))",
+            "xvalue": "transform[#, xvalue]()",
+            "yvalue": "transform[#, yvalue]()"
           },
           "openLoopTms": "transform[AI, 298]()"
         },
         "opModWattVar": {
           "CurveData[#]": {
-            "xvalue": null,
-            "yvalue": null
+            "#": "transform[AI](when_equal('AI.328', 'AI.308'), pairs(333, 100, xvalue, yvalue), take('AI.330'))",
+            "xvalue": "transform[#, xvalue]()",
+            "yvalue": "transform[#, yvalue]()"
           }
         },
         "opModVoltWatt": {
           "CurveData[#]": {
-            "xvalue": null,
-            "yvalue": null
+            "#": "transform[AI](when_equal('AI.328', 'AI.248'), pairs(333, 100, xvalue, yvalue), take('AI.330'))",
+            "xvalue": "transform[#, xvalue]()",
+            "yvalue": "transform[#, yvalue]()"
           },
           "openLoopTms": "transform[AI, 251]()"
         },
         "opModHVRTMustTrip": {
           "CurveData[#]": {
-            "xvalue": null,
-            "yvalue": null
+            "#": "transform[AI](when_equal('AI.328', 'AI.73'), pairs(333, 100, xvalue, yvalue), take('AI.330'))",
+            "xvalue": "transform[#, xvalue]()",
+            "yvalue": "transform[#, yvalue]()"
           }
         },
         "opModLVRTMustTrip": {
           "CurveData[#]": {
-            "xvalue": null,
-            "yvalue": null
+            "#": "transform[AI](when_equal('AI.328', 'AI.74'), pairs(333, 100, xvalue, yvalue), take('AI.330'))",
+            "xvalue": "transform[#, xvalue]()",
+            "yvalue": "transform[#, yvalue]()"
           }
         },
         "opModHVRTMomentaryCessation": {
           "CurveData[#]": {
-            "xvalue": null,
-            "yvalue": null
+            "#": "transform[AI](when_equal('AI.328', 'AI.75'), pairs(333, 100, xvalue, yvalue), take('AI.330'))",
+            "xvalue": "transform[#, xvalue]()",
+            "yvalue": "transform[#, yvalue]()"
           }
         },
         "opModLVRTMomentaryCessation": {
           "CurveData[#]": {
-            "xvalue": null,
-            "yvalue": null
+            "#": "transform[AI](when_equal('AI.328', 'AI.76'), pairs(333, 100, xvalue, yvalue), take('AI.330'))",
+            "xvalue": "transform[#, xvalue]()",
+            "yvalue": "transform[#, yvalue]()"
           }
         },
         "opModHFRTMustTrip": {
           "CurveData[#]": {
-            "xvalue": null,
-            "yvalue": null
+            "#": "transform[AI](when_equal('AI.328', 'AI.79'), pairs(333, 100, xvalue, yvalue), take('AI.330'))",
+            "xvalue": "transform[#, xvalue]()",
+            "yvalue": "transform[#, yvalue]()"
           }
         },
         "opModLFRTMustTrip": {
           "CurveData[#]": {
-            "xvalue": null,
-            "yvalue": null
+            "#": "transform[AI](when_equal('AI.328', 'AI.80'), pairs(333, 100, xvalue, yvalue), take('AI.330'))",
+            "xvalue": "transform[#, xvalue]()",
+            "yvalue": "transform[#, yvalue]()"
           }
         }
       },
@@ -277,58 +286,67 @@
           "autonomousVRefEnable": "transform[BO, 41]()",
           "autonomousVRefTimeConstant": "transform[AO, 220]()",
           "CurveData[#]": {
-            "xvalue": null,
-            "yvalue": null
+            "#": "transform[AO](when_equal('AO.244', 'AO.217'), pairs(249, 100, xvalue, yvalue), take('AO.246'))",
+            "xvalue": "transform[#, xvalue]()",
+            "yvalue": "transform[#, yvalue]()"
           },
           "openLoopTms": "transform[AO, 218]()"
         },
         "opModWattVar": {
           "CurveData[#]": {
-            "xvalue": null,
-            "yvalue": null
+            "#": "transform[AO](when_equal('AO.244', 'AO.226'), pairs(249, 100, xvalue, yvalue), take('AO.246'))",
+            "xvalue": "transform[#, xvalue]()",
+            "yvalue": "transform[#, yvalue]()"
           }
         },
         "opModVoltWatt": {
           "CurveData[#]": {
-            "xvalue": null,
-            "yvalue": null
+            "#": "transform[AO](when_equal('AO.244', 'AO.173'), pairs(249, 100, xvalue, yvalue), take('AO.246'))",
+            "xvalue": "transform[#, xvalue]()",
+            "yvalue": "transform[#, yvalue]()"
           },
           "openLoopTms": "transform[AO, 175]()"
         },
         "opModHVRTMustTrip": {
           "CurveData[#]": {
-            "xvalue": null,
-            "yvalue": null
+            "#": "transform[AO](when_equal('AO.244', 'AO.23'), pairs(249, 100, xvalue, yvalue), take('AO.246'))",
+            "xvalue": "transform[#, xvalue]()",
+            "yvalue": "transform[#, yvalue]()"
           }
         },
         "opModLVRTMustTrip": {
           "CurveData[#]": {
-            "xvalue": null,
-            "yvalue": null
+            "#": "transform[AO](when_equal('AO.244', 'AO.24'), pairs(249, 100, xvalue, yvalue), take('AO.246'))",
+            "xvalue": "transform[#, xvalue]()",
+            "yvalue": "transform[#, yvalue]()"
           }
         },
         "opModHVRTMomentaryCessation": {
           "CurveData[#]": {
-            "xvalue": null,
-            "yvalue": null
+            "#": "transform[AO](when_equal('AO.244', 'AO.25'), pairs(249, 100, xvalue, yvalue), take('AO.246'))",
+            "xvalue": "transform[#, xvalue]()",
+            "yvalue": "transform[#, yvalue]()"
           }
         },
         "opModLVRTMomentaryCessation": {
           "CurveData[#]": {
-            "xvalue": null,
-            "yvalue": null
+            "#": "transform[AO](when_equal('AO.244', 'AO.26'), pairs(249, 100, xvalue, yvalue), take('AO.246'))",
+            "xvalue": "transform[#, xvalue]()",
+            "yvalue": "transform[#, yvalue]()"
           }
         },
         "opModHFRTMustTrip": {
           "CurveData[#]": {
-            "xvalue": null,
-            "yvalue": null
+            "#": "transform[AO](when_equal('AO.244', 'AO.28'), pairs(249, 100, xvalue, yvalue), take('AO.246'))",
+            "xvalue": "transform[#, xvalue]()",
+            "yvalue": "transform[#, yvalue]()"
           }
         },
         "opModLFRTMustTrip": {
           "CurveData[#]": {
-            "xvalue": null,
-            "yvalue": null
+            "#": "transform[AO](when_equal('AO.244', 'AO.29'), pairs(249, 100, xvalue, yvalue), take('AO.246'))",
+            "xvalue": "transform[#, xvalue]()",
+            "yvalue": "transform[#, yvalue]()"
           }
         }
       },

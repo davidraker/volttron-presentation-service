@@ -28,7 +28,7 @@ class PresentationService(Agent):
         super(PresentationService, self).__init__(**kwargs)
 
         # Load bundled transforms and mappings as configuration defaults. Only JSON files directly
-        # inside each package directory are loaded; subdirectories (e.g., transforms/unfinished) are not.
+        # inside each package directory are loaded; subdirectories are not.
         package_root = resources.files('interoperability')
         known_transforms = self._load_bundled_definitions(package_root.joinpath('transforms'))
         known_mappings = self._load_bundled_definitions(package_root.joinpath('mappings'))

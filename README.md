@@ -160,8 +160,8 @@ transform[<path segment>, <path segment>, ...](<function>(<args>), <function>(<a
   `("702", "WMaxRtg")`.
 * The parenthesised functions are applied in order to the value found at that path. An
   empty pair of parentheses copies the value unchanged.
-* Function arguments may be integers, quoted strings, bare identifiers, dotted paths
-  (`phsA.mag`), or nested function calls.
+* Function arguments may be numbers (signed, decimal or scientific, such as `0.001`),
+  quoted strings, bare identifiers, dotted paths (`phsA.mag`), or nested function calls.
 
 Patterns may be nested. A value that is an object is a group, and the output will contain
 the same group structure. This is how the bundled files organise fields under 61850
@@ -173,6 +173,57 @@ path, that field is left out of the output rather than raising an error, and a g
 fields are all absent is left out too. A source that is present with a value of `null` is
 copied through as `null`. This lets a transform written for a full device message be
 applied to a partial update.
+
+### Repeated groups
+
+An output key ending in `[#]` produces a list. The group beneath it is evaluated once per
+element of a source list. Inside the group, a path segment written `Pt[#]` names the list and
+marks the iteration point; the segments after it are looked up in each element. Every path in
+the group must name the same list.
+
+```json
+{
+  "CurveData[#]": {
+    "#": "transform(take('705.Crv.0.ActPt'))",
+    "xvalue": "transform[705, Crv, 0, Pt[#], V]()",
+    "yvalue": "transform[705, Crv, 0, Pt[#], Var]()"
+  }
+}
+```
+
+The reserved `"#"` entry adjusts the source. Written without a path, as above, its functions
+are applied to the list the sibling paths name. Written with a path
+(`"#": "transform[DERCurve, opModVoltVar](as_list())"`) it supplies the list explicitly, and
+sibling paths then start with the bare segment `#`, meaning the current element
+(`"ActPt": "transform[#, CurveData](count())"`). Written with functions only and no sibling
+naming a list (`"#": "transform(as_list())"`), it applies the functions to the enclosing
+element itself, which is how a flat message is wrapped into a one-element SunSpec `Crv` list.
+
+Paths without a marker inside a repeated group are resolved against the message root, so
+shared fields can be copied into every element. Groups nest; a path such as
+`705, Crv[#], Pt[#], V` walks two levels, and a path starting with `#` always refers to the
+element of the group it is written in. A repeated group whose list is absent or empty is left
+out of the output, and elements whose fields are all absent are dropped.
+
+Several groups may feed one list by adding a label after the marker, for example
+`"sequence[#] volt-var"` and `"sequence[#] volt-watt"`; their lists are concatenated in
+pattern order. Mistakes such as a marker outside a repeated group, sibling paths naming
+different lists, or a group with no source are reported when the definition is compiled.
+
+### Spread entries
+
+A key starting with `*` (the rest of the key is a comment) holds an expression that produces
+a group; its fields are merged into the enclosing group at that position. This turns a list of
+curve points into numbered DNP3 point indices:
+
+```json
+{
+  "AO": {
+    "246": "transform[DERCurve, opModVoltVar, CurveData](count())",
+    "*points": "transform[DERCurve, opModVoltVar, CurveData](unpairs(249, xvalue, yvalue))"
+  }
+}
+```
 
 Examples:
 
@@ -201,14 +252,32 @@ Functions available in `src/interoperability/transforms/__init__.py`:
 |-----------------------------------|----------------------------------------------------------------------------------------------|
 | `multiple(n)`                     | Multiply by `n`. Has an inverse.                                                             |
 | `add(n)`                          | Add `n`. Has an inverse.                                                                     |
+| `scale(n)`                        | Multiply by `n`, rounding away floating point noise to the decimal places of the operands (modbus_tk `scale`). Has an inverse. |
 | `scale_int(n)`                    | Multiply by `n` and cast to `int`. Has an inverse.                                           |
+| `scale_reg(path)`                 | Divide by the register at the quoted dotted `path`, resolved against the enclosing element; missing register leaves the field out. Has an inverse. |
+| `scale_reg_pow_10(path)`          | Multiply by 10 to the power of the register at `path`, e.g. SunSpec scale factors: `scale_reg_pow_10('701.W_SF')`. Has an inverse. |
+| `no_op()`                         | Copy the value unchanged. Its own inverse.                                                   |
+| `mod10k(reverse)`, `mod10k64(reverse)`, `mod10k48(reverse)` | Decode the ION and PM800 M10K register formats, where each 16 bit register holds four decimal digits (modbus_tk). `reverse` may be `True`/`False`; positive values only. Have inverses. |
 | `scale_decimal_int_signed(n)`     | Scale a decimal-encoded signed register (PM800 power factor style). Has an inverse.          |
 | `cast_value(type_name)`           | Cast to `bool`, `str`, `int`, `float`, `list`, `tuple`, or `dict`. Boolean parsing accepts common truthy and falsy strings. |
 | `mean(path, ...)`                 | Average of several dotted-path fields of the current value, ignoring missing or `None`.      |
+| `take(n)`                         | Keep the first `n` elements of a list. `n` may be a quoted dotted path to the field holding the count, resolved against the element enclosing the expression (the message root at top level), e.g. `take('705.Crv.0.ActPt')`. |
+| `pairs(start, count, x, y)`       | Turn a flat, position-indexed array of alternating X and Y values into a list of `{x, y}` points, e.g. `pairs(333, 100, xVal, yVal)` for DNP3 curve points. |
+| `unpairs(start, x, y)`            | The inverse: lay a list of points out as numbered alternating X and Y values. Use in a spread entry. |
+| `count()`                         | Number of elements in a list or group.                                                       |
+| `as_list()`                       | Wrap the value in a one-element list.                                                        |
+| `const(v)`                        | Replace the value with the literal `v` (only emitted when the source is present).            |
+| `when(path, v)`                   | Pass the value through only when the field at the quoted dotted `path` equals `v`; otherwise treat it as missing. |
+| `when_equal(path_a, path_b)`      | Pass the value through only when both fields are present and equal, e.g. `when_equal('AI.328', 'AI.297')`. |
 
-`scale`, `scale_reg`, `scale_reg_pow_10`, `no_op`, and the `mod10k*` family are declared
-but not yet implemented. Functions that define an `inverse` are intended to support
-automatic generation of reverse transforms in the future.
+Functions after a guard such as `when` are skipped once the value has become missing. Paths
+given to `take`, `when` and `when_equal` are resolved against the element enclosing the
+expression: the message root at top level, or the current element inside a repeated group.
+
+The register transforms mirror the ones in VOLTTRON's modbus_tk driver, rebuilt as convtools
+conversions; where the driver looked scaling registers up by name on the device, these take a
+path into the message. Functions that define an `inverse` are intended to support automatic
+generation of reverse transforms in the future.
 
 ## Bundled transforms
 
@@ -220,7 +289,7 @@ The format names they use are:
 | `61850`           | IEC 61850-7-420 logical nodes and data objects (DGEN, DECP, MMXU, ...) |
 | `sunspec`         | SunSpec Modbus models, keyed by model number (`1`, `701`, `702`, ...) |
 | `1815.2.inputs`   | IEEE 1815.2 (MESA-DER / DNP3) input points, grouped as `AI` and `BI` |
-| `1815.2.outputs`  | IEEE 1815.2 output points, grouped as `AO` and `BO`                 |
+| `1815.2.outputs`  | IEEE 1815.2 output points, grouped as `AO` and `BO`, plus an optional `sequence` of point batches (see below) |
 | `2030.5`          | IEEE 2030.5 resources keyed by resource then attribute (`DERCapability.rtgMaxW`); see below |
 | `1547`            | IEEE 1547.1 function group and parameter names (`Nameplate` / `Active Power (unity)`) |
 
@@ -246,9 +315,24 @@ Conventions the 2030.5, 1547 and SunSpec to 1815.2 files rely on, beyond those o
   `Frequency-Watt`, `Enter Service`, `Limit Watt`) and then by parameter name. Curve
   point arrays are copied whole between the 1547 view and a protocol.
 * DNP3 indices come from the IEEE 1815.2-2025 MESA DER PICS, not the DNP3-AN2018-001
-  numbers printed in IEEE 1547.1-2020, which differ for several points. Only the curve
-  index points (for example AO217 for the active Volt-VAR curve) are mapped; the curve
-  editing block AO244 to AO448 needs a dedicated function.
+  numbers printed in IEEE 1547.1-2020, which differ for several points.
+* Curves are lists. SunSpec curve points are the `Pt` list of the active stored curve
+  (`Crv[0]`, trimmed to `ActPt`), 2030.5 curves are `DERCurve.<curveType>.CurveData`, and
+  61850 curves are the `crvPts` list of the curve object (`DVVR.VVArCrv`,
+  `DHVT.TrZnSt.PTOV.TmVCrv`, ...) with `numPts`. Writing into SunSpec emits a one-element
+  `Crv` list; picking a writable stored curve and issuing `AdptCrvReq` is left to the driver.
+* IEEE 1815.2 exposes curves through a single edit window: a selector (AI328 / AO244), the
+  curve type (AI329 / AO245), the point count (AI330 / AO246) and up to 100 X,Y pairs from
+  AI333 / AO249. Each mode only carries the index of the curve it uses (AI297 / AO217 for
+  Volt-VAR). Reading is stateless: the window is mapped into a mode's curve only when the
+  selector equals that mode's curve index (`when_equal`), so the outstation, or whoever polls
+  it, must step the selector through the curves to read them all. Writing produces
+  `sequence`, a list of `{"AO": {...}}` batches to apply in order after the plain `AO` and
+  `BO` groups; within a batch the keys are in write order (select, type, count, points, then
+  the mode's curve index). Each mode is written to a fixed curve slot: Volt-VAR 1, Watt-VAR 2,
+  Volt-Watt 3, HVRT must trip 4, HVRT momentary cessation 5, LVRT must trip 6, LVRT momentary
+  cessation 7, HFRT must trip 8, LFRT must trip 9. The generic 61850 curve logical node
+  (`DGSMn`, `FMARn.PairArr.CrvPts`) maps the window directly, without a guard.
 * Bitmaps whose bit assignments differ between protocols (`DERCapability.modesSupported`,
   SunSpec `CtrlModes`, DNP3 BI31 to BI51) are only copied to and from the `1547` view.
 

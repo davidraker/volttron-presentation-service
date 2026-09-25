@@ -105,58 +105,58 @@
           "autonomousVRefEnable": "transform[DVVR, VRefAdjEna]()",
           "autonomousVRefTimeConstant": "transform[DVVR, VRefTmms]()",
           "CurveData[#]": {
-            "xvalue": "transform[DVVR, 'VVArCrv[#]', xVal]()",
-            "yvalue": "transform[DVVR, 'VVArCrv[#]', yVal]()"
+            "xvalue": "transform[DVVR, VVArCrv, crvPts[#], xVal]()",
+            "yvalue": "transform[DVVR, VVArCrv, crvPts[#], yVal]()"
           },
           "openLoopTms": "transform[DVVR, OpnLoopMax]()"
         },
         "opModWattVar": {
           "CurveData[#]": {
-            "xvalue": "transform[DWVR, 'WVArCrv[#]', xVal]()",
-            "yvalue": "transform[DWVR, 'WVArCrv[#]', yVal]()"
+            "xvalue": "transform[DWVR, WVArCrv, crvPts[#], xVal]()",
+            "yvalue": "transform[DWVR, WVArCrv, crvPts[#], yVal]()"
           }
         },
         "opModVoltWatt": {
           "CurveData[#]": {
-            "xvalue": "transform[DVWC, 'VWCrv[#]', xVal]()",
-            "yvalue": "transform[DVWC, 'VWCrv[#]', yVal]()"
+            "xvalue": "transform[DVWC, VWCrv, crvPts[#], xVal]()",
+            "yvalue": "transform[DVWC, VWCrv, crvPts[#], yVal]()"
           },
           "openLoopTms": "transform[DVWC, OpnLoopMax]()"
         },
         "opModHVRTMustTrip": {
           "CurveData[#]": {
-            "xvalue": "transform[DHVT, TrZnSt, PTOV, 'TmVCrv[#]', xVal]()",
-            "yvalue": "transform[DHVT, TrZnSt, PTOV, 'TmVCrv[#]', yVal]()"
+            "xvalue": "transform[DHVT, TrZnSt, PTOV, TmVCrv, crvPts[#], xVal]()",
+            "yvalue": "transform[DHVT, TrZnSt, PTOV, TmVCrv, crvPts[#], yVal]()"
           }
         },
         "opModLVRTMustTrip": {
           "CurveData[#]": {
-            "xvalue": "transform[DLVT, TrZnSt, PTUV, 'TmVCrv[#]', xVal]()",
-            "yvalue": "transform[DLVT, TrZnSt, PTUV, 'TmVCrv[#]', yVal]()"
+            "xvalue": "transform[DLVT, TrZnSt, PTUV, TmVCrv, crvPts[#], xVal]()",
+            "yvalue": "transform[DLVT, TrZnSt, PTUV, TmVCrv, crvPts[#], yVal]()"
           }
         },
         "opModHVRTMomentaryCessation": {
           "CurveData[#]": {
-            "xvalue": "transform[DHVT, CeaZnSt, PTOV, 'TmVCrv[#]', xVal]()",
-            "yvalue": "transform[DHVT, CeaZnSt, PTOV, 'TmVCrv[#]', yVal]()"
+            "xvalue": "transform[DHVT, CeaZnSt, PTOV, TmVCrv, crvPts[#], xVal]()",
+            "yvalue": "transform[DHVT, CeaZnSt, PTOV, TmVCrv, crvPts[#], yVal]()"
           }
         },
         "opModLVRTMomentaryCessation": {
           "CurveData[#]": {
-            "xvalue": "transform[DLVT, CeaZnSt, PTUV, 'TmVCrv[#]', xVal]()",
-            "yvalue": "transform[DLVT, CeaZnSt, PTUV, 'TmVCrv[#]', yVal]()"
+            "xvalue": "transform[DLVT, CeaZnSt, PTUV, TmVCrv, crvPts[#], xVal]()",
+            "yvalue": "transform[DLVT, CeaZnSt, PTUV, TmVCrv, crvPts[#], yVal]()"
           }
         },
         "opModHFRTMustTrip": {
           "CurveData[#]": {
-            "xvalue": "transform[DHFT, TrZnSt, PTOF, 'StrVal[#]', xVal]()",
-            "yvalue": "transform[DHFT, TrZnSt, PTOF, 'StrVal[#]', yVal]()"
+            "xvalue": "transform[DHFT, TrZnSt, PTOF, TmHzCrv, crvPts[#], xVal]()",
+            "yvalue": "transform[DHFT, TrZnSt, PTOF, TmHzCrv, crvPts[#], yVal]()"
           }
         },
         "opModLFRTMustTrip": {
           "CurveData[#]": {
-            "xvalue": "transform[DLFT, TrZnSt, PTUF, 'StrVal[#]', xVal]()",
-            "yvalue": "transform[DLFT, TrZnSt, PTUF, 'StrVal[#]', yVal]()"
+            "xvalue": "transform[DLFT, TrZnSt, PTUF, TmHzCrv, crvPts[#], xVal]()",
+            "yvalue": "transform[DLFT, TrZnSt, PTUF, TmHzCrv, crvPts[#], yVal]()"
           }
         }
       },

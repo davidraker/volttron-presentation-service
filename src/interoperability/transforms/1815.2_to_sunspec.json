@@ -88,75 +88,97 @@
       },
       "705": {
         "Ena": "transform[BI, 81]()",
-        "VRef": "transform[AI, 29]()",
-        "VRefAutoEna": "transform[BI, 93]()",
-        "VRefAutoTms": "transform[AI, 300]()",
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform(as_list())",
+          "VRef": "transform[AI, 29]()",
+          "VRefAutoEna": "transform[BI, 93]()",
+          "VRefAutoTms": "transform[AI, 300]()",
+          "RspTms": "transform[AI, 298]()",
+          "ActPt": "transform[AI, 330](when_equal('AI.328', 'AI.297'))",
           "Pt[#]": {
-            "V": null,
-            "Var": null
+            "#": "transform[AI](when_equal('AI.328', 'AI.297'), pairs(333, 100, V, Var), take('AI.330'))",
+            "V": "transform[#, V]()",
+            "Var": "transform[#, Var]()"
           }
-        },
-        "RspTms": "transform[AI, 298]()"
+        }
       },
       "706": {
         "Ena": "transform[BI, 77]()",
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform(as_list())",
+          "RspTms": "transform[AI, 251]()",
+          "ActPt": "transform[AI, 330](when_equal('AI.328', 'AI.248'))",
           "Pt[#]": {
-            "V": null,
-            "W": null
+            "#": "transform[AI](when_equal('AI.328', 'AI.248'), pairs(333, 100, V, W), take('AI.330'))",
+            "V": "transform[#, V]()",
+            "W": "transform[#, W]()"
           }
-        },
-        "RspTms": "transform[AI, 251]()"
+        }
       },
       "707": {
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform(as_list())",
           "MustTrip": {
+            "ActPt": "transform[AI, 330](when_equal('AI.328', 'AI.74'))",
             "Pt[#]": {
-              "V": null,
-              "Tms": null
+              "#": "transform[AI](when_equal('AI.328', 'AI.74'), pairs(333, 100, V, Tms), take('AI.330'))",
+              "V": "transform[#, V]()",
+              "Tms": "transform[#, Tms]()"
             }
           },
           "MomCess": {
+            "ActPt": "transform[AI, 330](when_equal('AI.328', 'AI.76'))",
             "Pt[#]": {
-              "V": null,
-              "Tms": null
+              "#": "transform[AI](when_equal('AI.328', 'AI.76'), pairs(333, 100, V, Tms), take('AI.330'))",
+              "V": "transform[#, V]()",
+              "Tms": "transform[#, Tms]()"
             }
           }
         }
       },
       "708": {
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform(as_list())",
           "MustTrip": {
+            "ActPt": "transform[AI, 330](when_equal('AI.328', 'AI.73'))",
             "Pt[#]": {
-              "V": null,
-              "Tms": null
+              "#": "transform[AI](when_equal('AI.328', 'AI.73'), pairs(333, 100, V, Tms), take('AI.330'))",
+              "V": "transform[#, V]()",
+              "Tms": "transform[#, Tms]()"
             }
           },
           "MomCess": {
+            "ActPt": "transform[AI, 330](when_equal('AI.328', 'AI.75'))",
             "Pt[#]": {
-              "V": null,
-              "Tms": null
+              "#": "transform[AI](when_equal('AI.328', 'AI.75'), pairs(333, 100, V, Tms), take('AI.330'))",
+              "V": "transform[#, V]()",
+              "Tms": "transform[#, Tms]()"
             }
           }
         }
       },
       "709": {
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform(as_list())",
           "MustTrip": {
+            "ActPt": "transform[AI, 330](when_equal('AI.328', 'AI.80'))",
             "Pt[#]": {
-              "Hz": null,
-              "Tms": null
+              "#": "transform[AI](when_equal('AI.328', 'AI.80'), pairs(333, 100, Hz, Tms), take('AI.330'))",
+              "Hz": "transform[#, Hz]()",
+              "Tms": "transform[#, Tms]()"
             }
           }
         }
       },
       "710": {
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform(as_list())",
           "MustTrip": {
+            "ActPt": "transform[AI, 330](when_equal('AI.328', 'AI.79'))",
             "Pt[#]": {
-              "Hz": null,
-              "Tms": null
+              "#": "transform[AI](when_equal('AI.328', 'AI.79'), pairs(333, 100, Hz, Tms), take('AI.330'))",
+              "Hz": "transform[#, Hz]()",
+              "Tms": "transform[#, Tms]()"
             }
           }
         }
@@ -173,10 +195,13 @@
       },
       "712": {
         "Ena": "transform[BI, 82]()",
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform(as_list())",
+          "ActPt": "transform[AI, 330](when_equal('AI.328', 'AI.308'))",
           "Pt[#]": {
-            "W": null,
-            "Var": null
+            "#": "transform[AI](when_equal('AI.328', 'AI.308'), pairs(333, 100, W, Var), take('AI.330'))",
+            "W": "transform[#, W]()",
+            "Var": "transform[#, Var]()"
           }
         }
       },
@@ -275,75 +300,97 @@
       },
       "705": {
         "Ena": "transform[BO, 29]()",
-        "VRef": "transform[AO, 0]()",
-        "VRefAutoEna": "transform[BO, 41]()",
-        "VRefAutoTms": "transform[AO, 220]()",
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform(as_list())",
+          "VRef": "transform[AO, 0]()",
+          "VRefAutoEna": "transform[BO, 41]()",
+          "VRefAutoTms": "transform[AO, 220]()",
+          "RspTms": "transform[AO, 218]()",
+          "ActPt": "transform[AO, 246](when_equal('AO.244', 'AO.217'))",
           "Pt[#]": {
-            "V": null,
-            "Var": null
+            "#": "transform[AO](when_equal('AO.244', 'AO.217'), pairs(249, 100, V, Var), take('AO.246'))",
+            "V": "transform[#, V]()",
+            "Var": "transform[#, Var]()"
           }
-        },
-        "RspTms": "transform[AO, 218]()"
+        }
       },
       "706": {
         "Ena": "transform[BO, 25]()",
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform(as_list())",
+          "RspTms": "transform[AO, 175]()",
+          "ActPt": "transform[AO, 246](when_equal('AO.244', 'AO.173'))",
           "Pt[#]": {
-            "V": null,
-            "W": null
+            "#": "transform[AO](when_equal('AO.244', 'AO.173'), pairs(249, 100, V, W), take('AO.246'))",
+            "V": "transform[#, V]()",
+            "W": "transform[#, W]()"
           }
-        },
-        "RspTms": "transform[AO, 175]()"
+        }
       },
       "707": {
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform(as_list())",
           "MustTrip": {
+            "ActPt": "transform[AO, 246](when_equal('AO.244', 'AO.24'))",
             "Pt[#]": {
-              "V": null,
-              "Tms": null
+              "#": "transform[AO](when_equal('AO.244', 'AO.24'), pairs(249, 100, V, Tms), take('AO.246'))",
+              "V": "transform[#, V]()",
+              "Tms": "transform[#, Tms]()"
             }
           },
           "MomCess": {
+            "ActPt": "transform[AO, 246](when_equal('AO.244', 'AO.26'))",
             "Pt[#]": {
-              "V": null,
-              "Tms": null
+              "#": "transform[AO](when_equal('AO.244', 'AO.26'), pairs(249, 100, V, Tms), take('AO.246'))",
+              "V": "transform[#, V]()",
+              "Tms": "transform[#, Tms]()"
             }
           }
         }
       },
       "708": {
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform(as_list())",
           "MustTrip": {
+            "ActPt": "transform[AO, 246](when_equal('AO.244', 'AO.23'))",
             "Pt[#]": {
-              "V": null,
-              "Tms": null
+              "#": "transform[AO](when_equal('AO.244', 'AO.23'), pairs(249, 100, V, Tms), take('AO.246'))",
+              "V": "transform[#, V]()",
+              "Tms": "transform[#, Tms]()"
             }
           },
           "MomCess": {
+            "ActPt": "transform[AO, 246](when_equal('AO.244', 'AO.25'))",
             "Pt[#]": {
-              "V": null,
-              "Tms": null
+              "#": "transform[AO](when_equal('AO.244', 'AO.25'), pairs(249, 100, V, Tms), take('AO.246'))",
+              "V": "transform[#, V]()",
+              "Tms": "transform[#, Tms]()"
             }
           }
         }
       },
       "709": {
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform(as_list())",
           "MustTrip": {
+            "ActPt": "transform[AO, 246](when_equal('AO.244', 'AO.29'))",
             "Pt[#]": {
-              "Hz": null,
-              "Tms": null
+              "#": "transform[AO](when_equal('AO.244', 'AO.29'), pairs(249, 100, Hz, Tms), take('AO.246'))",
+              "Hz": "transform[#, Hz]()",
+              "Tms": "transform[#, Tms]()"
             }
           }
         }
       },
       "710": {
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform(as_list())",
           "MustTrip": {
+            "ActPt": "transform[AO, 246](when_equal('AO.244', 'AO.28'))",
             "Pt[#]": {
-              "Hz": null,
-              "Tms": null
+              "#": "transform[AO](when_equal('AO.244', 'AO.28'), pairs(249, 100, Hz, Tms), take('AO.246'))",
+              "Hz": "transform[#, Hz]()",
+              "Tms": "transform[#, Tms]()"
             }
           }
         }
@@ -360,10 +407,13 @@
       },
       "712": {
         "Ena": "transform[BO, 30]()",
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform(as_list())",
+          "ActPt": "transform[AO, 246](when_equal('AO.244', 'AO.226'))",
           "Pt[#]": {
-            "W": null,
-            "Var": null
+            "#": "transform[AO](when_equal('AO.244', 'AO.226'), pairs(249, 100, W, Var), take('AO.246'))",
+            "W": "transform[#, W]()",
+            "Var": "transform[#, Var]()"
           }
         }
       },

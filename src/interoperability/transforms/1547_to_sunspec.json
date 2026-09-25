@@ -88,51 +88,65 @@
       },
       "705": {
         "Ena": "transform['Volt-VAR', Enable]()",
-        "VRef": "transform['Volt-VAR', Vref]()",
-        "VRefAutoEna": "transform['Volt-VAR', 'Autonomous Vref Adjustment enable']()",
-        "VRefAutoTms": "transform['Volt-VAR', 'Vref Adjustment Time Constant']()",
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform(as_list())",
+          "VRef": "transform['Volt-VAR', Vref]()",
+          "VRefAutoEna": "transform['Volt-VAR', 'Autonomous Vref Adjustment enable']()",
+          "VRefAutoTms": "transform['Volt-VAR', 'Vref Adjustment Time Constant']()",
+          "RspTms": "transform['Volt-VAR', 'Open Loop Response Time']()",
+          "ActPt": "transform['Volt-VAR', 'V/Q Curve Points'](count())",
           "Pt": "transform['Volt-VAR', 'V/Q Curve Points']()"
-        },
-        "RspTms": "transform['Volt-VAR', 'Open Loop Response Time']()"
+        }
       },
       "706": {
         "Ena": "transform['Volt-Watt', Enable]()",
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform(as_list())",
+          "RspTms": "transform['Volt-Watt', 'Open Loop Response Time']()",
+          "ActPt": "transform['Volt-Watt', 'V/P Curve Points'](count())",
           "Pt": "transform['Volt-Watt', 'V/P Curve Points']()"
-        },
-        "RspTms": "transform['Volt-Watt', 'Open Loop Response Time']()"
+        }
       },
       "707": {
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform(as_list())",
           "MustTrip": {
+            "ActPt": "transform['Voltage Trip', 'LV Trip Curve Points'](count())",
             "Pt": "transform['Voltage Trip', 'LV Trip Curve Points']()"
           },
           "MomCess": {
+            "ActPt": "transform['Momentary Cessation', 'LV Cessation Curve Points'](count())",
             "Pt": "transform['Momentary Cessation', 'LV Cessation Curve Points']()"
           }
         }
       },
       "708": {
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform(as_list())",
           "MustTrip": {
+            "ActPt": "transform['Voltage Trip', 'HV Trip Curve Points'](count())",
             "Pt": "transform['Voltage Trip', 'HV Trip Curve Points']()"
           },
           "MomCess": {
+            "ActPt": "transform['Momentary Cessation', 'HV Cessation Curve Points'](count())",
             "Pt": "transform['Momentary Cessation', 'HV Cessation Curve Points']()"
           }
         }
       },
       "709": {
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform(as_list())",
           "MustTrip": {
+            "ActPt": "transform['Frequency Trip', 'LF Trip Curve Points'](count())",
             "Pt": "transform['Frequency Trip', 'LF Trip Curve Points']()"
           }
         }
       },
       "710": {
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform(as_list())",
           "MustTrip": {
+            "ActPt": "transform['Frequency Trip', 'HF Trip Curve Points'](count())",
             "Pt": "transform['Frequency Trip', 'HF Trip Curve Points']()"
           }
         }
@@ -149,7 +163,9 @@
       },
       "712": {
         "Ena": "transform['Watt-VAR', Enable]()",
-        "Crv": {
+        "Crv[#]": {
+          "#": "transform(as_list())",
+          "ActPt": "transform['Watt-VAR', 'P/Q Curve Points'](count())",
           "Pt": "transform['Watt-VAR', 'P/Q Curve Points']()"
         }
       },
