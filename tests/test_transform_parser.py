@@ -141,7 +141,7 @@ def test_registry_finds_direct_chains_between_bundled_formats():
 
 
 def test_registry_finds_multi_hop_chain():
-    registry = TransformRegistry()
+    registry = TransformRegistry(hubs={'a', 'b', 'c'})
     registry.update_registry([
         {'input_format': 'a', 'output_format': 'b', 'pattern': {'y': 'transform[x]()'}},
         {'input_format': 'b', 'output_format': 'c', 'pattern': {'z': 'transform[y]()'}},
@@ -179,17 +179,18 @@ def test_registry_keeps_existing_transform_unless_told_to_update(caplog):
 
 
 def test_update_registry_replaces_earlier_configuration_but_reports_duplicates_within_one(caplog):
-    registry = TransformRegistry()
-    assert registry.update_registry([{'input_format': 'a', 'output_format': 'b', 'pattern': {'v': 1}}]) == 1
+    registry = TransformRegistry(hubs={'a', 'b', 'c'})
+    v1, v2, v3, v4 = ({'v': f'transform[{src}]()'} for src in 'wxyz')
+    assert registry.update_registry([{'input_format': 'a', 'output_format': 'b', 'pattern': v1}]) == 1
     with caplog.at_level(logging.WARNING, logger='interoperability.transform_registry'):
         changed = registry.update_registry([
-            {'input_format': 'a', 'output_format': 'b', 'pattern': {'v': 2}},   # reload: replaces v=1
-            {'input_format': 'a', 'output_format': 'b', 'pattern': {'v': 3}},   # duplicate within the config
-            {'input_format': 'b', 'output_format': 'c', 'pattern': {'v': 4}},
+            {'input_format': 'a', 'output_format': 'b', 'pattern': v2},   # reload: replaces v1
+            {'input_format': 'a', 'output_format': 'b', 'pattern': v3},   # duplicate within the config
+            {'input_format': 'b', 'output_format': 'c', 'pattern': v4},
         ])
     assert changed == 2
     assert 'defined more than once' in caplog.text
-    assert registry.lookup('a', 'c') == [{'v': 2}, {'v': 4}]
+    assert registry.lookup('a', 'c') == [v2, v4]
 
 
 def test_agent_loads_bundled_definitions(tmp_path):

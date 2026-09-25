@@ -30,6 +30,47 @@ def scope():
     return c.label(scope_label.get())
 
 
+# ---- Fidelity: how much of a value's information survives each function (1.0 exact, 0.0 gone) ----
+# Used by the transform registry to weight edges and rank paths. Functions that define an ``inverse``
+# and are not listed here count as exact; anything else not listed counts as DEFAULT_LOSSY.
+FIDELITY = {
+    'scale_int': 0.9,      # truncates
+    'cast_value': 0.9,     # may truncate or coerce
+    'take': 0.9,           # drops trailing elements
+    'mean': 0.5,           # several fields collapse into one
+    'count': 0.3,          # only the length survives
+    'when': 0.7,           # present for some messages only
+    'when_equal': 0.7,
+    'const': 0.0,          # the source value itself is not carried
+    'pairs': 1.0, 'unpairs': 1.0, 'as_list': 1.0, 'no_op': 1.0,
+    'scale': 1.0, 'scale_reg': 1.0, 'scale_reg_pow_10': 1.0, 'scale_decimal_int_signed': 1.0,
+    'mod10k': 1.0, 'mod10k64': 1.0, 'mod10k48': 1.0, 'multiple': 1.0, 'add': 1.0,
+}
+DEFAULT_LOSSY = 0.9
+
+
+def fidelity_of(conv, name: str) -> float:
+    """Fidelity of one function conversion built by ``name``."""
+    explicit = getattr(conv, 'fidelity', None)
+    if explicit is not None:
+        return float(explicit)
+    if name in FIDELITY:
+        return FIDELITY[name]
+    return 1.0 if hasattr(conv, 'inverse') else DEFAULT_LOSSY
+
+
+def approx(fidelity: float | int | str):
+    """
+        Annotation for an approximate mapping: copies the value unchanged at runtime but records that only
+         ``fidelity`` (0 to 1) of its meaning carries over, e.g. ``transform[DCTE, RtnSrvDlyTim](approx(0.5))``
+         where a delay register stands in for a random delay. The registry uses it when weighting paths.
+    """
+    conv = c.this.pipe(c.this)
+    conv.fidelity = float(fidelity)
+    conv.inverse = c.this.pipe(c.this)
+    return conv
+
+
 def _resolve_path(value, path: str):
     """Follow a dotted path through dicts and lists; digits index lists. Returns None if absent."""
     for segment in path.split('.'):

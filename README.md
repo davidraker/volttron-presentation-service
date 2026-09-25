@@ -78,8 +78,8 @@ returned and a warning is logged.
 ## Configuration
 
 The service reads a single `config` entry from the VOLTTRON configuration store with two
-top-level lists, `mappings` and `transforms`. `sample_config.json` in this directory shows
-the shape:
+top-level lists, `mappings` and `transforms`, and an optional `formats` object.
+`sample_config.json` in this directory shows the shape:
 
 ```json
 {
@@ -104,6 +104,9 @@ the shape:
       }
     }
   ],
+  "formats": {
+    "acme_inverter": { "hub": false, "fields": ["W", "V.PhaseA", "V.PhaseB", "V.PhaseC"] }
+  },
   "transforms": [
     {
       "input_format": "sunspec",
@@ -135,6 +138,14 @@ Each entry in `transforms`:
 | `input_format`  | yes      | string | Format name of the incoming message.                                 |
 | `output_format` | yes      | string | Format name of the produced message.                                 |
 | `pattern`       | yes      | object | Output field name to transform expression (see the next section).    |
+| `lossiness`     | no       | number | Overrides the measured loss of this transform, 0 (lossless) to 1, for example from an empirical round trip. |
+
+Each entry in `formats` is keyed by format name:
+
+| Key      | Type            | Description                                                                                   |
+|----------|-----------------|-----------------------------------------------------------------------------------------------|
+| `hub`    | boolean         | Whether transform chains may pass through this format. The bundled standard formats are hubs; anything else, such as a device's own point list, is a leaf by default and only ever starts or ends a chain. |
+| `fields` | list of strings | The fields the format can carry, as dotted paths with `*` for repeating groups. Used to measure how much of the format a transform covers when no model package describes it (a platform driver's registry configuration is a natural source). |
 
 Mappings can also be added at runtime by publishing a list of mapping objects to the
 `mapper/update` pubsub topic. Transforms can be added at runtime with the
@@ -340,6 +351,29 @@ At startup the agent loads every JSON file directly inside `transforms/` and `ma
 as configuration defaults. Subdirectories are ignored. Anything supplied through the
 configuration store is applied on top of these defaults.
 
+## Choosing between chains
+
+When more than one chain of transforms connects two formats, the registry picks the one that
+preserves the most meaning, not the shortest. Each registered pattern is analysed, without
+running it, into a field map: which source fields reach which target fields, and with what
+fidelity. Fidelity is 1 for a plain copy or an invertible function, and lower for functions
+that lose information (`scale_int` and `take` 0.9, guards such as `when_equal` 0.7, `mean`
+0.5, `count` 0.3, `const` 0). An author can mark an approximate mapping with `approx(f)`,
+which copies the value unchanged but records that only a fraction `f` of its meaning carries
+over. Field maps compose along a chain, so a field dropped at the first hop cannot reappear
+later.
+
+A lookup enumerates every chain of up to four hops whose intermediate formats are hubs,
+scores each on the same set of source fields (the fields a resource publishes if the caller
+supplies them, otherwise every source field any candidate's first step reads), and keeps the
+chain with the highest retention; ties go to fewer hops. Leaf formats never appear in the
+middle of a chain, so adding hundreds of device formats adds no candidate chains between the
+standards. Each edge also carries a weight, `-ln(retention) + 0.01`, measured against the
+format's full field universe (from the model packages for SunSpec and IEEE 1815.2, from the
+`formats` configuration, or failing both from the fields the registered transforms mention).
+That number is informational, available through `score_transform`, and small in absolute
+terms for broad formats like SunSpec, whose universe spans every published model.
+
 ## Agent interface
 
 RPC methods exported by the service:
@@ -348,7 +382,8 @@ RPC methods exported by the service:
 |-----------------------------------------------------|--------------------------|---------------------------------------------------------------------------------------------------------------|
 | `resolve(uai, as_format=None, strict=False)`        | dict                     | Resolve a UAI to its canonical resource. When `as_format` is given, the result also includes `target_format` and `transform`, the ordered list of transform patterns from the resource's `data_format` to `as_format` (empty when they are the same format). Returns `{}` if nothing canonical is found, and fails with a `TransformNotFoundError` if the resource cannot be converted to `as_format`. |
 | `lookup_transform(input_format, output_format)`     | list of pattern dicts    | The transform chain between two formats. An empty list means no transform is needed (same format). When no chain exists the call fails with a `TransformNotFoundError` saying whether a format is unknown or the formats are simply not connected. |
-| `register_transform(input_format, output_format, pattern, update=False)` | bool | Add a transform edge at runtime. If the pair already has a different transform it is kept, with a warning, unless `update` is true. Registering the same pattern again is a no-op. Returns whether the registry changed. |
+| `register_transform(input_format, output_format, pattern, update=False, lossiness=None)` | bool | Add a transform edge at runtime. If the pair already has a different transform it is kept, with a warning, unless `update` is true. Registering the same pattern again is a no-op. Malformed patterns are rejected here. Returns whether the registry changed. |
+| `score_transform(input_format, output_format, fields=None)` | dict | The chain `lookup_transform` would choose, as `path` (the formats passed through) and `retention`, the fraction of source fields that reach the end, scored over `fields` if given. |
 
 Pubsub subscriptions:
 
@@ -457,8 +492,10 @@ reads the bundled files, and instantiates every OpenFMB, SunSpec, IEEE 1815.2 an
 
 This is an early-stage service. Things to be aware of:
 
-* **Transform weighting.** All transform edges have weight 0, so path selection is by hop
-  count only. Weighting by lossiness is a planned improvement.
+* **Transform weighting** is measured from the patterns alone (see "Choosing between chains"
+  above). It does not know when a mapping is semantically approximate unless the author marks
+  it with `approx()`, and there is no empirical round-trip check yet; the `lossiness` override
+  exists so one can be applied when it is written.
 * There are no agent-level tests; the service's RPC and pubsub behavior is untested.
 
 ## License

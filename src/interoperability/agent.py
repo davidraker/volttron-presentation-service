@@ -59,6 +59,9 @@ class PresentationService(Agent):
 
     def configure_main(self, _, __, contents):
         self.mapping_engine.ingest_mappings(contents.get('mappings', []))
+        # Optional per-format declarations: {"acme_inverter": {"hub": false, "fields": ["W", "V.PhaseA", ...]}}
+        for name, spec in (contents.get('formats') or {}).items():
+            self.transform_registry.declare_format(name, hub=spec.get('hub'), fields=spec.get('fields'))
         self.transform_registry.update_registry(contents.get('transforms', []))
 
     @RPC.export
@@ -68,11 +71,20 @@ class PresentationService(Agent):
         return self.transform_registry.lookup(input_format, output_format)
 
     @RPC.export
+    def score_transform(self, input_format: str, output_format: str, fields: list | None = None) -> dict:
+        """How well the best chain between two formats preserves the source: the formats it passes through and
+        the fraction of source fields (``fields`` if given, else all the chain could read) that reach the end."""
+        _, retention, path = self.transform_registry.lookup_scored(input_format, output_format, fields)
+        return {'path': path, 'retention': retention}
+
+    @RPC.export
     def register_transform(self, input_format: str, output_format: str, pattern: dict | list,
-                           update: bool = False) -> bool:
+                           update: bool = False, lossiness: float | None = None) -> bool:
         """Add a transform edge at runtime. An existing, different transform for the pair is kept (with a
-        warning) unless ``update`` is true. Returns whether the registry changed."""
-        return self.transform_registry.register(input_format, output_format, pattern, update=update)
+        warning) unless ``update`` is true. ``lossiness`` (0 to 1) overrides the measured retention.
+        Returns whether the registry changed."""
+        return self.transform_registry.register(input_format, output_format, pattern, update=update,
+                                                lossiness=lossiness)
 
     @PubSub.subscribe('pubsub', 'mapper/update')
     def ingest_mappings(self, _, __, ___, ____, _____, message):
@@ -91,7 +103,9 @@ class PresentationService(Agent):
                 # Add the target data format & transform definition to the response. An empty chain means the
                 # resource is already in that format; a missing chain raises TransformNotFoundError to the caller.
                 resource_dict['target_format'] = as_format
-                resource_dict['transform'] = self.transform_registry.lookup(resource_dict['data_format'], as_format)
+                chain, retention, path = self.transform_registry.lookup_scored(resource_dict['data_format'], as_format)
+                resource_dict['transform'] = chain
+                _log.info(f'Transform {" -> ".join(path)} retains {retention:.0%} of the source fields.')
             _log.info(f'Returning canonical node: {node}, with transform {resource_dict["data_format"]} -> {as_format}')
             return resource_dict
         else:

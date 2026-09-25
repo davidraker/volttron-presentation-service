@@ -257,6 +257,127 @@ def drop_missing(value):
     return value
 
 
+WILDCARD = '*'
+
+
+def _normalize_path(segments) -> tuple[str, ...]:
+    """Paths as compared by field maps: string segments, iteration markers as wildcards."""
+    return tuple(WILDCARD if seg is EACH else str(seg) for seg in segments)
+
+
+def path_matches(a: tuple, b: tuple) -> bool:
+    """Whether two normalized paths denote the same field; a wildcard or list index on either side matches
+    any segment in the other (``705.Crv.0.Pt.*.V`` is a field of ``705.Crv.*.Pt.*.V``)."""
+    if len(a) != len(b):
+        return False
+    for x, y in zip(a, b):
+        if x == y or x == WILDCARD or y == WILDCARD:
+            continue
+        if (x.isdigit() and y == WILDCARD) or (y.isdigit() and x == WILDCARD):
+            continue
+        return False
+    return True
+
+
+class FieldMapping:
+    """One source field carried to one target field with a fidelity between 0 (lost) and 1 (exact)."""
+    __slots__ = ('source', 'target', 'fidelity', 'functions')
+
+    def __init__(self, source: tuple, target: tuple, fidelity: float, functions: tuple = ()):
+        self.source, self.target, self.fidelity, self.functions = source, target, fidelity, functions
+
+    def __repr__(self):
+        return f'FieldMapping({".".join(self.source)} -> {".".join(self.target)} @ {self.fidelity:.2f})'
+
+
+def _wild_positions(path: tuple) -> frozenset:
+    return frozenset(i for i, seg in enumerate(path) if seg == WILDCARD)
+
+
+def _blank(path: tuple, positions: frozenset) -> tuple:
+    return tuple(WILDCARD if i in positions else seg for i, seg in enumerate(path))
+
+
+class _PathIndex:
+    """Mappings indexed so that matching a path against thousands of candidates compares only the few
+    that can match.
+
+    Two paths match when every segment is equal or one side has a wildcard (list indices count as
+    wildcards, see :func:`path_matches`). Mappings are grouped by length and wildcard positions; for a
+    query, each group is probed with the query blanked at the group's wildcard positions and its own,
+    through a dict built lazily per blanking pattern.
+    """
+
+    def __init__(self, mappings, key):
+        self._groups: dict[tuple, list] = {}          # (length, wildcard positions) -> mappings
+        self._key = key
+        self._lookups: dict[tuple, dict] = {}         # (length, positions, blank set) -> blanked path -> mappings
+        for m in mappings:
+            path = key(m)
+            self._groups.setdefault((len(path), _wild_positions(path)), []).append(m)
+
+    def _table(self, group: tuple, blank: frozenset) -> dict:
+        table = self._lookups.get((group, blank))
+        if table is None:
+            table = {}
+            for m in self._groups[group]:
+                table.setdefault(_blank(self._key(m), blank), []).append(m)
+            self._lookups[(group, blank)] = table
+        return table
+
+    def candidates(self, path: tuple):
+        query_wild = _wild_positions(path)
+        for group in self._groups:
+            if group[0] != len(path):
+                continue
+            blank = group[1] | query_wild
+            yield from self._table(group, blank).get(_blank(path, blank), ())
+
+
+class FieldMap:
+    """What a transform carries: its field mappings and the target fields it declares but cannot fill.
+
+    Built by :meth:`TransformParser.field_map`. Maps compose along a chain of transforms, which is how
+    the registry scores candidate paths without running them.
+    """
+
+    def __init__(self, mappings: list[FieldMapping], nulls: list[tuple]):
+        self.mappings = mappings
+        self.nulls = nulls
+        self._by_source = _PathIndex(mappings, lambda m: m.source)
+
+    def sources(self) -> set[tuple]:
+        return {m.source for m in self.mappings}
+
+    def targets(self) -> set[tuple]:
+        return {m.target for m in self.mappings}
+
+    def compose(self, following: 'FieldMap') -> 'FieldMap':
+        """The map of this transform followed by ``following``: fields survive only if the second transform
+        picks up the field the first produced, and fidelities multiply."""
+        composed = []
+        for m in self.mappings:
+            for n in following._by_source.candidates(m.target):
+                if path_matches(m.target, n.source):
+                    composed.append(FieldMapping(m.source, n.target, m.fidelity * n.fidelity, m.functions + n.functions))
+        return FieldMap(composed, list(following.nulls))
+
+    def retention(self, fields: set[tuple] | None = None) -> float:
+        """Fraction of ``fields`` (default: this map's own sources) that reach a target, weighted by the best
+        fidelity each achieves."""
+        universe = self.sources() if fields is None else set(fields)
+        if not universe:
+            return 1.0
+        total = 0.0
+        for field in universe:
+            total += max((m.fidelity for m in self._by_source.candidates(field) if path_matches(m.source, field)),
+                         default=0.0)
+        return total / len(universe)
+
+    def __repr__(self):
+        return f'FieldMap({len(self.mappings)} mappings, {len(self.nulls)} nulls)'
+
+
 class TransformParser:
     def __init__(self):
         self.function_call = self.setup_function_call()
@@ -312,7 +433,10 @@ class TransformParser:
             # TODO: Probably also need a function to look up things like scale registers from outside the
             #  input (e.g., from the driver data model.) Library functions can already reach the enclosing
             #  element through transforms.scope().
-            return getattr(transforms, name)(*args)
+            conv = getattr(transforms, name)(*args)
+            if conv is not None:
+                conv.transform_call = (name, tuple(args))    # for field_map() fidelity accounting
+            return conv
         return handle_function_call
 
     # ---- Phase 1: parse the pattern into a tree of dicts, _Expr and _Repeat nodes ----
@@ -423,37 +547,50 @@ class TransformParser:
         source = c.call_func(_lookup, base, suffix) if suffix else base
         return self._apply_functions(source, expr.convs)
 
-    def _build_repeat(self, node: _Repeat, depth: int):
-        level = depth + 1
+    @staticmethod
+    def _repeat_source(node: _Repeat, level: int) -> tuple[str, tuple | None]:
+        """How a repeated group finds its list, validating the definition.
+
+        Returns ``('explicit', None)`` when the "#" entry names the list, ``('named', prefix)`` when the
+        sibling paths name it (a "#" entry may add functions), or ``('element', None)`` when a "#" entry
+        with functions only turns the enclosing element into the list.
+        """
         where = _dotted(node.where)
         prefixes = {prefix for prefix in (e.prefix_at(level) for e in _collect_expressions(node.child))
                     if prefix is not None}
         named = prefixes - {()}
         if node.source is not None and node.source.segments:
-            # Explicit source path; sibling paths must start at the element ("#").
             if named:
                 raise ValueError(f'{where}: the group has an explicit "{SOURCE_KEY}" source, so paths inside it '
                                  f'must start with "{SOURCE_KEY}" instead of naming the list; got {sorted(named)}.')
-            source = self._build_expression(node.source, depth)
-        elif named:
-            # The list is named in the sibling paths ("Name[#]"); a "#" entry may add functions.
+            return 'explicit', None
+        if named:
             if len(named) > 1:
                 raise ValueError(f'{where}: expressions disagree about the list to iterate: {sorted(named)}.')
             if () in prefixes:
                 raise ValueError(f'{where}: some paths start with "{SOURCE_KEY}" while others name the list '
                                  f'{sorted(named)}.')
             (prefix,) = named
+            return 'named', prefix
+        if node.source is not None:
+            return 'element', None
+        if prefixes:
+            raise ValueError(f'{where}: paths start with "{SOURCE_KEY}" but the group has no "{SOURCE_KEY}" entry.')
+        raise ValueError(f'{where}: repeated group has no source list. Mark the list in a path '
+                         f'("Name{REPEAT_SUFFIX}") or add a "{SOURCE_KEY}" entry.')
+
+    def _build_repeat(self, node: _Repeat, depth: int):
+        level = depth + 1
+        kind, prefix = self._repeat_source(node, level)
+        if kind == 'explicit':
+            source = self._build_expression(node.source, depth)
+        elif kind == 'named':
             source = c.call_func(_lookup, c.this, prefix)
             if node.source is not None:
                 source = self._apply_functions(source, node.source.convs)
-        elif node.source is not None:
+        else:
             # "#" with functions only and no named list: the enclosing element itself is the source.
             source = self._apply_functions(c.this, node.source.convs)
-        elif prefixes:
-            raise ValueError(f'{where}: paths start with "{SOURCE_KEY}" but the group has no "{SOURCE_KEY}" entry.')
-        else:
-            raise ValueError(f'{where}: repeated group has no source list. Mark the list in a path '
-                             f'("Name{REPEAT_SUFFIX}") or add a "{SOURCE_KEY}" entry.')
         element = c.this.pipe(self._build(node.child, level), label_input=_level_label(level))
         return source.pipe(c.if_(c.call_func(_is_populated_list, c.this),
                                  c.this.iter(element).as_type(list),
@@ -472,6 +609,96 @@ class TransformParser:
         if isinstance(node, _Expr):
             return self._build_expression(node, depth)
         return c.naive(node)   # An unknown function parsed to None.
+
+    # ---- Field maps: what a transform carries, without executing it ----
+
+    @staticmethod
+    def _expression_fidelity(expr: _Expr) -> tuple[float, tuple]:
+        fidelity, names = 1.0, []
+        for conv in expr.convs:
+            name = getattr(conv, 'transform_call', ('?',))[0]
+            names.append(name)
+            fidelity *= transforms.fidelity_of(conv, name)
+        return fidelity, tuple(names)
+
+    def _expression_source(self, expr: _Expr, element_paths: list[tuple]) -> tuple:
+        """Full normalized source path of an expression given the source paths of the enclosing elements."""
+        if expr.markers > len(element_paths) - 1:
+            raise ValueError(f'{_dotted(expr.where)}: the path {expr.segments} uses an iteration marker '
+                             f'outside of a repeated group ("name{REPEAT_SUFFIX}").')
+        if expr.markers and expr.parts[0] == ():
+            # Anchored at an element: the enclosing element's path plus the remaining parts, with a wildcard
+            # for each further iteration.
+            path = element_paths[expr.first_level]
+            for part in expr.parts[1:-1]:
+                path = path + _normalize_path(part) + (WILDCARD,)
+            return path + _normalize_path(expr.parts[-1])
+        return _normalize_path(expr.segments)
+
+    def _map_node(self, node, target: tuple, element_paths: list[tuple], group_fidelity: float,
+                  mappings: list, nulls: list):
+        if isinstance(node, dict):
+            for key, child in node.items():
+                if isinstance(key, str) and key.startswith(SPREAD_PREFIX):
+                    self._map_node(child, target + (WILDCARD,), element_paths, group_fidelity, mappings, nulls)
+                else:
+                    self._map_node(child, target + (str(key),), element_paths, group_fidelity, mappings, nulls)
+        elif isinstance(node, _Concat):
+            for repeat in node.repeats:
+                self._map_node(repeat, target, element_paths, group_fidelity, mappings, nulls)
+        elif isinstance(node, _Repeat):
+            level = len(element_paths)
+            fidelity = group_fidelity
+            kind, prefix = self._repeat_source(node, level)
+            if kind == 'explicit':
+                list_path = self._expression_source(node.source, element_paths)
+            elif kind == 'named':
+                list_path = element_paths[-1] + _normalize_path(prefix)
+            else:
+                list_path = element_paths[-1]
+            if node.source is not None:
+                source_fidelity, names = self._expression_fidelity(node.source)
+                fidelity *= source_fidelity
+                wraps = 'as_list' in names
+            else:
+                wraps = False
+            element = list_path if wraps else list_path + (WILDCARD,)
+            self._map_node(node.child, target + (WILDCARD,), element_paths + [element], fidelity, mappings, nulls)
+        elif isinstance(node, _Expr):
+            fidelity, names = self._expression_fidelity(node)
+            source = self._expression_source(node, element_paths)
+            mappings.append(FieldMapping(source, target, fidelity * group_fidelity, names))
+        elif node is None:
+            pass
+
+    @staticmethod
+    def _collect_nulls(pattern: dict, path: tuple, nulls: list) -> None:
+        """Record the normalized target paths of null (unmapped) fields, recursing into groups."""
+        for k, v in pattern.items():
+            if k == SOURCE_KEY:
+                continue
+            repeated = isinstance(k, str) and _REPEAT_KEY.match(k)
+            name = repeated.group('name') if repeated else str(k)
+            key_path = path + (name,) + ((WILDCARD,) if repeated else ())
+            if v is None:
+                nulls.append(key_path)
+            elif isinstance(v, dict):
+                TransformParser._collect_nulls(v, key_path, nulls)
+
+    def field_map(self, schemas) -> FieldMap:
+        """Analyse a pattern (or chain of patterns) without executing it: which source fields reach which
+        target fields, at what fidelity, and which target fields are declared but unmapped (``null``)."""
+        schemas = schemas if isinstance(schemas, list) else [schemas]
+        result = None
+        for schema in schemas:
+            nulls: list[tuple] = []
+            self._collect_nulls(schema, (), nulls)
+            parsed = self._parse_pattern(schema)
+            mappings: list[FieldMapping] = []
+            self._map_node(parsed, (), [()], 1.0, mappings, nulls)
+            stage = FieldMap(mappings, nulls)
+            result = stage if result is None else result.compose(stage)
+        return result if result is not None else FieldMap([], [])
 
     def build_transform_from_schema(self, schemas):
         _log.debug(f'Building transform from schema: {schemas}')
