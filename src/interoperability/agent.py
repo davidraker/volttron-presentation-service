@@ -33,7 +33,11 @@ class PresentationService(Agent):
         known_transforms = self._load_bundled_definitions(package_root.joinpath('transforms'))
         known_mappings = self._load_bundled_definitions(package_root.joinpath('mappings'))
 
-        self.vip.config.set_default({'mappings': known_mappings, 'transforms': known_transforms})
+        # Both the fastlib compatibility layer and upstream VOLTTRON key their
+        # config store by name and match a subscription pattern against that
+        # same name with fnmatch, so the default must be stored under the
+        # name subscribed to below.
+        self.vip.config.set_default('config', {'mappings': known_mappings, 'transforms': known_transforms})
         self.mapping_engine = UAITree()
         self.transform_registry = TransformRegistry()
 
