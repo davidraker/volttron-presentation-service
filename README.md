@@ -303,10 +303,12 @@ The format names they use are:
 | `1815.2.outputs`  | IEEE 1815.2 output points, grouped as `AO` and `BO`, plus an optional `sequence` of point batches (see below) |
 | `2030.5`          | IEEE 2030.5 resources keyed by resource then attribute (`DERCapability.rtgMaxW`); see below |
 | `1547`            | IEEE 1547.1 function group and parameter names (`Nameplate` / `Active Power (unity)`) |
+| `openfmb.ess`, `openfmb.solar` | OpenFMB v2.2 profiles for a storage or a solar device, in the protobuf JSON form adapters publish (`essReading.readingMMXU.W.net.cVal.mag`); see below |
 
-Every pairing of these formats ships as its own file, named `<input>_to_<output>.json`;
+Every pairing of the first six formats ships as its own file, named `<input>_to_<output>.json`;
 the 1815.2 files hold two definitions each, one for `1815.2.inputs` and one for
-`1815.2.outputs`. The IEEE 2030.5 and IEEE 1547 files, and the direct SunSpec to 1815.2
+`1815.2.outputs`. The OpenFMB formats map to and from `61850` only (`openfmb_to_61850.json`,
+`61850_to_openfmb.json`, two definitions each) and reach every other protocol through that hub. The IEEE 2030.5 and IEEE 1547 files, and the direct SunSpec to 1815.2
 files, were derived from a single cross-reference table so the two directions of each pair
 stay consistent.
 
@@ -320,6 +322,28 @@ Conventions the 2030.5, 1547 and SunSpec to 1815.2 files rely on, beyond those o
   under `MirrorMeterReading` keyed by the ReadingType unit name (`W`, `var`, `Hz`, and `V`
   sub-keyed by `PhaseA`, `PhaseB`, `PhaseC`, `PhaseAB`, `PhaseBC`, `PhaseCA`). Multiplier
   sub-elements of 2030.5 quantities are not applied, just as SunSpec scale factors are not.
+* `openfmb.ess` and `openfmb.solar` messages are single profiles as an OpenFMB adapter publishes
+  them, so a message holds whichever of `essReading`, `essStatus`, `essControl`, `essCapability`
+  (or the `solar` equivalents) that profile carries, and one transform covers all of them. Readings
+  go to `DECP.MMXU`, ratings to `DGEN`, `DSTO` and `DECP.VRef`, nameplate to `LPHD.PhyNam`, status to
+  `DSTO`, `DGEN` and `CALH`. Control profiles are schedules (`...ScheduleFSCH.ValDCSG.crvPts`) and map
+  entry by entry onto `FSCH.SchdEntr`; in the reverse direction the 61850 top-level control nodes
+  become one schedule point without a start time, followed by the `FSCH.SchdEntr` entries with
+  theirs. Two formats exist because ESS and solar profiles hold the same data under different keys
+  and a 61850 message must become one kind of profile. The generated profiles lack the message
+  header (`mRID`, `messageTimeStamp`), which the publishing side must add. The definitions are
+  produced by `detritus/scripts/build_openfmb_transforms.py`, which reads the leaf shapes from the
+  generated OpenFMB classes.
+* Schedules carry every planned control, not a decision about which one is current. In `2030.5`
+  a scheduled control is an entry of `DERControlList`, a list whose entries each hold an
+  `interval` (`start`, `duration` in seconds) plus the same `DERControl` and `DERCurve` groups
+  used at the top level for the immediate settings. In `61850` the equivalent is
+  `FSCH.SchdEntr`, a list whose entries hold `StrTm` (start, seconds), `SchdIntv` (duration,
+  seconds) and the same control and curve logical nodes (`DVVR`, `DHFW`, `DFPF`, ...) used at
+  the top level; the naming follows the IEC 61850 FSCH schedule node. The two lists map onto
+  each other entry by entry. SunSpec and IEEE 1815.2 have no place for scheduled settings, so
+  schedules do not cross into them and the field map reports the loss. Choosing the entry in
+  force belongs to the consumer of the message, not to the transform.
 * `1547` messages are grouped by the function group of the 1547.1 mapping tables
   (`Nameplate`, `Configuration`, `Monitoring`, `Constant PF`, `Volt-VAR`, `Watt-VAR`,
   `Constant VAR`, `Volt-Watt`, `Voltage Trip`, `Momentary Cessation`, `Frequency Trip`,
@@ -368,7 +392,8 @@ scores each on the same set of source fields (the fields a resource publishes if
 supplies them, otherwise every source field any candidate's first step reads), and keeps the
 chain with the highest retention; ties go to fewer hops. Leaf formats never appear in the
 middle of a chain, so adding hundreds of device formats adds no candidate chains between the
-standards. Each edge also carries a weight, `-ln(retention) + 0.01`, measured against the
+standards. The hubs by default are the bundled standard formats, including the two OpenFMB
+formats. Each edge also carries a weight, `-ln(retention) + 0.01`, measured against the
 format's full field universe (from the model packages for SunSpec and IEEE 1815.2, from the
 `formats` configuration, or failing both from the fields the registered transforms mention).
 That number is informational, available through `score_transform`, and small in absolute
@@ -429,7 +454,7 @@ interoperability_service/
     transform_registry.py         networkx graph of transforms between formats
     transforms/                   Bundled transform JSON files and the transform function library
     mappings/                     Bundled default mappings (currently none)
-    models/openfmb/               Hand-organised OpenFMB pydantic models by module, plus profile builders and sample generators
+    models/openfmb/               OpenFMB pydantic models generated from the protobuf PSM, plus profile builders and sample generator
     models/sunspec/               Generated SunSpec Modbus models (one module per model id), SunSpecDevice container, builders
     models/ieee1815_2/            Generated IEEE 1815.2 (MESA-DER) point enums, function-group profiles, PointDatabase, builders
     models/ieee2030_5/            Generated IEEE 2030.5 schema types, enums and builders
@@ -447,14 +472,19 @@ directly.
 
 ### OpenFMB models
 
-`models/openfmb/` contains pydantic models for each OpenFMB module (breaker, cap bank,
-ESS, EVSE, generation, interconnection, load, meter, recloser, regulator, reserve,
-resource, solar, switch, and common types). `profile_builders.py` provides keyword-only
-constructors for full profiles. The package is self-contained (it is a copy of the
-regenerated information model from the sibling `openfmb` project and uses relative
-imports). `generate_samples.py` produces example solar reading and status profiles as JSON. These
-models are groundwork for an `openfmb` data format and are not yet wired into the
-transform registry.
+`models/openfmb/` is generated by its `generate_models.py` from the OpenFMB protobuf PSM
+(v2.2, the `psm-protobuf-python` bindings kept at `openfmb/psm-protobuf-python` in this
+workspace), which is the authority for message shapes. There is one package per OpenFMB module
+(`ess_module`, `solar_module`, `common_module`, ...) holding a pydantic class per protobuf
+message and an `Enum` per enumeration; `PROFILES` maps the 67 profile names to their classes.
+The classes follow protobuf's JSON mapping, which is what OpenFMB adapters publish: field names
+as in the `.proto` files (`essReading.readingMMXU.W.net.cVal.mag`), enumerations by name,
+wrapper types collapsed to scalars, 64 bit integers accepted as strings or numbers. Unknown
+fields are rejected, so a message of the wrong shape fails validation rather than silently
+matching nothing. Regeneration needs `protobuf>=6.31` on the path; the generated package needs
+only pydantic. `profile_builders.py` offers hand-written constructors for the DER profiles and
+`generate_samples.py` writes example messages to `solar_json_output/`. The `openfmb` field
+universe used by the transform registry is derived from these classes.
 
 ### SunSpec, IEEE 1815.2 and IEEE 2030.5 models
 

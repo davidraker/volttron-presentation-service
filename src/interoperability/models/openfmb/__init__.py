@@ -1,262 +1,80 @@
+"""OpenFMB profiles as pydantic models, generated from the OpenFMB protobuf PSM by ``generate_models.py``.
+
+Every module package (``ess_module``, ``solar_module``, ...) holds one class per protobuf message and one
+``Enum`` per enumeration. ``PROFILES`` maps every profile class name to its class.
+"""
 from __future__ import annotations
 
-from .breaker_module import *
-from .cap_bank_module import *
-from .circuit_segment_service_module import *
-from .environment_module import *
-from .ess_module import *
-from .evse_module import *
-from .generation_module import *
-from .interconnection_module import *
-from .load_module import *
-from .meter_module import *
-from .recloser_module import *
-from .regulator_module import *
-from .reserve_module import *
-from .resource_module import *
-from .switch_module import *
+from ._base import OpenFMBMessage
+from . import common_module
+from . import breaker_module
+from . import cap_bank_module
+from . import circuit_segment_service_module
+from . import environment_module
+from . import ess_module
+from . import evse_module
+from . import generation_module
+from . import interconnection_module
+from . import load_module
+from . import meter_module
+from . import recloser_module
+from . import regulator_module
+from . import reserve_module
+from . import resource_module
+from . import solar_module
+from . import switch_module
 
-__all__ = [
-    'Breaker',
-    'BreakerDiscreteControl',
-    'BreakerDiscreteControlProfile',
-    'BreakerDiscreteControlXCBR',
-    'BreakerEvent',
-    'BreakerEventProfile',
-    'BreakerReading',
-    'BreakerReadingProfile',
-    'BreakerReadingValue',
-    'BreakerStatus',
-    'BreakerStatusProfile',
-    'CapBankCSG',
-    'CapBankControl',
-    'CapBankControlFSCC',
-    'CapBankControlProfile',
-    'CapBankControlScheduleFSCH',
-    'CapBankControlYPSH',
-    'CapBankDiscreteControl',
-    'CapBankDiscreteControlProfile',
-    'CapBankDiscreteControlYPSH',
-    'CapBankEvent',
-    'CapBankEventAndStatusYPSH',
-    'CapBankEventProfile',
-    'CapBankPoint',
-    'CapBankReading',
-    'CapBankReadingProfile',
-    'CapBankStatus',
-    'CapBankStatusProfile',
-    'CapBankSystem',
-    'CircuitSegmentControl',
-    'CircuitSegmentControlDCSC',
-    'CircuitSegmentControlProfile',
-    'CircuitSegmentEvent',
-    'CircuitSegmentEventDCSC',
-    'CircuitSegmentEventProfile',
-    'CircuitSegmentServiceMode',
-    'CircuitSegmentStatus',
-    'CircuitSegmentStatusDCSC',
-    'CircuitSegmentStatusProfile',
-    'ENG_CircuitSegmentServiceMode',
-    'EnvironmentReading',
-    'EnvironmentReadingProfile',
-    'ESSCSG',
-    'ESSCapability',
-    'ESSCapabilityConfiguration',
-    'ESSCapabilityOverride',
-    'ESSCapabilityOverrideProfile',
-    'ESSCapabilityProfile',
-    'ESSCapabilityRatings',
-    'ESSControl',
-    'ESSControlProfile',
-    'ESSControlScheduleFSCH',
-    'ESSCurvePoint',
-    'ESSDiscreteControl',
-    'ESSDiscreteControlDBAT',
-    'ESSDiscreteControlProfile',
-    'ESSEvent',
-    'ESSEventAndStatusZGEN',
-    'ESSEventProfile',
-    'ESSEventZGEN',
-    'ESSFunction',
-    'ESSPoint',
-    'ESSPointStatus',
-    'ESSReading',
-    'ESSReadingProfile',
-    'ESSStatus',
-    'ESSStatusProfile',
-    'ESSStatusZGEN',
-    'EssControlFSCC',
-    'EssEventZBAT',
-    'EssStatusZBAT',
-    'CapabilityConfigurationDEAO',
-    'CapabilityConfigurationDEDO',
-    'CapabilityConfigurationDESE',
-    'CapabilityRatingsDEAO',
-    'CapabilityRatingsDEDO',
-    'CapabilityRatingsDESE',
-    'CapabilityRatingsZCAB',
-    'ChargingState',
-    'ControlDEAO',
-    'ControlDEDO',
-    'ControlDEEV',
-    'ControlDESE',
-    'DEEVControlScheduleFSCH',
-    'DESEControlScheduleFSCH',
-    'DiscreteControlDESE',
-    'ENS_EVACCableCapability',
-    'ENS_EVACConnectionState',
-    'ENS_EVACPlugState',
-    'ENS_EVConnectionCharging',
-    'ENS_EVDCCableCapability',
-    'ENS_EVDCConnectionStateA',
-    'ENS_EVDCConnectionStateC',
-    'ENS_EVDCPlugState',
-    'EVACCableCapability',
-    'EVACConnectionState',
-    'EVACPlugState',
-    'EVConnectionCharging',
-    'EVDCCableCapability',
-    'EVDCConnectionStateA',
-    'EVDCConnectionStateC',
-    'EVDCPlugState',
-    'EVSE',
-    'EVSECSG',
-    'EVSECapability',
-    'EVSECapabilityOverride',
-    'EVSECapabilityOverrideProfile',
-    'EVSECapabilityProfile',
-    'EVSEControl',
-    'EVSEControlProfile',
-    'EVSECurvePoint',
-    'EVSEDiscreteControl',
-    'EVSEDiscreteControlProfile',
-    'EVSEEvent',
-    'EVSEEventProfile',
-    'EVSEFunction',
-    'EVSEPoint',
-    'EVSEPointStatus',
-    'EVSEReading',
-    'EVSEReadingDESE',
-    'EVSEReadingProfile',
-    'EVSEStatus',
-    'EVSEStatusProfile',
-    'EventAndStatusDEAO',
-    'EventAndStatusDEDO',
-    'EventAndStatusDEEV',
-    'EventAndStatusDESE',
-    'ReadingDEAO',
-    'ReadingDEDO',
-    'ReadingDEEV',
-    'DroopParameter',
-    'GeneratingUnit',
-    'GenerationCSG',
-    'GenerationCapability',
-    'GenerationCapabilityConfiguration',
-    'GenerationCapabilityOverride',
-    'GenerationCapabilityOverrideProfile',
-    'GenerationCapabilityProfile',
-    'GenerationCapabilityRatings',
-    'GenerationControl',
-    'GenerationControlFSCC',
-    'GenerationControlProfile',
-    'GenerationControlScheduleFSCH',
-    'GenerationDiscreteControl',
-    'GenerationDiscreteControlProfile',
-    'GenerationEvent',
-    'GenerationEventAndStatusZGEN',
-    'GenerationEventProfile',
-    'GenerationEventZGEN',
-    'GenerationPoint',
-    'GenerationPointStatus',
-    'GenerationReading',
-    'GenerationReadingProfile',
-    'GenerationStatus',
-    'GenerationStatusProfile',
-    'GenerationStatusZGEN',
-    'ReactivePowerControl',
-    'RealPowerControl',
-    'InterconnectionCSG',
-    'InterconnectionControlScheduleFSCH',
-    'InterconnectionPlannedScheduleProfile',
-    'InterconnectionPoint',
-    'InterconnectionRequestedScheduleProfile',
-    'InterconnectionSchedule',
-    'InterconnectionScheduleFSCC',
-    'LoadCSG',
-    'LoadControl',
-    'LoadControlFSCC',
-    'LoadControlProfile',
-    'LoadControlScheduleFSCH',
-    'LoadEvent',
-    'LoadEventAndStatusZGLD',
-    'LoadEventProfile',
-    'LoadEventZGLD',
-    'LoadPoint',
-    'LoadPointStatus',
-    'LoadReading',
-    'LoadReadingProfile',
-    'LoadStatus',
-    'LoadStatusProfile',
-    'LoadStatusZGLD',
-    'MeterReading',
-    'MeterReadingProfile',
-    'Recloser',
-    'RecloserDiscreteControl',
-    'RecloserDiscreteControlProfile',
-    'RecloserDiscreteControlXCBR',
-    'RecloserEvent',
-    'RecloserEventProfile',
-    'RecloserReading',
-    'RecloserReadingProfile',
-    'RecloserStatus',
-    'RecloserStatusProfile',
-    'DirectionalATCC',
-    'RegulatorCSG',
-    'RegulatorControl',
-    'RegulatorControlATCC',
-    'RegulatorControlFSCC',
-    'RegulatorControlProfile',
-    'RegulatorControlScheduleFSCH',
-    'RegulatorDiscreteControl',
-    'RegulatorDiscreteControlProfile',
-    'RegulatorEvent',
-    'RegulatorEventAndStatusANCR',
-    'RegulatorEventAndStatusATCC',
-    'RegulatorEventProfile',
-    'RegulatorPoint',
-    'RegulatorReading',
-    'RegulatorReadingProfile',
-    'RegulatorStatus',
-    'RegulatorStatusProfile',
-    'RegulatorSystem',
-    'AllocatedMargin',
-    'ReserveAvailability',
-    'ReserveAvailabilityProfile',
-    'ReserveMargin',
-    'ReserveRequest',
-    'ReserveRequestProfile',
-    'AnalogControlGGIO',
-    'BooleanControlGGIO',
-    'IntegerControlGGIO',
-    'ResourceDiscreteControl',
-    'ResourceDiscreteControlProfile',
-    'ResourceEvent',
-    'ResourceEventProfile',
-    'ResourceReading',
-    'ResourceReadingProfile',
-    'ResourceStatus',
-    'ResourceStatusProfile',
-    'StringControlGGIO',
-    'ProtectedSwitch',
-    'SwitchDiscreteControl',
-    'SwitchDiscreteControlProfile',
-    'SwitchDiscreteControlXSWI',
-    'SwitchEvent',
-    'SwitchEventProfile',
-    'SwitchEventXSWI',
-    'SwitchReading',
-    'SwitchReadingProfile',
-    'SwitchStatus',
-    'SwitchStatusProfile',
-    'SwitchStatusXSWI',
-]
+PROFILES: dict[str, type] = {}
+__all__ = []
+PROFILES.update(common_module.PROFILES)
+__all__ += common_module.__all__
+globals().update({name: getattr(common_module, name) for name in common_module.__all__})
+PROFILES.update(breaker_module.PROFILES)
+__all__ += breaker_module.__all__
+globals().update({name: getattr(breaker_module, name) for name in breaker_module.__all__})
+PROFILES.update(cap_bank_module.PROFILES)
+__all__ += cap_bank_module.__all__
+globals().update({name: getattr(cap_bank_module, name) for name in cap_bank_module.__all__})
+PROFILES.update(circuit_segment_service_module.PROFILES)
+__all__ += circuit_segment_service_module.__all__
+globals().update({name: getattr(circuit_segment_service_module, name) for name in circuit_segment_service_module.__all__})
+PROFILES.update(environment_module.PROFILES)
+__all__ += environment_module.__all__
+globals().update({name: getattr(environment_module, name) for name in environment_module.__all__})
+PROFILES.update(ess_module.PROFILES)
+__all__ += ess_module.__all__
+globals().update({name: getattr(ess_module, name) for name in ess_module.__all__})
+PROFILES.update(evse_module.PROFILES)
+__all__ += evse_module.__all__
+globals().update({name: getattr(evse_module, name) for name in evse_module.__all__})
+PROFILES.update(generation_module.PROFILES)
+__all__ += generation_module.__all__
+globals().update({name: getattr(generation_module, name) for name in generation_module.__all__})
+PROFILES.update(interconnection_module.PROFILES)
+__all__ += interconnection_module.__all__
+globals().update({name: getattr(interconnection_module, name) for name in interconnection_module.__all__})
+PROFILES.update(load_module.PROFILES)
+__all__ += load_module.__all__
+globals().update({name: getattr(load_module, name) for name in load_module.__all__})
+PROFILES.update(meter_module.PROFILES)
+__all__ += meter_module.__all__
+globals().update({name: getattr(meter_module, name) for name in meter_module.__all__})
+PROFILES.update(recloser_module.PROFILES)
+__all__ += recloser_module.__all__
+globals().update({name: getattr(recloser_module, name) for name in recloser_module.__all__})
+PROFILES.update(regulator_module.PROFILES)
+__all__ += regulator_module.__all__
+globals().update({name: getattr(regulator_module, name) for name in regulator_module.__all__})
+PROFILES.update(reserve_module.PROFILES)
+__all__ += reserve_module.__all__
+globals().update({name: getattr(reserve_module, name) for name in reserve_module.__all__})
+PROFILES.update(resource_module.PROFILES)
+__all__ += resource_module.__all__
+globals().update({name: getattr(resource_module, name) for name in resource_module.__all__})
+PROFILES.update(solar_module.PROFILES)
+__all__ += solar_module.__all__
+globals().update({name: getattr(solar_module, name) for name in solar_module.__all__})
+PROFILES.update(switch_module.PROFILES)
+__all__ += switch_module.__all__
+globals().update({name: getattr(switch_module, name) for name in switch_module.__all__})
+__all__ = sorted(set(__all__)) + ['OpenFMBMessage', 'PROFILES']

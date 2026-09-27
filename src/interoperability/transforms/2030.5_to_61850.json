@@ -222,6 +222,143 @@
       },
       "DWMN": {
         "ModEna": null
+      },
+      "FSCH": {
+        "SchdEntr[#]": {
+          "#": "transform[DERControlList]()",
+          "StrTm": "transform[#, interval, start]()",
+          "SchdIntv": "transform[#, interval, duration]()",
+          "DFPF": {
+            "PFGnTgt": "transform[#, DERControl, opModFixedPFInjectW, displacement]()",
+            "PFExtSet": "transform[#, DERControl, opModFixedPFInjectW, excitation]()",
+            "PFLodTgt": "transform[#, DERControl, opModFixedPFAbsorbW, displacement]()",
+            "PFLodExtSet": "transform[#, DERControl, opModFixedPFAbsorbW, excitation]()"
+          },
+          "DVVR": {
+            "VRefAdjEna": "transform[#, DERCurve, opModVoltVar, autonomousVRefEnable]()",
+            "VRefTmms": "transform[#, DERCurve, opModVoltVar, autonomousVRefTimeConstant]()",
+            "VVArCrv": {
+              "numPts": "transform[#, DERCurve, opModVoltVar, CurveData](count())",
+              "crvPts[#]": {
+                "xVal": "transform[#, DERCurve, opModVoltVar, CurveData[#], xvalue]()",
+                "yVal": "transform[#, DERCurve, opModVoltVar, CurveData[#], yvalue]()"
+              }
+            },
+            "OpnLoopMax": "transform[#, DERCurve, opModVoltVar, openLoopTms]()"
+          },
+          "DWVR": {
+            "WVArCrv": {
+              "numPts": "transform[#, DERCurve, opModWattVar, CurveData](count())",
+              "crvPts[#]": {
+                "xVal": "transform[#, DERCurve, opModWattVar, CurveData[#], xvalue]()",
+                "yVal": "transform[#, DERCurve, opModWattVar, CurveData[#], yvalue]()"
+              }
+            }
+          },
+          "DVAR": {
+            "VArTgt": "transform[#, DERControl, opModFixedVar]()"
+          },
+          "DVWC": {
+            "VWCrv": {
+              "numPts": "transform[#, DERCurve, opModVoltWatt, CurveData](count())",
+              "crvPts[#]": {
+                "xVal": "transform[#, DERCurve, opModVoltWatt, CurveData[#], xvalue]()",
+                "yVal": "transform[#, DERCurve, opModVoltWatt, CurveData[#], yvalue]()"
+              }
+            },
+            "OpnLoopMax": "transform[#, DERCurve, opModVoltWatt, openLoopTms]()"
+          },
+          "DHVT": {
+            "TrZnSt": {
+              "PTOV": {
+                "TmVCrv": {
+                  "numPts": "transform[#, DERCurve, opModHVRTMustTrip, CurveData](count())",
+                  "crvPts[#]": {
+                    "xVal": "transform[#, DERCurve, opModHVRTMustTrip, CurveData[#], xvalue]()",
+                    "yVal": "transform[#, DERCurve, opModHVRTMustTrip, CurveData[#], yvalue]()"
+                  }
+                }
+              }
+            },
+            "CeaZnSt": {
+              "PTOV": {
+                "TmVCrv": {
+                  "numPts": "transform[#, DERCurve, opModHVRTMomentaryCessation, CurveData](count())",
+                  "crvPts[#]": {
+                    "xVal": "transform[#, DERCurve, opModHVRTMomentaryCessation, CurveData[#], xvalue]()",
+                    "yVal": "transform[#, DERCurve, opModHVRTMomentaryCessation, CurveData[#], yvalue]()"
+                  }
+                }
+              }
+            }
+          },
+          "DLVT": {
+            "TrZnSt": {
+              "PTUV": {
+                "TmVCrv": {
+                  "numPts": "transform[#, DERCurve, opModLVRTMustTrip, CurveData](count())",
+                  "crvPts[#]": {
+                    "xVal": "transform[#, DERCurve, opModLVRTMustTrip, CurveData[#], xvalue]()",
+                    "yVal": "transform[#, DERCurve, opModLVRTMustTrip, CurveData[#], yvalue]()"
+                  }
+                }
+              }
+            },
+            "CeaZnSt": {
+              "PTUV": {
+                "TmVCrv": {
+                  "numPts": "transform[#, DERCurve, opModLVRTMomentaryCessation, CurveData](count())",
+                  "crvPts[#]": {
+                    "xVal": "transform[#, DERCurve, opModLVRTMomentaryCessation, CurveData[#], xvalue]()",
+                    "yVal": "transform[#, DERCurve, opModLVRTMomentaryCessation, CurveData[#], yvalue]()"
+                  }
+                }
+              }
+            }
+          },
+          "DHFT": {
+            "TrZnSt": {
+              "PTOF": {
+                "TmHzCrv": {
+                  "numPts": "transform[#, DERCurve, opModHFRTMustTrip, CurveData](count())",
+                  "crvPts[#]": {
+                    "xVal": "transform[#, DERCurve, opModHFRTMustTrip, CurveData[#], xvalue]()",
+                    "yVal": "transform[#, DERCurve, opModHFRTMustTrip, CurveData[#], yvalue]()"
+                  }
+                }
+              }
+            }
+          },
+          "DLFT": {
+            "TrZnSt": {
+              "PTUF": {
+                "TmHzCrv": {
+                  "numPts": "transform[#, DERCurve, opModLFRTMustTrip, CurveData](count())",
+                  "crvPts[#]": {
+                    "xVal": "transform[#, DERCurve, opModLFRTMustTrip, CurveData[#], xvalue]()",
+                    "yVal": "transform[#, DERCurve, opModLFRTMustTrip, CurveData[#], yvalue]()"
+                  }
+                }
+              }
+            }
+          },
+          "DHFW": {
+            "HzStr": "transform[#, DERControl, opModFreqDroop, dBOF]()",
+            "WGra": "transform[#, DERControl, opModFreqDroop, kOF]()",
+            "OpnLoopMax": "transform[#, DERControl, opModFreqDroop, openLoopTms]()"
+          },
+          "DLFW": {
+            "HzStr": "transform[#, DERControl, opModFreqDroop, dBUF]()",
+            "WGra": "transform[#, DERControl, opModFreqDroop, kUF]()",
+            "OpnLoopMax": "transform[#, DERControl, opModFreqDroop, openLoopTms]()"
+          },
+          "DCTE": {
+            "RtnSrvAuth": "transform[#, DERControl, opModEnergize]()"
+          },
+          "DWMX": {
+            "LimW": "transform[#, DERControl, opModMaxLimW]()"
+          }
+        }
       }
     }
   }

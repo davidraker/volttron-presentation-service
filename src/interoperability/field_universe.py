@@ -11,39 +11,56 @@ import typing
 from .transform_parser import WILDCARD
 
 
-def _group_type(annotation):
-    """(group class, is_list) if a pydantic annotation holds a SunSpec group, else None."""
-    from .models.sunspec import SunSpecGroup
+def _group_type(annotation, base):
+    """(group class, is_list) if a pydantic annotation holds a subclass of ``base``, else None."""
     origin = typing.get_origin(annotation)
     if origin is list:
-        inner = _group_type(typing.get_args(annotation)[0])
+        inner = _group_type(typing.get_args(annotation)[0], base)
         return (inner[0], True) if inner else None
     if origin is typing.Union or (origin is not None and origin.__class__.__name__ == 'UnionType') \
             or type(annotation).__name__ == 'UnionType':
         for arg in typing.get_args(annotation):
-            found = _group_type(arg)
+            found = _group_type(arg, base)
             if found:
                 return found
         return None
-    if isinstance(annotation, type) and issubclass(annotation, SunSpecGroup):
+    if isinstance(annotation, type) and issubclass(annotation, base):
         return (annotation, False)
     return None
 
 
-def _group_fields(cls, prefix: tuple):
+def _group_fields(cls, prefix: tuple, base=None, seen: frozenset = frozenset()):
+    """Leaf field paths of a pydantic model, descending into nested models of ``base`` (lists as wildcards).
+    Field aliases are used where present, since they are the wire names."""
+    base = base or cls.__mro__[-2]
     for name, info in cls.model_fields.items():
-        group = _group_type(info.annotation)
+        wire = info.alias or name
+        group = _group_type(info.annotation, base)
         if group:
             sub, is_list = group
-            yield from _group_fields(sub, prefix + ((name, WILDCARD) if is_list else (name,)))
+            if sub in seen:
+                continue
+            yield from _group_fields(sub, prefix + ((wire, WILDCARD) if is_list else (wire,)), base, seen | {cls})
         else:
-            yield prefix + (name,)
+            yield prefix + (wire,)
 
 
 def sunspec_fields() -> set[tuple]:
     """Every point of every generated SunSpec model, keyed by model number; repeating groups as wildcards."""
-    from .models.sunspec import MODEL_REGISTRY
-    return {(str(model_id),) + field for model_id, cls in MODEL_REGISTRY.items() for field in _group_fields(cls, ())}
+    from .models.sunspec import MODEL_REGISTRY, SunSpecGroup
+    return {(str(model_id),) + field for model_id, cls in MODEL_REGISTRY.items() for field in _group_fields(cls, (), SunSpecGroup)}
+
+
+def openfmb_fields(prefix: str = '') -> set[tuple]:
+    """Every leaf of every OpenFMB profile whose name starts with ``prefix`` (``ESS``, ``Solar``, or all), as
+    published in protobuf JSON form; repeated fields as wildcards. Profiles do not share top-level names, so
+    their paths are simply unioned."""
+    from .models.openfmb import PROFILES, OpenFMBMessage
+    universe = set()
+    for name, cls in PROFILES.items():
+        if name.startswith(prefix):
+            universe |= set(_group_fields(cls, (), OpenFMBMessage))
+    return universe
 
 
 def ieee1815_2_fields(tables: tuple[str, ...]) -> set[tuple]:
@@ -54,6 +71,9 @@ def ieee1815_2_fields(tables: tuple[str, ...]) -> set[tuple]:
 
 _MODEL_FORMATS = {
     'sunspec': sunspec_fields,
+    'openfmb': openfmb_fields,
+    'openfmb.ess': lambda: openfmb_fields('ESS'),
+    'openfmb.solar': lambda: openfmb_fields('Solar'),
     '1815.2.inputs': lambda: ieee1815_2_fields(('AI', 'BI', 'CTR')),
     '1815.2.outputs': lambda: ieee1815_2_fields(('AO', 'BO')),
 }

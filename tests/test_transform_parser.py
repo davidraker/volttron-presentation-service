@@ -499,6 +499,99 @@ def test_bundled_curves_through_the_1815_2_edit_window(parser):
     assert back['DGSMn'] == {'InCrv': 1, 'ModTyp': 2}
 
 
+def test_bundled_schedules_carry_every_entry_between_2030_5_and_61850(parser):
+    sep2 = {'DERControl': {'opModFixedPFInjectW': {'displacement': 0.95, 'excitation': 1}},
+            'DERControlList': [
+                {'interval': {'start': 1700000000, 'duration': 3600},
+                 'DERControl': {'opModMaxLimW': 80, 'opModFreqDroop': {'dBOF': 0.036, 'kOF': 5}},
+                 'DERCurve': {'opModVoltVar': {'openLoopTms': 5, 'CurveData': [{'xvalue': 95, 'yvalue': 44}, {'xvalue': 105, 'yvalue': -44}]}}},
+                {'interval': {'start': 1700003600, 'duration': 3600},
+                 'DERControl': {'opModMaxLimW': 100}}]}
+    i61850 = _bundled_pipeline(parser, '2030.5', '61850').execute(sep2)
+    entries = i61850['FSCH']['SchdEntr']
+    assert len(entries) == 2
+    assert entries[0]['StrTm'] == 1700000000 and entries[0]['SchdIntv'] == 3600
+    assert entries[0]['DWMX'] == {'LimW': 80}
+    assert entries[0]['DHFW'] == {'HzStr': 0.036, 'WGra': 5}
+    assert entries[0]['DVVR'] == {'VVArCrv': {'numPts': 2, 'crvPts': [{'xVal': 95, 'yVal': 44}, {'xVal': 105, 'yVal': -44}]},
+                                  'OpnLoopMax': 5}
+    assert entries[1] == {'StrTm': 1700003600, 'SchdIntv': 3600, 'DWMX': {'LimW': 100}}
+    # The immediate settings still map at the top level, and schedule content does not leak into it.
+    assert i61850['DFPF'] == {'PFGnTgt': 0.95, 'PFExtSet': 1}
+    assert 'DWMX' not in i61850 and 'DVVR' not in i61850
+    back = _bundled_pipeline(parser, '61850', '2030.5').execute(i61850)
+    assert back['DERControlList'] == [
+        {'interval': {'start': 1700000000, 'duration': 3600},
+         'DERControl': {'opModMaxLimW': 80, 'opModFreqDroop': {'dBOF': 0.036, 'kOF': 5}},
+         'DERCurve': {'opModVoltVar': {'CurveData': [{'xvalue': 95, 'yvalue': 44}, {'xvalue': 105, 'yvalue': -44}], 'openLoopTms': 5}}},
+        {'interval': {'start': 1700003600, 'duration': 3600}, 'DERControl': {'opModMaxLimW': 100}}]
+    assert 'DERControlList' not in _bundled_pipeline(parser, '61850', '2030.5').execute({'DFPF': {'PFExtSet': 1}})
+    # Formats without a schedule container simply do not carry it.
+    assert 'FSCH' not in _bundled_pipeline(parser, '61850', 'sunspec').execute(i61850)
+
+
+def test_bundled_openfmb_profiles_round_trip_through_61850_and_stay_valid(parser):
+    from interoperability.models.openfmb import PROFILES
+    from interoperability.models.openfmb.generate_samples import example_profiles
+    examples = example_profiles()
+    to_61850 = _bundled_pipeline(parser, 'openfmb.ess', '61850')
+    reading = to_61850.execute(examples['ESSReadingProfile'])
+    assert reading['DECP']['MMXU']['TotW'] == -25000.0 and reading['DECP']['MMXU']['PhV']['phsB']['mag'] == 239.8
+    status = to_61850.execute(examples['ESSStatusProfile'])
+    assert status['DSTO']['SocUsePct'] == 63.5 and status['DSTO']['GriMod'] == 'GridConnectModeKind_VSI_PQ'
+    capability = to_61850.execute(examples['ESSCapabilityProfile'])
+    assert capability['DGEN']['WMaxRtg'] == 100000.0 and capability['DSTO']['WhRtg'] == 200000.0
+    assert capability['LPHD']['PhyNam'] == {'vendor': 'ACME', 'model': 'BESS-200'}
+    control = to_61850.execute(examples['ESSControlProfile'])
+    entries = control['FSCH']['SchdEntr']
+    assert [e['StrTm'] for e in entries] == [1700000000, 1700003600]
+    assert entries[0]['DVVR']['VVArCrv']['numPts'] == 4 and entries[0]['DVVR']['VVArCrv']['crvPts'][0] == {'xVal': 0.92, 'yVal': 0.44}
+    assert entries[0]['DHFW'] == {'HzStr': 0.036, 'WGra': 0.05, 'ModEna': True}
+    assert entries[1]['DFPF'] == {'ModEna': True, 'PFGnTgt': 0.95, 'PFExtSet': True}
+    assert 'DVVR' not in control                                   # schedule content stays in FSCH
+    # Back to OpenFMB: each part validates as its profile, and the schedule points survive.
+    back = _bundled_pipeline(parser, '61850', 'openfmb.ess')
+    merged = {}
+    for out in (reading, status, capability, control):
+        for k, v in out.items():
+            merged.setdefault(k, {}).update(v)
+    result = back.execute(merged)
+    for profile, key in [('ESSReadingProfile', 'essReading'), ('ESSStatusProfile', 'essStatus'),
+                         ('ESSCapabilityProfile', 'essCapability'), ('ESSControlProfile', 'essControl')]:
+        PROFILES[profile].model_validate({key: result[key]})
+    points = result['essControl']['essControlFSCC']['essControlScheduleFSCH']['ValDCSG']['crvPts']
+    assert [p['startTime']['seconds'] for p in points] == [1700000000, 1700003600]
+    assert points[0]['control']['voltVarOperation']['crvPts'] == examples['ESSControlProfile']['essControl'][
+        'essControlFSCC']['essControlScheduleFSCH']['ValDCSG']['crvPts'][0]['control']['voltVarOperation']['crvPts']
+    assert result['essReading']['readingMMXU']['W']['net']['cVal']['mag'] == -25000.0
+    # 61850 top-level controls become an immediate point (no start time) ahead of the scheduled ones.
+    immediate = back.execute({'DFPF': {'PFGnTgt': 0.9}, 'FSCH': {'SchdEntr': [{'StrTm': 5, 'DWMX': {'LimW': 0.5}}]}})
+    points = immediate['essControl']['essControlFSCC']['essControlScheduleFSCH']['ValDCSG']['crvPts']
+    assert points == [{'control': {'pFOperation': {'pFParameter': {'pFGnTgtMxVal': 0.9}}}},
+                      {'startTime': {'seconds': 5}, 'control': {'limitWOperation': {'wMaxSptVal': 0.5}}}]
+    # Solar uses its own keys, including the capitalised schedule field.
+    solar = _bundled_pipeline(parser, 'openfmb.solar', '61850').execute(examples['SolarControlProfile'])
+    assert len(solar['FSCH']['SchdEntr']) == 2
+    solar_back = _bundled_pipeline(parser, '61850', 'openfmb.solar').execute(solar)
+    PROFILES['SolarControlProfile'].model_validate({'solarControl': solar_back['solarControl']})
+    assert 'SolarControlScheduleFSCH' in solar_back['solarControl']['solarControlFSCC']
+
+
+def test_openfmb_reaches_other_protocols_through_the_61850_hub():
+    from interoperability.models.openfmb.generate_samples import example_profiles
+    registry = TransformRegistry()
+    registry.update_registry([d for f in _bundled_transform_files() for d in json.loads(f.read_text())])
+    chain, retention, path = registry.lookup_scored('openfmb.ess', 'sunspec')
+    # The only OpenFMB edges lead to 61850; from there the scorer picks the route retaining the most fields,
+    # which may legitimately pass through another hub.
+    assert path[:2] == ['openfmb.ess', '61850'] and path[-1] == 'sunspec' and retention > 0
+    parser = TransformParser()
+    reading = parser.build_transform_from_schema(chain).execute(example_profiles()['ESSReadingProfile'])
+    assert reading['701']['W'] == -25000.0 and reading['701']['Hz'] == 60.01
+    assert registry.lookup_scored('2030.5', 'openfmb.solar')[2][-2:] == ['61850', 'openfmb.solar']
+    assert len(registry.field_universe('openfmb.ess')) < len(registry.field_universe('openfmb'))
+
+
 def test_bundled_curves_round_trip_sunspec_2030_5_and_61850(parser):
     sunspec = {'705': {'Ena': 1, 'Crv': [{'ActPt': 2, 'VRef': 100, 'VRefAutoEna': 1, 'VRefAutoTms': 300, 'RspTms': 5,
                                           'Pt': [{'V': 95, 'Var': 44}, {'V': 105, 'Var': -44}, {'V': 0, 'Var': 0}]}]},

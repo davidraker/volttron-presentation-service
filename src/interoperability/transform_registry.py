@@ -11,7 +11,7 @@ _log = logging.getLogger(__name__)
 
 #: Formats that may be used as intermediate steps of a transform chain. Everything else (device
 #: specific formats, for example) is a leaf: it can start or end a chain but never sits in the middle.
-DEFAULT_HUBS = frozenset({'61850', 'sunspec', '2030.5', '1547', '1815.2.inputs', '1815.2.outputs'})
+DEFAULT_HUBS = frozenset({'61850', 'sunspec', '2030.5', '1547', '1815.2.inputs', '1815.2.outputs', 'openfmb.ess', 'openfmb.solar'})
 #: Longest chain considered; retention is poor by construction beyond this.
 MAX_HOPS = 4
 #: Added to every edge weight so that, at equal retention, fewer hops win.
