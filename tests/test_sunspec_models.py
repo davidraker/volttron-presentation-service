@@ -7,6 +7,7 @@ from interoperability.models import sunspec
 from interoperability.models.sunspec import (
     MODEL_REGISTRY,
     DERMeasureAC,
+    DERMeasureACAlrm,
     DERMeasureACSt,
     DERVoltVar,
     SunSpecDevice,
@@ -44,7 +45,11 @@ def test_every_builder_is_callable_without_arguments():
 def test_enum_and_bitfield_points():
     m = build_model_701_der_measure_ac(W=1000, W_SF=1, St=1, Alrm=3)
     assert m.St is DERMeasureACSt.ON
-    assert m.Alrm == 3 and m.Alrm.name is not None
+    # bitfield32 allows more than one flag active at once, so Alrm is a composite
+    # IntFlag value here; composite .name is only defined from Python 3.11, and
+    # pyproject.toml pins support to >=3.10, so check both bits directly.
+    assert m.Alrm == 3
+    assert m.Alrm & DERMeasureACAlrm.GROUND_FAULT and m.Alrm & DERMeasureACAlrm.DC_OVER_VOLT
     assert m.scaled_value('W') == 10000.0
     # Values outside the symbol list are kept as plain ints instead of failing validation.
     assert DERMeasureAC(St=99).St == 99
