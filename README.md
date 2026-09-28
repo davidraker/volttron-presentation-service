@@ -265,7 +265,7 @@ Functions available in `src/interoperability/transforms/__init__.py`:
 | `add(n)`                          | Add `n`. Has an inverse.                                                                     |
 | `scale(n)`                        | Multiply by `n`, rounding away floating point noise to the decimal places of the operands (modbus_tk `scale`). Has an inverse. |
 | `scale_int(n)`                    | Multiply by `n` and cast to `int`. Has an inverse.                                           |
-| `scale_reg(path)`                 | Divide by the register at the quoted dotted `path`, resolved against the enclosing element; missing register leaves the field out. Has an inverse. |
+| `scale_reg(path)`                 | Divide by the register at the quoted dotted `path`, resolved against the enclosing element; an absent register leaves the value unchanged. Has an inverse. |
 | `scale_reg_pow_10(path)`          | Multiply by 10 to the power of the register at `path`, e.g. SunSpec scale factors: `scale_reg_pow_10('701.W_SF')`. Has an inverse. |
 | `no_op()`                         | Copy the value unchanged. Its own inverse.                                                   |
 | `mod10k(reverse)`, `mod10k64(reverse)`, `mod10k48(reverse)` | Decode the ION and PM800 M10K register formats, where each 16 bit register holds four decimal digits (modbus_tk). `reverse` may be `True`/`False`; positive values only. Have inverses. |
@@ -275,6 +275,10 @@ Functions available in `src/interoperability/transforms/__init__.py`:
 | `take(n)`                         | Keep the first `n` elements of a list. `n` may be a quoted dotted path to the field holding the count, resolved against the element enclosing the expression (the message root at top level), e.g. `take('705.Crv.0.ActPt')`. |
 | `pairs(start, count, x, y)`       | Turn a flat, position-indexed array of alternating X and Y values into a list of `{x, y}` points, e.g. `pairs(333, 100, xVal, yVal)` for DNP3 curve points. |
 | `unpairs(start, x, y)`            | The inverse: lay a list of points out as numbered alternating X and Y values. Use in a spread entry. |
+| `series(count, start, spec, ...)` | Gather numbered flat points into records: `series(4, 1, 'V:705_Crv1_Pt{}_V', 'Var:705_Crv1_Pt{}_Var')` turns a driver's `705_Crv1_Pt1_V` ... into `[{V, Var}, ...]`. Indices with no field present are skipped. |
+| `unseries(start, spec, ...)`      | The inverse, for a spread entry: lay records out as numbered flat points.                    |
+| `scale_fields(spec, ...)`         | Multiply named fields of every record in a list by constants: `scale_fields('V:0.01', 'Var:0.01')`. Has an inverse. |
+| `prefix_keys(prefix)`             | Rename every key of a group by prefixing it, e.g. a DNP3 point table `{"244": 1}` to the driver's `{"AO_244": 1}`. For spread entries. Has an inverse. |
 | `count()`                         | Number of elements in a list or group.                                                       |
 | `as_list()`                       | Wrap the value in a one-element list.                                                        |
 | `const(v)`                        | Replace the value with the literal `v` (only emitted when the source is present).            |
@@ -282,8 +286,9 @@ Functions available in `src/interoperability/transforms/__init__.py`:
 | `when_equal(path_a, path_b)`      | Pass the value through only when both fields are present and equal, e.g. `when_equal('AI.328', 'AI.297')`. |
 
 Functions after a guard such as `when` are skipped once the value has become missing. Paths
-given to `take`, `when` and `when_equal` are resolved against the element enclosing the
-expression: the message root at top level, or the current element inside a repeated group.
+given to `take`, `when`, `when_equal`, `scale_reg` and `scale_reg_pow_10` are resolved against the
+element enclosing the expression: the message root at top level, or the current element inside a
+repeated group. A path starting with `/` is resolved from the message root wherever it appears.
 
 The register transforms mirror the ones in VOLTTRON's modbus_tk driver, rebuilt as convtools
 conversions; where the driver looked scaling registers up by name on the device, these take a
@@ -375,6 +380,77 @@ At startup the agent loads every JSON file directly inside `transforms/` and `ma
 as configuration defaults. Subdirectories are ignored. Anything supplied through the
 configuration store is applied on top of these defaults.
 
+## Device formats
+
+A platform driver publishes a device as a flat `{point name: value}` message. That flat point list is a
+format of its own: a leaf in the transform graph that maps onto one protocol and reaches the others
+through it. When the device speaks SunSpec and its registry names each point after the SunSpec path it
+holds (`701_W`, `704_PFWInj_PF`, `705_Crv1_ActPt`, `705_Crv1_Pt3_Var`, `708_Crv1_MustTrip_Pt1_V`, with
+a 1-based index on repeating groups), `interoperability.discovery.device_formats` derives everything from the
+names alone, validated against the SunSpec model classes:
+
+* `sunspec_point_path('705_Crv1_Pt3_Var')` gives `('705', 'Crv', 0, 'Pt', 2, 'Var')`.
+* `sunspec_device_transforms(format_name, point_names)` gives the two transform definitions between the
+  device format and `sunspec`. Repeating groups become one-element lists; numbered point rows become
+  `series()` lists trimmed to the group's `ActPt`; the reverse flattens them again with `unseries()`.
+* `device_format_declaration(point_names, scaling)` gives the `formats` entry (a leaf whose fields are
+  the points, recording who applies scale factors).
+
+**Scale factors.** SunSpec values are integers scaled by a companion `_SF` register, and where that
+scaling happens is a build-time choice, `scaling`, that fixes the registry and the transforms together:
+
+* `transform`: the driver publishes raw registers, the `_SF` points included. Reads apply
+  `scale_reg_pow_10('/705_V_SF')` against the published factor (the leading `/` resolves the path from
+  the message root, even inside a curve). Writes bake the discovered factor in as a constant with
+  `scale()` and `scale_fields()`, since a write arriving from another protocol carries no factor; points
+  whose factor was not discovered are listed in the result's `notes` and left unscaled.
+* `driver`: the driver applies the factors itself. The modbus registry carries a `Transform` column
+  entry per scaled point (`scale_reg_pow_10(705_V_SF)`, the modbus_tk syntax the platform driver is
+  adopting), the `_SF` points are omitted, and the transforms pass values through unchanged.
+
+`infer_scaling(rows)` tells the two apart for an existing registry. Whichever side scales, the SunSpec
+message that comes out is the same; the integration test asserts it.
+
+**Discovery.** `interoperability.discovery.sunspec` (extra `discovery`, which installs pysunspec2) scans
+a device over Modbus TCP or RTU, or reads a pysunspec2 JSON device description offline, and writes the
+whole configuration set: a registry for the `modbus` driver with absolute addresses and register types,
+a registry for the `fake` driver with the discovered values as starting values, the device configs for
+both, the presentation service configuration and a `vctl` script:
+
+```shell
+PYTHONPATH=src python -m interoperability.discovery.sunspec --host 10.0.0.21 --unit 1 --scaling driver --out build/
+PYTHONPATH=src python -m interoperability.discovery.sunspec --file device.json --out build/   # offline
+```
+
+`tests/integration/fake_sunspec/` is the worked case: `device_1547.json` (pysunspec2's 1547 test device,
+models 1 and 701 to 713 with three stored curves per curve model), `build_configs.py` generating one
+configuration set per scaling mode, and `tests/test_integration_fake_sunspec.py` driving the fake driver's
+`all` message through the `sunspec`, `2030.5` and `1815.2.inputs` aliases exactly as the service resolves
+it, in both modes, and checking that the generated files are current.
+
+**IEEE 1815.2 devices.** The same machinery serves an outstation behind the `dnp3` driver, with point names
+`<table>_<index>` (`AI_297`, `AO_217`, `BI_93`), validated against the service's IEEE 1815.2 point
+registry. `dnp3_device_transforms` maps the device onto `1815.2.inputs` (AI, BI, CTR) and
+`1815.2.outputs` (the AO and BO read-back), and back from `1815.2.outputs` only, since inputs are
+read-only on a device; the curve edit window's `sequence` batches are carried to the device as ordered
+lists of flat points. Multipliers and offsets come from the profile, so both scaling modes work without
+device discovery: `transform` applies them on the device edge, `driver` writes them into the registry's
+`Transform` column (`scale(0.1)`) and `Scaling` column for the driver to apply with their inverses. The
+current dnp3 driver applies neither, so `transform` is the mode that works today. DNP3 has no
+self-description: `interoperability.discovery.dnp3` takes the point set from a test-tool profile file
+(`--profile mandatory_1547.json`) or from any index listing such as an integrity poll, and writes the
+same configuration set as the SunSpec tool. `tests/integration/fake_dnp3/` is the worked case, with
+`tests/test_integration_fake_dnp3.py` covering reads to `sunspec`, `2030.5` and `61850` and writes back
+through the edit window in both modes.
+
+**IEEE 2030.5.** There is no register device to discover: the VOLTTRON 2030.5 agent mirrors a driver
+device to a 2030.5 server through a point map of `Object::property` rows. `interoperability.discovery.point_maps`
+generates that map for any device format that reaches `2030.5`, from the composed field map of the
+chosen chain; curve points and meter readings, which the agent configures elsewhere, are listed in the
+notes. Messages from a 2030.5 source are already in the service's `2030.5` format and need no device
+format. The `2030.5` field universe is derived from the generated `sep` models following the service's
+convention.
+
 ## Choosing between chains
 
 When more than one chain of transforms connects two formats, the registry picks the one that
@@ -452,6 +528,12 @@ interoperability_service/
     resource.py                   Resource pydantic models and the ResourceData client helper
     transform_parser.py           Expression grammar and convtools pipeline builder
     transform_registry.py         networkx graph of transforms between formats
+    discovery/                    configuration tooling, not needed at runtime
+      device_formats.py           a driver's flat point list as a format; SunSpec and DNP3 transforms from point names
+      sunspec.py                  registries and configuration from a SunSpec device scan (pysunspec2)
+      dnp3.py                     registries and configuration from an IEEE 1815.2 profile or point listing
+      point_maps.py               the IEEE 2030.5 agent's point map, generated from field maps
+    field_universe.py             every field a format can carry, from models, configuration or the transforms
     transforms/                   Bundled transform JSON files and the transform function library
     mappings/                     Bundled default mappings (currently none)
     models/openfmb/               OpenFMB pydantic models generated from the protobuf PSM, plus profile builders and sample generator

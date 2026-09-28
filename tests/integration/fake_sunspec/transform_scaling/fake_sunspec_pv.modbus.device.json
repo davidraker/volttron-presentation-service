@@ -1,0 +1,15 @@
+{
+  "driver_type": "modbus",
+  "remote_config": {
+    "driver_type": "modbus",
+    "device_address": "127.0.0.1",
+    "port": 502,
+    "unit_id": 1,
+    "addressing": "offset",
+    "word_order": "big"
+  },
+  "registry_config": "config://registry_configs/fake_sunspec_pv.modbus.csv",
+  "interval": 5,
+  "publish_depth_first_all": true,
+  "timezone": "UTC"
+}

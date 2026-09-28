@@ -90,11 +90,11 @@
         "opModHFRTMustTrip": null,
         "opModLFRTMustTrip": null,
         "opModFreqDroop": {
-          "dBOF": "transform[711, Ctl, DbOf]()",
-          "dBUF": "transform[711, Ctl, DbUf]()",
-          "kOF": "transform[711, Ctl, KOf]()",
-          "kUF": "transform[711, Ctl, KUf]()",
-          "openLoopTms": "transform[711, Ctl, RspTms]()"
+          "dBOF": "transform[711, Ctl, 0, DbOf]()",
+          "dBUF": "transform[711, Ctl, 0, DbUf]()",
+          "kOF": "transform[711, Ctl, 0, KOf]()",
+          "kUF": "transform[711, Ctl, 0, KUf]()",
+          "openLoopTms": "transform[711, Ctl, 0, RspTms]()"
         },
         "opModEnergize": "transform[703, ES]()",
         "opModMaxLimW": "transform[704, WMaxLimPct]()"

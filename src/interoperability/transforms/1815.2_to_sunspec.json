@@ -185,7 +185,8 @@
       },
       "711": {
         "Ena": "transform[BI, 68]()",
-        "Ctl": {
+        "Ctl[#]": {
+          "#": "transform(as_list())",
           "DbOf": "transform[AI, 121]()",
           "DbUf": "transform[AI, 125]()",
           "KOf": "transform[AI, 123]()",
@@ -397,7 +398,8 @@
       },
       "711": {
         "Ena": "transform[BO, 16]()",
-        "Ctl": {
+        "Ctl[#]": {
+          "#": "transform(as_list())",
           "DbOf": "transform[AO, 62]()",
           "DbUf": "transform[AO, 66]()",
           "KOf": "transform[AO, 64]()",

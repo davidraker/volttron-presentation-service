@@ -1,0 +1,128 @@
+Point Name,Volttron Point Name,Units,Units Details,Writable,Starting Value,Type,Notes
+DGEN.VMinRtg,AI_2,Volts,Nameplate Minimum Voltage Rating,FALSE,0,int,"DNP3 AI 2, multiplier 0.1"
+DGEN.VMaxRtg,AI_3,Volts,Nameplate Maximum Voltage Rating,FALSE,0,int,"DNP3 AI 3, multiplier 0.1"
+DGEN.WMaxRtg,AI_4,Watts,Nameplate Active Generation Power Rating at Unity Power Factor,FALSE,0,int,DNP3 AI 4
+DGEN.WOvPFRtg,AI_6,Watts,"Nameplate Active Generation Power Rating at Specified Over-Excited Power Factor, injecting reactive power (as positive vars)",FALSE,0,int,DNP3 AI 6
+DGEN.OvPFRtg,AI_8,None,Specified Over-Excited Power Factor,FALSE,0,int,"DNP3 AI 8, multiplier 0.01"
+DGEN.WUnPFRtg,AI_9,Watts,"Nameplate Active Generation Power Rating at Specified Under-Excited Power Factor, absorbing reactive power (as negative vars)",FALSE,0,int,DNP3 AI 9
+DSTO.ChaWUnPFRtg,AI_10,Watts,Nameplate Active Charging Power Rating at Specified Under-Excited Power Factor,FALSE,0,int,DNP3 AI 10
+DGEN.UnPFRtg,AI_11,None,Specified Under-Excited Power Factor,FALSE,0,int,"DNP3 AI 11, multiplier 0.01"
+DGEN.IvarMaxRtg,AI_12,Vars,Nameplate Reactive Supply (Injection) Power Rating,FALSE,0,int,DNP3 AI 12
+DGEN.AvarMaxRtg,AI_13,Vars,Nameplate Reactive Absorption Power Rating,FALSE,0,int,DNP3 AI 13
+DSTO.ChaVAMaxRtg,AI_15,VAs,Nameplate Apparent Charging Power Rating,FALSE,0,int,DNP3 AI 15
+DSTO.WhRtg,AI_16,Amp-hrs or Watt-hrs,Nameplate Storage Actual Energy Capacity,FALSE,0,int,DNP3 AI 16
+DGEN.SuscRtg,AI_21,Siemens,Remaining Reactive Susceptance,FALSE,0,int,DNP3 AI 21
+DGEN.RegClas.1,AI_22,Enum,IEEE 1547 Normal Operating Performance Category,FALSE,0,int,DNP3 AI 22
+DGEN.RegClas.2,AI_23,Enum,IEEE 1547 Abnormal Operating Performance Category,FALSE,0,int,DNP3 AI 23
+DECP.VRef,AI_29,Volts,Reference Voltage,FALSE,0,int,"DNP3 AI 29, multiplier 0.1"
+DECP.VRefOfs,AI_30,Volts,Reference Voltage Offset,FALSE,0,int,"DNP3 AI 30, multiplier 0.1"
+DGEN.WMax,AI_32,Watts,Maximum Active Generation Power,FALSE,0,int,DNP3 AI 32
+DGEN.IvarMax,AI_34,Vars,Maximum Reactive Injection Power,FALSE,0,int,DNP3 AI 34
+DGEN.AvarMax,AI_35,Vars,Maximum Reactive Absorption Power,FALSE,0,int,DNP3 AI 35
+DSTO.UseSocPct,AI_48,Percent,System Usable State of Charge,FALSE,0,int,"DNP3 AI 48, multiplier 0.1"
+DHFW1.HzStr,AI_121,Hz,Frequency-Watt High Starting Frequency,FALSE,0,int,"DNP3 AI 121, multiplier 0.001"
+DHFW1.WGra,AI_123,Percent watts per percent Hz difference,Frequency-Watt High Discharging / Generating Gradient,FALSE,0,int,"DNP3 AI 123, multiplier 0.001"
+DLFW1.HzStr,AI_125,Hz,Frequency-Watt Low Starting Frequency,FALSE,0,int,"DNP3 AI 125, multiplier 0.001"
+DLFW1.WGra,AI_127,Percent watts per percent Hz difference,Frequency-Watt Low Discharging / Generating Gradient,FALSE,0,int,"DNP3 AI 127, multiplier 0.001"
+DLFW1.OplTmsMax.1,AI_131,Seconds,Frequency-Watt Ramp Up Time Constant,FALSE,0,int,DNP3 AI 131
+DHFW1.OplTmsMax.2,AI_132,Seconds,Frequency-Watt Ramp Down Time Constant,FALSE,0,int,DNP3 AI 132
+DWMX.WLimPct,AI_148,Percent of WMax,"Active Power Limit Maximum (Pos = Generation, Neg = Consumption)",FALSE,0,int,"DNP3 AI 148, multiplier 0.1"
+DWMN.WLimPct,AI_149,Percent of WMax,"Active Power Limit Minimum (Pos = Generation, Neg = Consumption)",FALSE,0,int,"DNP3 AI 149, multiplier 0.1"
+DVWC1.EcpRef,AI_246,n/a,Volt-Watt Signal Meter ID,FALSE,0,int,DNP3 AI 246
+DVWC1.MMXN.Vol,AI_247,Volts,Volt-Watt Reference Voltage Input,FALSE,0,int,"DNP3 AI 247, multiplier 0.1"
+DVWC1.VWCrv,AI_248,n/a,Volt-Watt Curve Index,FALSE,0,int,DNP3 AI 248
+DVAR.VArTgtPct,AI_281,Percent,Constant VArs Reactive Power Target,FALSE,0,int,"DNP3 AI 281, multiplier 0.1"
+DFPF.PFGnTgt,AI_288,None,Constant Power Factor Setpoint - Generation / Discharging,FALSE,0,int,"DNP3 AI 288, multiplier 0.01"
+DGSMn.InCrv,AI_328,n/a,Curve Edit Selector,FALSE,0,int,DNP3 AI 328
+SYS.MMXU.Hz,AI_536,Hz,System Meter Frequency,FALSE,0,int,DNP3 AI 536
+SYS.MMXU.TotW,AI_537,Watts,System Meter Active Power,FALSE,0,int,DNP3 AI 537
+SYS.MMXU.TotVAr,AI_541,Vars,System Meter Reactive Power,FALSE,0,int,DNP3 AI 541
+SYS.MMXU.PhV.phsA.mag,AI_547,Volts,System Meter Phase A Volts,FALSE,0,int,DNP3 AI 547
+SYS.MMXU.PhV.phsA.ang,AI_548,Degrees,System Meter Phase A Angle,FALSE,0,int,DNP3 AI 548
+SYS.MMXU.PhV.phsB.mag,AI_549,Volts,System Meter Phase B Volts,FALSE,0,int,DNP3 AI 549
+SYS.MMXU.PhV.phsB.ang,AI_550,Degrees,System Meter Phase B Angle,FALSE,0,int,DNP3 AI 550
+SYS.MMXU.PhV.phsC.mag,AI_551,Volts,System Meter Phase C Volts,FALSE,0,int,DNP3 AI 551
+SYS.MMXU.PhV.phsC.ang,AI_552,Degrees,System Meter Phase C Angle,FALSE,0,int,DNP3 AI 552
+SYS.MMXU.AvPPVPhs,AI_553,Volts,System Meter Average Line to Line Voltage,FALSE,0,int,DNP3 AI 553
+SYS.MMXU.A.phsA.mag,AI_554,Amps,System Meter Current A,FALSE,0,int,DNP3 AI 554
+SYS.MMXU.A.phsB.mag,AI_555,Amps,System Meter Current B,FALSE,0,int,DNP3 AI 555
+SYS.MMXU.A.phsC.mag,AI_556,Amps,System Meter Current C,FALSE,0,int,DNP3 AI 556
+DHFW3.WGra,AI_590,W per Hz,Frequency-Watt Droop High Discharging / Generating Gradient,FALSE,0,int,DNP3 AI 590
+DLFW3.WGra,AI_591,W per Hz,Frequency-Watt Droop Low Discharging / Generating Gradient,FALSE,0,int,DNP3 AI 591
+DHFW3.WMin,AI_592,Watts,High Frequency-Watt Droop Minimum Active Power,FALSE,0,int,DNP3 AI 592
+DLFW3.WMax,AI_593,Watts,Low Frequency-Watt Droop Maximum Active Power,FALSE,0,int,DNP3 AI 593
+DWMX.WLimSpt,AI_619,Watts,"Active Power Limit Maximum (Pos = Generation, Neg = Consumption)",FALSE,0,int,DNP3 AI 619
+DWMN.WLimSpt,AI_620,Watts,"Active Power Limit Minimum (Pos = Generation, Neg = Consumption)",FALSE,0,int,DNP3 AI 620
+DVAR.DVar.Tgt,AI_621,Vars,Constant Vars using vars as unit,FALSE,0,int,DNP3 AI 621
+LCCH1.ChLiv,BI_0,,System Communication Error,FALSE,False,boolean,DNP3 BI 0
+CALH.GrAlm,BI_1,,System Has Priority 1 Alarms,FALSE,False,boolean,DNP3 BI 1
+DGEN.DEROpSt.disconnectedandavailable,BI_21,,DER is Off but Available to Start,FALSE,False,boolean,DNP3 BI 21
+DGEN.DEROpSt.disconnectedandblocked,BI_22,,DER is Off and Not Available to Start,FALSE,False,boolean,DNP3 BI 22
+DHVT,BI_31,,Supports Low/High Voltage Ride-Through Mode,FALSE,False,boolean,DNP3 BI 31
+DHFT,BI_32,,Supports Low/High Frequency Ride-Through Mode,FALSE,False,boolean,DNP3 BI 32
+DHFW,BI_35,,Supports Frequency-Watt Mode,FALSE,False,boolean,DNP3 BI 35
+DWMX,BI_36,,Supports Active Power Limit Mode,FALSE,False,boolean,DNP3 BI 36
+DVWC,BI_44,,Supports Volt-Watt Mode,FALSE,False,boolean,DNP3 BI 44
+DVAR,BI_46,,Supports Constant VArs Mode,FALSE,False,boolean,DNP3 BI 46
+DFPF,BI_47,,Supports Constant Power Factor Mode,FALSE,False,boolean,DNP3 BI 47
+DVVR,BI_48,,Supports Volt-VAr Control Mode,FALSE,False,boolean,DNP3 BI 48
+DWVR,BI_49,,Supports Watt-VAr Mode,FALSE,False,boolean,DNP3 BI 49
+DWMX.Mod,BI_69,,Operating Mode - Active Power Limit Enabled,FALSE,False,boolean,DNP3 BI 69
+DVWC.Mod,BI_77,,Operating Mode - Volt-Watt Enabled,FALSE,False,boolean,DNP3 BI 77
+DVAR.Mod,BI_79,,Operating Mode - Constant VArs Enabled,FALSE,False,boolean,DNP3 BI 79
+DFPF.Mod,BI_80,,Operating Mode - Constant Power Factor Enabled,FALSE,False,boolean,DNP3 BI 80
+DVVR.Mod,BI_81,,Operating Mode - Volt-VAR Control Enabled,FALSE,False,boolean,DNP3 BI 81
+DWVR.Mod,BI_82,,Operating Mode - Watt-VAr Enabled,FALSE,False,boolean,DNP3 BI 82
+DHVT.PTOV1.BlkRef,AO_23,n/a,Low/High Voltage Ride-Through High Must Trip Curve Index,TRUE,0,int,DNP3 AO 23
+DLVT.PTUV1.BlkRef,AO_24,n/a,Low/High Voltage Ride-Through Low Must Trip Curve Index,TRUE,0,int,DNP3 AO 24
+DHVT.PTOV2.BlkRef,AO_25,n/a,Low/High Voltage Ride-Through High Momentary Cessation Curve Index,TRUE,0,int,DNP3 AO 25
+DLVT.PTUV2.BlkRef,AO_26,n/a,Low/High Voltage Ride-Through Low Momentary Cessation Curve Index,TRUE,0,int,DNP3 AO 26
+DHFT.PTOF1.BlkRef,AO_28,n/a,Low/High Frequency Ride-Through High Must Trip Curve Index,TRUE,0,int,DNP3 AO 28
+DLFT.PTUF1.BlkRef,AO_29,n/a,Low/High Frequency Ride-Through Low Must Trip Curve Index,TRUE,0,int,DNP3 AO 29
+DHFW1.HzStr,AO_62,Hz,Frequency-Watt High Starting Frequency,TRUE,0,int,"DNP3 AO 62, multiplier 0.001"
+DHFW1.WGra,AO_64,Percent watts per percent Hz difference,Frequency-Watt High Discharging / Generating Gradient,TRUE,0,int,"DNP3 AO 64, multiplier 0.001"
+DLFW1.HzStr,AO_66,Hz,Frequency-Watt Low Starting Frequency,TRUE,0,int,"DNP3 AO 66, multiplier 0.001"
+DLFW1.WGra,AO_68,Percent watts per percent Hz difference,Frequency-Watt Low Discharging / Generating  Gradient,TRUE,0,int,"DNP3 AO 68, multiplier 0.001"
+DHFW1.OplTmsMax.1,AO_72,Seconds,Frequency-Watt Ramp Up Time Constant,TRUE,0,int,DNP3 AO 72
+DHFW1.OplTmsMax.2,AO_73,Seconds,Frequency-Watt Ramp Down Time Constant,TRUE,0,int,DNP3 AO 73
+DWMX.WLimPct,AO_87,Percent of WMax,"Active Power Limit Maximum (Pos = Generation, Neg = Consumption)",TRUE,0,int,"DNP3 AO 87, multiplier 0.1"
+DWMN.WLimPct,AO_88,Percent of WMax,"Active Power Limit Minimum (Pos = Generation, Neg = Consumption)",TRUE,0,int,"DNP3 AO 88, multiplier 0.1"
+DVWC.VWCrv,AO_173,n/a,Volt-Watt Curve Index,TRUE,0,int,DNP3 AO 173
+DVWC.OplTmsMax.1,AO_175,Seconds,Volt-Watt Ramp Up Time Constant,TRUE,0,int,DNP3 AO 175
+DVWC.OplTmsMax.2,AO_176,Seconds,Volt-Watt Ramp Down Time Constant,TRUE,0,int,DNP3 AO 176
+DVAR.VArTgtPct,AO_203,Percent,Constant Vars Reactive Power Target,TRUE,0,int,"DNP3 AO 203, multiplier 0.1"
+DFPF.PFGnTgt,AO_210,None,Constant Power Factor Setpoint - Generation/Discharging,TRUE,0,int,"DNP3 AO 210, multiplier 0.01"
+DFPF.PFLodTgt,AO_211,None,Constant Power Factor Setpoint - Charging,TRUE,0,int,"DNP3 AO 211, multiplier 0.01"
+DVVR.VVArCrv,AO_217,n/a,Volt-Var Curve Index,TRUE,0,int,DNP3 AO 217
+DVVR.VRefTmms,AO_220,Seconds,Volt-Var Autonomous Voltage Reference Adjustment Time Constant,TRUE,0,int,DNP3 AO 220
+DGSMn.InCrv,AO_244,n/a,Curve Edit Selector,TRUE,0,int,DNP3 AO 244
+DGSMn.ModTyp,AO_245,Enum,Curve Type,TRUE,0,int,DNP3 AO 245
+FMARn.PairArr.NumPts,AO_246,n/a,Curve Number of Points,TRUE,0,int,DNP3 AO 246
+FMARn.IndpUnits,AO_247,Enum,Independent (X-Value) Units for Curve,TRUE,0,int,DNP3 AO 247
+FMARn.DepRef,AO_248,Enum,Dependent (Y-Value) Units for Curve,TRUE,0,int,DNP3 AO 248
+FMARn.PairArr.CrvPts.1.xVal,AO_249,Varies,Curve Point 1 X-Value,TRUE,0,int,DNP3 AO 249
+FMARn.PairArr.CrvPts.1.yVal,AO_250,Varies,Curve Point 1 Y-Value,TRUE,0,int,"DNP3 AO 250, multiplier 0.1"
+FMARn.PairArr.CrvPts.2.xVal,AO_251,Varies,Curve Point 2 X-Value,TRUE,0,int,DNP3 AO 251
+FMARn.PairArr.CrvPts.2.yVal,AO_252,Varies,Curve Point 2 Y-Value,TRUE,0,int,"DNP3 AO 252, multiplier 0.1"
+FMARn.PairArr.CrvPts.3.xVal,AO_253,Varies,Curve Point 3 X-Value,TRUE,0,int,DNP3 AO 253
+FMARn.PairArr.CrvPts.3.yVal,AO_254,Varies,Curve Point 3 Y-Value,TRUE,0,int,"DNP3 AO 254, multiplier 0.1"
+FMARn.PairArr.CrvPts.4.xVal,AO_255,Varies,Curve Point 4 X-Value,TRUE,0,int,DNP3 AO 255
+FMARn.PairArr.CrvPts.4.yVal,AO_256,Varies,Curve Point 4 Y-Value,TRUE,0,int,"DNP3 AO 256, multiplier 0.1"
+DHFW3.WGra,AO_480,W per Hz,High Frequency-Watt Droop Upper Gradient,TRUE,0,int,DNP3 AO 480
+DLFW3.WGra,AO_481,W per Hz,Low Frequency-Watt Droop Lower Gradient,TRUE,0,int,DNP3 AO 481
+DHFW3.WMin,AO_482,Watts,High Frequency-Watt Droop Minimum Active Power,TRUE,0,int,DNP3 AO 482
+DLFW3.WMax,AO_483,Watts,Low Frequency-Watt Droop Maximum Active Power,TRUE,0,int,DNP3 AO 483
+DWMX.WLimSpt,AO_509,Watts,"Active Power Limit Maximum (Pos = Generation, Neg = Consumption)",TRUE,0,int,DNP3 AO 509
+DWMN.WLimSpt,AO_510,Watts,"Active Power Limit Minimum (Pos = Generation, Neg = Consumption)",TRUE,0,int,DNP3 AO 510
+DVAR.DVar.Tgt,AO_511,Vars,Constant Vars using vars as unit,TRUE,0,int,DNP3 AO 511
+DGEN.PrmConn,BO_3,,System Permission to Start,TRUE,False,boolean,DNP3 BO 3
+DWMX.Mod,BO_17,,Enable Active Power Limit Mode,TRUE,False,boolean,DNP3 BO 17
+DVWC.Mod,BO_25,,Enable Volt-Watt Mode,TRUE,False,boolean,DNP3 BO 25
+DVAR.Mod,BO_27,,Enable Constant Vars Mode,TRUE,False,boolean,DNP3 BO 27
+DFPF.Mod,BO_28,,Enable Constant Power Factor Mode,TRUE,False,boolean,DNP3 BO 28
+DVVR.Mod,BO_29,,Enable Volt-Var Control Mode,TRUE,False,boolean,DNP3 BO 29
+DVVR.VRefAdjEna,BO_41,,Volt-Var Enable Autonomous Voltage Reference Adjustment,TRUE,False,boolean,DNP3 BO 41
+HM1MMTR.SupWh,CTR_5000,,Meter #1 Active Energy Delivered,FALSE,0,int,DNP3 CTR 5000
+HM1MMTR.DmdWh,CTR_5001,,Meter #1 Active Energy Received,FALSE,0,int,DNP3 CTR 5001
+HM1MMTR.SupVArh,CTR_5002,,Meter #1 Reactive Energy Delivered,FALSE,0,int,DNP3 CTR 5002
+HM1MMTR.DmdVArh,CTR_5003,,Meter #1 Reactive Energy Received,FALSE,0,int,DNP3 CTR 5003

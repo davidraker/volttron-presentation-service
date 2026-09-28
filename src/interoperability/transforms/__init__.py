@@ -25,9 +25,20 @@ MISSING = _Missing()
 scope_label = contextvars.ContextVar('scope_label', default='each0')
 
 
+ROOT_LABEL = 'each0'
+
+
 def scope():
     """Conversion yielding the element that encloses the expression being built (see ``scope_label``)."""
     return c.label(scope_label.get())
+
+
+def scoped_path(path: str):
+    """Conversion resolving a quoted dotted path: against the enclosing element, or against the whole message
+    when the path starts with ``/`` (``'/705_V_SF'`` reaches a flat driver point from inside a repeated group)."""
+    if path.startswith('/'):
+        return c.call_func(_resolve_path, c.label(ROOT_LABEL), path[1:])
+    return c.call_func(_resolve_path, scope(), path)
 
 
 # ---- Fidelity: how much of a value's information survives each function (1.0 exact, 0.0 gone) ----
@@ -42,8 +53,8 @@ FIDELITY = {
     'when': 0.7,           # present for some messages only
     'when_equal': 0.7,
     'const': 0.0,          # the source value itself is not carried
-    'pairs': 1.0, 'unpairs': 1.0, 'as_list': 1.0, 'no_op': 1.0,
-    'scale': 1.0, 'scale_reg': 1.0, 'scale_reg_pow_10': 1.0, 'scale_decimal_int_signed': 1.0,
+    'pairs': 1.0, 'unpairs': 1.0, 'series': 1.0, 'unseries': 1.0, 'as_list': 1.0, 'no_op': 1.0,
+    'scale': 1.0, 'scale_fields': 1.0, 'prefix_keys': 1.0, 'scale_reg': 1.0, 'scale_reg_pow_10': 1.0, 'scale_decimal_int_signed': 1.0,
     'mod10k': 1.0, 'mod10k64': 1.0, 'mod10k48': 1.0, 'multiple': 1.0, 'add': 1.0,
 }
 DEFAULT_LOSSY = 0.9
@@ -157,20 +168,21 @@ def scale_int(multiplier):
 
 
 def _register(path: str):
-    """Conversion reading a scaling register by quoted dotted path from the element enclosing the expression."""
-    return c.call_func(_resolve_path, scope(), path)
+    """Conversion reading a scaling register by quoted dotted path (see ``scoped_path``)."""
+    return scoped_path(path)
 
 
 def scale_reg(register: str):
     """
         Divide the value by another register's value, named by a quoted dotted path resolved against the
-         element enclosing the expression (modbus_tk ``scale_reg``), e.g. ``scale_reg('701.W_SF')``. The
-         value is treated as missing when the scaling register is absent; division by zero gives None.
+         element enclosing the expression (modbus_tk ``scale_reg``), e.g. ``scale_reg('701.W_SF')``. When the
+         scaling register is absent the value passes through unchanged, so a message from a driver that has
+         already applied the factor (and no longer publishes it) is not altered; division by zero gives None.
          The inverse multiplies by the register.
     """
     reg = _register(register)
-    conv = c.if_(reg.is_(None), c.naive(MISSING), c.try_(c.this / reg).except_(ZeroDivisionError, None))
-    conv.inverse = c.if_(reg.is_(None), c.naive(MISSING), c.this * reg)
+    conv = c.if_(reg.is_(None), c.this, c.try_(c.this / reg).except_(ZeroDivisionError, None))
+    conv.inverse = c.if_(reg.is_(None), c.this, c.this * reg)
     return conv
 
 
@@ -179,12 +191,12 @@ def scale_reg_pow_10(register: str):
         Multiply the value by 10 to the power of another register's value (modbus_tk ``scale_reg_pow_10``),
          which is how SunSpec scale factor registers work: ``scale_reg_pow_10('701.W_SF')`` with W_SF = -1
          scales by 0.1. The register is a quoted dotted path resolved against the element enclosing the
-         expression; the value is treated as missing when it is absent. The inverse divides.
+         expression. When it is absent the value passes through unchanged (see ``scale_reg``). The inverse divides.
     """
     reg = _register(register)
     factor = c.naive(10.0) ** reg
-    conv = c.if_(reg.is_(None), c.naive(MISSING), c.call_func(_fix_decimals, c.this * factor, c.this, factor))
-    conv.inverse = c.if_(reg.is_(None), c.naive(MISSING), c.this / factor)
+    conv = c.if_(reg.is_(None), c.this, c.call_func(_fix_decimals, c.this * factor, c.this, factor))
+    conv.inverse = c.if_(reg.is_(None), c.this, c.this / factor)
     return conv
 
 
@@ -293,7 +305,7 @@ def take(count: int | str):
          If the referenced field is absent the list is passed through unchanged.
     """
     if isinstance(count, str):
-        n = c.call_func(_resolve_path, scope(), count)
+        n = scoped_path(count)
     else:
         n = c.naive(count)
     return c.call_func(_take, c.this, n)
@@ -349,7 +361,7 @@ def when(path: str, expected):
         Pass the value through only when the field at ``path`` (a quoted dotted path resolved against the
          element enclosing the expression) equals ``expected``; otherwise the field is treated as missing.
     """
-    return c.call_func(_when, c.this, c.call_func(_resolve_path, scope(), path), expected)
+    return c.call_func(_when, c.this, scoped_path(path), expected)
 
 
 def when_equal(path_a: str, path_b: str):
@@ -358,8 +370,7 @@ def when_equal(path_a: str, path_b: str):
          the element enclosing the expression) are present and equal. Used to accept an IEEE 1815.2 curve
          window only when its selector matches a mode's curve index, e.g. ``when_equal('AI.328', 'AI.297')``.
     """
-    return c.call_func(_when, c.this, c.call_func(_resolve_path, scope(), path_a),
-                       c.call_func(_resolve_path, scope(), path_b))
+    return c.call_func(_when, c.this, scoped_path(path_a), scoped_path(path_b))
 
 
 def _unpairs(points, start, x, y):
@@ -382,3 +393,111 @@ def unpairs(start: int, x: str = 'x', y: str = 'y'):
          into the enclosing point group.
     """
     return c.call_func(_unpairs, c.this, start, x, y)
+
+
+def _parse_specs(specs):
+    """'field:template' strings -> [(field, template)]; the template holds one ``{}`` for the index."""
+    parsed = []
+    for spec in specs:
+        field, _, template = str(spec).partition(':')
+        if not template or '{}' not in template:
+            raise ValueError(f"series specs are 'field:name_with_{{}}' strings, got {spec!r}")
+        parsed.append((field, template))
+    return parsed
+
+
+def _series(mapping, count, start, specs):
+    if not isinstance(mapping, dict):
+        return MISSING
+    items = []
+    for i in range(start, start + count):
+        item = {field: mapping.get(template.format(i), MISSING) for field, template in specs}
+        if all(v is MISSING for v in item.values()):
+            continue
+        items.append(item)
+    return items
+
+
+def series(count: int, start: int, *specs: str):
+    """
+        Gather numbered flat points into a list of records, e.g. a driver's ``705_Crv1_Pt1_V``, ``705_Crv1_Pt1_Var``,
+         ``705_Crv1_Pt2_V`` ... into ``[{V, Var}, ...]``: ``series(4, 1, 'V:705_Crv1_Pt{}_V', 'Var:705_Crv1_Pt{}_Var')``.
+         ``count`` indices from ``start`` are tried; indices with none of the fields present are skipped.
+    """
+    parsed = _parse_specs(specs)
+    conv = c.call_func(_series, c.this, count, start, parsed)
+    # The concrete point names each record field comes from, so field maps can account for them exactly.
+    conv.series_fields = {field: [template.format(i) for i in range(start, start + count)] for field, template in parsed}
+    return conv
+
+
+def _unseries(items, start, specs):
+    if not isinstance(items, (list, tuple)):
+        return MISSING
+    flat = {}
+    for i, item in enumerate(items, start):
+        if isinstance(item, dict):
+            for field, template in specs:
+                flat[template.format(i)] = item.get(field, MISSING)
+    return flat
+
+
+def unseries(start: int, *specs: str):
+    """
+        Inverse of ``series``: lay a list of records out as numbered flat points, for a spread entry:
+         ``"*705 points": "transform[705, Crv, 0, Pt](unseries(1, 'V:705_Crv1_Pt{}_V', 'Var:705_Crv1_Pt{}_Var'))"``.
+    """
+    return c.call_func(_unseries, c.this, start, _parse_specs(specs))
+
+
+def _scale_record(item, factors):
+    item = dict(item)
+    for field, factor in factors:
+        if isinstance(item.get(field), (int, float)) and not isinstance(item[field], bool):
+            item[field] = _fix_decimals(item[field] * factor, item[field], factor)
+    return item
+
+
+def _scale_fields(items, factors):
+    if isinstance(items, dict):
+        return _scale_record(items, factors)
+    if not isinstance(items, (list, tuple)):
+        return MISSING
+    return [_scale_record(item, factors) if isinstance(item, dict) else item for item in items]
+
+
+def scale_fields(*specs: str):
+    """
+        Multiply named fields by constants, in every record of a list or in a single group:
+         ``scale_fields('V:0.01', 'Var:0.01')``. Used with ``series``/``unseries`` when a curve's points carry a
+         scale factor known at configuration time, or on a point table keyed by index. Has an inverse.
+    """
+    factors = []
+    for spec in specs:
+        field, _, factor = str(spec).partition(':')
+        factors.append((field, _numeric(factor)))
+    conv = c.call_func(_scale_fields, c.this, factors)
+    conv.inverse = c.call_func(_scale_fields, c.this, [(f, 1 / v) for f, v in factors])
+    return conv
+
+
+def _prefix_keys(mapping, prefix):
+    if not isinstance(mapping, dict):
+        return MISSING
+    return {f'{prefix}{k}': v for k, v in mapping.items()}
+
+
+def _strip_prefix(mapping, prefix):
+    if not isinstance(mapping, dict):
+        return MISSING
+    return {(k[len(prefix):] if str(k).startswith(prefix) else k): v for k, v in mapping.items()}
+
+
+def prefix_keys(prefix: str):
+    """
+        Rename every key of a group by prefixing it, e.g. ``prefix_keys('AO_')`` turns a DNP3 point table
+         ``{"244": 1}`` into the driver's flat ``{"AO_244": 1}``. Meant for a spread entry. Has an inverse.
+    """
+    conv = c.call_func(_prefix_keys, c.this, prefix)
+    conv.inverse = c.call_func(_strip_prefix, c.this, prefix)
+    return conv

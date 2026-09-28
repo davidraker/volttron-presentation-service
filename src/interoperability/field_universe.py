@@ -69,7 +69,58 @@ def ieee1815_2_fields(tables: tuple[str, ...]) -> set[tuple]:
     return {(table, str(index)) for table in tables for index in POINTS[PointType(table)]}
 
 
+# The service's 2030.5 convention: resource name, then attribute; curves under DERCurve.<curveType>; readings
+# under MirrorMeterReading.<unit> with voltages by phase (see the README's bundled-transform conventions).
+_SEP2_RESOURCES = ('DERCapability', 'DERSettings', 'DERStatus', 'DefaultDERControl', 'DeviceInformation')
+_SEP2_CURVE_TYPES = ('opModVoltVar', 'opModWattVar', 'opModVoltWatt', 'opModHVRTMustTrip', 'opModLVRTMustTrip',
+                     'opModHVRTMomentaryCessation', 'opModLVRTMomentaryCessation', 'opModHFRTMustTrip', 'opModLFRTMustTrip',
+                     'opModFreqWatt')
+_SEP2_READINGS = ('W', 'var', 'VA', 'Hz', 'A', 'PF')
+_SEP2_PHASES = ('PhaseA', 'PhaseB', 'PhaseC', 'PhaseAB', 'PhaseBC', 'PhaseCA')
+
+
+def ieee2030_5_fields() -> set[tuple]:
+    """Every attribute path of the 2030.5 convention, from the generated sep models."""
+    from .models.ieee2030_5 import sep
+    skip = {'href', 'mRID', 'description', 'version', 'creationTime', 'replyTo', 'responseRequired', 'subscribable'}
+
+    def attributes(cls):
+        return [n for n in cls.model_fields if n not in skip]
+
+    def scalar_or_group(cls, prefix):
+        for name in attributes(cls):
+            info = cls.model_fields[name]
+            sub = _group_type(info.annotation, sep.SepBase)
+            # Quantities with a multiplier (FixedPointType and friends) are single values in the convention,
+            # since multipliers are not applied; real sub-structures (displacement/excitation, droop settings)
+            # keep their attributes.
+            if sub and not sub[1] and sub[0].__name__ not in ('Link', 'ListLink') \
+                    and not set(attributes(sub[0])) <= {'value', 'multiplier'}:
+                for inner in attributes(sub[0]):
+                    if inner != 'multiplier':
+                        yield prefix + (name, inner)
+            else:
+                yield prefix + (name,)
+
+    universe = set()
+    for resource in _SEP2_RESOURCES:
+        universe |= set(scalar_or_group(getattr(sep, resource), (resource,)))
+    universe |= set(scalar_or_group(sep.DERControlBase, ('DERControl',)))
+    universe |= set(scalar_or_group(sep.DERControlBase, ('DERControlList', WILDCARD, 'DERControl')))
+    universe |= {('DERControlList', WILDCARD, 'interval', 'start'), ('DERControlList', WILDCARD, 'interval', 'duration')}
+    for curve in _SEP2_CURVE_TYPES:
+        for prefix in ((('DERCurve', curve),), (('DERControlList', WILDCARD, 'DERCurve', curve),)):
+            base = prefix[0]
+            universe |= {base + (a,) for a in attributes(sep.DERCurve) if a != 'CurveData'}
+            universe |= {base + ('CurveData', WILDCARD, a) for a in attributes(sep.CurveData)}
+    for reading in _SEP2_READINGS:
+        universe.add(('MirrorMeterReading', reading))
+    universe |= {('MirrorMeterReading', 'V', phase) for phase in _SEP2_PHASES}
+    return universe
+
+
 _MODEL_FORMATS = {
+    '2030.5': ieee2030_5_fields,
     'sunspec': sunspec_fields,
     'openfmb': openfmb_fields,
     'openfmb.ess': lambda: openfmb_fields('ESS'),

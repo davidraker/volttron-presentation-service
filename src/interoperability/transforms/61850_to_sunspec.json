@@ -168,7 +168,8 @@
         }
       },
       "711": {
-        "Ctl": {
+        "Ctl[#]": {
+          "#": "transform(as_list())",
           "DbOf": "transform[DHFW, HzStr]()",
           "DbUf": "transform[DLFW, HzStr]()",
           "KOf": "transform[DHFW, WGra]()",

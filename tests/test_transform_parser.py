@@ -400,8 +400,8 @@ def test_scale_reg_and_scale_reg_pow_10_use_a_sibling_register(parser):
               'V': "transform[701, V](scale_reg('701.V_DIV'))"}
     pipeline = parser.build_transform_from_schema(schema)
     assert pipeline.execute({'701': {'W': 12345, 'W_SF': -1, 'V': 2400, 'V_DIV': 10}}) == {'W': 1234.5, 'V': 240.0}
-    assert pipeline.execute({'701': {'W': 12345, 'W_SF': 2}}) == {'W': 1234500.0}            # V_DIV absent: V omitted
-    assert pipeline.execute({'701': {'W': 5, 'V': 2400, 'V_DIV': 0}}) == {'V': None}          # W_SF absent, /0 -> None
+    assert pipeline.execute({'701': {'W': 12345, 'W_SF': 2, 'V': 240}}) == {'W': 1234500.0, 'V': 240}   # V_DIV absent: V unchanged
+    assert pipeline.execute({'701': {'W': 5, 'V': 2400, 'V_DIV': 0}}) == {'W': 5, 'V': None}    # W_SF absent: unchanged; /0 -> None
     # Inside a repeated group the register path is relative to the element.
     schema = {'pts[#]': {'v': "transform[705, Crv, 0, Pt[#], V](scale_reg_pow_10('sf'))"}}
     assert parser.build_transform_from_schema(schema).execute(
@@ -412,7 +412,7 @@ def test_scale_reg_and_scale_reg_pow_10_use_a_sibling_register(parser):
         return c.this.pipe(c.naive(value).pipe(conv.inverse), label_input='each0').execute(element)
     assert invert(transforms.scale_reg_pow_10('sf'), {'sf': -1}, 95.0) == 950.0
     assert invert(transforms.scale_reg('d'), {'d': 10}, 240.0) == 2400.0
-    assert invert(transforms.scale_reg('d'), {}, 240.0) is transforms.MISSING
+    assert invert(transforms.scale_reg('d'), {}, 240.0) == 240.0                       # absent register: unchanged
 
 
 def test_no_op_copies_and_is_its_own_inverse():

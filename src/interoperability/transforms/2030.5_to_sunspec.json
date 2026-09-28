@@ -177,7 +177,8 @@
       },
       "711": {
         "Ena": null,
-        "Ctl": {
+        "Ctl[#]": {
+          "#": "transform(as_list())",
           "DbOf": "transform[DERControl, opModFreqDroop, dBOF]()",
           "DbUf": "transform[DERControl, opModFreqDroop, dBUF]()",
           "KOf": "transform[DERControl, opModFreqDroop, kOF]()",

@@ -153,7 +153,8 @@
       },
       "711": {
         "Ena": null,
-        "Ctl": {
+        "Ctl[#]": {
+          "#": "transform(as_list())",
           "DbOf": "transform['Frequency-Watt', dbof]()",
           "DbUf": "transform['Frequency-Watt', dbuf]()",
           "KOf": "transform['Frequency-Watt', kof]()",

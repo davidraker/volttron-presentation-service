@@ -191,17 +191,17 @@
         }
       },
       "DHFW": {
-        "HzStr": "transform[711, Ctl, DbOf]()",
-        "WGra": "transform[711, Ctl, KOf]()",
+        "HzStr": "transform[711, Ctl, 0, DbOf]()",
+        "WGra": "transform[711, Ctl, 0, KOf]()",
         "OpnLoopMax": {
           "DLFW": {
-            "OpnLoopMax": "transform[711, Ctl, RspTms]()"
+            "OpnLoopMax": "transform[711, Ctl, 0, RspTms]()"
           }
         }
       },
       "DLFW": {
-        "HzStr": "transform[711, Ctl, DbUf]()",
-        "WGra": "transform[711, Ctl, Kuf]()"
+        "HzStr": "transform[711, Ctl, 0, DbUf]()",
+        "WGra": "transform[711, Ctl, 0, Kuf]()"
       },
       "DCTE": {
         "RtnSrvAuto": {

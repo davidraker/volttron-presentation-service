@@ -99,11 +99,11 @@
         "LF Trip Curve Points": "transform[709, Crv, 0, MustTrip, Pt](take('709.Crv.0.MustTrip.ActPt'))"
       },
       "Frequency-Watt": {
-        "dbof": "transform[711, Ctl, DbOf]()",
-        "dbuf": "transform[711, Ctl, DbUf]()",
-        "kof": "transform[711, Ctl, KOf]()",
-        "kuf": "transform[711, Ctl, KUf]()",
-        "Open Loop Response Time": "transform[711, Ctl, RspTms]()"
+        "dbof": "transform[711, Ctl, 0, DbOf]()",
+        "dbuf": "transform[711, Ctl, 0, DbUf]()",
+        "kof": "transform[711, Ctl, 0, KOf]()",
+        "kuf": "transform[711, Ctl, 0, KUf]()",
+        "Open Loop Response Time": "transform[711, Ctl, 0, RspTms]()"
       },
       "Enter Service": {
         "Permit service": "transform[703, ES]()",

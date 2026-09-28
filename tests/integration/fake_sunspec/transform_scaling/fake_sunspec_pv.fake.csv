@@ -1,0 +1,385 @@
+Point Name,Volttron Point Name,Units,Units Details,Writable,Starting Value,Type,Notes
+1_Mn,1_Mn,,Manufacturer,FALSE,SunSpecTest,str,SunSpec string at 40004
+1_Md,1_Md,,Model,FALSE,Test-1547-1,str,SunSpec string at 40020
+1_Opt,1_Opt,,Options,FALSE,opt_a_b_c,str,SunSpec string at 40036
+1_Vr,1_Vr,,Version,FALSE,1.2.3,str,SunSpec string at 40044
+1_SN,1_SN,,Serial Number,FALSE,sn-123456789,str,SunSpec string at 40052
+1_DA,1_DA,,Device Address,TRUE,1,int,SunSpec uint16 at 40068
+701_ACType,701_ACType,,AC Wiring Type,FALSE,3,int,SunSpec enum16 at 40072
+701_St,701_St,,Operating State,FALSE,2,int,SunSpec enum16 at 40073
+701_InvSt,701_InvSt,,Inverter State,FALSE,,int,SunSpec enum16 at 40074
+701_ConnSt,701_ConnSt,,Grid Connection State,FALSE,,int,SunSpec enum16 at 40075
+701_Alrm,701_Alrm,,Alarm Bitfield,FALSE,0,int,SunSpec bitfield32 at 40076
+701_DERMode,701_DERMode,,DER Operational Characteristics,FALSE,,int,SunSpec bitfield32 at 40078
+701_W,701_W,W,Active Power,FALSE,9800,int,"SunSpec int16 at 40080, scale factor 701_W_SF"
+701_VA,701_VA,VA,Apparent Power,FALSE,10000,int,"SunSpec int16 at 40081, scale factor 701_VA_SF"
+701_Var,701_Var,Var,Reactive Power,FALSE,200,int,"SunSpec int16 at 40082, scale factor 701_Var_SF"
+701_PF,701_PF,,Power Factor,FALSE,985,int,"SunSpec int16 at 40083, scale factor 701_PF_SF"
+701_A,701_A,A,Total AC Current,FALSE,411,int,"SunSpec int16 at 40084, scale factor 701_A_SF"
+701_LLV,701_LLV,V,Voltage LL,FALSE,2400,int,"SunSpec uint16 at 40085, scale factor 701_V_SF"
+701_LNV,701_LNV,V,Voltage LN,FALSE,2400,int,"SunSpec uint16 at 40086, scale factor 701_V_SF"
+701_Hz,701_Hz,Hz,Frequency,FALSE,60010,int,"SunSpec uint32 at 40087, scale factor 701_Hz_SF"
+701_TotWhInj,701_TotWhInj,Wh,Total Energy Injected,FALSE,150,int,"SunSpec uint64 at 40089, scale factor 701_TotWh_SF"
+701_TotWhAbs,701_TotWhAbs,Wh,Total Energy Absorbed,FALSE,0,int,"SunSpec uint64 at 40093, scale factor 701_TotWh_SF"
+701_TotVarhInj,701_TotVarhInj,Varh,Total Reactive Energy Inj,FALSE,9,int,"SunSpec uint64 at 40097, scale factor 701_TotVarh_SF"
+701_TotVarhAbs,701_TotVarhAbs,Varh,Total Reactive Energy Abs,FALSE,0,int,"SunSpec uint64 at 40101, scale factor 701_TotVarh_SF"
+701_TmpAmb,701_TmpAmb,C,Ambient Temperature,FALSE,450,int,"SunSpec int16 at 40105, scale factor 701_Tmp_SF"
+701_TmpCab,701_TmpCab,C,Cabinet Temperature,FALSE,550,int,"SunSpec int16 at 40106, scale factor 701_Tmp_SF"
+701_TmpSnk,701_TmpSnk,C,Heat Sink Temperature,FALSE,650,int,"SunSpec int16 at 40107, scale factor 701_Tmp_SF"
+701_TmpTrns,701_TmpTrns,C,Transformer Temperature,FALSE,500,int,"SunSpec int16 at 40108, scale factor 701_Tmp_SF"
+701_TmpSw,701_TmpSw,C,IGBT/MOSFET Temperature,FALSE,400,int,"SunSpec int16 at 40109, scale factor 701_Tmp_SF"
+701_TmpOt,701_TmpOt,C,Other Temperature,FALSE,420,int,"SunSpec int16 at 40110, scale factor 701_Tmp_SF"
+701_WL1,701_WL1,W,Watts L1,FALSE,3200,int,"SunSpec int16 at 40111, scale factor 701_W_SF"
+701_VAL1,701_VAL1,VA,VA L1,FALSE,3333,int,"SunSpec int16 at 40112, scale factor 701_VA_SF"
+701_VarL1,701_VarL1,Var,Var L1,FALSE,80,int,"SunSpec int16 at 40113, scale factor 701_Var_SF"
+701_PFL1,701_PFL1,,PF L1,FALSE,984,int,"SunSpec int16 at 40114, scale factor 701_PF_SF"
+701_AL1,701_AL1,A,Amps L1,FALSE,137,int,"SunSpec int16 at 40115, scale factor 701_A_SF"
+701_VL1L2,701_VL1L2,V,Phase Voltage L1-L2,FALSE,120,int,"SunSpec uint16 at 40116, scale factor 701_V_SF"
+701_VL1,701_VL1,V,Phase Voltage L1-N,FALSE,120,int,"SunSpec uint16 at 40117, scale factor 701_V_SF"
+701_TotWhInjL1,701_TotWhInjL1,Wh,Total Watt-Hours Inj L1,FALSE,49,int,"SunSpec uint64 at 40118, scale factor 701_TotWh_SF"
+701_TotWhAbsL1,701_TotWhAbsL1,Wh,Total Watt-Hours Abs L1,FALSE,0,int,"SunSpec uint64 at 40122, scale factor 701_TotWh_SF"
+701_TotVarhInjL1,701_TotVarhInjL1,Varh,Total Var-Hours Inj L1,FALSE,2,int,"SunSpec uint64 at 40126, scale factor 701_TotVarh_SF"
+701_TotVarhAbsL1,701_TotVarhAbsL1,Varh,Total Var-Hours Abs L1,FALSE,0,int,"SunSpec uint64 at 40130, scale factor 701_TotVarh_SF"
+701_WL2,701_WL2,W,Watts L2,FALSE,3300,int,"SunSpec int16 at 40134, scale factor 701_W_SF"
+701_VAL2,701_VAL2,VA,VA L2,FALSE,3333,int,"SunSpec int16 at 40135, scale factor 701_VA_SF"
+701_VarL2,701_VarL2,Var,Var L2,FALSE,80,int,"SunSpec int16 at 40136, scale factor 701_Var_SF"
+701_PFL2,701_PFL2,,PF L2,FALSE,986,int,"SunSpec int16 at 40137, scale factor 701_PF_SF"
+701_AL2,701_AL2,A,Amps L2,FALSE,136,int,"SunSpec int16 at 40138, scale factor 701_A_SF"
+701_VL2L3,701_VL2L3,V,Phase Voltage L2-L3,FALSE,120,int,"SunSpec uint16 at 40139, scale factor 701_V_SF"
+701_VL2,701_VL2,V,Phase Voltage L2-N,FALSE,120,int,"SunSpec uint16 at 40140, scale factor 701_V_SF"
+701_TotWhInjL2,701_TotWhInjL2,Wh,Total Watt-Hours Inj L2,FALSE,50,int,"SunSpec uint64 at 40141, scale factor 701_TotWh_SF"
+701_TotWhAbsL2,701_TotWhAbsL2,Wh,Total Watt-Hours Abs L2,FALSE,0,int,"SunSpec uint64 at 40145, scale factor 701_TotWh_SF"
+701_TotVarhInjL2,701_TotVarhInjL2,Varh,Total Var-Hours Inj L2,FALSE,3,int,"SunSpec uint64 at 40149, scale factor 701_TotVarh_SF"
+701_TotVarhAbsL2,701_TotVarhAbsL2,Varh,Total Var-Hours Abs L2,FALSE,0,int,"SunSpec uint64 at 40153, scale factor 701_TotVarh_SF"
+701_WL3,701_WL3,W,Watts L3,FALSE,3500,int,"SunSpec int16 at 40157, scale factor 701_W_SF"
+701_VAL3,701_VAL3,VA,VA L3,FALSE,3333,int,"SunSpec int16 at 40158, scale factor 701_VA_SF"
+701_VarL3,701_VarL3,Var,Var L3,FALSE,40,int,"SunSpec int16 at 40159, scale factor 701_Var_SF"
+701_PFL3,701_PFL3,,PF L3,FALSE,987,int,"SunSpec int16 at 40160, scale factor 701_PF_SF"
+701_AL3,701_AL3,A,Amps L3,FALSE,138,int,"SunSpec int16 at 40161, scale factor 701_A_SF"
+701_VL3L1,701_VL3L1,V,Phase Voltage L3-L1,FALSE,120,int,"SunSpec uint16 at 40162, scale factor 701_V_SF"
+701_VL3,701_VL3,V,Phase Voltage L3-N,FALSE,,int,"SunSpec uint16 at 40163, scale factor 701_V_SF"
+701_TotWhInjL3,701_TotWhInjL3,Wh,Total Watt-Hours Inj L3,FALSE,51,int,"SunSpec uint64 at 40164, scale factor 701_TotWh_SF"
+701_TotWhAbsL3,701_TotWhAbsL3,Wh,Total Watt-Hours Abs L3,FALSE,0,int,"SunSpec uint64 at 40168, scale factor 701_TotWh_SF"
+701_TotVarhInjL3,701_TotVarhInjL3,Varh,Total Var-Hours Inj L3,FALSE,4,int,"SunSpec uint64 at 40172, scale factor 701_TotVarh_SF"
+701_TotVarhAbsL3,701_TotVarhAbsL3,Varh,Total Var-Hours Abs L3,FALSE,0,int,"SunSpec uint64 at 40176, scale factor 701_TotVarh_SF"
+701_ThrotPct,701_ThrotPct,Pct,Throttling In Pct,FALSE,,int,SunSpec uint16 at 40180
+701_ThrotSrc,701_ThrotSrc,,Throttle Source Information,FALSE,,int,SunSpec bitfield32 at 40181
+701_A_SF,701_A_SF,,Current Scale Factor,FALSE,-1,int,SunSpec sunssf at 40183
+701_V_SF,701_V_SF,,Voltage Scale Factor,FALSE,-1,int,SunSpec sunssf at 40184
+701_Hz_SF,701_Hz_SF,,Frequency Scale Factor,FALSE,-3,int,SunSpec sunssf at 40185
+701_W_SF,701_W_SF,,Active Power Scale Factor,FALSE,0,int,SunSpec sunssf at 40186
+701_PF_SF,701_PF_SF,,Power Factor Scale Factor,FALSE,-3,int,SunSpec sunssf at 40187
+701_VA_SF,701_VA_SF,,Apparent Power Scale Factor,FALSE,0,int,SunSpec sunssf at 40188
+701_Var_SF,701_Var_SF,,Reactive Power Scale Factor,FALSE,0,int,SunSpec sunssf at 40189
+701_TotWh_SF,701_TotWh_SF,,Active Energy Scale Factor,FALSE,3,int,SunSpec sunssf at 40190
+701_TotVarh_SF,701_TotVarh_SF,,Reactive Energy Scale Factor,FALSE,3,int,SunSpec sunssf at 40191
+701_Tmp_SF,701_Tmp_SF,,Temperature Scale Factor,FALSE,-1,int,SunSpec sunssf at 40192
+701_MnAlrmInfo,701_MnAlrmInfo,,Manufacturer Alarm Info,FALSE,,str,SunSpec string at 40193
+702_WMaxRtg,702_WMaxRtg,W,Active Power Max Rating,FALSE,10000,int,"SunSpec uint16 at 40227, scale factor 702_W_SF"
+702_WOvrExtRtg,702_WOvrExtRtg,W,Active Power (Over-Excited) Rating,FALSE,10000,int,"SunSpec uint16 at 40228, scale factor 702_W_SF"
+702_WOvrExtRtgPF,702_WOvrExtRtgPF,,Specified Over-Excited PF,FALSE,1000,int,"SunSpec uint16 at 40229, scale factor 702_PF_SF"
+702_WUndExtRtg,702_WUndExtRtg,W,Active Power (Under-Excited) Rating,FALSE,10000,int,"SunSpec uint16 at 40230, scale factor 702_W_SF"
+702_WUndExtRtgPF,702_WUndExtRtgPF,,Specified Under-Excited PF,FALSE,1000,int,"SunSpec uint16 at 40231, scale factor 702_PF_SF"
+702_VAMaxRtg,702_VAMaxRtg,VA,Apparent Power Max Rating,FALSE,11000,int,"SunSpec uint16 at 40232, scale factor 702_VA_SF"
+702_VarMaxInjRtg,702_VarMaxInjRtg,Var,Reactive Power Injected Rating,FALSE,2500,int,"SunSpec uint16 at 40233, scale factor 702_Var_SF"
+702_VarMaxAbsRtg,702_VarMaxAbsRtg,Var,Reactive Power Absorbed Rating,FALSE,0,int,"SunSpec uint16 at 40234, scale factor 702_Var_SF"
+702_WChaRteMaxRtg,702_WChaRteMaxRtg,W,Charge Rate Max Rating,FALSE,0,int,"SunSpec uint16 at 40235, scale factor 702_W_SF"
+702_WDisChaRteMaxRtg,702_WDisChaRteMaxRtg,W,Discharge Rate Max Rating,FALSE,0,int,"SunSpec uint16 at 40236, scale factor 702_W_SF"
+702_VAChaRteMaxRtg,702_VAChaRteMaxRtg,VA,Charge Rate Max VA Rating,FALSE,0,int,"SunSpec uint16 at 40237, scale factor 702_VA_SF"
+702_VADisChaRteMaxRtg,702_VADisChaRteMaxRtg,VA,Discharge Rate Max VA Rating,FALSE,0,int,"SunSpec uint16 at 40238, scale factor 702_VA_SF"
+702_VNomRtg,702_VNomRtg,V,AC Voltage Nominal Rating,FALSE,240,int,"SunSpec uint16 at 40239, scale factor 702_V_SF"
+702_VMaxRtg,702_VMaxRtg,V,AC Voltage Max Rating,FALSE,270,int,"SunSpec uint16 at 40240, scale factor 702_V_SF"
+702_VMinRtg,702_VMinRtg,V,AC Voltage Min Rating,FALSE,210,int,"SunSpec uint16 at 40241, scale factor 702_V_SF"
+702_AMaxRtg,702_AMaxRtg,A,AC Current Max Rating,FALSE,50,int,"SunSpec uint16 at 40242, scale factor 702_A_SF"
+702_PFOvrExtRtg,702_PFOvrExtRtg,,PF Over-Excited Rating (Unused),FALSE,850,int,"SunSpec uint16 at 40243, scale factor 702_PF_SF"
+702_PFUndExtRtg,702_PFUndExtRtg,,PF Under-Excited Rating (Unused),FALSE,850,int,"SunSpec uint16 at 40244, scale factor 702_PF_SF"
+702_ReactSusceptRtg,702_ReactSusceptRtg,S,Reactive Susceptance,FALSE,,int,"SunSpec uint16 at 40245, scale factor 702_S_SF"
+702_NorOpCatRtg,702_NorOpCatRtg,,Normal Operating Category,FALSE,2,int,SunSpec enum16 at 40246
+702_AbnOpCatRtg,702_AbnOpCatRtg,,Abnormal Operating Category,FALSE,3,int,SunSpec enum16 at 40247
+702_CtrlModes,702_CtrlModes,,Supported Control Modes,FALSE,,int,SunSpec bitfield32 at 40248
+702_IntIslandCatRtg,702_IntIslandCatRtg,,Intentional Island Categories,FALSE,,int,SunSpec bitfield16 at 40250
+702_WMax,702_WMax,W,Active Power Max Setting,TRUE,10000,int,"SunSpec uint16 at 40251, scale factor 702_W_SF"
+702_WMaxOvrExt,702_WMaxOvrExt,W,Active Power (Over-Excited) Setting,TRUE,,int,"SunSpec uint16 at 40252, scale factor 702_W_SF"
+702_WOvrExtPF,702_WOvrExtPF,,Specified Over-Excited PF,TRUE,,int,"SunSpec uint16 at 40253, scale factor 702_PF_SF"
+702_WMaxUndExt,702_WMaxUndExt,W,Active Power (Under-Excited) Setting,TRUE,,int,"SunSpec uint16 at 40254, scale factor 702_W_SF"
+702_WUndExtPF,702_WUndExtPF,,Specified Under-Excited PF,TRUE,,int,"SunSpec uint16 at 40255, scale factor 702_PF_SF"
+702_VAMax,702_VAMax,VA,Apparent Power Max Setting,TRUE,10000,int,"SunSpec uint16 at 40256, scale factor 702_VA_SF"
+702_VarMaxInj,702_VarMaxInj,Var,Reactive Power Injected Setting,TRUE,,int,"SunSpec uint16 at 40257, scale factor 702_Var_SF"
+702_VarMaxAbs,702_VarMaxAbs,Var,Reactive Power Absorbed Setting,TRUE,,int,"SunSpec uint16 at 40258, scale factor 702_Var_SF"
+702_WChaRteMax,702_WChaRteMax,W,Charge Rate Max Setting,TRUE,,int,"SunSpec uint16 at 40259, scale factor 702_W_SF"
+702_WDisChaRteMax,702_WDisChaRteMax,W,Discharge Rate Max Setting,TRUE,,int,"SunSpec uint16 at 40260, scale factor 702_W_SF"
+702_VAChaRteMax,702_VAChaRteMax,VA,Charge Rate Max VA Setting,TRUE,,int,"SunSpec uint16 at 40261, scale factor 702_VA_SF"
+702_VADisChaRteMax,702_VADisChaRteMax,VA,Discharge Rate Max VA Setting,TRUE,,int,"SunSpec uint16 at 40262, scale factor 702_VA_SF"
+702_VNom,702_VNom,V,Nominal AC Voltage Setting,TRUE,,int,"SunSpec uint16 at 40263, scale factor 702_V_SF"
+702_VMax,702_VMax,V,AC Voltage Max Setting,TRUE,,int,"SunSpec uint16 at 40264, scale factor 702_V_SF"
+702_VMin,702_VMin,V,AC Voltage Min Setting,TRUE,,int,"SunSpec uint16 at 40265, scale factor 702_V_SF"
+702_AMax,702_AMax,A,AC Current Max Setting,TRUE,,int,"SunSpec uint16 at 40266, scale factor 702_A_SF"
+702_PFOvrExt,702_PFOvrExt,,PF Over-Excited Setting (Unused),TRUE,,int,"SunSpec uint16 at 40267, scale factor 702_PF_SF"
+702_PFUndExt,702_PFUndExt,,PF Under-Excited Setting (Unused),TRUE,,int,"SunSpec uint16 at 40268, scale factor 702_PF_SF"
+702_IntIslandCat,702_IntIslandCat,,Intentional Island Categories,TRUE,,int,SunSpec bitfield16 at 40269
+702_W_SF,702_W_SF,,Active Power Scale Factor,FALSE,0,int,SunSpec sunssf at 40270
+702_PF_SF,702_PF_SF,,Power Factor Scale Factor,FALSE,-3,int,SunSpec sunssf at 40271
+702_VA_SF,702_VA_SF,,Apparent Power Scale Factor,FALSE,0,int,SunSpec sunssf at 40272
+702_Var_SF,702_Var_SF,,Reactive Power Scale Factor,FALSE,0,int,SunSpec sunssf at 40273
+702_V_SF,702_V_SF,,Voltage Scale Factor,FALSE,0,int,SunSpec sunssf at 40274
+702_A_SF,702_A_SF,,Current Scale Factor,FALSE,0,int,SunSpec sunssf at 40275
+702_S_SF,702_S_SF,,Susceptance Scale Factor,FALSE,0,int,SunSpec sunssf at 40276
+703_ES,703_ES,,Permit Enter Service,TRUE,1,int,SunSpec enum16 at 40279
+703_ESVHi,703_ESVHi,Pct,Enter Service Voltage High,TRUE,1050,int,"SunSpec uint16 at 40280, scale factor 703_V_SF"
+703_ESVLo,703_ESVLo,Pct,Enter Service Voltage Low,TRUE,917,int,"SunSpec uint16 at 40281, scale factor 703_V_SF"
+703_ESHzHi,703_ESHzHi,Hz,Enter Service Frequency High,TRUE,6010,int,"SunSpec uint32 at 40282, scale factor 703_Hz_SF"
+703_ESHzLo,703_ESHzLo,Hz,Enter Service Frequency Low,TRUE,5950,int,"SunSpec uint32 at 40284, scale factor 703_Hz_SF"
+703_ESDlyTms,703_ESDlyTms,Secs,Enter Service Delay Time,TRUE,300,int,SunSpec uint32 at 40286
+703_ESRndTms,703_ESRndTms,Secs,Enter Service Random Delay,TRUE,100,int,SunSpec uint32 at 40288
+703_ESRmpTms,703_ESRmpTms,Secs,Enter Service Ramp Time,TRUE,60,int,SunSpec uint32 at 40290
+703_ESDlyRemTms,703_ESDlyRemTms,Secs,Enter Service Delay Remaining,FALSE,,int,SunSpec uint32 at 40292
+703_V_SF,703_V_SF,,Voltage Scale Factor,FALSE,-3,int,SunSpec sunssf at 40294
+703_Hz_SF,703_Hz_SF,,Frequency Scale Factor,FALSE,-2,int,SunSpec sunssf at 40295
+704_PFWInjEna,704_PFWInjEna,,Power Factor Enable (W Inj) Enable,TRUE,0,int,SunSpec enum16 at 40298
+704_PFWInjEnaRvrt,704_PFWInjEnaRvrt,,Power Factor Reversion Enable (W Inj),TRUE,,int,SunSpec enum16 at 40299
+704_PFWInjRvrtTms,704_PFWInjRvrtTms,Secs,PF Reversion Time (W Inj),TRUE,,int,SunSpec uint32 at 40300
+704_PFWInjRvrtRem,704_PFWInjRvrtRem,Secs,PF Reversion Time Rem (W Inj),FALSE,,int,SunSpec uint32 at 40302
+704_PFWAbsEna,704_PFWAbsEna,,Power Factor Enable (W Abs) Enable,TRUE,0,int,SunSpec enum16 at 40304
+704_PFWAbsEnaRvrt,704_PFWAbsEnaRvrt,,Power Factor Reversion Enable (W Abs),TRUE,,int,SunSpec enum16 at 40305
+704_PFWAbsRvrtTms,704_PFWAbsRvrtTms,Secs,PF Reversion Time (W Abs),TRUE,,int,SunSpec uint32 at 40306
+704_PFWAbsRvrtRem,704_PFWAbsRvrtRem,Secs,PF Reversion Time Rem (W Abs),FALSE,,int,SunSpec uint32 at 40308
+704_WMaxLimPctEna,704_WMaxLimPctEna,,Limit Max Power Pct Enable,TRUE,,int,SunSpec enum16 at 40310
+704_WMaxLimPct,704_WMaxLimPct,Pct,Limit Max Power Pct Setpoint,TRUE,,int,"SunSpec uint16 at 40311, scale factor 704_WMaxLimPct_SF"
+704_WMaxLimPctRvrt,704_WMaxLimPctRvrt,Pct,Reversion Limit Max Power Pct,TRUE,,int,"SunSpec uint16 at 40312, scale factor 704_WMaxLimPct_SF"
+704_WMaxLimPctEnaRvrt,704_WMaxLimPctEnaRvrt,,Reversion Limit Max Power Pct Enable,TRUE,,int,SunSpec enum16 at 40313
+704_WMaxLimPctRvrtTms,704_WMaxLimPctRvrtTms,Secs,Limit Max Power Pct Reversion Time,TRUE,,int,SunSpec uint32 at 40314
+704_WMaxLimPctRvrtRem,704_WMaxLimPctRvrtRem,Secs,Limit Max Power Pct Rev Time Rem,FALSE,,int,SunSpec uint32 at 40316
+704_WSetEna,704_WSetEna,,Set Active Power Enable,TRUE,,int,SunSpec enum16 at 40318
+704_WSetMod,704_WSetMod,,Set Active Power Mode,TRUE,,int,SunSpec enum16 at 40319
+704_WSet,704_WSet,W,Active Power Setpoint (W),TRUE,,int,"SunSpec int32 at 40320, scale factor 704_WSet_SF"
+704_WSetRvrt,704_WSetRvrt,W,Reversion Active Power (W),TRUE,,int,"SunSpec int32 at 40322, scale factor 704_WSet_SF"
+704_WSetPct,704_WSetPct,Pct,Active Power Setpoint (Pct),TRUE,,int,"SunSpec int16 at 40324, scale factor 704_WSetPct_SF"
+704_WSetPctRvrt,704_WSetPctRvrt,Pct,Reversion Active Power (Pct),TRUE,,int,"SunSpec int16 at 40325, scale factor 704_WSetPct_SF"
+704_WSetEnaRvrt,704_WSetEnaRvrt,,Reversion Active Power Enable,TRUE,,int,SunSpec enum16 at 40326
+704_WSetRvrtTms,704_WSetRvrtTms,Secs,Active Power Reversion Time,TRUE,,int,SunSpec uint32 at 40327
+704_WSetRvrtRem,704_WSetRvrtRem,Secs,Active Power Rev Time Rem,FALSE,,int,SunSpec uint32 at 40329
+704_VarSetEna,704_VarSetEna,,Set Reactive Power Enable,TRUE,,int,SunSpec enum16 at 40331
+704_VarSetMod,704_VarSetMod,,Set Reactive Power Mode,TRUE,,int,SunSpec enum16 at 40332
+704_VarSetPri,704_VarSetPri,,Reactive Power Priority,TRUE,,int,SunSpec enum16 at 40333
+704_VarSet,704_VarSet,Var,Reactive Power Setpoint (Vars),TRUE,,int,"SunSpec int32 at 40334, scale factor 704_VarSet_SF"
+704_VarSetRvrt,704_VarSetRvrt,Var,Reversion Reactive Power (Vars),TRUE,,int,"SunSpec int32 at 40336, scale factor 704_VarSet_SF"
+704_VarSetPct,704_VarSetPct,Pct,Reactive Power Setpoint (Pct),TRUE,,int,"SunSpec int16 at 40338, scale factor 704_VarSetPct_SF"
+704_VarSetPctRvrt,704_VarSetPctRvrt,Pct,Reversion Reactive Power (Pct),TRUE,,int,"SunSpec int16 at 40339, scale factor 704_VarSetPct_SF"
+704_VarSetEnaRvrt,704_VarSetEnaRvrt,,Reversion Reactive Power Enable,TRUE,,int,SunSpec enum16 at 40340
+704_VarSetRvrtTms,704_VarSetRvrtTms,Secs,Reactive Power Reversion Time,TRUE,,int,SunSpec uint32 at 40341
+704_VarSetRvrtRem,704_VarSetRvrtRem,Secs,Reactive Power Rev Time Rem,FALSE,,int,SunSpec uint32 at 40343
+704_WRmp,704_WRmp,%Max/Sec,Normal Ramp Rate,TRUE,,int,SunSpec uint16 at 40345
+704_WRmpRef,704_WRmpRef,,Normal Ramp Rate Reference,TRUE,,int,SunSpec enum16 at 40346
+704_VarRmp,704_VarRmp,%Max/Sec,Reactive Power Ramp Rate,TRUE,,int,SunSpec uint16 at 40347
+704_AntiIslEna,704_AntiIslEna,,Anti-Islanding Enable,TRUE,,int,SunSpec enum16 at 40348
+704_PF_SF,704_PF_SF,,Power Factor Scale Factor,FALSE,-3,int,SunSpec sunssf at 40349
+704_WMaxLimPct_SF,704_WMaxLimPct_SF,,Limit Max Power Scale Factor,FALSE,,int,SunSpec sunssf at 40350
+704_WSet_SF,704_WSet_SF,,Active Power Scale Factor,FALSE,,int,SunSpec sunssf at 40351
+704_WSetPct_SF,704_WSetPct_SF,,Active Power Pct Scale Factor,FALSE,,int,SunSpec sunssf at 40352
+704_VarSet_SF,704_VarSet_SF,,Reactive Power Scale Factor,FALSE,,int,SunSpec sunssf at 40353
+704_VarSetPct_SF,704_VarSetPct_SF,,Reactive Power Pct Scale Factor,FALSE,,int,SunSpec sunssf at 40354
+704_PFWInj_PF,704_PFWInj_PF,,Power Factor (W Inj),TRUE,950,int,"SunSpec uint16 at 40355, scale factor 704_PF_SF"
+704_PFWInj_Ext,704_PFWInj_Ext,,Power Factor Excitation (W Inj),TRUE,1,int,SunSpec enum16 at 40356
+704_PFWInjRvrt_PF,704_PFWInjRvrt_PF,,Reversion Power Factor (W Inj),TRUE,,int,"SunSpec uint16 at 40357, scale factor 704_PF_SF"
+704_PFWInjRvrt_Ext,704_PFWInjRvrt_Ext,,Reversion PF Excitation (W Inj),TRUE,,int,SunSpec enum16 at 40358
+704_PFWAbs_PF,704_PFWAbs_PF,,Power Factor (W Abs),TRUE,,int,"SunSpec uint16 at 40359, scale factor 704_PF_SF"
+704_PFWAbs_Ext,704_PFWAbs_Ext,,Power Factor Excitation (W Abs),TRUE,,int,SunSpec enum16 at 40360
+704_PFWAbsRvrt_PF,704_PFWAbsRvrt_PF,,Reversion Power Factor (W Abs),TRUE,,int,"SunSpec uint16 at 40361, scale factor 704_PF_SF"
+704_PFWAbsRvrt_Ext,704_PFWAbsRvrt_Ext,,Reversion PF Excitation (W Abs),TRUE,,int,SunSpec enum16 at 40362
+705_Ena,705_Ena,,DER Volt-Var Module Enable,TRUE,1,int,SunSpec enum16 at 40365
+705_AdptCrvReq,705_AdptCrvReq,,Adopt Curve Request,TRUE,0,int,SunSpec uint16 at 40366
+705_AdptCrvRslt,705_AdptCrvRslt,,Adopt Curve Result,FALSE,0,int,SunSpec enum16 at 40367
+705_NPt,705_NPt,,Number Of Points,FALSE,4,int,SunSpec uint16 at 40368
+705_NCrv,705_NCrv,,Stored Curve Count,FALSE,3,int,SunSpec uint16 at 40369
+705_RvrtTms,705_RvrtTms,Secs,Reversion Timeout,TRUE,0,int,SunSpec uint32 at 40370
+705_RvrtRem,705_RvrtRem,Secs,Reversion Time Remaining,FALSE,0,int,SunSpec uint32 at 40372
+705_RvrtCrv,705_RvrtCrv,,Reversion Curve,TRUE,0,int,SunSpec uint16 at 40374
+705_V_SF,705_V_SF,,Voltage Scale Factor,FALSE,-2,int,SunSpec sunssf at 40375
+705_DeptRef_SF,705_DeptRef_SF,,Var Scale Factor,FALSE,-2,int,SunSpec sunssf at 40376
+705_RspTms_SF,705_RspTms_SF,,Open-Loop Scale Factor,FALSE,,int,SunSpec sunssf at 40377
+705_Crv1_ActPt,705_Crv1_ActPt,,Active Points,TRUE,4,int,SunSpec uint16 at 40378
+705_Crv1_DeptRef,705_Crv1_DeptRef,,Dependent Reference,TRUE,1,int,SunSpec enum16 at 40379
+705_Crv1_Pri,705_Crv1_Pri,,Power Priority,TRUE,1,int,SunSpec enum16 at 40380
+705_Crv1_VRef,705_Crv1_VRef,VNomPct,Vref Adjustment,TRUE,1,int,"SunSpec uint16 at 40381, scale factor 705_V_SF"
+705_Crv1_VRefAuto,705_Crv1_VRefAuto,VNomPct,Current Autonomous Vref,FALSE,0,int,"SunSpec uint16 at 40382, scale factor 705_V_SF"
+705_Crv1_VRefAutoEna,705_Crv1_VRefAutoEna,,Autonomous Vref Enable,TRUE,,int,SunSpec enum16 at 40383
+705_Crv1_VRefAutoTms,705_Crv1_VRefAutoTms,Secs,Auto Vref Time Constant,TRUE,,int,SunSpec uint16 at 40384
+705_Crv1_RspTms,705_Crv1_RspTms,Secs,Open Loop Response Time,TRUE,6,int,"SunSpec uint32 at 40385, scale factor 705_RspTms_SF"
+705_Crv1_ReadOnly,705_Crv1_ReadOnly,,Curve Access,FALSE,1,int,SunSpec enum16 at 40387
+705_Crv1_Pt1_V,705_Crv1_Pt1_V,VNomPct,Voltage Point,TRUE,9200,int,"SunSpec uint16 at 40388, scale factor 705_V_SF"
+705_Crv1_Pt1_Var,705_Crv1_Pt1_Var,DeptRef,Reactive Power Point,TRUE,3000,int,"SunSpec int16 at 40389, scale factor 705_DeptRef_SF"
+705_Crv1_Pt2_V,705_Crv1_Pt2_V,VNomPct,Voltage Point,TRUE,9670,int,"SunSpec uint16 at 40390, scale factor 705_V_SF"
+705_Crv1_Pt2_Var,705_Crv1_Pt2_Var,DeptRef,Reactive Power Point,TRUE,0,int,"SunSpec int16 at 40391, scale factor 705_DeptRef_SF"
+705_Crv1_Pt3_V,705_Crv1_Pt3_V,VNomPct,Voltage Point,TRUE,10300,int,"SunSpec uint16 at 40392, scale factor 705_V_SF"
+705_Crv1_Pt3_Var,705_Crv1_Pt3_Var,DeptRef,Reactive Power Point,TRUE,0,int,"SunSpec int16 at 40393, scale factor 705_DeptRef_SF"
+705_Crv1_Pt4_V,705_Crv1_Pt4_V,VNomPct,Voltage Point,TRUE,10700,int,"SunSpec uint16 at 40394, scale factor 705_V_SF"
+705_Crv1_Pt4_Var,705_Crv1_Pt4_Var,DeptRef,Reactive Power Point,TRUE,-3000,int,"SunSpec int16 at 40395, scale factor 705_DeptRef_SF"
+705_Crv2_ActPt,705_Crv2_ActPt,,Active Points,TRUE,4,int,SunSpec uint16 at 40396
+705_Crv2_DeptRef,705_Crv2_DeptRef,,Dependent Reference,TRUE,1,int,SunSpec enum16 at 40397
+705_Crv2_Pri,705_Crv2_Pri,,Power Priority,TRUE,1,int,SunSpec enum16 at 40398
+705_Crv2_VRef,705_Crv2_VRef,VNomPct,Vref Adjustment,TRUE,1,int,"SunSpec uint16 at 40399, scale factor 705_V_SF"
+705_Crv2_VRefAuto,705_Crv2_VRefAuto,VNomPct,Current Autonomous Vref,FALSE,0,int,"SunSpec uint16 at 40400, scale factor 705_V_SF"
+705_Crv2_VRefAutoEna,705_Crv2_VRefAutoEna,,Autonomous Vref Enable,TRUE,,int,SunSpec enum16 at 40401
+705_Crv2_VRefAutoTms,705_Crv2_VRefAutoTms,Secs,Auto Vref Time Constant,TRUE,,int,SunSpec uint16 at 40402
+705_Crv2_RspTms,705_Crv2_RspTms,Secs,Open Loop Response Time,TRUE,6,int,"SunSpec uint32 at 40403, scale factor 705_RspTms_SF"
+705_Crv2_ReadOnly,705_Crv2_ReadOnly,,Curve Access,FALSE,0,int,SunSpec enum16 at 40405
+705_Crv2_Pt1_V,705_Crv2_Pt1_V,VNomPct,Voltage Point,TRUE,9300,int,"SunSpec uint16 at 40406, scale factor 705_V_SF"
+705_Crv2_Pt1_Var,705_Crv2_Pt1_Var,DeptRef,Reactive Power Point,TRUE,3000,int,"SunSpec int16 at 40407, scale factor 705_DeptRef_SF"
+705_Crv2_Pt2_V,705_Crv2_Pt2_V,VNomPct,Voltage Point,TRUE,9570,int,"SunSpec uint16 at 40408, scale factor 705_V_SF"
+705_Crv2_Pt2_Var,705_Crv2_Pt2_Var,DeptRef,Reactive Power Point,TRUE,0,int,"SunSpec int16 at 40409, scale factor 705_DeptRef_SF"
+705_Crv2_Pt3_V,705_Crv2_Pt3_V,VNomPct,Voltage Point,TRUE,10200,int,"SunSpec uint16 at 40410, scale factor 705_V_SF"
+705_Crv2_Pt3_Var,705_Crv2_Pt3_Var,DeptRef,Reactive Power Point,TRUE,0,int,"SunSpec int16 at 40411, scale factor 705_DeptRef_SF"
+705_Crv2_Pt4_V,705_Crv2_Pt4_V,VNomPct,Voltage Point,TRUE,10600,int,"SunSpec uint16 at 40412, scale factor 705_V_SF"
+705_Crv2_Pt4_Var,705_Crv2_Pt4_Var,DeptRef,Reactive Power Point,TRUE,-4000,int,"SunSpec int16 at 40413, scale factor 705_DeptRef_SF"
+705_Crv3_ActPt,705_Crv3_ActPt,,Active Points,TRUE,4,int,SunSpec uint16 at 40414
+705_Crv3_DeptRef,705_Crv3_DeptRef,,Dependent Reference,TRUE,1,int,SunSpec enum16 at 40415
+705_Crv3_Pri,705_Crv3_Pri,,Power Priority,TRUE,1,int,SunSpec enum16 at 40416
+705_Crv3_VRef,705_Crv3_VRef,VNomPct,Vref Adjustment,TRUE,1,int,"SunSpec uint16 at 40417, scale factor 705_V_SF"
+705_Crv3_VRefAuto,705_Crv3_VRefAuto,VNomPct,Current Autonomous Vref,FALSE,0,int,"SunSpec uint16 at 40418, scale factor 705_V_SF"
+705_Crv3_VRefAutoEna,705_Crv3_VRefAutoEna,,Autonomous Vref Enable,TRUE,,int,SunSpec enum16 at 40419
+705_Crv3_VRefAutoTms,705_Crv3_VRefAutoTms,Secs,Auto Vref Time Constant,TRUE,,int,SunSpec uint16 at 40420
+705_Crv3_RspTms,705_Crv3_RspTms,Secs,Open Loop Response Time,TRUE,6,int,"SunSpec uint32 at 40421, scale factor 705_RspTms_SF"
+705_Crv3_ReadOnly,705_Crv3_ReadOnly,,Curve Access,FALSE,0,int,SunSpec enum16 at 40423
+705_Crv3_Pt1_V,705_Crv3_Pt1_V,VNomPct,Voltage Point,TRUE,9400,int,"SunSpec uint16 at 40424, scale factor 705_V_SF"
+705_Crv3_Pt1_Var,705_Crv3_Pt1_Var,DeptRef,Reactive Power Point,TRUE,2000,int,"SunSpec int16 at 40425, scale factor 705_DeptRef_SF"
+705_Crv3_Pt2_V,705_Crv3_Pt2_V,VNomPct,Voltage Point,TRUE,9570,int,"SunSpec uint16 at 40426, scale factor 705_V_SF"
+705_Crv3_Pt2_Var,705_Crv3_Pt2_Var,DeptRef,Reactive Power Point,TRUE,0,int,"SunSpec int16 at 40427, scale factor 705_DeptRef_SF"
+705_Crv3_Pt3_V,705_Crv3_Pt3_V,VNomPct,Voltage Point,TRUE,10500,int,"SunSpec uint16 at 40428, scale factor 705_V_SF"
+705_Crv3_Pt3_Var,705_Crv3_Pt3_Var,DeptRef,Reactive Power Point,TRUE,0,int,"SunSpec int16 at 40429, scale factor 705_DeptRef_SF"
+705_Crv3_Pt4_V,705_Crv3_Pt4_V,VNomPct,Voltage Point,TRUE,10800,int,"SunSpec uint16 at 40430, scale factor 705_V_SF"
+705_Crv3_Pt4_Var,705_Crv3_Pt4_Var,DeptRef,Reactive Power Point,TRUE,-2000,int,"SunSpec int16 at 40431, scale factor 705_DeptRef_SF"
+706_Ena,706_Ena,,DER Volt-Watt Module Enable,TRUE,0,int,SunSpec enum16 at 40434
+706_AdptCrvReq,706_AdptCrvReq,,Adopt Curve Request,TRUE,0,int,SunSpec uint16 at 40435
+706_AdptCrvRslt,706_AdptCrvRslt,,Adopt Curve Result,FALSE,0,int,SunSpec enum16 at 40436
+706_NPt,706_NPt,,Number Of Points,FALSE,2,int,SunSpec uint16 at 40437
+706_NCrv,706_NCrv,,Stored Curve Count,FALSE,2,int,SunSpec uint16 at 40438
+706_RvrtTms,706_RvrtTms,Secs,Reversion Timeout,TRUE,,int,SunSpec uint32 at 40439
+706_RvrtRem,706_RvrtRem,Secs,Reversion Time Remaining,FALSE,,int,SunSpec uint32 at 40441
+706_RvrtCrv,706_RvrtCrv,,Reversion Curve,TRUE,,int,SunSpec uint16 at 40443
+706_V_SF,706_V_SF,,Voltage Scale Factor,FALSE,0,int,SunSpec sunssf at 40444
+706_DeptRef_SF,706_DeptRef_SF,,Watt Scale Factor,FALSE,0,int,SunSpec sunssf at 40445
+706_RspTms_SF,706_RspTms_SF,,Open-Loop Scale Factor,FALSE,,int,SunSpec sunssf at 40446
+706_Crv1_ActPt,706_Crv1_ActPt,,Active Points,TRUE,2,int,SunSpec uint16 at 40447
+706_Crv1_DeptRef,706_Crv1_DeptRef,,Dependent Reference,TRUE,1,int,SunSpec enum16 at 40448
+706_Crv1_RspTms,706_Crv1_RspTms,Secs,Open Loop Response Time,TRUE,10,int,"SunSpec uint32 at 40449, scale factor 706_RspTms_SF"
+706_Crv1_ReadOnly,706_Crv1_ReadOnly,,Curve Access,FALSE,1,int,SunSpec enum16 at 40451
+706_Crv1_Pt1_V,706_Crv1_Pt1_V,VNomPct,Voltage Point,TRUE,106,int,"SunSpec uint16 at 40452, scale factor 706_V_SF"
+706_Crv1_Pt1_W,706_Crv1_Pt1_W,DeptRef,Dependent Reference,TRUE,100,int,"SunSpec int16 at 40453, scale factor 706_DeptRef_SF"
+706_Crv1_Pt2_V,706_Crv1_Pt2_V,VNomPct,Voltage Point,TRUE,110,int,"SunSpec uint16 at 40454, scale factor 706_V_SF"
+706_Crv1_Pt2_W,706_Crv1_Pt2_W,DeptRef,Dependent Reference,TRUE,0,int,"SunSpec int16 at 40455, scale factor 706_DeptRef_SF"
+706_Crv2_ActPt,706_Crv2_ActPt,,Active Points,TRUE,2,int,SunSpec uint16 at 40456
+706_Crv2_DeptRef,706_Crv2_DeptRef,,Dependent Reference,TRUE,1,int,SunSpec enum16 at 40457
+706_Crv2_RspTms,706_Crv2_RspTms,Secs,Open Loop Response Time,TRUE,5,int,"SunSpec uint32 at 40458, scale factor 706_RspTms_SF"
+706_Crv2_ReadOnly,706_Crv2_ReadOnly,,Curve Access,FALSE,0,int,SunSpec enum16 at 40460
+706_Crv2_Pt1_V,706_Crv2_Pt1_V,VNomPct,Voltage Point,TRUE,105,int,"SunSpec uint16 at 40461, scale factor 706_V_SF"
+706_Crv2_Pt1_W,706_Crv2_Pt1_W,DeptRef,Dependent Reference,TRUE,100,int,"SunSpec int16 at 40462, scale factor 706_DeptRef_SF"
+706_Crv2_Pt2_V,706_Crv2_Pt2_V,VNomPct,Voltage Point,TRUE,109,int,"SunSpec uint16 at 40463, scale factor 706_V_SF"
+706_Crv2_Pt2_W,706_Crv2_Pt2_W,DeptRef,Dependent Reference,TRUE,0,int,"SunSpec int16 at 40464, scale factor 706_DeptRef_SF"
+707_Ena,707_Ena,,DER Trip LV Module Enable,TRUE,1,int,SunSpec enum16 at 40467
+707_AdptCrvReq,707_AdptCrvReq,,Adopt Curve Request,TRUE,,int,SunSpec uint16 at 40468
+707_AdptCrvRslt,707_AdptCrvRslt,,Adopt Curve Result,FALSE,,int,SunSpec enum16 at 40469
+707_NPt,707_NPt,,Number Of Points,FALSE,1,int,SunSpec uint16 at 40470
+707_NCrvSet,707_NCrvSet,,Stored Curve Count,FALSE,1,int,SunSpec uint16 at 40471
+707_V_SF,707_V_SF,,Voltage Scale Factor,FALSE,-2,int,SunSpec sunssf at 40472
+707_Tms_SF,707_Tms_SF,,Time Point Scale Factor,FALSE,0,int,SunSpec sunssf at 40473
+707_Crv1_ReadOnly,707_Crv1_ReadOnly,,Curve Access,FALSE,,int,SunSpec enum16 at 40474
+707_Crv1_MustTrip_ActPt,707_Crv1_MustTrip_ActPt,,Number Of Active Points,TRUE,1,int,SunSpec uint16 at 40475
+707_Crv1_MustTrip_Pt1_V,707_Crv1_MustTrip_Pt1_V,VNomPct,Voltage Point,TRUE,5000,int,"SunSpec uint16 at 40476, scale factor 707_V_SF"
+707_Crv1_MustTrip_Pt1_Tms,707_Crv1_MustTrip_Pt1_Tms,Secs,Time Point,TRUE,5,int,"SunSpec uint32 at 40477, scale factor 707_Tms_SF"
+707_Crv1_MayTrip_ActPt,707_Crv1_MayTrip_ActPt,,Number Of Active Points,TRUE,1,int,SunSpec uint16 at 40479
+707_Crv1_MayTrip_Pt1_V,707_Crv1_MayTrip_Pt1_V,VNomPct,Voltage Point,TRUE,7000,int,"SunSpec uint16 at 40480, scale factor 707_V_SF"
+707_Crv1_MayTrip_Pt1_Tms,707_Crv1_MayTrip_Pt1_Tms,Secs,Time Point,TRUE,5,int,"SunSpec uint32 at 40481, scale factor 707_Tms_SF"
+707_Crv1_MomCess_ActPt,707_Crv1_MomCess_ActPt,,Number Of Active Points,TRUE,1,int,SunSpec uint16 at 40483
+707_Crv1_MomCess_Pt1_V,707_Crv1_MomCess_Pt1_V,VNomPct,Voltage Point,TRUE,6000,int,"SunSpec uint16 at 40484, scale factor 707_V_SF"
+707_Crv1_MomCess_Pt1_Tms,707_Crv1_MomCess_Pt1_Tms,Secs,Time Point,TRUE,5,int,"SunSpec uint32 at 40485, scale factor 707_Tms_SF"
+708_Ena,708_Ena,,DER Trip HV Module Enable,TRUE,1,int,SunSpec enum16 at 40489
+708_AdptCrvReq,708_AdptCrvReq,,Adopt Curve Request,TRUE,,int,SunSpec uint16 at 40490
+708_AdptCrvRslt,708_AdptCrvRslt,,Adopt Curve Result,FALSE,,int,SunSpec enum16 at 40491
+708_NPt,708_NPt,,Number Of Points,FALSE,1,int,SunSpec uint16 at 40492
+708_NCrvSet,708_NCrvSet,,Stored Curve Count,FALSE,1,int,SunSpec uint16 at 40493
+708_V_SF,708_V_SF,,Voltage Scale Factor,FALSE,-2,int,SunSpec sunssf at 40494
+708_Tms_SF,708_Tms_SF,,Time Point Scale Factor,FALSE,0,int,SunSpec sunssf at 40495
+708_Crv1_ReadOnly,708_Crv1_ReadOnly,,Curve Access,FALSE,,int,SunSpec enum16 at 40496
+708_Crv1_MustTrip_ActPt,708_Crv1_MustTrip_ActPt,,Number Of Active Points,TRUE,1,int,SunSpec uint16 at 40497
+708_Crv1_MustTrip_Pt1_V,708_Crv1_MustTrip_Pt1_V,VNomPct,Voltage Point,TRUE,12000,int,"SunSpec uint16 at 40498, scale factor 708_V_SF"
+708_Crv1_MustTrip_Pt1_Tms,708_Crv1_MustTrip_Pt1_Tms,Secs,Time Point,TRUE,5,int,"SunSpec uint32 at 40499, scale factor 708_Tms_SF"
+708_Crv1_MayTrip_ActPt,708_Crv1_MayTrip_ActPt,,Number Of Active Points,TRUE,1,int,SunSpec uint16 at 40501
+708_Crv1_MayTrip_Pt1_V,708_Crv1_MayTrip_Pt1_V,VNomPct,Voltage Point,TRUE,10000,int,"SunSpec uint16 at 40502, scale factor 708_V_SF"
+708_Crv1_MayTrip_Pt1_Tms,708_Crv1_MayTrip_Pt1_Tms,Secs,Time Point,TRUE,5,int,"SunSpec uint32 at 40503, scale factor 708_Tms_SF"
+708_Crv1_MomCess_ActPt,708_Crv1_MomCess_ActPt,,Number Of Active Points,TRUE,1,int,SunSpec uint16 at 40505
+708_Crv1_MomCess_Pt1_V,708_Crv1_MomCess_Pt1_V,VNomPct,Voltage Point,TRUE,10000,int,"SunSpec uint16 at 40506, scale factor 708_V_SF"
+708_Crv1_MomCess_Pt1_Tms,708_Crv1_MomCess_Pt1_Tms,Secs,Time Point,TRUE,5,int,"SunSpec uint32 at 40507, scale factor 708_Tms_SF"
+709_Ena,709_Ena,,DER Trip LF Module Enable,TRUE,1,int,SunSpec enum16 at 40511
+709_AdptCrvReq,709_AdptCrvReq,,Adopt Curve Request,TRUE,,int,SunSpec uint16 at 40512
+709_AdptCrvRslt,709_AdptCrvRslt,,Adopt Curve Result,FALSE,,int,SunSpec enum16 at 40513
+709_NPt,709_NPt,,Number Of Points,FALSE,1,int,SunSpec uint16 at 40514
+709_NCrvSet,709_NCrvSet,,Stored Curve Count,FALSE,1,int,SunSpec uint16 at 40515
+709_Hz_SF,709_Hz_SF,,Frequency Scale Factor,FALSE,,int,SunSpec sunssf at 40516
+709_Tms_SF,709_Tms_SF,,Time Point Scale Factor,FALSE,-2,int,SunSpec sunssf at 40517
+709_Crv1_ReadOnly,709_Crv1_ReadOnly,,Curve Access,FALSE,,int,SunSpec enum16 at 40518
+709_Crv1_MustTrip_ActPt,709_Crv1_MustTrip_ActPt,,Number Of Active Points,TRUE,1,int,SunSpec uint16 at 40519
+709_Crv1_MustTrip_Pt1_Hz,709_Crv1_MustTrip_Pt1_Hz,Hz,Frequency Point,TRUE,,int,"SunSpec uint32 at 40520, scale factor 709_Hz_SF"
+709_Crv1_MustTrip_Pt1_Tms,709_Crv1_MustTrip_Pt1_Tms,Secs,Time Point,TRUE,5,int,"SunSpec uint32 at 40522, scale factor 709_Tms_SF"
+709_Crv1_MayTrip_ActPt,709_Crv1_MayTrip_ActPt,,Number Of Active Points,TRUE,1,int,SunSpec uint16 at 40524
+709_Crv1_MayTrip_Pt1_Hz,709_Crv1_MayTrip_Pt1_Hz,Hz,Frequency Point,TRUE,,int,"SunSpec uint32 at 40525, scale factor 709_Hz_SF"
+709_Crv1_MayTrip_Pt1_Tms,709_Crv1_MayTrip_Pt1_Tms,Secs,Time Point,TRUE,5,int,"SunSpec uint32 at 40527, scale factor 709_Tms_SF"
+709_Crv1_MomCess_ActPt,709_Crv1_MomCess_ActPt,,Number Of Active Points,TRUE,1,int,SunSpec uint16 at 40529
+709_Crv1_MomCess_Pt1_Hz,709_Crv1_MomCess_Pt1_Hz,Hz,Frequency Point,TRUE,,int,"SunSpec uint32 at 40530, scale factor 709_Hz_SF"
+709_Crv1_MomCess_Pt1_Tms,709_Crv1_MomCess_Pt1_Tms,Secs,Time Point,TRUE,5,int,"SunSpec uint32 at 40532, scale factor 709_Tms_SF"
+710_Ena,710_Ena,,DER Trip HF Module Enable,TRUE,,int,SunSpec enum16 at 40536
+710_AdptCrvReq,710_AdptCrvReq,,Adopt Curve Request,TRUE,,int,SunSpec uint16 at 40537
+710_AdptCrvRslt,710_AdptCrvRslt,,Adopt Curve Result,FALSE,,int,SunSpec enum16 at 40538
+710_NPt,710_NPt,,Number Of Points,FALSE,1,int,SunSpec uint16 at 40539
+710_NCrvSet,710_NCrvSet,,Stored Curve Count,FALSE,1,int,SunSpec uint16 at 40540
+710_Hz_SF,710_Hz_SF,,Frequency Scale Factor,FALSE,,int,SunSpec sunssf at 40541
+710_Tms_SF,710_Tms_SF,,Time Point Scale Factor,FALSE,-2,int,SunSpec sunssf at 40542
+710_Crv1_ReadOnly,710_Crv1_ReadOnly,,Curve Access,FALSE,,int,SunSpec enum16 at 40543
+710_Crv1_MustTrip_ActPt,710_Crv1_MustTrip_ActPt,,Number Of Active Points,TRUE,1,int,SunSpec uint16 at 40544
+710_Crv1_MustTrip_Pt1_Hz,710_Crv1_MustTrip_Pt1_Hz,Hz,Frequency Point,TRUE,,int,"SunSpec uint32 at 40545, scale factor 710_Hz_SF"
+710_Crv1_MustTrip_Pt1_Tms,710_Crv1_MustTrip_Pt1_Tms,Secs,Time Point,TRUE,5,int,"SunSpec uint32 at 40547, scale factor 710_Tms_SF"
+710_Crv1_MayTrip_ActPt,710_Crv1_MayTrip_ActPt,,Number Of Active Points,TRUE,1,int,SunSpec uint16 at 40549
+710_Crv1_MayTrip_Pt1_Hz,710_Crv1_MayTrip_Pt1_Hz,Hz,Frequency Point,TRUE,,int,"SunSpec uint32 at 40550, scale factor 710_Hz_SF"
+710_Crv1_MayTrip_Pt1_Tms,710_Crv1_MayTrip_Pt1_Tms,Secs,Time Point,TRUE,5,int,"SunSpec uint32 at 40552, scale factor 710_Tms_SF"
+710_Crv1_MomCess_ActPt,710_Crv1_MomCess_ActPt,,Number Of Active Points,TRUE,1,int,SunSpec uint16 at 40554
+710_Crv1_MomCess_Pt1_Hz,710_Crv1_MomCess_Pt1_Hz,Hz,Frequency Point,TRUE,,int,"SunSpec uint32 at 40555, scale factor 710_Hz_SF"
+710_Crv1_MomCess_Pt1_Tms,710_Crv1_MomCess_Pt1_Tms,Secs,Time Point,TRUE,5,int,"SunSpec uint32 at 40557, scale factor 710_Tms_SF"
+711_Ena,711_Ena,,DER Frequency Droop Module Enable,TRUE,,int,SunSpec enum16 at 40561
+711_AdptCtlReq,711_AdptCtlReq,,Set Active Control Request,TRUE,,int,SunSpec uint16 at 40562
+711_AdptCtlRslt,711_AdptCtlRslt,,Set Active Control Result,FALSE,,int,SunSpec enum16 at 40563
+711_NCtl,711_NCtl,,Stored Control Count,FALSE,1,int,SunSpec uint16 at 40564
+711_RvrtTms,711_RvrtTms,Secs,Reversion Timeout,TRUE,0,int,SunSpec uint32 at 40565
+711_RvrtRem,711_RvrtRem,Secs,Reversion Time Left,FALSE,0,int,SunSpec uint32 at 40567
+711_RvrtCtl,711_RvrtCtl,,Reversion Control,TRUE,,int,SunSpec uint16 at 40569
+711_Db_SF,711_Db_SF,,Deadband Scale Factor,FALSE,-2,int,SunSpec sunssf at 40570
+711_K_SF,711_K_SF,,Frequency Change Scale Factor,FALSE,-2,int,SunSpec sunssf at 40571
+711_RspTms_SF,711_RspTms_SF,,Open-Loop Scale Factor,FALSE,0,int,SunSpec sunssf at 40572
+711_Ctl1_DbOf,711_Ctl1_DbOf,Hz,Over-Frequency Deadband,TRUE,60030,int,"SunSpec uint32 at 40573, scale factor 711_Db_SF"
+711_Ctl1_DbUf,711_Ctl1_DbUf,Hz,Under-Frequency Deadband,TRUE,59970,int,"SunSpec uint32 at 40575, scale factor 711_Db_SF"
+711_Ctl1_KOf,711_Ctl1_KOf,,Over-Frequency Change Ratio,TRUE,40,int,"SunSpec uint16 at 40577, scale factor 711_K_SF"
+711_Ctl1_KUf,711_Ctl1_KUf,,Under-Frequency Change Ratio,TRUE,40,int,"SunSpec uint16 at 40578, scale factor 711_K_SF"
+711_Ctl1_RspTms,711_Ctl1_RspTms,Secs,Open-Loop Response Time,TRUE,600,int,"SunSpec uint32 at 40579, scale factor 711_RspTms_SF"
+711_Ctl1_PMin,711_Ctl1_PMin,Pct,Minimum Active Power,TRUE,,int,SunSpec int16 at 40581
+711_Ctl1_ReadOnly,711_Ctl1_ReadOnly,,Control Access,FALSE,,int,SunSpec enum16 at 40582
+712_Ena,712_Ena,,DER Watt-Var Module Enable,TRUE,,int,SunSpec enum16 at 40585
+712_AdptCrvReq,712_AdptCrvReq,,Set Active Curve Request,TRUE,,int,SunSpec uint16 at 40586
+712_AdptCrvRslt,712_AdptCrvRslt,,Set Active Curve Result,FALSE,,int,SunSpec enum16 at 40587
+712_NPt,712_NPt,,Number Of Points,FALSE,1,int,SunSpec uint16 at 40588
+712_NCrv,712_NCrv,,Stored Curve Count,FALSE,1,int,SunSpec uint16 at 40589
+712_RvrtTms,712_RvrtTms,Secs,Reversion Timeout,TRUE,0,int,SunSpec uint32 at 40590
+712_RvrtRem,712_RvrtRem,Secs,Reversion Time Left,FALSE,0,int,SunSpec uint32 at 40592
+712_RvrtCrv,712_RvrtCrv,,Reversion Curve,TRUE,0,int,SunSpec uint16 at 40594
+712_W_SF,712_W_SF,,Active Power Scale Factor,FALSE,,int,SunSpec sunssf at 40595
+712_DeptRef_SF,712_DeptRef_SF,,Var Scale Factor,FALSE,-2,int,SunSpec sunssf at 40596
+712_Crv1_ActPt,712_Crv1_ActPt,,Active Points,TRUE,1,int,SunSpec uint16 at 40597
+712_Crv1_DeptRef,712_Crv1_DeptRef,,Dependent Reference,TRUE,,int,SunSpec enum16 at 40598
+712_Crv1_Pri,712_Crv1_Pri,,Power Priority,TRUE,,int,SunSpec enum16 at 40599
+712_Crv1_ReadOnly,712_Crv1_ReadOnly,,Curve Access,FALSE,,int,SunSpec enum16 at 40600
+712_Crv1_Pt1_W,712_Crv1_Pt1_W,WMaxPct,Active Power Point,TRUE,,int,"SunSpec int16 at 40601, scale factor 712_W_SF"
+712_Crv1_Pt1_Var,712_Crv1_Pt1_Var,VarPct,Reactive Power Point,TRUE,,int,"SunSpec int16 at 40602, scale factor 712_DeptRef_SF"
+713_WHRtg,713_WHRtg,WH,Energy Rating,FALSE,,int,"SunSpec uint16 at 40605, scale factor 713_WH_SF"
+713_WHAvail,713_WHAvail,WH,Energy Available,FALSE,,int,"SunSpec uint16 at 40606, scale factor 713_WH_SF"
+713_SoC,713_SoC,Pct,State of Charge,FALSE,,int,"SunSpec uint16 at 40607, scale factor 713_Pct_SF"
+713_SoH,713_SoH,Pct,State of Health,FALSE,,int,"SunSpec uint16 at 40608, scale factor 713_Pct_SF"
+713_Sta,713_Sta,,Status,FALSE,,int,SunSpec enum16 at 40609
+713_WH_SF,713_WH_SF,,Energy Scale Factor,FALSE,,int,SunSpec sunssf at 40610
+713_Pct_SF,713_Pct_SF,,Percent Scale Factor,FALSE,,int,SunSpec sunssf at 40611

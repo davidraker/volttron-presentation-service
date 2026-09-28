@@ -1,0 +1,10 @@
+{
+  "driver_type": "fake",
+  "remote_config": {
+    "driver_type": "fake"
+  },
+  "registry_config": "config://registry_configs/fake_sunspec_pv.fake.csv",
+  "interval": 5,
+  "publish_depth_first_all": true,
+  "timezone": "UTC"
+}

@@ -55,8 +55,8 @@ import logging
 import re
 
 from convtools import conversion as c
-from pyparsing import (alphas, alphanums, Combine, common, delimited_list, Forward, Group, Literal, Optional,
-                       QuotedString, Suppress, Word)
+from pyparsing import (alphas, alphanums, Combine, common, delimited_list, FollowedBy, Forward, Group, Literal,
+                       Optional, QuotedString, Regex, Suppress, Word)
 
 from . import transforms
 from .transforms import MISSING
@@ -384,8 +384,9 @@ class TransformParser:
 
     @staticmethod
     def setup_function_call():
-        # Numbers become int or float (signed, decimal or scientific), so scale(0.001) and add(-5) parse.
-        number = common.number
+        # Numbers become int or float (signed, decimal or scientific), so scale(0.001) and add(-5) parse. A
+        # digit run followed by a letter or underscore is a bare identifier such as the point name 701_W.
+        number = common.number + ~FollowedBy(Regex(r'[A-Za-z_]'))
         # Quoted strings (either quote style) may contain any characters, so path segments such as
         # 'RegClas[1]' or "DateTgt[Date]" that are not valid bare identifiers can still be expressed.
         string_literal = QuotedString('"') | QuotedString("'")
@@ -636,16 +637,19 @@ class TransformParser:
         return _normalize_path(expr.segments)
 
     def _map_node(self, node, target: tuple, element_paths: list[tuple], group_fidelity: float,
-                  mappings: list, nulls: list):
+                  mappings: list, nulls: list, series_stack: list | None = None):
+        # series_stack[level]: for a repeated group whose list is built by series(), the concrete point names
+        # behind each record field, so that those points are reported as sources rather than a wildcard.
+        series_stack = series_stack if series_stack is not None else [None]
         if isinstance(node, dict):
             for key, child in node.items():
                 if isinstance(key, str) and key.startswith(SPREAD_PREFIX):
-                    self._map_node(child, target + (WILDCARD,), element_paths, group_fidelity, mappings, nulls)
+                    self._map_node(child, target + (WILDCARD,), element_paths, group_fidelity, mappings, nulls, series_stack)
                 else:
-                    self._map_node(child, target + (str(key),), element_paths, group_fidelity, mappings, nulls)
+                    self._map_node(child, target + (str(key),), element_paths, group_fidelity, mappings, nulls, series_stack)
         elif isinstance(node, _Concat):
             for repeat in node.repeats:
-                self._map_node(repeat, target, element_paths, group_fidelity, mappings, nulls)
+                self._map_node(repeat, target, element_paths, group_fidelity, mappings, nulls, series_stack)
         elif isinstance(node, _Repeat):
             level = len(element_paths)
             fidelity = group_fidelity
@@ -656,16 +660,26 @@ class TransformParser:
                 list_path = element_paths[-1] + _normalize_path(prefix)
             else:
                 list_path = element_paths[-1]
+            series_fields = None
             if node.source is not None:
                 source_fidelity, names = self._expression_fidelity(node.source)
                 fidelity *= source_fidelity
                 wraps = 'as_list' in names
+                for conv in node.source.convs:
+                    series_fields = getattr(conv, 'series_fields', series_fields)
             else:
                 wraps = False
             element = list_path if wraps else list_path + (WILDCARD,)
-            self._map_node(node.child, target + (WILDCARD,), element_paths + [element], fidelity, mappings, nulls)
+            self._map_node(node.child, target + (WILDCARD,), element_paths + [element], fidelity, mappings, nulls,
+                           series_stack + [series_fields])
         elif isinstance(node, _Expr):
             fidelity, names = self._expression_fidelity(node)
+            if node.markers and node.parts[0] == () and len(node.parts) == 2 and len(node.parts[-1]) == 1:
+                fields = series_stack[node.first_level] if node.first_level < len(series_stack) else None
+                if fields and node.parts[-1][0] in fields:
+                    for point in fields[node.parts[-1][0]]:
+                        mappings.append(FieldMapping((point,), target, fidelity * group_fidelity, names))
+                    return
             source = self._expression_source(node, element_paths)
             mappings.append(FieldMapping(source, target, fidelity * group_fidelity, names))
         elif node is None:
