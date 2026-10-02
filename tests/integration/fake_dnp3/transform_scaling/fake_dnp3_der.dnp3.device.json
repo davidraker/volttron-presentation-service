@@ -2,7 +2,6 @@
   "driver_type": "dnp3",
   "remote_config": {
     "driver_type": "dnp3",
-    "master_ip": "0.0.0.0",
     "outstation_ip": "127.0.0.1",
     "port": 20000,
     "master_id": 2,

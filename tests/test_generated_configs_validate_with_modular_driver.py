@@ -20,7 +20,7 @@ CASES = Path(__file__).parent / 'integration'
 DRIVERS = Path(os.environ.get('VOLTTRON_MODULAR_DRIVERS', '/home/dmr/Projects/volttron/modular/drivers'))
 if not DRIVERS.is_dir():
     pytest.skip('modular volttron-platform-driver checkout not found', allow_module_level=True)
-for sub in ('base-driver/src', 'interfaces/fake/src', 'interfaces/pymodbus/src'):
+for sub in ('base-driver/src', 'interfaces/fake/src', 'interfaces/pymodbus/src', 'interfaces/dnp3/src'):
     path = str(DRIVERS / sub)
     if path not in sys.path:
         sys.path.append(path)
@@ -34,7 +34,10 @@ def _classes(driver: str):
     if driver == 'modbus':
         modbus = importlib.import_module('volttron.driver.interfaces.modbus.config')
         return modbus.ModbusPointConfig, modbus.ModbusRemoteConfig
-    return base.PointConfig, base.RemoteConfig      # the dnp3 interface reads plain dict rows
+    if driver == 'dnp3':
+        dnp3 = importlib.import_module('volttron.driver.interfaces.dnp3.config')
+        return dnp3.Dnp3PointConfig, dnp3.Dnp3RemoteConfig
+    return base.PointConfig, base.RemoteConfig
 
 
 @pytest.mark.parametrize('case, stem, driver', [

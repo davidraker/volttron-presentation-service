@@ -154,8 +154,9 @@ def device_config(driver: str, registry_name: str, *, interval: float = 5, outst
                   port: int = 20000, master_id: int = 2, outstation_id: int = 1) -> dict:
     remote: dict[str, Any] = {'driver_type': driver}
     if driver == 'dnp3':
-        remote.update({'master_ip': '0.0.0.0', 'outstation_ip': outstation_ip, 'port': port,
-                       'master_id': master_id, 'outstation_id': outstation_id})
+        # The keys of volttron-lib-dnp3-driver 2.x (Dnp3RemoteConfig); the proxy-based interface binds no local
+        # address, so the old master_ip is not emitted.
+        remote.update({'outstation_ip': outstation_ip, 'port': port, 'master_id': master_id, 'outstation_id': outstation_id})
     return {'driver_type': driver, 'remote_config': remote, 'registry_config': f'config://{registry_name}',
             'interval': interval, 'publish_depth_first_all': True, 'timezone': 'UTC'}
 
