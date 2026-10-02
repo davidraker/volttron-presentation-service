@@ -396,6 +396,7 @@
       "input_format": "fake_sunspec_pv",
       "output_format": "sunspec",
       "pattern": {
+        "#": "transform(device_values())",
         "1": {
           "Mn": "transform[1_Mn]()",
           "Md": "transform[1_Md]()",
@@ -1309,6 +1310,28 @@
           "site1",
           "pv_inverter"
         ]
+      }
+    },
+    {
+      "uai": [
+        "openfmb",
+        "solarmodule",
+        "SolarReadingProfile",
+        "7d1a2b3c-0000-4000-8000-000000000001"
+      ],
+      "resource_type": "alias",
+      "resource": {
+        "data_format": "openfmb.solar.reading",
+        "owner": "platform.driver",
+        "references": [
+          "site1",
+          "pv_inverter"
+        ],
+        "encoding": "protobuf",
+        "parameters": {
+          "mrid": "7d1a2b3c-0000-4000-8000-000000000001",
+          "name": "PV inverter 1"
+        }
       }
     }
   ]

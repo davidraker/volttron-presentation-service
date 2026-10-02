@@ -25,6 +25,8 @@ The agent runs under the VIP identity `platform.presentation`.
   monolithic `volttron.platform` imports if `volttron-core` is not installed.
 * Runtime libraries (pulled in by the package): `convtools`, `networkx`, `pydantic` 2,
   `pyparsing`, `treelib`
+* Optional extras: `discovery` (pysunspec2, for scanning SunSpec devices) and `openfmb` (the
+  `protobuf` runtime, for encoding OpenFMB profiles as protobuf on the wire)
 
 ## Installation
 
@@ -61,10 +63,20 @@ A leaf in the UAI tree is a resource. There are two kinds:
 | `canonical` | `data_format`, `owner`, `publication_topic`, `rpc_topic` | The real source of the data. `publication_topic` is the VOLTTRON pubsub topic the data appears on; `rpc_topic` is where writes go. |
 | `alias`     | `data_format`, `owner`, `references`                  | A name that points at another UAI (`references`). `data_format` is the format the alias presents itself in. |
 
+Both kinds also accept:
+
+| Field        | Meaning |
+|--------------|---------|
+| `encoding`   | How the resource's messages travel on the wire: `json` (the default when unset) or `protobuf`. On an alias it is the encoding of the remote topic the alias stands for; the format declaration names the protobuf message (`proto`, below). |
+| `parameters` | Per-resource values transform expressions reach with `param('name')`, for example `{"mrid": "...", "name": "ESS 1"}` for the device identity an OpenFMB header carries. An alias's parameters are merged over the canonical resource's, the outermost alias winning. |
+
 Aliases can chain. When an alias is resolved the engine follows `references` until it
 reaches a canonical resource. If the caller did not name a target format, the alias's own
 `data_format` is used as the target, so an alias is a convenient way to say "this device,
-but as seen through 61850."
+but as seen through 61850." An alias whose UAI is the remote topic itself, such as
+`["openfmb", "solarmodule", "SolarReadingProfile", "<mRID>"]` with
+`"data_format": "openfmb.solar.reading"`, `"encoding": "protobuf"` and the device mRID in
+`parameters`, is how a device is published as one OpenFMB profile on one topic.
 
 ### Formats and transforms
 
@@ -146,6 +158,10 @@ Each entry in `formats` is keyed by format name:
 |----------|-----------------|-----------------------------------------------------------------------------------------------|
 | `hub`    | boolean         | Whether transform chains may pass through this format. The bundled standard formats are hubs; anything else, such as a device's own point list, is a leaf by default and only ever starts or ends a chain. |
 | `fields` | list of strings | The fields the format can carry, as dotted paths with `*` for repeating groups. Used to measure how much of the format a transform covers when no model package describes it (a platform driver's registry configuration is a natural source). |
+| `proto`  | string          | The fully qualified protobuf message a resource in this format is encoded as when an alias asks for `"encoding": "protobuf"`, e.g. `essmodule.ESSReadingProfile`. Declared for the bundled `openfmb.<device>.<profile>` formats in `src/interoperability/formats/openfmb.json`. |
+
+Other keys of a format declaration (`scaling`, written by the discovery tooling) are kept and
+returned by the registry's `format_spec`, but the service does not act on them.
 
 Mappings can also be added at runtime by publishing a list of mapping objects to the
 `mapper/update` pubsub topic. Transforms can be added at runtime with the
@@ -295,6 +311,37 @@ conversions; where the driver looked scaling registers up by name on the device,
 path into the message. Functions that define an `inverse` are intended to support automatic
 generation of reverse transforms in the future.
 
+### Stage input
+
+A `"#"` entry at the root of a pattern rebinds the input of that stage: its expression is applied
+to the whole incoming message, and every other path in the pattern is then resolved against the
+result (including root-relative `'/...'` paths inside repeated groups). The modular platform driver
+publishes `devices/.../all` as a two-element list, `[values, meta]`, so every generated
+device-format pattern starts with
+
+```json
+"#": "transform(device_values())"
+```
+
+`device_values()` yields the first element when the message is such a list and passes a bare
+`{point: value}` dict through, so one pattern serves both shapes. Any expression may be used as the
+rebind (`"#": "transform[payload]()"` reads a wrapped body); the rule is only allowed at the root
+and directly inside a repeated group, where it has its list-naming meaning. The field map ignores
+the root rebind, since it does not move the source paths.
+
+### Parameters and generated values
+
+Some output fields come from nowhere in the message. A library function written on its own,
+without `transform[...]`, applies to the whole input and can produce such a value:
+
+| Expression       | Produces |
+|------------------|----------|
+| `param('mrid')`  | the named entry of the resource's `parameters`, bound when the chain is compiled (`TransformParser(context=...)`, which `resolve` fills from the canonical resource and its aliases); an unbound name yields nothing and the field is dropped |
+| `uuid4()`        | a fresh random UUID string per message |
+| `timestamp()`    | the current time as `{"seconds": ..., "nanoseconds": ...}`, the OpenFMB `Timestamp` shape |
+
+These carry nothing from the source, so they weigh nothing in the field map (like `const`).
+
 ## Bundled transforms
 
 Transform definitions shipped with the package live in `src/interoperability/transforms/`.
@@ -309,6 +356,7 @@ The format names they use are:
 | `2030.5`          | IEEE 2030.5 resources keyed by resource then attribute (`DERCapability.rtgMaxW`); see below |
 | `1547`            | IEEE 1547.1 function group and parameter names (`Nameplate` / `Active Power (unity)`) |
 | `openfmb.ess`, `openfmb.solar` | OpenFMB v2.2 profiles for a storage or a solar device, in the protobuf JSON form adapters publish (`essReading.readingMMXU.W.net.cVal.mag`); see below |
+| `openfmb.ess.reading`, `.status`, `.capability`, `.control`, and the `openfmb.solar.*` equivalents | One OpenFMB profile with its message header, as an adapter publishes it on one topic; leaves reached from the two hub formats above (`openfmb_profiles.json`); see below |
 
 Every pairing of the first six formats ships as its own file, named `<input>_to_<output>.json`;
 the 1815.2 files hold two definitions each, one for `1815.2.inputs` and one for
@@ -335,10 +383,22 @@ Conventions the 2030.5, 1547 and SunSpec to 1815.2 files rely on, beyond those o
   entry by entry onto `FSCH.SchdEntr`; in the reverse direction the 61850 top-level control nodes
   become one schedule point without a start time, followed by the `FSCH.SchdEntr` entries with
   theirs. Two formats exist because ESS and solar profiles hold the same data under different keys
-  and a 61850 message must become one kind of profile. The generated profiles lack the message
-  header (`mRID`, `messageTimeStamp`), which the publishing side must add. The definitions are
-  produced by `detritus/scripts/build_openfmb_transforms.py`, which reads the leaf shapes from the
-  generated OpenFMB classes.
+  and a 61850 message must become one kind of profile. The hub formats carry no message header. The
+  leaf shapes in these definitions (`setMag`, `mag`, `cVal.mag`, `stVal`, ...) follow the generated
+  OpenFMB classes.
+* `openfmb.<device>.<profile>` (`openfmb.ess.reading`, `openfmb.solar.status`, ...) is a single
+  profile ready to publish: `openfmb_profiles.json` selects that profile's body out of the hub
+  format's dict and adds the header the hub lacks. `readingMessageInfo` (or `status`, `capability`,
+  `control`) gets a fresh `uuid4()` as the message mRID and `timestamp()` as `messageTimeStamp`; the
+  `ess` or `solarInverter` block gets `conductingEquipment.mRID` from `param('mrid')` and its name
+  from `param('name')`, so the alias for the topic supplies the device identity in its `parameters`.
+  Per OpenFMB the message mRID identifies the message and the equipment mRID the device; the sample
+  generator in `models/openfmb/generate_samples.py` predates this and reuses the device mRID for both.
+  The reverse definitions (`openfmb.ess.reading -> openfmb.ess`) drop the header so an inbound profile
+  reaches `openfmb_to_61850.json`. A device publishes through
+  `device -> sunspec -> 61850 -> openfmb.solar -> openfmb.solar.reading`, four transforms, which is
+  the registry's hop limit. The formats are declared, with their protobuf message names, in
+  `src/interoperability/formats/openfmb.json`, loaded as configuration defaults like the transforms.
 * Schedules carry every planned control, not a decision about which one is current. In `2030.5`
   a scheduled control is an entry of `DERControlList`, a list whose entries each hold an
   `interval` (`start`, `duration` in seconds) plus the same `DERControl` and `DERCurve` groups
@@ -382,9 +442,12 @@ configuration store is applied on top of these defaults.
 
 ## Device formats
 
-A platform driver publishes a device as a flat `{point name: value}` message. That flat point list is a
-format of its own: a leaf in the transform graph that maps onto one protocol and reaches the others
-through it. When the device speaks SunSpec and its registry names each point after the SunSpec path it
+The platform driver (always the modular `volttron-platform-driver` package and its interface libraries,
+whichever VOLTTRON runtime hosts it) publishes a device as a flat `{point name: value}` message, wrapped
+on `devices/.../all` as `[values, meta]` with the point metadata (units, type) in the second element. That
+flat point list is a format of its own: a leaf in the transform graph that maps onto one protocol and reaches the
+others through it. Every generated device-to-protocol pattern begins with the stage input
+`"#": "transform(device_values())"`, so the same pattern reads either the wrapped or the bare message. When the device speaks SunSpec and its registry names each point after the SunSpec path it
 holds (`701_W`, `704_PFWInj_PF`, `705_Crv1_ActPt`, `705_Crv1_Pt3_Var`, `708_Crv1_MustTrip_Pt1_V`, with
 a 1-based index on repeating groups), `interoperability.discovery.device_formats` derives everything from the
 names alone, validated against the SunSpec model classes:
@@ -395,6 +458,10 @@ names alone, validated against the SunSpec model classes:
   `series()` lists trimmed to the group's `ActPt`; the reverse flattens them again with `unseries()`.
 * `device_format_declaration(point_names, scaling)` gives the `formats` entry (a leaf whose fields are
   the points, recording who applies scale factors).
+* `resource_mappings(device_format, device_topic, uai, alias_formats)` gives the canonical resource and one
+  alias per requested format. An alias is a format name, or a dict `{"format", "encoding", "parameters", "uai"}`
+  when it should be published as protobuf, carry per-resource parameters, or live under another UAI, as an
+  OpenFMB topic alias does.
 
 **Scale factors.** SunSpec values are integers scaled by a companion `_SF` register, and where that
 scaling happens is a build-time choice, `scaling`, that fixes the registry and the transforms together:
@@ -425,7 +492,8 @@ PYTHONPATH=src python -m interoperability.discovery.sunspec --file device.json -
 `tests/integration/fake_sunspec/` is the worked case: `device_1547.json` (pysunspec2's 1547 test device,
 models 1 and 701 to 713 with three stored curves per curve model), `build_configs.py` generating one
 configuration set per scaling mode, and `tests/test_integration_fake_sunspec.py` driving the fake driver's
-`all` message through the `sunspec`, `2030.5` and `1815.2.inputs` aliases exactly as the service resolves
+`all` message (in both its shapes) through the `sunspec`, `2030.5` and `1815.2.inputs` aliases and through
+an `openfmb.solar.reading` alias under an OpenFMB topic, protobuf-encoded, exactly as the service resolves
 it, in both modes, and checking that the generated files are current.
 
 **IEEE 1815.2 devices.** The same machinery serves an outstation behind the `dnp3` driver, with point names
@@ -481,7 +549,7 @@ RPC methods exported by the service:
 
 | Method                                              | Returns                  | Description                                                                                                   |
 |-----------------------------------------------------|--------------------------|---------------------------------------------------------------------------------------------------------------|
-| `resolve(uai, as_format=None, strict=False)`        | dict                     | Resolve a UAI to its canonical resource. When `as_format` is given, the result also includes `target_format` and `transform`, the ordered list of transform patterns from the resource's `data_format` to `as_format` (empty when they are the same format). Returns `{}` if nothing canonical is found, and fails with a `TransformNotFoundError` if the resource cannot be converted to `as_format`. |
+| `resolve(uai, as_format=None, strict=False)`        | dict                     | Resolve a UAI to its canonical resource. When `as_format` is given (or the UAI is an alias, whose format is used), the result also includes `target_format` and `transform`, the ordered list of transform patterns from the resource's `data_format` to `as_format` (empty when they are the same format), `parameters` (the canonical resource's merged with each alias's, outermost winning), `encoding` (`json` unless an alias declares otherwise) and, for a non-JSON encoding, `codec`: `{"encoding": "protobuf", "proto": "<format's protobuf message>"}`. Returns `{}` if nothing canonical is found, fails with a `TransformNotFoundError` if the resource cannot be converted to `as_format`, and with a `ValueError` if protobuf is asked for a format that declares no `proto`. |
 | `lookup_transform(input_format, output_format)`     | list of pattern dicts    | The transform chain between two formats. An empty list means no transform is needed (same format). When no chain exists the call fails with a `TransformNotFoundError` saying whether a format is unknown or the formats are simply not connected. |
 | `register_transform(input_format, output_format, pattern, update=False, lossiness=None)` | bool | Add a transform edge at runtime. If the pair already has a different transform it is kept, with a warning, unless `update` is true. Registering the same pattern again is a no-op. Malformed patterns are rejected here. Returns whether the registry changed. |
 | `score_transform(input_format, output_format, fields=None)` | dict | The chain `lookup_transform` would choose, as `path` (the formats passed through) and `retention`, the fraction of source fields that reach the end, scored over `fields` if given. |
@@ -495,8 +563,10 @@ Pubsub subscriptions:
 ## Consuming a resource from another agent
 
 `interoperability.resource.ResourceData` is a client-side helper. It resolves a UAI through
-the service, compiles the returned transform, subscribes to the canonical publication
-topic, and delivers transformed payloads to your callback under your own local topic.
+the service, compiles the returned transform with the resource's `parameters` bound, subscribes
+to the canonical publication topic, and delivers transformed payloads to your callback under
+your own local topic, encoded as the resource's `codec` says (`bytes` for a protobuf alias;
+`encode` and `decode` are also available directly for the message bus adapter's inbound path).
 
 ```python
 from interoperability.resource import ResourceData
@@ -534,9 +604,12 @@ interoperability_service/
       dnp3.py                     registries and configuration from an IEEE 1815.2 profile or point listing
       point_maps.py               the IEEE 2030.5 agent's point map, generated from field maps
     field_universe.py             every field a format can carry, from models, configuration or the transforms
+    codecs/                       wire codecs: protobuf encoding of OpenFMB profiles (extra ``openfmb``)
     transforms/                   Bundled transform JSON files and the transform function library
+    formats/                      Bundled format declarations (the OpenFMB profile formats and their protobuf messages)
     mappings/                     Bundled default mappings (currently none)
     models/openfmb/               OpenFMB pydantic models generated from the protobuf PSM, plus profile builders and sample generator
+    models/openfmb/proto/         the vendored psm-protobuf-python bindings the codec and the model generator read
     models/sunspec/               Generated SunSpec Modbus models (one module per model id), SunSpecDevice container, builders
     models/ieee1815_2/            Generated IEEE 1815.2 (MESA-DER) point enums, function-group profiles, PointDatabase, builders
     models/ieee2030_5/            Generated IEEE 2030.5 schema types, enums and builders
@@ -568,6 +641,12 @@ only pydantic. `profile_builders.py` offers hand-written constructors for the DE
 `generate_samples.py` writes example messages to `solar_json_output/`. The `openfmb` field
 universe used by the transform registry is derived from these classes.
 
+The protobuf bindings themselves are vendored in `models/openfmb/proto/` (see its `SOURCE.md`),
+and `interoperability.codecs.openfmb` uses them to turn a transform's output dict into protobuf
+bytes and back (`encode`, `decode`), keyed by the message name the format declares as `proto`.
+This needs the `protobuf` runtime, installed by the `openfmb` extra; nothing else in the service
+does.
+
 ### SunSpec, IEEE 1815.2 and IEEE 2030.5 models
 
 The sibling packages `models/sunspec/`, `models/ieee1815_2/` and `models/ieee2030_5/` give
@@ -597,8 +676,10 @@ pytest tests
 
 The suite exercises the expression language, checks that every bundled transform
 definition compiles, verifies lookups in the registry, confirms the agent's default loader
-reads the bundled files, and instantiates every OpenFMB, SunSpec, IEEE 1815.2 and IEEE
-2030.5 model and builder. The loader test is skipped if VOLTTRON is not installed.
+reads the bundled files, exercises `resolve` and the `ResourceData` helper, round-trips OpenFMB
+profiles through the protobuf codec, and instantiates every OpenFMB, SunSpec, IEEE 1815.2 and
+IEEE 2030.5 model and builder. The loader, resolve and helper tests are skipped if VOLTTRON is
+not installed; the codec tests if `protobuf` is not.
 
 ## Status and known limitations
 
@@ -608,7 +689,11 @@ This is an early-stage service. Things to be aware of:
   above). It does not know when a mapping is semantically approximate unless the author marks
   it with `approx()`, and there is no empirical round-trip check yet; the `lossiness` override
   exists so one can be applied when it is written.
-* There are no agent-level tests; the service's RPC and pubsub behavior is untested.
+* Agent-level tests cover `resolve` and the default loader only; the remaining RPC and pubsub
+  behavior is untested.
+* The transform chain runs in one direction, canonical format to alias format. Inbound messages
+  in an alias's format (a control profile from a remote bus) still need inverse chains, which
+  exist only as a TODO in `transform_parser.py`.
 
 ## License
 

@@ -1,0 +1,34 @@
+{
+  "openfmb.ess.reading": {
+    "hub": false,
+    "proto": "essmodule.ESSReadingProfile"
+  },
+  "openfmb.ess.status": {
+    "hub": false,
+    "proto": "essmodule.ESSStatusProfile"
+  },
+  "openfmb.ess.capability": {
+    "hub": false,
+    "proto": "essmodule.ESSCapabilityProfile"
+  },
+  "openfmb.ess.control": {
+    "hub": false,
+    "proto": "essmodule.ESSControlProfile"
+  },
+  "openfmb.solar.reading": {
+    "hub": false,
+    "proto": "solarmodule.SolarReadingProfile"
+  },
+  "openfmb.solar.status": {
+    "hub": false,
+    "proto": "solarmodule.SolarStatusProfile"
+  },
+  "openfmb.solar.capability": {
+    "hub": false,
+    "proto": "solarmodule.SolarCapabilityProfile"
+  },
+  "openfmb.solar.control": {
+    "hub": false,
+    "proto": "solarmodule.SolarControlProfile"
+  }
+}

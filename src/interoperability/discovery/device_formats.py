@@ -2,9 +2,11 @@
 turn it into a protocol's nested shape and back.
 
 A platform driver publishes ``devices/<campus>/<building>/<device>/all`` as a flat ``{point name: value}``
-message. When the device speaks SunSpec, its registry can name each point after the SunSpec path it
-holds, and from those names alone the transforms between the device format and ``sunspec`` can be
-generated: this is the "derive a format from a registry" step of the configuration workflow.
+message; the modular driver wraps it as ``[values, meta]``, with the point metadata (units, type) in the
+second element. The generated device-to-protocol patterns start with ``"#": "transform(device_values())"``
+so either shape yields the values dict. When the device speaks SunSpec, its registry can name each point
+after the SunSpec path it holds, and from those names alone the transforms between the device format and
+``sunspec`` can be generated: this is the "derive a format from a registry" step of the configuration workflow.
 
 Point naming: ``<model>_<segment>_...`` where a repeating group carries a 1-based index, e.g.
 ``701_W``, ``704_PFWInj_PF``, ``705_Crv1_ActPt``, ``705_Crv1_Pt3_Var``, ``708_Crv1_MustTrip_Pt1_V``.
@@ -30,6 +32,9 @@ from ..field_universe import _group_type
 from ..models.sunspec import MODEL_REGISTRY, SunSpecGroup
 
 _INDEXED = re.compile(r'^([A-Za-z_][A-Za-z0-9_]*?)(\d+)$')
+#: First entry of every device-to-protocol pattern: unwrap the driver's ``[values, meta]`` publish (or pass a bare
+#: values dict through) before the point names are read.
+DEVICE_STAGE_INPUT = {'#': 'transform(device_values())'}
 #: SunSpec point that counts the valid entries of a sibling ``Pt`` list.
 ACTIVE_COUNT = 'ActPt'
 SCALING_MODES = ('transform', 'driver')
@@ -270,7 +275,8 @@ def sunspec_device_transforms(device_format: str, point_names: list[str], *, sca
     """
     builder = _Builder(point_names, scaling, scale_factors)
     tree = builder.tree()
-    definitions = [{'input_format': device_format, 'output_format': 'sunspec', 'pattern': builder.to_protocol(tree, False)},
+    definitions = [{'input_format': device_format, 'output_format': 'sunspec',
+                    'pattern': {**DEVICE_STAGE_INPUT, **builder.to_protocol(tree, False)}},
                    {'input_format': 'sunspec', 'output_format': device_format, 'pattern': builder.from_protocol(tree, ())}]
     return DeviceTransforms(definitions, scaling, sorted(set(builder.notes)))
 
@@ -382,7 +388,8 @@ def dnp3_device_transforms(device_format: str, point_names: list[str], *, scalin
                 batch[f'*{table}'] = f'transform[#, {table}]({", ".join(functions)})'
             from_protocol['sequence[#]'] = batch
         if to_protocol:
-            definitions.append({'input_format': device_format, 'output_format': fmt, 'pattern': to_protocol})
+            definitions.append({'input_format': device_format, 'output_format': fmt,
+                                'pattern': {**DEVICE_STAGE_INPUT, **to_protocol}})
             # Inputs (AI, BI, counters) are read-only on the device, so nothing is written back to them; writes
             # reach the device only through the outputs format, which also carries the ordered curve batches.
             if fmt == '1815.2.outputs':
@@ -391,12 +398,25 @@ def dnp3_device_transforms(device_format: str, point_names: list[str], *, scalin
 
 
 # ============================================================================================ shared
-def resource_mappings(device_format: str, device_topic: str, uai: list[str], alias_formats: dict[str, str]) -> list[dict]:
-    """A canonical resource for the device plus one alias per requested format, for the service's ``mappings``."""
+def resource_mappings(device_format: str, device_topic: str, uai: list[str],
+                      alias_formats: dict[str, str | dict]) -> list[dict]:
+    """A canonical resource for the device plus one alias per requested format, for the service's ``mappings``.
+
+    ``alias_formats`` maps the alias name (the last UAI segment, or a full UAI as a list) to a format name, or to
+    a dict ``{"format": ..., "encoding": ..., "parameters": {...}, "uai": [...]}`` when the alias carries a wire
+    encoding (``protobuf``) or per-resource parameters (an OpenFMB device mRID), or lives under another UAI
+    prefix (an OpenFMB topic such as ``openfmb/solarmodule/SolarReadingProfile/<mrid>``).
+    """
     mappings = [{'uai': uai, 'resource_type': 'canonical',
                  'resource': {'data_format': device_format, 'owner': 'platform.driver',
                               'publication_topic': f'{device_topic}/all', 'rpc_topic': device_topic}}]
-    for alias, fmt in alias_formats.items():
-        mappings.append({'uai': uai[:-1] + [alias], 'resource_type': 'alias',
-                         'resource': {'data_format': fmt, 'owner': 'platform.driver', 'references': uai}})
+    for alias, spec in alias_formats.items():
+        spec = {'format': spec} if isinstance(spec, str) else dict(spec)
+        resource = {'data_format': spec['format'], 'owner': 'platform.driver', 'references': uai}
+        if spec.get('encoding'):
+            resource['encoding'] = spec['encoding']
+        if spec.get('parameters'):
+            resource['parameters'] = spec['parameters']
+        alias_uai = list(spec['uai']) if spec.get('uai') else uai[:-1] + [alias]
+        mappings.append({'uai': alias_uai, 'resource_type': 'alias', 'resource': resource})
     return mappings

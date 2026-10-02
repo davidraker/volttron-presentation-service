@@ -14,6 +14,7 @@ import interoperability.agent as agent_module
 
 STUB_MAPPINGS = [{'id': 'stub-mapping'}]
 STUB_TRANSFORMS = [{'id': 'stub-transform'}]
+STUB_FORMATS = {'stub.format': {'hub': False}}
 
 
 class _FakeConfigStore:
@@ -49,6 +50,7 @@ def _build_service(monkeypatch):
         '_load_bundled_definitions',
         staticmethod(fake_load_bundled_definitions),
     )
+    monkeypatch.setattr(agent_module.PresentationService, '_load_bundled_formats', staticmethod(lambda directory: STUB_FORMATS))
     service = agent_module.PresentationService()
     return service, fake_config
 
@@ -58,7 +60,7 @@ def test_set_default_is_called_with_a_name_and_the_bundled_value(monkeypatch):
 
     assert len(fake_config.set_default_calls) == 1
     name, value = fake_config.set_default_calls[0]
-    assert value == {'mappings': STUB_MAPPINGS, 'transforms': STUB_TRANSFORMS}
+    assert value == {'mappings': STUB_MAPPINGS, 'transforms': STUB_TRANSFORMS, 'formats': STUB_FORMATS}
     assert isinstance(name, str) and name
 
 

@@ -62,7 +62,7 @@ def service(config):
     tree.ingest_mappings(config['mappings'])
     registry = TransformRegistry()
     for name, spec in config['formats'].items():
-        registry.declare_format(name, hub=spec.get('hub'), fields=spec.get('fields'))
+        registry.declare_format(name, **spec)
     bundled = resources.files('interoperability').joinpath('transforms')
     registry.update_registry([d for f in sorted(bundled.iterdir(), key=lambda f: f.name)
                               if f.is_file() and f.name.endswith('.json') for d in json.loads(f.read_text())]
@@ -72,11 +72,14 @@ def service(config):
 
 def resolve(service, uai: list[str]):
     tree, registry = service
-    node, as_format = tree.resolve(tuple(uai))
+    node, as_format, aliases = tree.resolve(tuple(uai))
     assert node is not None and node.is_canonical
     resource = node.resource.model_dump()
+    for alias in reversed(aliases):
+        resource['parameters'].update(alias.resource.parameters)
     chain, retention, path = registry.lookup_scored(resource['data_format'], as_format)
-    return resource, as_format, path, retention, TransformParser().build_transform_from_schema(chain)
+    parser = TransformParser(context=resource['parameters'])
+    return resource, as_format, path, retention, parser.build_transform_from_schema(chain)
 
 
 # ---- discovery and generation ----
@@ -128,12 +131,14 @@ def test_point_names_and_profile_scaling():
         with pytest.raises(ValueError):
             dnp3_point_path(bad)
     read, readback, write = dnp3_device_transforms('dev', ['AI_2', 'AO_217', 'AO_88'], scaling='transform').definitions
-    assert read['pattern'] == {'AI': {'2': 'transform[AI_2](scale(0.1))'}}
+    # Reads start by unwrapping the driver's [values, meta] publish, then map the flat points.
+    assert read['pattern'] == {'#': 'transform(device_values())', 'AI': {'2': 'transform[AI_2](scale(0.1))'}}
     assert readback['pattern']['AO']['88'] == 'transform[AO_88](scale(0.1))'
     assert write['pattern']['AO_88'] == 'transform[AO, 88](scale(10.0))' and write['pattern']['AO_217'] == 'transform[AO, 217]()'
     assert write['pattern']['sequence[#]']['*AO'] == "transform[#, AO](scale_fields('88:10.0'), prefix_keys('AO_'))"
     driver = dnp3_device_transforms('dev', ['AI_2', 'AO_88'], scaling='driver').definitions
-    assert driver[0]['pattern'] == {'AI': {'2': 'transform[AI_2]()'}} and driver[2]['pattern']['sequence[#]']['*AO'] == "transform[#, AO](prefix_keys('AO_'))"
+    assert driver[0]['pattern'] == {'#': 'transform(device_values())', 'AI': {'2': 'transform[AI_2]()'}}
+    assert driver[2]['pattern']['sequence[#]']['*AO'] == "transform[#, AO](prefix_keys('AO_'))"
 
 
 # ---- the device used through each alias ----

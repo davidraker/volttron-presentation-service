@@ -49,22 +49,36 @@ class TransformRegistry:
         self.hubs = set(DEFAULT_HUBS if hubs is None else hubs)
         self.field_providers = list(field_providers) if field_providers is not None else [models_provider]
         self.declared_fields: dict[str, set[tuple]] = {}
+        self.format_specs: dict[str, dict] = {}
         self._parser = TransformParser()
         self._universe_cache: dict[str, set[tuple]] = {}
         self._weights_stale = True
 
     # ---- formats ----
 
-    def declare_format(self, name: str, *, hub: bool | None = None, fields: Iterable | None = None) -> None:
-        """Describe a format: whether chains may pass through it, and the fields it can carry (for formats
-        without a model package, e.g. from a platform driver's registry configuration)."""
+    def declare_format(self, name: str, *, hub: bool | None = None, fields: Iterable | None = None,
+                       proto: str | None = None, **extra) -> None:
+        """Describe a format: whether chains may pass through it, the fields it can carry (for formats
+        without a model package, e.g. from a platform driver's registry configuration), and ``proto``, the
+        fully qualified protobuf message a resource in this format is encoded as (``essmodule.ESSReadingProfile``).
+        Other keys of a declaration (``scaling``, ...) are kept in :attr:`format_specs` for callers."""
         if hub is True:
             self.hubs.add(name)
         elif hub is False:
             self.hubs.discard(name)
         if fields is not None:
             self.declared_fields[name] = parse_declared_fields(fields)
+        spec = self.format_specs.setdefault(name, {})
+        if hub is not None:
+            spec['hub'] = hub
+        if proto is not None:
+            spec['proto'] = proto
+        spec.update(extra)
         self._invalidate()
+
+    def format_spec(self, name: str) -> dict:
+        """The declaration of a format (``hub``, ``proto``, ...); empty when it was never declared."""
+        return dict(self.format_specs.get(name, {}))
 
     def has_format(self, data_format: str) -> bool:
         return data_format in self.registry

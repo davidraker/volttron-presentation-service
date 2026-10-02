@@ -27,17 +27,19 @@ class PresentationService(Agent):
     def __init__(self, **kwargs):
         super(PresentationService, self).__init__(**kwargs)
 
-        # Load bundled transforms and mappings as configuration defaults. Only JSON files directly
-        # inside each package directory are loaded; subdirectories are not.
+        # Load bundled transforms, mappings and format declarations as configuration defaults. Only JSON
+        # files directly inside each package directory are loaded; subdirectories are not.
         package_root = resources.files('interoperability')
         known_transforms = self._load_bundled_definitions(package_root.joinpath('transforms'))
         known_mappings = self._load_bundled_definitions(package_root.joinpath('mappings'))
+        known_formats = self._load_bundled_formats(package_root.joinpath('formats'))
 
         # Both the fastlib compatibility layer and upstream VOLTTRON key their
         # config store by name and match a subscription pattern against that
         # same name with fnmatch, so the default must be stored under the
         # name subscribed to below.
-        self.vip.config.set_default('config', {'mappings': known_mappings, 'transforms': known_transforms})
+        self.vip.config.set_default('config', {'mappings': known_mappings, 'transforms': known_transforms,
+                                               'formats': known_formats})
         self.mapping_engine = UAITree()
         self.transform_registry = TransformRegistry()
 
@@ -61,11 +63,29 @@ class PresentationService(Agent):
                 _log.warning(f'Ignoring bundled definition file {definition_file.name}: expected a list or object.')
         return definitions
 
+    @staticmethod
+    def _load_bundled_formats(directory) -> dict[str, dict]:
+        """Format declarations, ``{name: {"hub": ..., "proto": ...}}``, merged from the JSON objects in a directory."""
+        formats: dict[str, dict] = {}
+        if not directory.is_dir():
+            return formats
+        for definition_file in sorted(directory.iterdir(), key=lambda f: f.name):
+            if not (definition_file.is_file() and definition_file.name.endswith('.json')):
+                continue
+            with definition_file.open('r') as f:
+                loaded = json.load(f)
+            if isinstance(loaded, dict) and all(isinstance(v, dict) for v in loaded.values()):
+                formats.update(loaded)
+            else:
+                _log.warning(f'Ignoring bundled format file {definition_file.name}: expected an object of objects.')
+        return formats
+
     def configure_main(self, _, __, contents):
         self.mapping_engine.ingest_mappings(contents.get('mappings', []))
-        # Optional per-format declarations: {"acme_inverter": {"hub": false, "fields": ["W", "V.PhaseA", ...]}}
+        # Optional per-format declarations: {"acme_inverter": {"hub": false, "fields": ["W", "V.PhaseA", ...]},
+        #                                    "openfmb.ess.reading": {"proto": "essmodule.ESSReadingProfile"}}
         for name, spec in (contents.get('formats') or {}).items():
-            self.transform_registry.declare_format(name, hub=spec.get('hub'), fields=spec.get('fields'))
+            self.transform_registry.declare_format(name, **spec)
         self.transform_registry.update_registry(contents.get('transforms', []))
 
     @RPC.export
@@ -99,10 +119,21 @@ class PresentationService(Agent):
 
     @RPC.export
     def resolve(self, uai: tuple, as_format: str | None = None, strict: bool = False) -> dict[str, str]:
+        """The canonical resource a UAI leads to, as a dict, plus what a caller needs to present it in
+        ``as_format`` (or the outermost alias's format): ``target_format``, the ``transform`` chain,
+        ``parameters`` (the canonical resource's, overridden by each alias's, outermost winning) and, when the
+        presenting alias declares a non-JSON ``encoding``, a ``codec`` naming it and the format's protobuf
+        message. Returns ``{}`` when nothing canonical is found."""
         _log.info(f'Resolving UAI: {uai}, AS FORMAT: {as_format}, STRICT: {strict}')
-        node, as_format = self.mapping_engine.resolve(uai, as_format, strict)
+        node, as_format, aliases = self.mapping_engine.resolve(uai, as_format, strict)
         if node and node.is_canonical:
             resource_dict = cast(ResourceNode, node).resource.model_dump()
+            parameters = dict(resource_dict.get('parameters') or {})
+            for alias in reversed(aliases):
+                parameters.update(alias.resource.parameters)
+            resource_dict['parameters'] = parameters
+            encoding = next((a.resource.encoding for a in aliases if a.resource.encoding), None) or 'json'
+            resource_dict['encoding'] = encoding
             if as_format:
                 # Add the target data format & transform definition to the response. An empty chain means the
                 # resource is already in that format; a missing chain raises TransformNotFoundError to the caller.
@@ -110,6 +141,12 @@ class PresentationService(Agent):
                 chain, retention, path = self.transform_registry.lookup_scored(resource_dict['data_format'], as_format)
                 resource_dict['transform'] = chain
                 _log.info(f'Transform {" -> ".join(path)} retains {retention:.0%} of the source fields.')
+                if encoding != 'json':
+                    proto = self.transform_registry.format_spec(as_format).get('proto')
+                    if encoding == 'protobuf' and not proto:
+                        raise ValueError(f'Alias for {uai} asks for protobuf, but format "{as_format}" declares no'
+                                         f' "proto" message name in its formats entry.')
+                    resource_dict['codec'] = {'encoding': encoding, 'proto': proto}
             _log.info(f'Returning canonical node: {node}, with transform {resource_dict["data_format"]} -> {as_format}')
             return resource_dict
         else:

@@ -58,3 +58,34 @@ def test_lookup_reraises_other_remote_errors():
     other = RemoteError('boom', exc_type="<class 'KeyError'>", exc_args=['x'])
     with pytest.raises(RemoteError):
         ResourceData.lookup(_agent(other), 'site/pv')
+
+
+def test_lookup_binds_parameters_and_codec():
+    pytest.importorskip('google.protobuf')
+    from interoperability.codecs import openfmb as codec
+    definition = {'data_format': 'openfmb.ess', 'target_format': 'openfmb.ess.reading', 'publication_topic': 'devices/ess',
+                  'parameters': {'mrid': 'dev-1'}, 'encoding': 'protobuf',
+                  'codec': {'encoding': 'protobuf', 'proto': 'essmodule.ESSReadingProfile'},
+                  'transform': [{'ess': {'conductingEquipment': {'mRID': "param('mrid')"}}, 'essReading': 'transform[essReading]()'}]}
+    resource = ResourceData.lookup(_agent(definition), 'openfmb/essmodule/ESSReadingProfile/dev-1')
+    result = resource.transform.execute({'essReading': {'readingMMXU': {'Hz': {'mag': 60.0}}}})
+    assert result['ess'] == {'conductingEquipment': {'mRID': 'dev-1'}}
+    wire = resource.encode(result)
+    assert isinstance(wire, bytes)
+    assert codec.decode('essmodule.ESSReadingProfile', wire)['ess'] == {'conductingEquipment': {'mRID': 'dev-1'}}
+    assert resource.decode(wire)['essReading'] == {'readingMMXU': {'Hz': {'mag': 60.0}}}
+    assert resource.decode({'parsed': 'json'}) == {'parsed': 'json'}
+
+
+def test_subscribe_relays_encoded_payloads():
+    pytest.importorskip('google.protobuf')
+    agent = _agent({'data_format': 'openfmb.ess', 'target_format': 'openfmb.ess.reading', 'publication_topic': 'devices/ess',
+                    'codec': {'encoding': 'protobuf', 'proto': 'essmodule.ESSReadingProfile'}, 'transform': []})
+    resource = ResourceData.lookup(agent, 'remote/topic')
+    received = []
+    resource.subscribe(lambda *args: received.append(args))
+    handler = agent.vip.pubsub.subscribe.call_args.kwargs['callback']
+    assert agent.vip.pubsub.subscribe.call_args.kwargs['prefix'] == 'devices/ess'
+    handler('pubsub', 'platform.driver', 'bus', 'devices/ess/all', {}, {'essReading': {'readingMMXU': {'Hz': {'mag': 60.0}}}})
+    (peer, sender, bus, topic, headers, payload), = received
+    assert topic == 'remote/topic' and isinstance(payload, bytes)

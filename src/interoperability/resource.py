@@ -1,8 +1,9 @@
 import logging
 
-from pydantic import BaseModel, ConfigDict
-from typing import Callable
+from pydantic import BaseModel, ConfigDict, Field
+from typing import Any, Callable
 
+from .codecs import decoder_for, encoder_for
 from .transform_parser import TransformParser
 
 try:
@@ -24,6 +25,12 @@ class Resource(BaseModel):
     model_config = ConfigDict(validate_assignment=True, populate_by_name=True)
     data_format: str
     owner: str
+    #: Wire encoding of the resource's messages: ``json`` (the default when unset) or ``protobuf``. For an alias it
+    #: is the encoding its remote topic carries; the format declaration names the protobuf message (``proto``).
+    encoding: str | None = None
+    #: Per-resource values transform expressions reach with ``param('name')``, e.g. ``{"mrid": "..."}`` for the
+    #: device mRID an OpenFMB header carries. An alias's parameters are merged over the canonical resource's.
+    parameters: dict[str, Any] = Field(default_factory=dict)
 
     @classmethod
     def create(cls, resource_config):
@@ -54,8 +61,13 @@ class ResourceData:
         self.local_topic = local_topic
         self.resource_def = resource_def
         # No 'transform' (resolved without a target format) or an empty chain means the resource is already
-        # in the wanted format; both compile to the identity.
-        self.transform = TransformParser().build_transform_from_schema(self.resource_def.get('transform') or [])
+        # in the wanted format; both compile to the identity. The resource's parameters bind param() expressions.
+        parser = TransformParser(context=self.resource_def.get('parameters') or {})
+        self.transform = parser.build_transform_from_schema(self.resource_def.get('transform') or [])
+        # The wire codec of the target format (``codec`` from resolve): identity for JSON, else e.g. protobuf.
+        codec = self.resource_def.get('codec')
+        self.encode: Callable[[Any], Any] = encoder_for(codec)
+        self.decode: Callable[[Any], Any] = decoder_for(codec)
         # TODO: One step further, make actual Resource (or include all this in Resource?).
         #   This version, however, does not contain all the fields of canonical nor aliased resources.
         # self.resource = Resource(**resource_def)
@@ -63,7 +75,7 @@ class ResourceData:
     def subscribe(self, callback: Callable):
         def handle_incoming(peer, sender, bus, topic, headers, message):
             _log.debug(f'@@@@@ CANONICAL MESSAGE ({topic}): {message}')
-            transformed_payload = self.transform.execute(message)
+            transformed_payload = self.encode(self.transform.execute(message))
             callback(peer, sender, bus, self.local_topic, headers, transformed_payload)
 
         return self.agent.vip.pubsub.subscribe(peer='pubsub', prefix=self.resource_def['publication_topic'],

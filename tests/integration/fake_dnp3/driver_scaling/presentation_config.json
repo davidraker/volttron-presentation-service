@@ -139,6 +139,7 @@
       "input_format": "fake_dnp3_der",
       "output_format": "1815.2.inputs",
       "pattern": {
+        "#": "transform(device_values())",
         "AI": {
           "2": "transform[AI_2]()",
           "3": "transform[AI_3]()",
@@ -229,6 +230,7 @@
       "input_format": "fake_dnp3_der",
       "output_format": "1815.2.outputs",
       "pattern": {
+        "#": "transform(device_values())",
         "AO": {
           "23": "transform[AO_23]()",
           "24": "transform[AO_24]()",

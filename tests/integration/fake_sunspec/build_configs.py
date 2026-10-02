@@ -24,13 +24,22 @@ HERE = Path(__file__).resolve().parent
 DEVICE_FORMAT = 'fake_sunspec_pv'
 DEVICE_TOPIC = 'devices/site1/feeder1/pv_inverter'
 UAI = ['site1', 'pv_inverter']
+#: The device's OpenFMB identity, carried in the profile headers the OpenFMB alias publishes.
+OPENFMB_MRID = '7d1a2b3c-0000-4000-8000-000000000001'
+ALIASES = {
+    'pv_sunspec': 'sunspec', 'pv_2030_5': '2030.5', 'pv_dnp3': '1815.2.inputs',
+    # One OpenFMB profile, protobuf on the wire, under the topic an OpenFMB adapter would subscribe to.
+    'pv_openfmb': {'format': 'openfmb.solar.reading', 'encoding': 'protobuf',
+                   'parameters': {'mrid': OPENFMB_MRID, 'name': 'PV inverter 1'},
+                   'uai': ['openfmb', 'solarmodule', 'SolarReadingProfile', OPENFMB_MRID]},
+}
 
 
 def main() -> None:
     device = discover_file(HERE / 'device_1547.json')
     for scaling in ('transform', 'driver'):
         written = write_case(device, HERE / f'{scaling}_scaling', device_format=DEVICE_FORMAT, device_topic=DEVICE_TOPIC,
-                             uai=UAI, scaling=scaling)
+                             uai=UAI, scaling=scaling, alias_formats=ALIASES)
         print(f'{scaling} scaling: {len(written)} files under {written["presentation_config"].parent}')
     print(f"{device.identity}: {len(device.points)} points, scale factors {device.scale_factors}")
     for note in device.notes:

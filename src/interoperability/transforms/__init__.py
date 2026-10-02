@@ -5,6 +5,8 @@ Each public function is called at parse time with the literal arguments written 
 the value found at the expression's source path.
 """
 import contextvars
+import time
+import uuid
 
 from convtools import conversion as c
 
@@ -26,6 +28,10 @@ scope_label = contextvars.ContextVar('scope_label', default='each0')
 
 
 ROOT_LABEL = 'each0'
+
+# Per-resource values a transform may refer to with ``param('name')`` (a device's OpenFMB mRID, for example).
+# The parser sets it while compiling a chain for one resource, so library functions bind the value at build time.
+parse_context = contextvars.ContextVar('parse_context', default={})
 
 
 def scope():
@@ -53,6 +59,8 @@ FIDELITY = {
     'when': 0.7,           # present for some messages only
     'when_equal': 0.7,
     'const': 0.0,          # the source value itself is not carried
+    'param': 0.0, 'uuid4': 0.0, 'timestamp': 0.0,     # produced, not carried from the source
+    'device_values': 1.0,
     'pairs': 1.0, 'unpairs': 1.0, 'series': 1.0, 'unseries': 1.0, 'as_list': 1.0, 'no_op': 1.0,
     'scale': 1.0, 'scale_fields': 1.0, 'prefix_keys': 1.0, 'scale_reg': 1.0, 'scale_reg_pow_10': 1.0, 'scale_decimal_int_signed': 1.0,
     'mod10k': 1.0, 'mod10k64': 1.0, 'mod10k48': 1.0, 'multiple': 1.0, 'add': 1.0,
@@ -350,6 +358,48 @@ def const(value):
     """Replace the value with a literal, e.g. ``transform[DERCurve, opModVoltVar](const(2))`` emits 2 only when
     the source is present."""
     return c.naive(value)
+
+
+def param(name: str):
+    """
+        A per-resource parameter bound when the chain is compiled, e.g. ``transform(param('mrid'))`` for the
+         device mRID an OpenFMB header carries. The values come from the ``parameters`` of the resource being
+         resolved (``TransformParser(context=...)``); an unbound name yields MISSING and the field is dropped.
+    """
+    return c.naive(parse_context.get().get(name, MISSING))
+
+
+def uuid4():
+    """A fresh random UUID string on every message, e.g. for an OpenFMB ``messageInfo.identifiedObject.mRID``."""
+    return c.call_func(lambda: str(uuid.uuid4()))
+
+
+def _timestamp():
+    now = time.time()
+    whole = int(now)
+    return {'seconds': whole, 'nanoseconds': int(round((now - whole) * 1e9))}
+
+
+def timestamp():
+    """The current time as an OpenFMB ``Timestamp`` group, ``{'seconds': ..., 'nanoseconds': ...}``."""
+    return c.call_func(_timestamp)
+
+
+def _device_values(message):
+    if isinstance(message, (list, tuple)) and len(message) == 2 and isinstance(message[0], dict):
+        return message[0]
+    return message
+
+
+def device_values():
+    """
+        The point values of a platform driver ``devices/.../all`` message, which arrives as ``[values, meta]``
+         (the modular driver) or as the bare ``{point: value}`` dict; either shape yields the dict. Meant for
+         a pattern's root ``"#"`` entry so the rest of the pattern reads flat points. Has an inverse (identity).
+    """
+    conv = c.call_func(_device_values, c.this)
+    conv.inverse = c.this.pipe(c.this)
+    return conv
 
 
 def _when(value, actual, expected):

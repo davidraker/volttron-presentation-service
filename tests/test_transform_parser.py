@@ -313,6 +313,46 @@ def test_repeated_group_definition_errors(parser, schema, message):
         parser.build_transform_from_schema(schema)
 
 
+def test_root_stage_input_rebinds_the_message(parser):
+    # The driver publishes devices/.../all as [values, meta]; device_values() yields the values dict and passes a
+    # bare dict through, so one pattern serves both shapes. Root-relative paths ('/...') see the rebound input.
+    schema = {'#': 'transform(device_values())',
+              '701': {'W': "transform[701_W](scale_reg_pow_10('/701_W_SF'))", 'Hz': 'transform[701_Hz]()'}}
+    pipeline = parser.build_transform_from_schema(schema)
+    values = {'701_W': 98, '701_W_SF': 2, '701_Hz': 60}
+    assert pipeline.execute([values, {'701_W': {'units': 'W'}}]) == {'701': {'W': 9800.0, 'Hz': 60}}
+    assert pipeline.execute(values) == {'701': {'W': 9800.0, 'Hz': 60}}
+    # Without the directive the list yields nothing, which is the failure the directive exists to prevent.
+    assert parser.build_transform_from_schema({'701': {'Hz': 'transform[701_Hz]()'}}).execute([values, {}]) == {}
+    # Any expression may rebind the input; a chain applies each stage's rebind to that stage's input only.
+    chain = [{'#': 'transform[payload]()', 'a': 'transform[x]()'}, {'b': 'transform[a](add(1))'}]
+    assert parser.build_transform_from_schema(chain).execute({'payload': {'x': 1}}) == {'b': 2}
+    with pytest.raises(TypeError):
+        parser.build_transform_from_schema({'#': 5, 'a': 'transform[x]()'})
+
+
+def test_root_stage_input_is_ignored_by_the_field_map(parser):
+    field_map = parser.field_map({'#': 'transform(device_values())', '701': {'W': 'transform[701_W]()'}})
+    assert field_map.sources() == {('701_W',)} and field_map.targets() == {('701', 'W')}
+
+
+def test_parameters_and_generated_header_values(parser):
+    # param() binds per-resource values when the chain is compiled; uuid4() and timestamp() are produced per message.
+    schema = {'header': {'mRID': 'uuid4()', 'stamp': 'timestamp()'},
+              'device': {'mRID': "param('mrid')", 'name': "param('name')"},
+              'body': 'transform[essReading]()'}
+    bound = TransformParser(context={'mrid': 'dev-1'}).build_transform_from_schema(schema)
+    first, second = bound.execute({'essReading': {'W': 1}}), bound.execute({'essReading': {'W': 1}})
+    assert first['device'] == {'mRID': 'dev-1'} and first['body'] == {'W': 1}          # unbound 'name' is dropped
+    assert first['header']['mRID'] != second['header']['mRID'] and len(first['header']['mRID']) == 36
+    assert set(first['header']['stamp']) == {'seconds', 'nanoseconds'} and first['header']['stamp']['seconds'] > 1_700_000_000
+    assert 'device' not in parser.build_transform_from_schema(schema).execute({'essReading': {}})   # no context at all
+    # Generated values carry nothing from the source, so they weigh nothing in the field map.
+    field_map = parser.field_map(schema)
+    assert {m.target: m.fidelity for m in field_map.mappings} == {
+        ('header', 'mRID'): 0.0, ('header', 'stamp'): 0.0, ('device', 'mRID'): 0.0, ('device', 'name'): 0.0, ('body',): 1.0}
+
+
 def test_repeated_group_element_source_wraps_enclosing_element(parser):
     # "#" with functions only and no list named by the siblings: the enclosing element is the source.
     schema = {'705': {'Crv[#]': {'#': 'transform(as_list())', 'VRef': 'transform[AI, 29]()', 'RspTms': 'transform[AI, 298]()'}}}
@@ -575,6 +615,48 @@ def test_bundled_openfmb_profiles_round_trip_through_61850_and_stay_valid(parser
     solar_back = _bundled_pipeline(parser, '61850', 'openfmb.solar').execute(solar)
     PROFILES['SolarControlProfile'].model_validate({'solarControl': solar_back['solarControl']})
     assert 'SolarControlScheduleFSCH' in solar_back['solarControl']['solarControlFSCC']
+
+
+def test_bundled_openfmb_profile_formats_add_headers_and_split_profiles():
+    """openfmb.<device>.<profile> formats: one profile with its header, as an adapter publishes it on one topic."""
+    from interoperability.models.openfmb import PROFILES
+    from interoperability.models.openfmb.generate_samples import example_profiles
+    from interoperability.transform_registry import MAX_HOPS
+    registry = TransformRegistry()
+    registry.update_registry([d for f in _bundled_transform_files() for d in json.loads(f.read_text())])
+    examples = example_profiles()
+    device = {'mrid': 'ess-mrid-1', 'name': 'ESS 1'}
+    for hub, profile, header, equipment, body in [
+            ('openfmb.ess', 'ESSReadingProfile', 'readingMessageInfo', 'ess', 'essReading'),
+            ('openfmb.ess', 'ESSStatusProfile', 'statusMessageInfo', 'ess', 'essStatus'),
+            ('openfmb.ess', 'ESSCapabilityProfile', 'capabilityMessageInfo', 'ess', 'essCapability'),
+            ('openfmb.ess', 'ESSControlProfile', 'controlMessageInfo', 'ess', 'essControl'),
+            ('openfmb.solar', 'SolarReadingProfile', 'readingMessageInfo', 'solarInverter', 'solarReading'),
+            ('openfmb.solar', 'SolarControlProfile', 'controlMessageInfo', 'solarInverter', 'solarControl')]:
+        leaf = f"{hub}.{profile[len(hub.split('.')[1]):-len('Profile')].lower()}"      # openfmb.ess.reading
+        # The whole device dict (every profile's body at once) narrows to one profile plus a fresh header.
+        chain, retention, path = registry.lookup_scored('61850', leaf)
+        assert path[-2:] == [hub, leaf] and len(path) - 1 <= MAX_HOPS
+        assert retention > 0            # the whole-group copy of the profile body counts the fields beneath it
+        chain, _, _ = registry.lookup_scored(hub, leaf)
+        pipeline = TransformParser(context=device).build_transform_from_schema(chain)
+        combined = {k: v for name in examples if name.startswith(hub.split('.')[1].upper() if hub == 'openfmb.ess' else 'Solar')
+                    for k, v in examples[name].items() if not k.endswith('MessageInfo') and k not in ('ess', 'solarInverter')}
+        result = pipeline.execute(combined)
+        assert set(result) == {header, equipment, body} and result[body] == examples[profile][body]
+        assert result[equipment] == {'conductingEquipment': {'mRID': 'ess-mrid-1', 'namedObject': {'name': 'ESS 1'}}}
+        info = result[header]['messageInfo']
+        assert len(info['identifiedObject']['mRID']) == 36 and info['messageTimeStamp']['seconds'] > 1_700_000_000
+        PROFILES[profile].model_validate(result)
+        # Back to the combined format drops the header, so inbound profiles reach openfmb_to_61850.json.
+        back, _, _ = registry.lookup_scored(leaf, hub)
+        assert TransformParser().build_transform_from_schema(back).execute(result) == {body: examples[profile][body]}
+    # The device path an adapter resolves fits the hop budget: device -> sunspec -> 61850 -> openfmb.ess -> leaf.
+    registry.register('dev', 'sunspec', {'#': 'transform(device_values())', '701': {'W': 'transform[701_W]()'}})
+    chain, _, path = registry.lookup_scored('dev', 'openfmb.ess.reading')
+    assert path == ['dev', 'sunspec', '61850', 'openfmb.ess', 'openfmb.ess.reading']
+    result = TransformParser(context={'mrid': 'm'}).build_transform_from_schema(chain).execute([{'701_W': 5}, {}])
+    assert result['essReading']['readingMMXU']['W']['net']['cVal']['mag'] == 5 and result['ess']['conductingEquipment']['mRID'] == 'm'
 
 
 def test_openfmb_reaches_other_protocols_through_the_61850_hub():

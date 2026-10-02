@@ -179,18 +179,26 @@ class UAITree(Tree):
         _log.debug(f'@@@@@@@@@@ CREATED TREE WITH: {self.all_nodes()}')
 
     def resolve(self, uai: tuple, as_format: str | None = None, strict: bool = False
-                 ) -> tuple[UAINode | None, str| None]:
+                 ) -> tuple[UAINode | None, str | None, list[AliasedResourceNode]]:
+        """The node a UAI leads to, following aliases to the canonical resource.
+
+        Returns the node, the format to present it in (``as_format`` if given, else the outermost alias's
+        format) and the alias nodes passed through, outermost first, so callers can read their
+        ``parameters`` and ``encoding``.
+        """
         if strict:
             node: UAINode | None = self.get_node_by_uai(uai)
         else:
             while ((node := self.get_node_by_uai(uai)) is None) and not len(uai) < 2:
                 uai = uai[:-1]
+        aliases: list[AliasedResourceNode] = []
         if isinstance(node, UAINode) and node.is_alias:
             aliased_node = cast(AliasedResourceNode, node)
             # If a specific format was specified, it is returned. Otherwise, it is the outermost alias format, if any.
             as_format = as_format if as_format else aliased_node.data_format
-            node, _ = self.resolve(aliased_node.references, as_format)
-        return node, as_format
+            node, _, inner = self.resolve(aliased_node.references, as_format)
+            aliases = [aliased_node] + inner
+        return node, as_format, aliases
 
     def update_resource(self, uai: tuple, resource: Resource):
             existing_node: UAINode = cast(UAINode, self.get_node(serialize_uai(uai, self.root_name)))

@@ -1,0 +1,242 @@
+[
+  {
+    "input_format": "openfmb.ess",
+    "output_format": "openfmb.ess.reading",
+    "pattern": {
+      "readingMessageInfo": {
+        "messageInfo": {
+          "identifiedObject": {
+            "mRID": "uuid4()"
+          },
+          "messageTimeStamp": "timestamp()"
+        }
+      },
+      "ess": {
+        "conductingEquipment": {
+          "mRID": "param('mrid')",
+          "namedObject": {
+            "name": "param('name')"
+          }
+        }
+      },
+      "essReading": "transform[essReading]()"
+    }
+  },
+  {
+    "input_format": "openfmb.ess.reading",
+    "output_format": "openfmb.ess",
+    "pattern": {
+      "essReading": "transform[essReading]()"
+    }
+  },
+  {
+    "input_format": "openfmb.ess",
+    "output_format": "openfmb.ess.status",
+    "pattern": {
+      "statusMessageInfo": {
+        "messageInfo": {
+          "identifiedObject": {
+            "mRID": "uuid4()"
+          },
+          "messageTimeStamp": "timestamp()"
+        }
+      },
+      "ess": {
+        "conductingEquipment": {
+          "mRID": "param('mrid')",
+          "namedObject": {
+            "name": "param('name')"
+          }
+        }
+      },
+      "essStatus": "transform[essStatus]()"
+    }
+  },
+  {
+    "input_format": "openfmb.ess.status",
+    "output_format": "openfmb.ess",
+    "pattern": {
+      "essStatus": "transform[essStatus]()"
+    }
+  },
+  {
+    "input_format": "openfmb.ess",
+    "output_format": "openfmb.ess.capability",
+    "pattern": {
+      "capabilityMessageInfo": {
+        "messageInfo": {
+          "identifiedObject": {
+            "mRID": "uuid4()"
+          },
+          "messageTimeStamp": "timestamp()"
+        }
+      },
+      "ess": {
+        "conductingEquipment": {
+          "mRID": "param('mrid')",
+          "namedObject": {
+            "name": "param('name')"
+          }
+        }
+      },
+      "essCapability": "transform[essCapability]()"
+    }
+  },
+  {
+    "input_format": "openfmb.ess.capability",
+    "output_format": "openfmb.ess",
+    "pattern": {
+      "essCapability": "transform[essCapability]()"
+    }
+  },
+  {
+    "input_format": "openfmb.ess",
+    "output_format": "openfmb.ess.control",
+    "pattern": {
+      "controlMessageInfo": {
+        "messageInfo": {
+          "identifiedObject": {
+            "mRID": "uuid4()"
+          },
+          "messageTimeStamp": "timestamp()"
+        }
+      },
+      "ess": {
+        "conductingEquipment": {
+          "mRID": "param('mrid')",
+          "namedObject": {
+            "name": "param('name')"
+          }
+        }
+      },
+      "essControl": "transform[essControl]()"
+    }
+  },
+  {
+    "input_format": "openfmb.ess.control",
+    "output_format": "openfmb.ess",
+    "pattern": {
+      "essControl": "transform[essControl]()"
+    }
+  },
+  {
+    "input_format": "openfmb.solar",
+    "output_format": "openfmb.solar.reading",
+    "pattern": {
+      "readingMessageInfo": {
+        "messageInfo": {
+          "identifiedObject": {
+            "mRID": "uuid4()"
+          },
+          "messageTimeStamp": "timestamp()"
+        }
+      },
+      "solarInverter": {
+        "conductingEquipment": {
+          "mRID": "param('mrid')",
+          "namedObject": {
+            "name": "param('name')"
+          }
+        }
+      },
+      "solarReading": "transform[solarReading]()"
+    }
+  },
+  {
+    "input_format": "openfmb.solar.reading",
+    "output_format": "openfmb.solar",
+    "pattern": {
+      "solarReading": "transform[solarReading]()"
+    }
+  },
+  {
+    "input_format": "openfmb.solar",
+    "output_format": "openfmb.solar.status",
+    "pattern": {
+      "statusMessageInfo": {
+        "messageInfo": {
+          "identifiedObject": {
+            "mRID": "uuid4()"
+          },
+          "messageTimeStamp": "timestamp()"
+        }
+      },
+      "solarInverter": {
+        "conductingEquipment": {
+          "mRID": "param('mrid')",
+          "namedObject": {
+            "name": "param('name')"
+          }
+        }
+      },
+      "solarStatus": "transform[solarStatus]()"
+    }
+  },
+  {
+    "input_format": "openfmb.solar.status",
+    "output_format": "openfmb.solar",
+    "pattern": {
+      "solarStatus": "transform[solarStatus]()"
+    }
+  },
+  {
+    "input_format": "openfmb.solar",
+    "output_format": "openfmb.solar.capability",
+    "pattern": {
+      "capabilityMessageInfo": {
+        "messageInfo": {
+          "identifiedObject": {
+            "mRID": "uuid4()"
+          },
+          "messageTimeStamp": "timestamp()"
+        }
+      },
+      "solarInverter": {
+        "conductingEquipment": {
+          "mRID": "param('mrid')",
+          "namedObject": {
+            "name": "param('name')"
+          }
+        }
+      },
+      "solarCapability": "transform[solarCapability]()"
+    }
+  },
+  {
+    "input_format": "openfmb.solar.capability",
+    "output_format": "openfmb.solar",
+    "pattern": {
+      "solarCapability": "transform[solarCapability]()"
+    }
+  },
+  {
+    "input_format": "openfmb.solar",
+    "output_format": "openfmb.solar.control",
+    "pattern": {
+      "controlMessageInfo": {
+        "messageInfo": {
+          "identifiedObject": {
+            "mRID": "uuid4()"
+          },
+          "messageTimeStamp": "timestamp()"
+        }
+      },
+      "solarInverter": {
+        "conductingEquipment": {
+          "mRID": "param('mrid')",
+          "namedObject": {
+            "name": "param('name')"
+          }
+        }
+      },
+      "solarControl": "transform[solarControl]()"
+    }
+  },
+  {
+    "input_format": "openfmb.solar.control",
+    "output_format": "openfmb.solar",
+    "pattern": {
+      "solarControl": "transform[solarControl]()"
+    }
+  }
+]

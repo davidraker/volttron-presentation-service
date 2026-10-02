@@ -51,14 +51,15 @@ def sunspec_fields() -> set[tuple]:
     return {(str(model_id),) + field for model_id, cls in MODEL_REGISTRY.items() for field in _group_fields(cls, (), SunSpecGroup)}
 
 
-def openfmb_fields(prefix: str = '') -> set[tuple]:
-    """Every leaf of every OpenFMB profile whose name starts with ``prefix`` (``ESS``, ``Solar``, or all), as
-    published in protobuf JSON form; repeated fields as wildcards. Profiles do not share top-level names, so
-    their paths are simply unioned."""
+def openfmb_fields(prefix: str = '', suffix: str = 'Profile') -> set[tuple]:
+    """Every leaf of every OpenFMB profile whose name starts with ``prefix`` (``ESS``, ``Solar``, or all) and ends
+    with ``suffix`` (``Profile`` for all of a device's profiles, ``ReadingProfile`` for one), as published in
+    protobuf JSON form; repeated fields as wildcards. Profiles do not share top-level names, so their paths are
+    simply unioned."""
     from .models.openfmb import PROFILES, OpenFMBMessage
     universe = set()
     for name, cls in PROFILES.items():
-        if name.startswith(prefix):
+        if name.startswith(prefix) and name.endswith(suffix):
             universe |= set(_group_fields(cls, (), OpenFMBMessage))
     return universe
 
@@ -125,6 +126,9 @@ _MODEL_FORMATS = {
     'openfmb': openfmb_fields,
     'openfmb.ess': lambda: openfmb_fields('ESS'),
     'openfmb.solar': lambda: openfmb_fields('Solar'),
+    # One profile each, with its header: the leaf formats an adapter publishes on one topic (see transforms/openfmb_profiles.json).
+    **{f'openfmb.{device}.{kind}': (lambda p=prefix, k=kind: openfmb_fields(p, f'{k.capitalize()}Profile'))
+       for device, prefix in (('ess', 'ESS'), ('solar', 'Solar')) for kind in ('reading', 'status', 'capability', 'control')},
     '1815.2.inputs': lambda: ieee1815_2_fields(('AI', 'BI', 'CTR')),
     '1815.2.outputs': lambda: ieee1815_2_fields(('AO', 'BO')),
 }

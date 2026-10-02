@@ -25,7 +25,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from .device_formats import SCALING_MODES, device_format_declaration, sunspec_device_transforms
+from .device_formats import SCALING_MODES, device_format_declaration, resource_mappings, sunspec_device_transforms
 
 # SunSpec point type -> data type name of the modbus platform driver interface (pymodbus names).
 REGISTER_TYPES = {
@@ -223,18 +223,14 @@ def device_config(driver: str, registry_name: str, *, interval: float = 5, host:
 
 
 def presentation_config(device: DiscoveredDevice, device_format: str, device_topic: str, uai: list[str],
-                        scaling: str, alias_formats: dict[str, str]) -> tuple[dict, list[str]]:
-    """Service configuration: format, transforms, the canonical resource and one alias per requested format."""
+                        scaling: str, alias_formats: dict[str, str | dict]) -> tuple[dict, list[str]]:
+    """Service configuration: format, transforms, the canonical resource and one alias per requested format
+    (see :func:`~interoperability.discovery.device_formats.resource_mappings` for the alias specs)."""
     names = [p.name for p in _included(device, scaling)]
     built = sunspec_device_transforms(device_format, names, scaling=scaling, scale_factors=device.scale_factors)
-    mappings = [{'uai': uai, 'resource_type': 'canonical',
-                 'resource': {'data_format': device_format, 'owner': 'platform.driver',
-                              'publication_topic': f'{device_topic}/all', 'rpc_topic': device_topic}}]
-    for alias, fmt in alias_formats.items():
-        mappings.append({'uai': uai[:-1] + [alias], 'resource_type': 'alias',
-                         'resource': {'data_format': fmt, 'owner': 'platform.driver', 'references': uai}})
     return ({'formats': {device_format: device_format_declaration(names, scaling)},
-             'transforms': built.definitions, 'mappings': mappings}, built.notes)
+             'transforms': built.definitions,
+             'mappings': resource_mappings(device_format, device_topic, uai, alias_formats)}, built.notes)
 
 
 def write_case(device: DiscoveredDevice, out: Path, *, device_format: str, device_topic: str, uai: list[str],

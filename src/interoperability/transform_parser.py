@@ -50,6 +50,23 @@ points becomes numbered DNP3 point indices::
 
     "AO": {"246": "transform[DERCurve, opModVoltVar, CurveData](count())",
            "*points": "transform[DERCurve, opModVoltVar, CurveData](unpairs(249, xvalue, yvalue))"}
+
+Stage input
+-----------
+A ``"#"`` entry at the root of a pattern rebinds the input of that stage: its expression is applied
+to the whole incoming message and every other path in the pattern is then resolved against the
+result. A platform driver publishes ``devices/.../all`` as ``[values, meta]``, so the device-format
+patterns start with::
+
+    "#": "transform(device_values())"
+
+and read flat points from the values dict whether or not the ``meta`` list wrapper is present.
+
+Parameters
+----------
+``TransformParser(context={...})`` binds per-resource values that expressions reach with
+``param('name')`` (``transform(param('mrid'))``), such as the device mRID an OpenFMB header carries.
+They are fixed when the chain is compiled; an unbound name yields MISSING and the field is dropped.
 """
 import logging
 import re
@@ -345,6 +362,11 @@ class FieldMap:
         self.mappings = mappings
         self.nulls = nulls
         self._by_source = _PathIndex(mappings, lambda m: m.source)
+        # Plain copies of a whole group (no wildcard on either side): they carry every field beneath the group.
+        self._group_copies: dict[tuple, list[FieldMapping]] = {}
+        for m in mappings:
+            if m.source and WILDCARD not in m.source and WILDCARD not in m.target:
+                self._group_copies.setdefault(m.source, []).append(m)
 
     def sources(self) -> set[tuple]:
         return {m.source for m in self.mappings}
@@ -354,12 +376,18 @@ class FieldMap:
 
     def compose(self, following: 'FieldMap') -> 'FieldMap':
         """The map of this transform followed by ``following``: fields survive only if the second transform
-        picks up the field the first produced, and fidelities multiply."""
+        picks up the field the first produced, and fidelities multiply. A following mapping that copies a whole
+        group (``"essReading": "transform[essReading]()"``) picks up every field beneath that group."""
         composed = []
         for m in self.mappings:
             for n in following._by_source.candidates(m.target):
                 if path_matches(m.target, n.source):
                     composed.append(FieldMapping(m.source, n.target, m.fidelity * n.fidelity, m.functions + n.functions))
+            for length in range(1, len(m.target)):
+                prefix = m.target[:length]
+                for n in following._group_copies.get(prefix, ()):
+                    composed.append(FieldMapping(m.source, n.target + m.target[length:], m.fidelity * n.fidelity,
+                                                 m.functions + n.functions))
         return FieldMap(composed, list(following.nulls))
 
     def retention(self, fields: set[tuple] | None = None) -> float:
@@ -379,8 +407,10 @@ class FieldMap:
 
 
 class TransformParser:
-    def __init__(self):
+    def __init__(self, context: dict | None = None):
         self.function_call = self.setup_function_call()
+        # Per-resource values for param(); bound while each expression is parsed (see _parse_expression).
+        self.context = dict(context or {})
 
     @staticmethod
     def setup_function_call():
@@ -446,9 +476,11 @@ class TransformParser:
         keys = where if default_keys is None else default_keys
         self.function_call.set_parse_action(self._make_parse_action(keys, where, depth))
         token = transforms.scope_label.set(_level_label(depth))
+        context_token = transforms.parse_context.set(self.context)
         try:
             result = self.function_call.parse_string(text, parse_all=True)[0]
         finally:
+            transforms.parse_context.reset(context_token)
             transforms.scope_label.reset(token)
         if result is not None and not isinstance(result, _Expr):
             # A bare library function call applies to the whole current input.
@@ -699,6 +731,17 @@ class TransformParser:
             elif isinstance(v, dict):
                 TransformParser._collect_nulls(v, key_path, nulls)
 
+    def _split_stage_input(self, schema: dict) -> tuple[dict, _Expr | None]:
+        """Separate a pattern's root ``"#"`` entry (the stage input rebind, see the module docstring) from
+        the fields it maps. Returns the pattern without it and the parsed rebind expression, or None."""
+        if SOURCE_KEY not in schema:
+            return schema, None
+        schema = dict(schema)
+        text = schema.pop(SOURCE_KEY)
+        if not isinstance(text, str):
+            raise TypeError(f'The root "{SOURCE_KEY}" entry must be a transform expression rebinding the stage input.')
+        return schema, self._parse_expression(text, (SOURCE_KEY,), 0, default_keys=())
+
     def field_map(self, schemas) -> FieldMap:
         """Analyse a pattern (or chain of patterns) without executing it: which source fields reach which
         target fields, at what fidelity, and which target fields are declared but unmapped (``null``)."""
@@ -706,6 +749,9 @@ class TransformParser:
         result = None
         for schema in schemas:
             nulls: list[tuple] = []
+            # The stage input rebind does not move source paths (device_values() keeps the point names), so
+            # the field map ignores it.
+            schema, _ = self._split_stage_input(schema)
             self._collect_nulls(schema, (), nulls)
             parsed = self._parse_pattern(schema)
             mappings: list[FieldMapping] = []
@@ -720,9 +766,13 @@ class TransformParser:
         # An empty chain (no transform needed, see TransformRegistry.lookup) compiles to the identity.
         pipeline = None
         for s in schemas:
+            s, stage_input = self._split_stage_input(s)
             parsed_schema = self._parse_pattern(s)
             _log.debug(f'Placing in pipeline: {parsed_schema}')
             stage = (c.this.pipe(self._build(parsed_schema, 0), label_input=_level_label(0))
                      .pipe(c.call_func(drop_missing, c.this)))
+            if stage_input is not None:
+                # Rebind first, so the root label (reached by '/...' paths) is the rebound input.
+                stage = c.this.pipe(self._build_expression(stage_input, 0)).pipe(stage)
             pipeline = pipeline.pipe(stage) if pipeline else stage
         return pipeline if pipeline is not None else c.this.pipe(c.this)

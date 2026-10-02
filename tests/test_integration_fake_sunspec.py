@@ -66,7 +66,7 @@ def service(config):
     tree.ingest_mappings(config['mappings'])
     registry = TransformRegistry()
     for name, spec in config['formats'].items():
-        registry.declare_format(name, hub=spec.get('hub'), fields=spec.get('fields'))
+        registry.declare_format(name, **spec)
     bundled = resources.files('interoperability').joinpath('transforms')
     registry.update_registry([d for f in sorted(bundled.iterdir(), key=lambda f: f.name)
                               if f.is_file() and f.name.endswith('.json') for d in json.loads(f.read_text())]
@@ -77,11 +77,14 @@ def service(config):
 def resolve(service, uai: list[str]):
     """The agent's resolve(): canonical resource, target format, route, retention and the compiled chain."""
     tree, registry = service
-    node, as_format = tree.resolve(tuple(uai))
+    node, as_format, aliases = tree.resolve(tuple(uai))
     assert node is not None and node.is_canonical
     resource = node.resource.model_dump()
+    for alias in reversed(aliases):
+        resource['parameters'].update(alias.resource.parameters)
     chain, retention, path = registry.lookup_scored(resource['data_format'], as_format)
-    return resource, as_format, path, retention, TransformParser().build_transform_from_schema(chain)
+    parser = TransformParser(context=resource['parameters'])
+    return resource, as_format, path, retention, parser.build_transform_from_schema(chain)
 
 
 # ---- discovery and generation ----
@@ -208,6 +211,42 @@ def test_device_used_as_1815_2_inputs(service, mode):
     assert volt_var['329'] == 2 and volt_var['330'] == 4
     assert [volt_var[str(i)] for i in range(333, 337)] == [92.0, 30.0, 96.7, 0.0]
     assert volt_var['297'] == 1
+
+
+def test_driver_payload_shapes_yield_the_same_sunspec_message(service, mode):
+    """The modular driver publishes [values, meta]; a bare values dict must give the same result."""
+    _, _, _, _, pipeline = resolve(service, ['site1', 'pv_sunspec'])
+    values = fake_driver_all_message(mode)
+    meta = {name: {'units': 'W', 'type': 'integer'} for name in values}
+    assert pipeline.execute([values, meta]) == pipeline.execute(values)
+    assert pipeline.execute([values, meta])['701']['Hz'] == 60.01
+
+
+def test_device_used_as_openfmb_solar_reading_profile(service, mode, config):
+    """The OpenFMB alias: one profile with a fresh header, the device identity from the alias parameters, and
+    protobuf on the wire as the alias declares."""
+    from interoperability.models.openfmb import PROFILES
+    alias = next(m for m in config['mappings'] if m['resource']['data_format'] == 'openfmb.solar.reading')
+    assert alias['uai'][:3] == ['openfmb', 'solarmodule', 'SolarReadingProfile'] and alias['resource']['encoding'] == 'protobuf'
+    resource, fmt, path, retention, pipeline = resolve(service, alias['uai'])
+    assert fmt == 'openfmb.solar.reading'
+    assert path == ['fake_sunspec_pv', 'sunspec', '61850', 'openfmb.solar', 'openfmb.solar.reading']
+    assert resource['parameters'] == alias['resource']['parameters']
+    values = fake_driver_all_message(mode)
+    result = pipeline.execute([values, {name: {'units': ''} for name in values}])
+    assert set(result) == {'readingMessageInfo', 'solarInverter', 'solarReading'}
+    assert result['solarInverter']['conductingEquipment'] == {'mRID': alias['resource']['parameters']['mrid'],
+                                                              'namedObject': {'name': 'PV inverter 1'}}
+    assert len(result['readingMessageInfo']['messageInfo']['identifiedObject']['mRID']) == 36
+    mmxu = result['solarReading']['readingMMXU']
+    assert mmxu['Hz']['mag'] == 60.01 and mmxu['W']['net']['cVal']['mag'] == pipeline.execute(values)['solarReading']['readingMMXU']['W']['net']['cVal']['mag']
+    PROFILES['SolarReadingProfile'].model_validate(result)
+    pytest.importorskip('google.protobuf')
+    from interoperability.codecs import openfmb as codec
+    data = codec.encode('solarmodule.SolarReadingProfile', result)
+    decoded = codec.decode('solarmodule.SolarReadingProfile', data)
+    assert decoded['solarReading']['readingMMXU']['Hz']['mag'] == 60.01
+    assert decoded['solarInverter']['conductingEquipment']['mRID'] == alias['resource']['parameters']['mrid']
 
 
 def test_unmapped_alias_format_is_reported_not_silent(service):
