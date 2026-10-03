@@ -24,13 +24,22 @@ HERE = Path(__file__).resolve().parent
 DEVICE_FORMAT = 'fake_dnp3_der'
 DEVICE_TOPIC = 'devices/site1/feeder1/der'
 UAI = ['site1', 'der']
+#: The device's OpenFMB identity, carried in the profile headers the OpenFMB alias publishes.
+OPENFMB_MRID = '9c2e4f10-0000-4000-8000-000000000002'
+ALIASES = {
+    'der_sunspec': 'sunspec', 'der_2030_5': '2030.5', 'der_61850': '61850',
+    # One OpenFMB profile, protobuf on the wire, under the topic an OpenFMB adapter would subscribe to.
+    'der_openfmb': {'format': 'openfmb.ess.reading', 'encoding': 'protobuf',
+                    'parameters': {'mrid': OPENFMB_MRID, 'name': 'DER 1'},
+                    'uai': ['openfmb', 'essmodule', 'ESSReadingProfile', OPENFMB_MRID]},
+}
 
 
 def main() -> None:
     device = discover_profile(HERE / 'profile_mandatory_1547.json')
     for scaling in ('transform', 'driver'):
         written = write_case(device, HERE / f'{scaling}_scaling', device_format=DEVICE_FORMAT, device_topic=DEVICE_TOPIC,
-                             uai=UAI, scaling=scaling)
+                             uai=UAI, scaling=scaling, alias_formats=ALIASES)
         print(f'{scaling} scaling: {len(written)} files under {written["presentation_config"].parent}')
     print(f'{device.profile_name}: {len(device.points)} points')
     for note in device.notes:

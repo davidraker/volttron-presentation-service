@@ -405,6 +405,28 @@
           "der"
         ]
       }
+    },
+    {
+      "uai": [
+        "openfmb",
+        "essmodule",
+        "ESSReadingProfile",
+        "9c2e4f10-0000-4000-8000-000000000002"
+      ],
+      "resource_type": "alias",
+      "resource": {
+        "data_format": "openfmb.ess.reading",
+        "owner": "platform.driver",
+        "references": [
+          "site1",
+          "der"
+        ],
+        "encoding": "protobuf",
+        "parameters": {
+          "mrid": "9c2e4f10-0000-4000-8000-000000000002",
+          "name": "DER 1"
+        }
+      }
     }
   ]
 }

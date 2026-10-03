@@ -386,6 +386,11 @@ Conventions the 2030.5, 1547 and SunSpec to 1815.2 files rely on, beyond those o
   and a 61850 message must become one kind of profile. The hub formats carry no message header. The
   leaf shapes in these definitions (`setMag`, `mag`, `cVal.mag`, `stVal`, ...) follow the generated
   OpenFMB classes.
+* The hub's metering node is `DECP.MMXU` (`TotW`, `TotVAr`, `TotVA`, `TotPF`, `Hz`, `PhV.phsA.mag`, `A.phsA.mag`,
+  ...). The SunSpec, OpenFMB and IEEE 1815.2 files all read and write it there; the MESA profile's "system meter"
+  points (AI 535 to 564, the AO limit points) that the PICS workbook names `MMXU0` live under it, so a DNP3
+  outstation's readings reach the OpenFMB and SunSpec profiles. The function-specific MESA meters (`MMXU1`...) keep
+  their own names.
 * `openfmb.<device>.<profile>` (`openfmb.ess.reading`, `openfmb.solar.status`, ...) is a single
   profile ready to publish: `openfmb_profiles.json` selects that profile's body out of the hub
   format's dict and adds the header the hub lacks. `readingMessageInfo` (or `status`, `capability`,
@@ -680,6 +685,13 @@ reads the bundled files, exercises `resolve` and the `ResourceData` helper, roun
 profiles through the protobuf codec, and instantiates every OpenFMB, SunSpec, IEEE 1815.2 and
 IEEE 2030.5 model and builder. The loader, resolve and helper tests are skipped if VOLTTRON is
 not installed; the codec tests if `protobuf` is not.
+
+`tests/test_e2e_dnp3_to_openfmb.py` runs the whole telemetry path in a subprocess: a dnp3py outstation
+serving the fake DNP3 case's points, the modular DNP3 driver interface through the real DNP3 protocol
+proxy, the driver's `[values, meta]` message, this service's chain to `openfmb.ess.reading` and its
+protobuf encoding, the message bus adapter, and the MQTT proxy's publish (paho mocked). It needs the
+driver stack, the DNP3 proxy, dnp3py, the bus adapter and protobuf importable, and is skipped otherwise;
+the `~/Scratch/drivers_proxies/.venv` environment has all of them.
 
 ## Status and known limitations
 

@@ -159,6 +159,27 @@ def test_device_read_as_1815_2_inputs_and_beyond(service, mode):
     assert fmt == '61850' and pipeline.execute(message)['DGEN']['VMinRtg'] == 211.0
 
 
+def test_device_used_as_openfmb_ess_reading_profile(service, mode, config):
+    """The OpenFMB alias: the system meter (AI 536-556) reaches an ESSReadingProfile through 61850's DECP.MMXU."""
+    from interoperability.models.openfmb import PROFILES
+    alias = next(m for m in config['mappings'] if m['resource']['data_format'] == 'openfmb.ess.reading')
+    resource, fmt, path, retention, pipeline = resolve(service, alias['uai'])
+    assert path == ['fake_dnp3_der', '1815.2.inputs', '61850', 'openfmb.ess', 'openfmb.ess.reading']
+    raw = {'AI_536': 60, 'AI_537': 12500, 'AI_541': -300, 'AI_547': 2400, 'AI_554': 52}
+    message = fake_driver_all_message(mode, **raw)
+    result = pipeline.execute([message, {name: {'units': ''} for name in message}])
+    assert set(result) == {'readingMessageInfo', 'ess', 'essReading'}
+    mmxu = result['essReading']['readingMMXU']
+    assert mmxu['Hz']['mag'] == 60 and mmxu['W']['net']['cVal']['mag'] == 12500 and mmxu['VAr']['net']['cVal']['mag'] == -300
+    assert mmxu['PhV']['phsA']['cVal']['mag'] == 2400 and mmxu['A']['phsA']['cVal']['mag'] == 52
+    assert result['ess']['conductingEquipment'] == {'mRID': alias['resource']['parameters']['mrid'], 'namedObject': {'name': 'DER 1'}}
+    PROFILES['ESSReadingProfile'].model_validate(result)
+    pytest.importorskip('google.protobuf')
+    from interoperability.codecs import openfmb as codec
+    decoded = codec.decode('essmodule.ESSReadingProfile', codec.encode('essmodule.ESSReadingProfile', result))
+    assert decoded['essReading']['readingMMXU']['W']['net']['cVal']['mag'] == 12500.0
+
+
 def test_both_scaling_modes_yield_the_same_inputs_message():
     outputs = []
     for mode, raw in (('transform', {'AI_2': 2110}), ('driver', {'AI_2': 211.0})):

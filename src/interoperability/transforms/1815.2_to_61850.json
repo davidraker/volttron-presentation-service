@@ -76,7 +76,87 @@
         "EcpIsldSt": "transform[AI, 68]()",
         "EcpConnType": "transform[AI, 533]()",
         "PhsConnTyp": "transform[AI, 534]()",
-        "ECPIsldAuto": "transform[BI, 26]()"
+        "ECPIsldAuto": "transform[BI, 26]()",
+        "MMXU": {
+          "ClcTotVA": "transform[AI, 535]()",
+          "Hz": "transform[AI, 536]()",
+          "TotW": "transform[AI, 537]()",
+          "W": {
+            "phsA": {
+              "mag": "transform[AI, 538]()"
+            },
+            "phsB": {
+              "mag": "transform[AI, 539]()"
+            },
+            "phsC": {
+              "mag": "transform[AI, 540]()"
+            }
+          },
+          "TotVAr": "transform[AI, 541]()",
+          "VAr": {
+            "phsA": {
+              "mag": "transform[AI, 542]()"
+            },
+            "phsB": {
+              "mag": "transform[AI, 543]()"
+            },
+            "phsC": {
+              "mag": "transform[AI, 544]()"
+            }
+          },
+          "TotPF": "transform[AI, 545]()",
+          "TotVA": "transform[AI, 546]()",
+          "PhV": {
+            "phsA": {
+              "mag": "transform[AI, 547]()",
+              "ang": "transform[AI, 548]()",
+              "rangeC": {
+                "hLim": "transform[AI, 563]()",
+                "lLim": "transform[AI, 564]()"
+              },
+              "range": {
+                "max": "transform[BI, 100]()",
+                "min": "transform[BI, 101]()"
+              }
+            },
+            "phsB": {
+              "mag": "transform[AI, 549]()",
+              "ang": "transform[AI, 550]()",
+              "rangeC": {
+                "hLim": "transform[AI, 565]()",
+                "lLim": "transform[AI, 566]()"
+              },
+              "range": {
+                "max": "transform[BI, 102]()",
+                "min": "transform[BI, 103]()"
+              }
+            },
+            "phsC": {
+              "mag": "transform[AI, 551]()",
+              "ang": "transform[AI, 552]()",
+              "rangeC": {
+                "hLim": "transform[AI, 567]()",
+                "lLim": "transform[AI, 568]()"
+              },
+              "range": {
+                "max": "transform[BI, 104]()",
+                "min": "transform[BI, 105]()"
+              }
+            }
+          },
+          "AvPPVPhs": "transform[AI, 553]()",
+          "A": {
+            "phsA": {
+              "mag": "transform[AI, 554]()"
+            },
+            "phsB": {
+              "mag": "transform[AI, 555]()"
+            },
+            "phsC": {
+              "mag": "transform[AI, 556]()"
+            }
+          }
+        }
       },
       "MMXU1": {
         "PFSign": "transform[AI, 41]()",
@@ -593,86 +673,6 @@
         },
         "IndpUnits": "transform[AI, 331]()",
         "DepRef": "transform[AI, 332]()"
-      },
-      "MMXU0": {
-        "ClcTotVA": "transform[AI, 535]()",
-        "Hz": "transform[AI, 536]()",
-        "TotW": "transform[AI, 537]()",
-        "W": {
-          "phsA": {
-            "mag": "transform[AI, 538]()"
-          },
-          "phsB": {
-            "mag": "transform[AI, 539]()"
-          },
-          "phsC": {
-            "mag": "transform[AI, 540]()"
-          }
-        },
-        "TotVAr": "transform[AI, 541]()",
-        "VAr": {
-          "phsA": {
-            "mag": "transform[AI, 542]()"
-          },
-          "phsB": {
-            "mag": "transform[AI, 543]()"
-          },
-          "phsC": {
-            "mag": "transform[AI, 544]()"
-          }
-        },
-        "TotPF": "transform[AI, 545]()",
-        "TotVA": "transform[AI, 546]()",
-        "PhV": {
-          "phsA": {
-            "mag": "transform[AI, 547]()",
-            "ang": "transform[AI, 548]()",
-            "rangeC": {
-              "hLim": "transform[AI, 563]()",
-              "lLim": "transform[AI, 564]()"
-            },
-            "range": {
-              "max": "transform[BI, 100]()",
-              "min": "transform[BI, 101]()"
-            }
-          },
-          "phsB": {
-            "mag": "transform[AI, 549]()",
-            "ang": "transform[AI, 550]()",
-            "rangeC": {
-              "hLim": "transform[AI, 565]()",
-              "lLim": "transform[AI, 566]()"
-            },
-            "range": {
-              "max": "transform[BI, 102]()",
-              "min": "transform[BI, 103]()"
-            }
-          },
-          "phsC": {
-            "mag": "transform[AI, 551]()",
-            "ang": "transform[AI, 552]()",
-            "rangeC": {
-              "hLim": "transform[AI, 567]()",
-              "lLim": "transform[AI, 568]()"
-            },
-            "range": {
-              "max": "transform[BI, 104]()",
-              "min": "transform[BI, 105]()"
-            }
-          }
-        },
-        "AvPPVPhs": "transform[AI, 553]()",
-        "A": {
-          "phsA": {
-            "mag": "transform[AI, 554]()"
-          },
-          "phsB": {
-            "mag": "transform[AI, 555]()"
-          },
-          "phsC": {
-            "mag": "transform[AI, 556]()"
-          }
-        }
       },
       "FSCC": {
         "ActSchdRef": "transform[AI, 569]()",
@@ -1522,7 +1522,47 @@
       "DECP": {
         "VRefOfs": "transform[AO, 1]()",
         "EcpNomHz": "transform[AO, 2]()",
-        "ECPIsldAuto": "transform[BO, 7]()"
+        "ECPIsldAuto": "transform[BO, 7]()",
+        "MMXU": {
+          "TotW": {
+            "rangeC": {
+              "hLim": "transform[AO, 449]()",
+              "lLim": "transform[AO, 450]()"
+            }
+          },
+          "TotVAr": {
+            "rangeC": {
+              "hLim": "transform[AO, 451]()",
+              "lLim": "transform[AO, 452]()"
+            }
+          },
+          "TotPF": {
+            "rangeC": {
+              "hLim": "transform[AO, 453]()",
+              "lLim": "transform[AO, 454]()"
+            }
+          },
+          "PhV": {
+            "phsA": {
+              "rangeC": {
+                "hLim": "transform[AO, 455]()",
+                "lLim": "transform[AO, 456]()"
+              }
+            },
+            "phsB": {
+              "rangeC": {
+                "hLim": "transform[AO, 457]()",
+                "lLim": "transform[AO, 458]()"
+              }
+            },
+            "phsC": {
+              "rangeC": {
+                "hLim": "transform[AO, 459]()",
+                "lLim": "transform[AO, 460]()"
+              }
+            }
+          }
+        }
       },
       "DGEN": {
         "OplPct": "transform[AO, 3]()",
@@ -1955,46 +1995,6 @@
         },
         "IndpUnits": "transform[AO, 247]()",
         "DepRef": "transform[AO, 248]()"
-      },
-      "MMXU0": {
-        "TotW": {
-          "rangeC": {
-            "hLim": "transform[AO, 449]()",
-            "lLim": "transform[AO, 450]()"
-          }
-        },
-        "TotVAr": {
-          "rangeC": {
-            "hLim": "transform[AO, 451]()",
-            "lLim": "transform[AO, 452]()"
-          }
-        },
-        "TotPF": {
-          "rangeC": {
-            "hLim": "transform[AO, 453]()",
-            "lLim": "transform[AO, 454]()"
-          }
-        },
-        "PhV": {
-          "phsA": {
-            "rangeC": {
-              "hLim": "transform[AO, 455]()",
-              "lLim": "transform[AO, 456]()"
-            }
-          },
-          "phsB": {
-            "rangeC": {
-              "hLim": "transform[AO, 457]()",
-              "lLim": "transform[AO, 458]()"
-            }
-          },
-          "phsC": {
-            "rangeC": {
-              "hLim": "transform[AO, 459]()",
-              "lLim": "transform[AO, 460]()"
-            }
-          }
-        }
       },
       "FSCC": {
         "Schd": "transform[AO, 461]()"
