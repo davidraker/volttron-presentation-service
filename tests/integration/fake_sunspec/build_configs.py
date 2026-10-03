@@ -10,7 +10,9 @@ Outputs (this directory, overwritten), one sub-directory per scaling mode:
 
 Each holds the fake and modbus driver registries, the device configs for both interfaces, the presentation
 service configuration (device format, transforms, canonical resource and sunspec / 2030.5 / 1815.2 aliases),
-the discovery record and a vctl script. Run from the ``interoperability_service`` directory::
+the discovery record and a vctl script, plus the IEEE 2030.5 *mirror* of the device: the registry and device
+config of the ``ieee2030_5`` client driver that reports this inverter to a 2030.5 server and receives its
+controls, with the mirror's own format and mappings as a presentation fragment (``*_sep2.presentation.json``). Run from the ``interoperability_service`` directory::
 
     PYTHONPATH=src python tests/integration/fake_sunspec/build_configs.py
 """
@@ -18,12 +20,17 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from interoperability.discovery import ieee2030_5
 from interoperability.discovery.sunspec import discover_file, write_case
 
 HERE = Path(__file__).resolve().parent
 DEVICE_FORMAT = 'fake_sunspec_pv'
 DEVICE_TOPIC = 'devices/site1/feeder1/pv_inverter'
 UAI = ['site1', 'pv_inverter']
+#: The 2030.5 client that mirrors the inverter to a utility server: a second device in the platform.
+MIRROR_FORMAT = 'fake_sunspec_pv_sep2'
+MIRROR_TOPIC = 'devices/site1/feeder1/pv_sep2'
+MIRROR_UAI = ['site1', 'pv_sep2']
 #: The device's OpenFMB identity, carried in the profile headers the OpenFMB alias publishes.
 OPENFMB_MRID = '7d1a2b3c-0000-4000-8000-000000000001'
 ALIASES = {
@@ -41,6 +48,11 @@ def main() -> None:
         written = write_case(device, HERE / f'{scaling}_scaling', device_format=DEVICE_FORMAT, device_topic=DEVICE_TOPIC,
                              uai=UAI, scaling=scaling, alias_formats=ALIASES)
         print(f'{scaling} scaling: {len(written)} files under {written["presentation_config"].parent}')
+        registry = ieee2030_5.load_registry(written['presentation_config'])
+        mirror = ieee2030_5.write_case(registry, DEVICE_FORMAT, HERE / f'{scaling}_scaling', mirror_format=MIRROR_FORMAT,
+                                       device_topic=MIRROR_TOPIC, uai=MIRROR_UAI, alias='pv_sep2_2030_5',
+                                       server_url='https://127.0.0.1:8443', pin=111115, notify_host='127.0.0.1')
+        print(f'{scaling} scaling: 2030.5 mirror {len(mirror)} files')
     print(f"{device.identity}: {len(device.points)} points, scale factors {device.scale_factors}")
     for note in device.notes:
         print('note:', note)

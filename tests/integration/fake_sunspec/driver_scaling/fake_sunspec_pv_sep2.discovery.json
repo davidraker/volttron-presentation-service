@@ -1,0 +1,511 @@
+{
+  "device_format": "fake_sunspec_pv",
+  "mirror_format": "fake_sunspec_pv_sep2",
+  "points": [
+    {
+      "name": "DERCapability_modesSupported",
+      "path": "DERCapability.modesSupported",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCapability_rtgAbnormalCategory",
+      "path": "DERCapability.rtgAbnormalCategory",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCapability_rtgMaxA",
+      "path": "DERCapability.rtgMaxA",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCapability_rtgMaxChargeRateVA",
+      "path": "DERCapability.rtgMaxChargeRateVA",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCapability_rtgMaxChargeRateW",
+      "path": "DERCapability.rtgMaxChargeRateW",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCapability_rtgMaxV",
+      "path": "DERCapability.rtgMaxV",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCapability_rtgMaxVA",
+      "path": "DERCapability.rtgMaxVA",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCapability_rtgMaxVar",
+      "path": "DERCapability.rtgMaxVar",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCapability_rtgMaxVarNeg",
+      "path": "DERCapability.rtgMaxVarNeg",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCapability_rtgMaxW",
+      "path": "DERCapability.rtgMaxW",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCapability_rtgMaxWh",
+      "path": "DERCapability.rtgMaxWh",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCapability_rtgMinV",
+      "path": "DERCapability.rtgMinV",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCapability_rtgNormalCategory",
+      "path": "DERCapability.rtgNormalCategory",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCapability_rtgOverExcitedPF",
+      "path": "DERCapability.rtgOverExcitedPF",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCapability_rtgOverExcitedW",
+      "path": "DERCapability.rtgOverExcitedW",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCapability_rtgReactiveSusceptance",
+      "path": "DERCapability.rtgReactiveSusceptance",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCapability_rtgUnderExcitedPF",
+      "path": "DERCapability.rtgUnderExcitedPF",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCapability_rtgUnderExcitedW",
+      "path": "DERCapability.rtgUnderExcitedW",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCapability_rtgVNom",
+      "path": "DERCapability.rtgVNom",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERSettings_setESDelay",
+      "path": "DERSettings.setESDelay",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERSettings_setESHighFreq",
+      "path": "DERSettings.setESHighFreq",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERSettings_setESHighVolt",
+      "path": "DERSettings.setESHighVolt",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERSettings_setESLowFreq",
+      "path": "DERSettings.setESLowFreq",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERSettings_setESLowVolt",
+      "path": "DERSettings.setESLowVolt",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERSettings_setESRampTms",
+      "path": "DERSettings.setESRampTms",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERSettings_setESRandomDelay",
+      "path": "DERSettings.setESRandomDelay",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERSettings_setMaxChargeRateVA",
+      "path": "DERSettings.setMaxChargeRateVA",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERSettings_setMaxChargeRateW",
+      "path": "DERSettings.setMaxChargeRateW",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERSettings_setMaxV",
+      "path": "DERSettings.setMaxV",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERSettings_setMaxVA",
+      "path": "DERSettings.setMaxVA",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERSettings_setMaxVar",
+      "path": "DERSettings.setMaxVar",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERSettings_setMaxVarNeg",
+      "path": "DERSettings.setMaxVarNeg",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERSettings_setMaxW",
+      "path": "DERSettings.setMaxW",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERSettings_setMinV",
+      "path": "DERSettings.setMinV",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERSettings_setVNom",
+      "path": "DERSettings.setVNom",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERStatus_alarmStatus",
+      "path": "DERStatus.alarmStatus",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERStatus_connectStatus",
+      "path": "DERStatus.connectStatus",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERStatus_operationalModeStatus",
+      "path": "DERStatus.operationalModeStatus",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERStatus_stateOfChargeStatus",
+      "path": "DERStatus.stateOfChargeStatus",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DeviceInformation_mfID",
+      "path": "DeviceInformation.mfID",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DeviceInformation_mfModel",
+      "path": "DeviceInformation.mfModel",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DeviceInformation_mfSerNum",
+      "path": "DeviceInformation.mfSerNum",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DeviceInformation_swVer",
+      "path": "DeviceInformation.swVer",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "MirrorMeterReading_Hz",
+      "path": "MirrorMeterReading.Hz",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "MirrorMeterReading_V_PhaseA",
+      "path": "MirrorMeterReading.V.PhaseA",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "MirrorMeterReading_V_PhaseAB",
+      "path": "MirrorMeterReading.V.PhaseAB",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "MirrorMeterReading_V_PhaseB",
+      "path": "MirrorMeterReading.V.PhaseB",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "MirrorMeterReading_V_PhaseBC",
+      "path": "MirrorMeterReading.V.PhaseBC",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "MirrorMeterReading_V_PhaseC",
+      "path": "MirrorMeterReading.V.PhaseC",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "MirrorMeterReading_V_PhaseCA",
+      "path": "MirrorMeterReading.V.PhaseCA",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "MirrorMeterReading_W",
+      "path": "MirrorMeterReading.W",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "MirrorMeterReading_var",
+      "path": "MirrorMeterReading.var",
+      "writable": true,
+      "via": "sunspec > 2030.5",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERControl_opModEnergize",
+      "path": "DERControl.opModEnergize",
+      "writable": false,
+      "via": "2030.5 > 1547 > sunspec",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERControl_opModFixedPFInjectW_displacement",
+      "path": "DERControl.opModFixedPFInjectW.displacement",
+      "writable": false,
+      "via": "2030.5 > 1547 > sunspec",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERControl_opModFixedPFInjectW_excitation",
+      "path": "DERControl.opModFixedPFInjectW.excitation",
+      "writable": false,
+      "via": "2030.5 > 1547 > sunspec",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERControl_opModFixedVar",
+      "path": "DERControl.opModFixedVar",
+      "writable": false,
+      "via": "2030.5 > 1547 > sunspec",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERControl_opModMaxLimW",
+      "path": "DERControl.opModMaxLimW",
+      "writable": false,
+      "via": "2030.5 > 1547 > sunspec",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERControlList",
+      "path": "DERControlList",
+      "writable": false,
+      "via": "schedules of the server programs",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCurve_opModHFRTMustTrip_CurveData",
+      "path": "DERCurve.opModHFRTMustTrip.CurveData",
+      "writable": false,
+      "via": "2030.5 > 1547 > sunspec",
+      "fidelity": 0.3
+    },
+    {
+      "name": "DERCurve_opModHVRTMomentaryCessation_CurveData",
+      "path": "DERCurve.opModHVRTMomentaryCessation.CurveData",
+      "writable": false,
+      "via": "2030.5 > 1547 > sunspec",
+      "fidelity": 0.3
+    },
+    {
+      "name": "DERCurve_opModHVRTMustTrip_CurveData",
+      "path": "DERCurve.opModHVRTMustTrip.CurveData",
+      "writable": false,
+      "via": "2030.5 > 1547 > sunspec",
+      "fidelity": 0.3
+    },
+    {
+      "name": "DERCurve_opModLFRTMustTrip_CurveData",
+      "path": "DERCurve.opModLFRTMustTrip.CurveData",
+      "writable": false,
+      "via": "2030.5 > 1547 > sunspec",
+      "fidelity": 0.3
+    },
+    {
+      "name": "DERCurve_opModLVRTMomentaryCessation_CurveData",
+      "path": "DERCurve.opModLVRTMomentaryCessation.CurveData",
+      "writable": false,
+      "via": "2030.5 > 1547 > sunspec",
+      "fidelity": 0.3
+    },
+    {
+      "name": "DERCurve_opModLVRTMustTrip_CurveData",
+      "path": "DERCurve.opModLVRTMustTrip.CurveData",
+      "writable": false,
+      "via": "2030.5 > 1547 > sunspec",
+      "fidelity": 0.3
+    },
+    {
+      "name": "DERCurve_opModVoltVar_CurveData",
+      "path": "DERCurve.opModVoltVar.CurveData",
+      "writable": false,
+      "via": "2030.5 > 1547 > sunspec",
+      "fidelity": 0.3
+    },
+    {
+      "name": "DERCurve_opModVoltVar_autonomousVRefEnable",
+      "path": "DERCurve.opModVoltVar.autonomousVRefEnable",
+      "writable": false,
+      "via": "2030.5 > 1547 > sunspec",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCurve_opModVoltVar_autonomousVRefTimeConstant",
+      "path": "DERCurve.opModVoltVar.autonomousVRefTimeConstant",
+      "writable": false,
+      "via": "2030.5 > 1547 > sunspec",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCurve_opModVoltVar_openLoopTms",
+      "path": "DERCurve.opModVoltVar.openLoopTms",
+      "writable": false,
+      "via": "2030.5 > 1547 > sunspec",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCurve_opModVoltVar_vRef",
+      "path": "DERCurve.opModVoltVar.vRef",
+      "writable": false,
+      "via": "2030.5 > 1547 > sunspec",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCurve_opModVoltWatt_CurveData",
+      "path": "DERCurve.opModVoltWatt.CurveData",
+      "writable": false,
+      "via": "2030.5 > 1547 > sunspec",
+      "fidelity": 0.3
+    },
+    {
+      "name": "DERCurve_opModVoltWatt_openLoopTms",
+      "path": "DERCurve.opModVoltWatt.openLoopTms",
+      "writable": false,
+      "via": "2030.5 > 1547 > sunspec",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERCurve_opModWattVar_CurveData",
+      "path": "DERCurve.opModWattVar.CurveData",
+      "writable": false,
+      "via": "2030.5 > 1547 > sunspec",
+      "fidelity": 0.3
+    }
+  ],
+  "notes": []
+}

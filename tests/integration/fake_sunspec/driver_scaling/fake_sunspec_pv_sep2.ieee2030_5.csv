@@ -1,0 +1,75 @@
+Volttron Point Name,Path,Writable,Multiplier,Scaling,Units,Starting Value,Notes
+DERCapability_modesSupported,DERCapability.modesSupported,TRUE,0,1,,0,via sunspec > 2030.5
+DERCapability_rtgAbnormalCategory,DERCapability.rtgAbnormalCategory,TRUE,0,1,,,via sunspec > 2030.5
+DERCapability_rtgMaxA,DERCapability.rtgMaxA,TRUE,0,1,A,,via sunspec > 2030.5
+DERCapability_rtgMaxChargeRateVA,DERCapability.rtgMaxChargeRateVA,TRUE,0,1,VA,,via sunspec > 2030.5
+DERCapability_rtgMaxChargeRateW,DERCapability.rtgMaxChargeRateW,TRUE,0,1,W,,via sunspec > 2030.5
+DERCapability_rtgMaxV,DERCapability.rtgMaxV,TRUE,0,1,V,,via sunspec > 2030.5
+DERCapability_rtgMaxVA,DERCapability.rtgMaxVA,TRUE,0,1,VA,,via sunspec > 2030.5
+DERCapability_rtgMaxVar,DERCapability.rtgMaxVar,TRUE,0,1,var,,via sunspec > 2030.5
+DERCapability_rtgMaxVarNeg,DERCapability.rtgMaxVarNeg,TRUE,0,1,var,,via sunspec > 2030.5
+DERCapability_rtgMaxW,DERCapability.rtgMaxW,TRUE,0,1,W,0,via sunspec > 2030.5
+DERCapability_rtgMaxWh,DERCapability.rtgMaxWh,TRUE,0,1,Wh,,via sunspec > 2030.5
+DERCapability_rtgMinV,DERCapability.rtgMinV,TRUE,0,1,V,,via sunspec > 2030.5
+DERCapability_rtgNormalCategory,DERCapability.rtgNormalCategory,TRUE,0,1,,,via sunspec > 2030.5
+DERCapability_rtgOverExcitedPF,DERCapability.rtgOverExcitedPF,TRUE,0,1,PF,,via sunspec > 2030.5
+DERCapability_rtgOverExcitedW,DERCapability.rtgOverExcitedW,TRUE,0,1,W,,via sunspec > 2030.5
+DERCapability_rtgReactiveSusceptance,DERCapability.rtgReactiveSusceptance,TRUE,0,1,,,via sunspec > 2030.5
+DERCapability_rtgUnderExcitedPF,DERCapability.rtgUnderExcitedPF,TRUE,0,1,PF,,via sunspec > 2030.5
+DERCapability_rtgUnderExcitedW,DERCapability.rtgUnderExcitedW,TRUE,0,1,W,,via sunspec > 2030.5
+DERCapability_rtgVNom,DERCapability.rtgVNom,TRUE,0,1,,,via sunspec > 2030.5
+DERSettings_setESDelay,DERSettings.setESDelay,TRUE,0,1,,,via sunspec > 2030.5
+DERSettings_setESHighFreq,DERSettings.setESHighFreq,TRUE,0,1,,,via sunspec > 2030.5
+DERSettings_setESHighVolt,DERSettings.setESHighVolt,TRUE,0,1,,,via sunspec > 2030.5
+DERSettings_setESLowFreq,DERSettings.setESLowFreq,TRUE,0,1,,,via sunspec > 2030.5
+DERSettings_setESLowVolt,DERSettings.setESLowVolt,TRUE,0,1,,,via sunspec > 2030.5
+DERSettings_setESRampTms,DERSettings.setESRampTms,TRUE,0,1,ms,,via sunspec > 2030.5
+DERSettings_setESRandomDelay,DERSettings.setESRandomDelay,TRUE,0,1,,,via sunspec > 2030.5
+DERSettings_setMaxChargeRateVA,DERSettings.setMaxChargeRateVA,TRUE,0,1,VA,,via sunspec > 2030.5
+DERSettings_setMaxChargeRateW,DERSettings.setMaxChargeRateW,TRUE,0,1,W,,via sunspec > 2030.5
+DERSettings_setMaxV,DERSettings.setMaxV,TRUE,0,1,V,,via sunspec > 2030.5
+DERSettings_setMaxVA,DERSettings.setMaxVA,TRUE,0,1,VA,,via sunspec > 2030.5
+DERSettings_setMaxVar,DERSettings.setMaxVar,TRUE,0,1,var,,via sunspec > 2030.5
+DERSettings_setMaxVarNeg,DERSettings.setMaxVarNeg,TRUE,0,1,var,,via sunspec > 2030.5
+DERSettings_setMaxW,DERSettings.setMaxW,TRUE,0,1,W,0,via sunspec > 2030.5
+DERSettings_setMinV,DERSettings.setMinV,TRUE,0,1,V,,via sunspec > 2030.5
+DERSettings_setVNom,DERSettings.setVNom,TRUE,0,1,,,via sunspec > 2030.5
+DERStatus_alarmStatus,DERStatus.alarmStatus,TRUE,0,1,,,via sunspec > 2030.5
+DERStatus_connectStatus,DERStatus.connectStatus,TRUE,0,1,,,via sunspec > 2030.5
+DERStatus_operationalModeStatus,DERStatus.operationalModeStatus,TRUE,0,1,,,via sunspec > 2030.5
+DERStatus_stateOfChargeStatus,DERStatus.stateOfChargeStatus,TRUE,0,1,,,via sunspec > 2030.5
+DeviceInformation_mfID,DeviceInformation.mfID,TRUE,0,1,,,via sunspec > 2030.5
+DeviceInformation_mfModel,DeviceInformation.mfModel,TRUE,0,1,,,via sunspec > 2030.5
+DeviceInformation_mfSerNum,DeviceInformation.mfSerNum,TRUE,0,1,,,via sunspec > 2030.5
+DeviceInformation_swVer,DeviceInformation.swVer,TRUE,0,1,,,via sunspec > 2030.5
+MirrorMeterReading_Hz,MirrorMeterReading.Hz,TRUE,,1,Hz,,via sunspec > 2030.5
+MirrorMeterReading_V_PhaseA,MirrorMeterReading.V.PhaseA,TRUE,,1,V,,via sunspec > 2030.5
+MirrorMeterReading_V_PhaseAB,MirrorMeterReading.V.PhaseAB,TRUE,,1,V,,via sunspec > 2030.5
+MirrorMeterReading_V_PhaseB,MirrorMeterReading.V.PhaseB,TRUE,,1,V,,via sunspec > 2030.5
+MirrorMeterReading_V_PhaseBC,MirrorMeterReading.V.PhaseBC,TRUE,,1,V,,via sunspec > 2030.5
+MirrorMeterReading_V_PhaseC,MirrorMeterReading.V.PhaseC,TRUE,,1,V,,via sunspec > 2030.5
+MirrorMeterReading_V_PhaseCA,MirrorMeterReading.V.PhaseCA,TRUE,,1,V,,via sunspec > 2030.5
+MirrorMeterReading_W,MirrorMeterReading.W,TRUE,,1,W,,via sunspec > 2030.5
+MirrorMeterReading_var,MirrorMeterReading.var,TRUE,,1,var,,via sunspec > 2030.5
+DERControl_opModEnergize,DERControl.opModEnergize,FALSE,,1,,,via 2030.5 > 1547 > sunspec
+DERControl_opModFixedPFInjectW_displacement,DERControl.opModFixedPFInjectW.displacement,FALSE,,1,,,via 2030.5 > 1547 > sunspec
+DERControl_opModFixedPFInjectW_excitation,DERControl.opModFixedPFInjectW.excitation,FALSE,,1,,,via 2030.5 > 1547 > sunspec
+DERControl_opModFixedVar,DERControl.opModFixedVar,FALSE,,1,var,,via 2030.5 > 1547 > sunspec
+DERControl_opModMaxLimW,DERControl.opModMaxLimW,FALSE,,1,% x100,,via 2030.5 > 1547 > sunspec
+DERControlList,DERControlList,FALSE,,1,,,via schedules of the server programs
+DERCurve_opModHFRTMustTrip_CurveData,DERCurve.opModHFRTMustTrip.CurveData,FALSE,,1,,,"via 2030.5 > 1547 > sunspec, fidelity 0.30"
+DERCurve_opModHVRTMomentaryCessation_CurveData,DERCurve.opModHVRTMomentaryCessation.CurveData,FALSE,,1,,,"via 2030.5 > 1547 > sunspec, fidelity 0.30"
+DERCurve_opModHVRTMustTrip_CurveData,DERCurve.opModHVRTMustTrip.CurveData,FALSE,,1,,,"via 2030.5 > 1547 > sunspec, fidelity 0.30"
+DERCurve_opModLFRTMustTrip_CurveData,DERCurve.opModLFRTMustTrip.CurveData,FALSE,,1,,,"via 2030.5 > 1547 > sunspec, fidelity 0.30"
+DERCurve_opModLVRTMomentaryCessation_CurveData,DERCurve.opModLVRTMomentaryCessation.CurveData,FALSE,,1,,,"via 2030.5 > 1547 > sunspec, fidelity 0.30"
+DERCurve_opModLVRTMustTrip_CurveData,DERCurve.opModLVRTMustTrip.CurveData,FALSE,,1,,,"via 2030.5 > 1547 > sunspec, fidelity 0.30"
+DERCurve_opModVoltVar_CurveData,DERCurve.opModVoltVar.CurveData,FALSE,,1,,,"via 2030.5 > 1547 > sunspec, fidelity 0.30"
+DERCurve_opModVoltVar_autonomousVRefEnable,DERCurve.opModVoltVar.autonomousVRefEnable,FALSE,,1,,,via 2030.5 > 1547 > sunspec
+DERCurve_opModVoltVar_autonomousVRefTimeConstant,DERCurve.opModVoltVar.autonomousVRefTimeConstant,FALSE,,1,,,via 2030.5 > 1547 > sunspec
+DERCurve_opModVoltVar_openLoopTms,DERCurve.opModVoltVar.openLoopTms,FALSE,,1,ms,,via 2030.5 > 1547 > sunspec
+DERCurve_opModVoltVar_vRef,DERCurve.opModVoltVar.vRef,FALSE,,1,,,via 2030.5 > 1547 > sunspec
+DERCurve_opModVoltWatt_CurveData,DERCurve.opModVoltWatt.CurveData,FALSE,,1,,,"via 2030.5 > 1547 > sunspec, fidelity 0.30"
+DERCurve_opModVoltWatt_openLoopTms,DERCurve.opModVoltWatt.openLoopTms,FALSE,,1,ms,,via 2030.5 > 1547 > sunspec
+DERCurve_opModWattVar_CurveData,DERCurve.opModWattVar.CurveData,FALSE,,1,,,"via 2030.5 > 1547 > sunspec, fidelity 0.30"
+DERCapability_type,DERCapability.type,TRUE,0,1,,83,required by the schema; not supplied by the device
+DERSettings_setGradW,DERSettings.setGradW,TRUE,0,1,% x100/s,100,required by the schema; not supplied by the device

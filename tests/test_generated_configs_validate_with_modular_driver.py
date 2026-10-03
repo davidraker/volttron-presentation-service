@@ -20,7 +20,7 @@ CASES = Path(__file__).parent / 'integration'
 DRIVERS = Path(os.environ.get('VOLTTRON_MODULAR_DRIVERS', '/home/dmr/Projects/volttron/modular/drivers'))
 if not DRIVERS.is_dir():
     pytest.skip('modular volttron-platform-driver checkout not found', allow_module_level=True)
-for sub in ('base-driver/src', 'interfaces/fake/src', 'interfaces/pymodbus/src', 'interfaces/dnp3/src'):
+for sub in ('base-driver/src', 'interfaces/fake/src', 'interfaces/pymodbus/src', 'interfaces/dnp3/src', 'interfaces/ieee2030_5/src'):
     path = str(DRIVERS / sub)
     if path not in sys.path:
         sys.path.append(path)
@@ -37,12 +37,16 @@ def _classes(driver: str):
     if driver == 'dnp3':
         dnp3 = importlib.import_module('volttron.driver.interfaces.dnp3.config')
         return dnp3.Dnp3PointConfig, dnp3.Dnp3RemoteConfig
+    if driver == 'ieee2030_5':
+        sep2 = importlib.import_module('volttron.driver.interfaces.ieee2030_5.config')
+        return sep2.Ieee2030_5PointConfig, sep2.Ieee2030_5RemoteConfig
     return base.PointConfig, base.RemoteConfig
 
 
 @pytest.mark.parametrize('case, stem, driver', [
     ('fake_sunspec', 'fake_sunspec_pv', 'fake'), ('fake_sunspec', 'fake_sunspec_pv', 'modbus'),
-    ('fake_dnp3', 'fake_dnp3_der', 'fake'), ('fake_dnp3', 'fake_dnp3_der', 'dnp3')])
+    ('fake_dnp3', 'fake_dnp3_der', 'fake'), ('fake_dnp3', 'fake_dnp3_der', 'dnp3'),
+    ('fake_sunspec', 'fake_sunspec_pv_sep2', 'ieee2030_5')])
 @pytest.mark.parametrize('mode', ['transform', 'driver'])
 def test_generated_configs_validate(case, stem, driver, mode):
     out = CASES / case / f'{mode}_scaling'
