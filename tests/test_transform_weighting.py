@@ -192,3 +192,15 @@ def test_update_registry_reads_lossiness_override(caplog):
     registry.update_registry([{'input_format': 'a', 'output_format': 'b', 'pattern': {'x': 'transform[x]()'}, 'lossiness': 0.25}])
     assert registry.edge_info('a', 'b')['retention'] == pytest.approx(0.75)
     assert registry.edge_info('a', 'b')['lossiness_override'] == 0.25
+
+
+def test_group_copy_before_deep_mappings_keeps_the_fields():
+    """A profile wrapper copies a whole group; the next stage reads beneath it. The composed map must still
+    know the leaf fields, or every chain that starts at a wrapper scores zero retention."""
+    from interoperability.transform_parser import TransformParser
+    parser = TransformParser()
+    wrapper = parser.field_map([{'essControl': 'transform[essControl]()'}])
+    deep = parser.field_map([{'DWMX': {'LimW': 'transform[essControl, limitW, wMaxSptVal]()'}}])
+    composed = wrapper.compose(deep)
+    assert composed.retention({('essControl', 'limitW', 'wMaxSptVal')}) == 1.0
+    assert composed.retention({('essControl', 'other')}) == 0.0

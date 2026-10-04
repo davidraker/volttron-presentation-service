@@ -70,7 +70,7 @@
         "ESRmpTms": "transform[DERSettings, setESRampTms]()"
       },
       "704": {
-        "PFWInjEna": null,
+        "PFWInjEna": "transform[DERControl, opModFixedPFInjectW, displacement](const(1))",
         "PFWInj": {
           "PF": "transform[DERControl, opModFixedPFInjectW, displacement]()",
           "Ext": "transform[DERControl, opModFixedPFInjectW, excitation]()"
@@ -80,10 +80,10 @@
           "PF": "transform[DERControl, opModFixedPFAbsorbW, displacement]()",
           "Ext": "transform[DERControl, opModFixedPFAbsorbW, excitation]()"
         },
-        "VarSetEna": null,
+        "VarSetEna": "transform[DERControl, opModFixedVar](const(1))",
         "VarSetPct": "transform[DERControl, opModFixedVar]()",
         "VarSet": "transform[DERControl, opModTargetVar]()",
-        "WMaxLimPctEna": null,
+        "WMaxLimPctEna": "transform[DERControl, opModMaxLimW](const(1))",
         "WMaxLimPct": "transform[DERControl, opModMaxLimW]()"
       },
       "705": {

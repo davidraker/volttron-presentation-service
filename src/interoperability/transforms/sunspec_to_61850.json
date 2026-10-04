@@ -64,7 +64,7 @@
         "GrAlm": "transform[701, Alrm]()"
       },
       "DFPF": {
-        "ModEna": "transform[704, PFWInjEna]()",
+        "ModEna": "transform[704, PFWInjEna](cast_value(bool))",
         "PFGnTgt": "transform[704, PFWInj, PF]()",
         "PFLodTgt": "transform[704, PFWInj, PF]()",
         "PFExtSet": "transform[704, PFWInj, Ext]()"
@@ -95,7 +95,7 @@
         }
       },
       "DVAR": {
-        "ModEna": "transform[704, VarSetEna]()",
+        "ModEna": "transform[704, VarSetEna](cast_value(bool))",
         "VArTgt": "transform[704, VarSetPct]()"
       },
       "DVWC": {
@@ -213,7 +213,7 @@
         "RtnSrvRmpTim": "transform[703, ESRmpTms]()"
       },
       "DWMX": {
-        "ModEna": "transform[704, WMaxLimPctEna]()",
+        "ModEna": "transform[704, WMaxLimPctEna](cast_value(bool))",
         "LimW": "transform[704, WMaxLimPct]()"
       }
     }

@@ -77,7 +77,7 @@
         "GrAlm": "transform[DERStatus, alarmStatus]()"
       },
       "DFPF": {
-        "ModEna": null,
+        "ModEna": "transform[DERControl, opModFixedPFInjectW, displacement](const(1), cast_value(bool))",
         "PFGnTgt": "transform[DERControl, opModFixedPFInjectW, displacement]()",
         "PFExtSet": "transform[DERControl, opModFixedPFInjectW, excitation]()",
         "PFLodTgt": "transform[DERControl, opModFixedPFAbsorbW, displacement]()",
@@ -107,7 +107,7 @@
         }
       },
       "DVAR": {
-        "ModEna": null,
+        "ModEna": "transform[DERControl, opModFixedVar](const(1), cast_value(bool))",
         "VArTgt": "transform[DERControl, opModFixedVar]()"
       },
       "DVWC": {
@@ -217,7 +217,7 @@
         "RtnSrvRmpTim": "transform[DERSettings, setESRampTms]()"
       },
       "DWMX": {
-        "ModEna": null,
+        "ModEna": "transform[DERControl, opModMaxLimW](const(1), cast_value(bool))",
         "LimW": "transform[DERControl, opModMaxLimW]()"
       },
       "DWMN": {
@@ -232,7 +232,8 @@
             "PFGnTgt": "transform[#, DERControl, opModFixedPFInjectW, displacement]()",
             "PFExtSet": "transform[#, DERControl, opModFixedPFInjectW, excitation]()",
             "PFLodTgt": "transform[#, DERControl, opModFixedPFAbsorbW, displacement]()",
-            "PFLodExtSet": "transform[#, DERControl, opModFixedPFAbsorbW, excitation]()"
+            "PFLodExtSet": "transform[#, DERControl, opModFixedPFAbsorbW, excitation]()",
+            "ModEna": "transform[#, DERControl, opModFixedPFInjectW, displacement](const(1), cast_value(bool))"
           },
           "DVVR": {
             "VRefAdjEna": "transform[#, DERCurve, opModVoltVar, autonomousVRefEnable]()",
@@ -256,7 +257,8 @@
             }
           },
           "DVAR": {
-            "VArTgt": "transform[#, DERControl, opModFixedVar]()"
+            "VArTgt": "transform[#, DERControl, opModFixedVar]()",
+            "ModEna": "transform[#, DERControl, opModFixedVar](const(1), cast_value(bool))"
           },
           "DVWC": {
             "VWCrv": {
@@ -356,7 +358,8 @@
             "RtnSrvAuth": "transform[#, DERControl, opModEnergize]()"
           },
           "DWMX": {
-            "LimW": "transform[#, DERControl, opModMaxLimW]()"
+            "LimW": "transform[#, DERControl, opModMaxLimW]()",
+            "ModEna": "transform[#, DERControl, opModMaxLimW](const(1), cast_value(bool))"
           }
         }
       }

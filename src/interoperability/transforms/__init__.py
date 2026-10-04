@@ -410,6 +410,11 @@ def _immediate(entries, path):
     for entry in entries:
         start = entry.get('startTime') if isinstance(entry, dict) else None
         seconds = start.get('seconds') if isinstance(start, dict) else start
+        if isinstance(seconds, str):
+            try:
+                seconds = float(seconds)                   # protobuf JSON carries int64 as a string
+            except ValueError:
+                continue
         if seconds in (None, 0):
             seconds = now                                  # no start time: in effect now
         if isinstance(seconds, (int, float)) and seconds <= now and (started is None or seconds >= started):
@@ -431,7 +436,9 @@ def immediate(*path: str):
          emits the hub's top-level logical nodes as the "immediate" schedule entry, so a schedule round trip
          through the hub carries its active entry twice: once immediate, once scheduled.
     """
-    return c.call_func(_immediate, c.this, tuple(path))
+    conv = c.call_func(_immediate, c.this, tuple(path))
+    conv.fidelity = 1.0                                        # picking the active entry loses nothing
+    return conv
 
 
 def _when(value, actual, expected):

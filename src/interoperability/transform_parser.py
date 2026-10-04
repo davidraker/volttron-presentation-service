@@ -364,9 +364,15 @@ class FieldMap:
         self._by_source = _PathIndex(mappings, lambda m: m.source)
         # Plain copies of a whole group (no wildcard on either side): they carry every field beneath the group.
         self._group_copies: dict[tuple, list[FieldMapping]] = {}
+        # Mappings reading beneath a group, by the group's path: what a preceding whole-group copy feeds.
+        self._beneath: dict[tuple, list[FieldMapping]] = {}
         for m in mappings:
             if m.source and WILDCARD not in m.source and WILDCARD not in m.target:
                 self._group_copies.setdefault(m.source, []).append(m)
+            for length in range(1, len(m.source)):
+                prefix = m.source[:length]
+                if WILDCARD not in prefix:
+                    self._beneath.setdefault(prefix, []).append(m)
 
     def sources(self) -> set[tuple]:
         return {m.source for m in self.mappings}
@@ -377,12 +383,18 @@ class FieldMap:
     def compose(self, following: 'FieldMap') -> 'FieldMap':
         """The map of this transform followed by ``following``: fields survive only if the second transform
         picks up the field the first produced, and fidelities multiply. A following mapping that copies a whole
-        group (``"essReading": "transform[essReading]()"``) picks up every field beneath that group."""
+        group (``"essReading": "transform[essReading]()"``) picks up every field beneath that group, and a
+        preceding whole-group copy (a profile wrapper's ``"essControl": "transform[essControl]()"``) feeds every
+        following mapping that reads beneath the group."""
         composed = []
         for m in self.mappings:
             for n in following._by_source.candidates(m.target):
                 if path_matches(m.target, n.source):
                     composed.append(FieldMapping(m.source, n.target, m.fidelity * n.fidelity, m.functions + n.functions))
+            if WILDCARD not in m.target:
+                for n in following._beneath.get(m.target, ()):
+                    composed.append(FieldMapping(m.source + n.source[len(m.target):], n.target, m.fidelity * n.fidelity,
+                                                 m.functions + n.functions))
             for length in range(1, len(m.target)):
                 prefix = m.target[:length]
                 for n in following._group_copies.get(prefix, ()):
@@ -665,8 +677,15 @@ class TransformParser:
             path = element_paths[expr.first_level]
             for part in expr.parts[1:-1]:
                 path = path + _normalize_path(part) + (WILDCARD,)
-            return path + _normalize_path(expr.parts[-1])
-        return _normalize_path(expr.segments)
+            path = path + _normalize_path(expr.parts[-1])
+        else:
+            path = _normalize_path(expr.segments)
+        for conv in expr.convs:
+            name, args = getattr(conv, 'transform_call', ('?', ()))
+            if name == 'immediate':
+                # immediate('a', 'b') reads a.b of one element of the list at the path: a field beneath it.
+                path = path + (WILDCARD,) + tuple(str(a) for a in args)
+        return path
 
     def _map_node(self, node, target: tuple, element_paths: list[tuple], group_fidelity: float,
                   mappings: list, nulls: list, series_stack: list | None = None):

@@ -97,7 +97,7 @@
           "openLoopTms": "transform[AI, 131]()"
         },
         "opModEnergize": "transform[BI, 16]()",
-        "opModMaxLimW": "transform[AI, 149]()"
+        "opModMaxLimW": "transform[AI, 148]()"
       },
       "DERCurve": {
         "opModVoltVar": {
@@ -278,7 +278,7 @@
           "openLoopTms": "transform[AO, 72]()"
         },
         "opModEnergize": "transform[BO, 3]()",
-        "opModMaxLimW": "transform[AO, 88]()"
+        "opModMaxLimW": "transform[AO, 87]()"
       },
       "DERCurve": {
         "opModVoltVar": {

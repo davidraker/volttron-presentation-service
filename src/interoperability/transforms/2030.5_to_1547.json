@@ -61,7 +61,7 @@
         "Operation SoC": "transform[DERStatus, stateOfChargeStatus]()"
       },
       "Constant PF": {
-        "Enable": null,
+        "Enable": "transform[DERControl, opModFixedPFInjectW, displacement](const(1), cast_value(bool))",
         "Injection/Absorption setting": "transform[DERControl, opModFixedPFInjectW, displacement]()",
         "Excitation setting": "transform[DERControl, opModFixedPFInjectW, excitation]()"
       },
@@ -78,7 +78,7 @@
         "P/Q Curve Points": "transform[DERCurve, opModWattVar, CurveData]()"
       },
       "Constant VAR": {
-        "Enable": null,
+        "Enable": "transform[DERControl, opModFixedVar](const(1), cast_value(bool))",
         "VAR Setting": "transform[DERControl, opModFixedVar]()"
       },
       "Volt-Watt": {
@@ -116,7 +116,7 @@
         "ES Ramp Time": "transform[DERSettings, setESRampTms]()"
       },
       "Limit Watt": {
-        "Enable": null,
+        "Enable": "transform[DERControl, opModMaxLimW](const(1), cast_value(bool))",
         "Watt Setting": "transform[DERControl, opModMaxLimW]()"
       }
     }

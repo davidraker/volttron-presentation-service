@@ -84,7 +84,7 @@
         "VarSetPct": "transform[AI, 281]()",
         "VarSet": null,
         "WMaxLimPctEna": "transform[BI, 69]()",
-        "WMaxLimPct": "transform[AI, 149]()"
+        "WMaxLimPct": "transform[AI, 148]()"
       },
       "705": {
         "Ena": "transform[BI, 81]()",
@@ -297,7 +297,7 @@
         "VarSetPct": "transform[AO, 203]()",
         "VarSet": null,
         "WMaxLimPctEna": "transform[BO, 17]()",
-        "WMaxLimPct": "transform[AO, 88]()"
+        "WMaxLimPct": "transform[AO, 87]()"
       },
       "705": {
         "Ena": "transform[BO, 29]()",

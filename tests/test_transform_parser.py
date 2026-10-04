@@ -551,13 +551,13 @@ def test_bundled_schedules_carry_every_entry_between_2030_5_and_61850(parser):
     entries = i61850['FSCH']['SchdEntr']
     assert len(entries) == 2
     assert entries[0]['StrTm'] == 1700000000 and entries[0]['SchdIntv'] == 3600
-    assert entries[0]['DWMX'] == {'LimW': 80}
+    assert entries[0]['DWMX'] == {'LimW': 80, 'ModEna': True}                  # an active control implies its mode enable
     assert entries[0]['DHFW'] == {'HzStr': 0.036, 'WGra': 5}
     assert entries[0]['DVVR'] == {'VVArCrv': {'numPts': 2, 'crvPts': [{'xVal': 95, 'yVal': 44}, {'xVal': 105, 'yVal': -44}]},
                                   'OpnLoopMax': 5}
-    assert entries[1] == {'StrTm': 1700003600, 'SchdIntv': 3600, 'DWMX': {'LimW': 100}}
+    assert entries[1] == {'StrTm': 1700003600, 'SchdIntv': 3600, 'DWMX': {'LimW': 100, 'ModEna': True}}
     # The immediate settings still map at the top level, and schedule content does not leak into it.
-    assert i61850['DFPF'] == {'PFGnTgt': 0.95, 'PFExtSet': 1}
+    assert i61850['DFPF'] == {'ModEna': True, 'PFGnTgt': 0.95, 'PFExtSet': 1}
     assert 'DWMX' not in i61850 and 'DVVR' not in i61850
     back = _bundled_pipeline(parser, '61850', '2030.5').execute(i61850)
     assert back['DERControlList'] == [

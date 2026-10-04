@@ -50,6 +50,7 @@ def test_immediate_picks_the_due_schedule_entry():
     assert pick.execute([later, due]) == 40
     assert pick.execute([{'control': {'limitWOperation': {'wMaxSptVal': 55}}}]) == 55          # no start time: now
     assert pick.execute([later]) is MISSING
+    assert pick.execute([{**due, 'startTime': {'seconds': str(due['startTime']['seconds'])}}]) == 40   # protobuf JSON int64
     assert pick.execute({'not': 'a list'}) is MISSING
 
 
@@ -88,3 +89,10 @@ def test_served_mirror_writes_the_downward_points_too():
     assert set(plain['pattern']) < set(served['pattern'])
     fragment = mirror_gen.presentation_fragment('m', mirror, 'devices/x', ['x', 'm'], served=True)
     assert 'DERControl_opModMaxLimW' in fragment['transforms'][1]['pattern']
+
+
+def test_immediate_reads_count_as_fields_beneath_the_list():
+    parser = TransformParser()
+    fm = parser.field_map([{'DWMX': {'LimW': "transform[sched, crvPts](immediate('control', 'wMaxSptVal'))"}}])
+    assert fm.retention({('sched', 'crvPts', '0', 'control', 'wMaxSptVal')}) == 1.0
+    assert fm.retention({('sched', 'crvPts')}) == 0.0

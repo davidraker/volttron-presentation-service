@@ -57,14 +57,14 @@
         "SoC": "transform[DSTO, SocUsePct]()"
       },
       "704": {
-        "PFWInjEna": "transform[DFPF, ModEna]()",
+        "PFWInjEna": "transform[DFPF, ModEna](cast_value(int))",
         "PFWInj": {
           "PF": "transform[DFPF, PFGnTgt]()",
           "Ext": "transform[DFPF, PFExtSet]()"
         },
-        "VarSetEna": "transform[DVAR, ModEna]()",
+        "VarSetEna": "transform[DVAR, ModEna](cast_value(int))",
         "VarSetPct": "transform[DVAR, VArTgt]()",
-        "WMaxLimPctEna": "transform[DWMX, ModEna]()",
+        "WMaxLimPctEna": "transform[DWMX, ModEna](cast_value(int))",
         "WMaxLimPct": "transform[DWMX, LimW]()"
       },
       "705": {

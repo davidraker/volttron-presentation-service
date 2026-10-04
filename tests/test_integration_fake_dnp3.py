@@ -196,8 +196,8 @@ def test_writes_reach_the_device_as_ordered_flat_batches(service, mode):
     control = {'DERControl': {'opModMaxLimW': 80},
                'DERCurve': {'opModVoltVar': {'CurveData': [{'xvalue': 95, 'yvalue': 44}, {'xvalue': 105, 'yvalue': -44}]}}}
     out = TransformParser().build_transform_from_schema(chain).execute(control)
-    limit = 800.0 if mode == 'transform' else 80        # AO 88 has multiplier 0.1: the device edge undoes it, or the driver will
-    assert out['AO_88'] == limit
+    limit = 800.0 if mode == 'transform' else 80        # AO 87 has multiplier 0.1: the device edge undoes it, or the driver will
+    assert out['AO_87'] == limit and out['BO_17'] is True            # an active control implies its mode enable
     batch = out['sequence'][0]
     assert list(batch)[:4] == ['AO_244', 'AO_245', 'AO_246', 'AO_249'] and list(batch)[-1] == 'AO_217'   # select, type, count, points, assign
     assert batch['AO_244'] == 1 and batch['AO_245'] == 2 and batch['AO_246'] == 2 and batch['AO_249'] == 95
@@ -205,7 +205,7 @@ def test_writes_reach_the_device_as_ordered_flat_batches(service, mode):
     # The 61850 route to the device also carries its schedule entries as further batches.
     sched = {'FSCH': {'SchdEntr': [{'StrTm': 5, 'DWMX': {'LimW': 50}}]}, 'DFPF': {'PFGnTgt': 0.9}}
     via_61850 = TransformParser().build_transform_from_schema(registry.lookup('61850', 'fake_dnp3_der')).execute(sched)
-    assert 'AO_88' not in via_61850                                                     # LimW inside the schedule, not immediate
+    assert 'AO_87' not in via_61850                                                     # LimW inside the schedule, not immediate
     assert via_61850['AO_210'] == (900.0 if mode == 'transform' else 0.9) or via_61850.get('AO_210') is not None
 
 
