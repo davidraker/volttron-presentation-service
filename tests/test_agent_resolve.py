@@ -78,3 +78,15 @@ def test_resolve_write_direction_and_field_hint(service):
     assert out == {'704_WMaxLimPct': 50, '704_WMaxLimPctEna': 1}
     with pytest.raises(ValueError):
         svc.resolve(('site1', 'pv_inverter'), as_format='2030.5', direction='sideways')
+
+
+def test_resolve_reports_the_uais_and_transform_chain_scores_fields(service):
+    svc, _ = service
+    alias = svc.resolve(('openfmb', 'solarmodule', 'SolarReadingProfile', '7d1a2b3c-0000-4000-8000-000000000001'))
+    assert alias['canonical_uai'] == ['site1', 'pv_inverter'] and alias['alias_uais'] == [['openfmb', 'solarmodule', 'SolarReadingProfile', '7d1a2b3c-0000-4000-8000-000000000001']]
+    assert alias['codec'] == {'encoding': 'protobuf', 'proto': 'solarmodule.SolarReadingProfile'}
+    canonical = svc.resolve(('site1', 'pv_inverter'), as_format='openfmb.solar.reading')
+    assert canonical['alias_uais'] == [] and canonical['codec'] == {'encoding': 'json', 'proto': 'solarmodule.SolarReadingProfile'}
+    chain = svc.transform_chain('fake_sunspec_pv', 'openfmb.solar.reading', fields=['701_W', '701_W_SF'])
+    assert chain['path'][0] == 'fake_sunspec_pv' and chain['path'][-1] == 'openfmb.solar.reading' and chain['transform'] and 0 < chain['retention'] <= 1
+    assert svc.transform_chain('sunspec', 'sunspec') == {'transform': [], 'path': ['sunspec'], 'retention': 1.0}

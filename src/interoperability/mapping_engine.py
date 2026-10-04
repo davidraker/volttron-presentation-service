@@ -24,8 +24,10 @@ def serialize_uai(uai, root_name):
 
 
 def deserialize_uai(identifier, remove_prefix=False):
-    uai = tuple(json.loads(identifier))
-    return uai[:-1] if remove_prefix else uai
+    """The UAI behind a node identifier written by serialize_uai (comma-joined JSON strings, root name first);
+    ``remove_prefix`` drops the root name."""
+    uai = tuple(json.loads(f'[{identifier}]'))
+    return uai[1:] if remove_prefix else uai
 
 
 class UAINode(Node):

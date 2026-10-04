@@ -89,3 +89,14 @@ def test_subscribe_relays_encoded_payloads():
     handler('pubsub', 'platform.driver', 'bus', 'devices/ess/all', {}, {'essReading': {'readingMMXU': {'Hz': {'mag': 60.0}}}})
     (peer, sender, bus, topic, headers, payload), = received
     assert topic == 'remote/topic' and isinstance(payload, bytes)
+
+
+def test_subscribe_covers_the_device_polls_and_pushes():
+    from unittest import mock
+    from interoperability.resource import ResourceData
+    agent = mock.MagicMock()
+    data = ResourceData(agent, 'openfmb/x', {'data_format': 'f', 'publication_topic': 'devices/site1/pv/all'})
+    assert data.publication_topics() == ['devices/site1/pv/all', 'devices/site1/pv/multi']
+    data.subscribe(lambda *a: None)
+    assert [c.kwargs['prefix'] for c in agent.vip.pubsub.subscribe.call_args_list] == ['devices/site1/pv/all', 'devices/site1/pv/multi']
+    assert ResourceData(agent, 't', {'data_format': 'f', 'publication_topic': 'devices/pv'}).publication_topics() == ['devices/pv']

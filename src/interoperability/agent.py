@@ -95,6 +95,14 @@ class PresentationService(Agent):
         return self.transform_registry.lookup(input_format, output_format)
 
     @RPC.export
+    def transform_chain(self, input_format: str, output_format: str, fields: list | None = None) -> dict:
+        """The best chain between two formats with the formats it passes through and the fraction of ``fields``
+        (dotted leaf paths; else every field it could read) it retains: ``{'transform', 'path', 'retention'}``.
+        Same formats give an empty chain; no chain raises TransformNotFoundError to the caller."""
+        chain, retention, path = self.transform_registry.lookup_scored(input_format, output_format, fields)
+        return {'transform': chain, 'path': path, 'retention': retention}
+
+    @RPC.export
     def score_transform(self, input_format: str, output_format: str, fields: list | None = None) -> dict:
         """How well the best chain between two formats preserves the source: the formats it passes through and
         the fraction of source fields (``fields`` if given, else all the chain could read) that reach the end."""
@@ -143,6 +151,10 @@ class PresentationService(Agent):
             resource_dict['parameters'] = parameters
             encoding = next((a.resource.encoding for a in aliases if a.resource.encoding), None) or 'json'
             resource_dict['encoding'] = encoding
+            resource_dict['canonical_uai'] = list(node.uai)
+            resource_dict['alias_uais'] = [list(a.uai) for a in aliases]        # outermost first; empty for a canonical UAI
+            if not as_format and not aliases:
+                as_format = None
             if as_format:
                 # Add the target data format & transform definition to the response. An empty chain means the
                 # resource is already in that format; a missing chain raises TransformNotFoundError to the caller.
@@ -153,8 +165,10 @@ class PresentationService(Agent):
                 resource_dict['transform'] = chain
                 resource_dict['path'], resource_dict['retention'] = path, retention
                 _log.info(f'Transform {" -> ".join(path)} retains {retention:.0%} of the source fields.')
+                proto = self.transform_registry.format_spec(as_format).get('proto')
+                if encoding == 'json' and proto:
+                    resource_dict['codec'] = {'encoding': 'json', 'proto': proto}        # the format is an OpenFMB profile
                 if encoding != 'json':
-                    proto = self.transform_registry.format_spec(as_format).get('proto')
                     if encoding == 'protobuf' and not proto:
                         raise ValueError(f'Alias for {uai} asks for protobuf, but format "{as_format}" declares no'
                                          f' "proto" message name in its formats entry.')

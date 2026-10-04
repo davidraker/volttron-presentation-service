@@ -15,18 +15,23 @@ Every protocol is stood up twice in this process, through one real proxy subproc
 A served device and a client-role device of the same protocol are different devices to the service, with their own
 device formats: the served ones are generated with ``served=True`` (an outstation's inputs and a server's downward
 resources are then written by the platform), the client ones as the discovery tools write them today. The service
-itself runs in-process (``PresentationService`` with VOLTTRON stubbed) on those formats, transforms and mappings.
+itself runs in-process (``PresentationService`` with VOLTTRON stubbed) on those formats, transforms and mappings; each
+device also has an OpenFMB reading and control alias (``openfmb/<module>/<Profile>/<mRID>``).
 
 For each path the message the source interface produced (a poll, or the pushes a served interface received) is turned
 into the target's points and written through the target interface, then the value is checked at the external party:
 the master reads the served unit, the served interface receives the master's write, the client interface receives the
-server's control, the published protobuf decodes. Who does the transforming and writing is the *writer*:
+server's control, the published protobuf decodes. Who does the transforming and writing is configurable:
 
-* ``direct`` (default): the harness itself resolves the chain with ``lookup_scored`` (hinting the fields the message
-  carries), executes it and calls ``set_multiple_points`` on the target interface.
-* ``device_adapter`` (``E2E_WRITER=device_adapter``): a DeviceAdapterAgent (VOLTTRON stubbed; its RPCs reach the
-  in-process service and the interfaces) is configured with one bridge per device-to-device path and the source's
-  publication is delivered to it. OpenFMB paths stay with the harness: they are the message bus adapter's job.
+* ``E2E_WRITER=direct`` (default): the harness itself resolves the chain with ``lookup_scored`` (hinting the fields the
+  message carries), executes it and calls ``set_multiple_points`` on the target interface.
+* ``E2E_WRITER=device_adapter``: a DeviceAdapterAgent (VOLTTRON stubbed; its RPCs reach the in-process service and the
+  interfaces) is configured with one bridge per device-to-device path and the source's publication is delivered to it.
+* ``E2E_OPENFMB=harness`` (default): the OpenFMB paths use the harness's own chain execution and the MQTT proxy's codec.
+  ``rpc``: a MessageBusAdapter in ``translate`` mode carries them, writing inbound controls through the Device
+  Adapter's ``write`` RPC. ``bus``: OpenFMB on the VOLTTRON bus: the bus adapter in ``relay`` mode re-serialises, the
+  Device Adapter's bus-end bridges translate. Both imply ``E2E_WRITER=device_adapter``. The agents share an in-process
+  pubsub (``LocalBus``) standing in for VOLTTRON's.
 
 Exit status is non-zero if any path fails. Run by test_e2e_matrix.py; ``E2E_LOG`` names the log file.
 Arguments: [work dir] [paths], paths as ``telemetry:SunSpec>DNP3,control:OpenFMB>2030.5`` to run a subset."""
@@ -51,11 +56,14 @@ from volttron.driver.interfaces.ieee2030_5.ieee2030_5 import Ieee2030_5
 from volttron.driver.interfaces.ieee2030_5.config import Ieee2030_5PointConfig
 from volttron.driver.interfaces.modbus.modbus import Modbus
 from volttron.driver.interfaces.modbus.config import ModbusPointConfig
+from protocol_proxy.ipc import SocketParams
+from protocol_proxy.manager.gevent import GeventProtocolProxyManager
 from protocol_proxy.protocol.ieee2030_5.identity import lfdi_from_cert
 from protocol_proxy.protocol.mqtt import mqtt_proxy as mqtt_module
 from protocol_proxy.protocol.mqtt.mqtt_proxy import MQTTProxy
 
 import interoperability.agent as service_module
+from interoperability import openfmb_bus
 from interoperability.codecs.openfmb import decode, encode
 from interoperability.discovery import ieee2030_5 as mirror_gen
 from interoperability.discovery.device_formats import dnp3_device_transforms, dnp3_scaling, resource_mappings
@@ -70,16 +78,22 @@ SUNSPEC_CASE = TESTS / 'integration' / 'fake_sunspec' / 'transform_scaling'
 DNP3_CASE = TESTS / 'integration' / 'fake_dnp3' / 'transform_scaling'
 WORK = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(tempfile.mkdtemp(prefix='e2e-matrix-'))
 ONLY = set(sys.argv[2].split(',')) if len(sys.argv) > 2 else None
-WRITER = os.environ.get('E2E_WRITER', 'direct')
+OPENFMB_MODE = os.environ.get('E2E_OPENFMB', 'harness')                    # harness | rpc | bus
+WRITER = 'device_adapter' if OPENFMB_MODE != 'harness' else os.environ.get('E2E_WRITER', 'direct')
+assert OPENFMB_MODE in ('harness', 'rpc', 'bus'), OPENFMB_MODE
 
 PROTOCOLS = ('SunSpec', 'DNP3', '2030.5', 'OpenFMB')
 DEVICES = ('SunSpec', 'DNP3', '2030.5')
 CLIENT_FORMAT = {'SunSpec': 'fake_sunspec_pv', 'DNP3': 'fake_dnp3_der', '2030.5': 'fake_sunspec_pv_sep2'}
 SERVED_FORMAT = {'SunSpec': 'fake_sunspec_pv', 'DNP3': 'fake_dnp3_der_served', '2030.5': 'fake_sunspec_pv_sep2_served'}
 OPENFMB_FAMILY = {'SunSpec': 'solar', 'DNP3': 'ess', '2030.5': 'ess'}           # the OpenFMB profile family used with each partner
+PROFILE = {'solar': 'Solar', 'ess': 'ESS'}
 PROTO = {'solar': ('solarmodule.SolarReadingProfile', 'solarmodule.SolarControlProfile'),
          'ess': ('essmodule.ESSReadingProfile', 'essmodule.ESSControlProfile')}
-MRID = '7d1a2b3c-0000-4000-8000-000000000001'
+# Every device (protocol, role) is also an OpenFMB conducting equipment with its own mRID, reading and control profile.
+MRID = {('SunSpec', 'client'): '7d1a2b3c-0000-4000-8000-000000000001', ('SunSpec', 'served'): '7d1a2b3c-0000-4000-8000-000000000011',
+        ('DNP3', 'client'): '9c2e4f10-0000-4000-8000-000000000002', ('DNP3', 'served'): '9c2e4f10-0000-4000-8000-000000000012',
+        ('2030.5', 'client'): '5e6f7a80-0000-4000-8000-000000000003', ('2030.5', 'served'): '5e6f7a80-0000-4000-8000-000000000013'}
 # The stimulus every path carries: a system meter reading (W, Hz) and an enabled active power limit (percent of WMax).
 W, HZ = 4321, 60
 LIMIT_PCT = 50
@@ -162,6 +176,41 @@ def roles(kind, src, dst):
 
 def bridge_name(kind, src, dst):
     return f'{kind}_{src}_{dst}'.replace('.', '_')
+
+
+def openfmb_alias(protocol, role, kind):
+    """The OpenFMB alias UAI (and topic) of a device: its reading or control profile."""
+    family = OPENFMB_FAMILY[protocol]
+    return ['openfmb', f'{family}module', f'{PROFILE[family]}{"Reading" if kind == "reading" else "Control"}Profile', MRID[(protocol, role)]]
+
+
+def openfmb_root(family):
+    return ('solarControl', 'solarControlFSCC', 'SolarControlScheduleFSCH') if family == 'solar' else \
+           ('essControl', 'essControlFSCC', 'essControlScheduleFSCH')
+
+
+def openfmb_reading(family):
+    key = 'solarReading' if family == 'solar' else 'essReading'
+    return {key: {'readingMMXU': {'W': {'net': {'cVal': {'mag': W}}}, 'Hz': {'mag': HZ}}}}
+
+
+def openfmb_control(family):
+    a, b, c = openfmb_root(family)
+    entry = {'startTime': {'seconds': int(time.time())},
+             'control': {'limitWOperation': {'maxLimParameter': {'modEna': True}, 'wMaxSptVal': LIMIT_PCT}}}
+    return {a: {b: {c: {'ValDCSG': {'crvPts': [entry]}}}}}
+
+
+def reading_view(got, family):
+    key = 'solarReading' if family == 'solar' else 'essReading'
+    return {'W': dig(got, key, 'readingMMXU', 'W', 'net', 'cVal', 'mag'), 'Hz': dig(got, key, 'readingMMXU', 'Hz', 'mag')}
+
+
+def control_view(got, family):
+    points = dig(got, *openfmb_root(family), 'ValDCSG', 'crvPts') or []
+    now = [p for p in points if 'startTime' not in p or int(dig(p, 'startTime', 'seconds') or 0) <= time.time()]
+    return ({'wMaxSptVal': dig(now[0], 'control', 'limitWOperation', 'wMaxSptVal') if now else None,
+             'modEna': dig(now[0], 'control', 'limitWOperation', 'maxLimParameter', 'modEna') if now else None}, len(points))
 
 
 # =============================================================================================== the parties
@@ -271,7 +320,8 @@ def setup_sep2(rows):
 
 
 class OpenFmb:
-    """The MQTT proxy with paho mocked: publishes are captured, inbound broker messages are injected."""
+    """The MQTT proxy with paho mocked: what our side publishes reaches the (mock) broker, and the external party's
+    publications are injected the way paho would deliver them."""
     def __init__(self):
         manager_id = uuid4()
         with mock.patch.object(mqtt_module.mqtt, 'Client') as client_class:
@@ -282,43 +332,82 @@ class OpenFmb:
         self.proxy.send = mock.Mock(return_value=True)
         self.proxy.peers[self.proxy.manager] = mock.Mock()
 
-    def publish(self, proto, payload, topic):
-        """Our side publishes: the adapter's PUBLISH_REMOTE envelope -> proxy -> paho publish; returns what the broker got."""
-        envelope = json.dumps({'topic': topic, 'payload': encode(proto, payload).hex(), 'encoding': 'hex'}).encode('utf8')
+    def publish_envelope(self, envelope: bytes):
+        """A PUBLISH_REMOTE envelope from the manager side: the proxy publishes it to the broker."""
         self.proxy.handle_publish_remote.__wrapped__(self.proxy, SimpleNamespace(sender_id=self.proxy.manager), envelope)
-        out_topic, out_payload = self.client.publish.call_args.args
-        assert out_topic == topic
-        return decode(proto, bytes(out_payload))
+
+    def publish(self, proto, payload, topic):
+        """Our side publishes a profile: returns what the broker got, decoded."""
+        self.publish_envelope(json.dumps({'topic': topic, 'payload': encode(proto, payload).hex(), 'encoding': 'hex'}).encode('utf8'))
+        return self.broker_got(topic, proto)
+
+    def broker_got(self, topic, proto):
+        """The last message the broker received on ``topic``, decoded as ``proto``."""
+        for call in reversed(self.client.publish.call_args_list):
+            out_topic, out_payload = call.args
+            if out_topic == topic:
+                return decode(proto, bytes(out_payload))
+        return None
 
     def receive(self, proto, payload, topic):
-        """The external party publishes: paho on_message -> PUBLISH_LOCAL to the manager; returns the decoded message."""
+        """The external party publishes: paho on_message -> PUBLISH_LOCAL to the manager. Returns (decoded, raw payload)."""
         self.proxy.on_message(self.client, None, SimpleNamespace(topic=topic, payload=encode(proto, payload), qos=0, retain=False, mid=1))
         message = self.proxy.send.call_args.args[1]
         local = json.loads(message.payload)
         assert local['topic'] == topic
-        return decode(proto, bytes.fromhex(local['payload']))
+        return decode(proto, bytes.fromhex(local['payload'])), message.payload
+
+
+class LocalBus:
+    """An in-process stand-in for VOLTTRON's pubsub shared by the agents: prefix subscriptions, synchronous delivery."""
+    def __init__(self):
+        self.subscriptions = []
+        self.published = []
+
+    def subscribe(self, peer=None, prefix=None, callback=None, **kwargs):
+        self.subscriptions.append((prefix, callback))
+        return mock.Mock()
+
+    def unsubscribe(self, peer=None, prefix=None, callback=None, **kwargs):
+        self.subscriptions = [(p, c) for p, c in self.subscriptions if not (p == prefix and c is callback)]
+
+    def publish(self, peer=None, topic=None, headers=None, message=None, **kwargs):
+        self.published.append((topic, headers or {}, message))
+        for prefix, callback in list(self.subscriptions):
+            if topic == prefix or topic.startswith(prefix.rstrip('/') + '/'):
+                callback('pubsub', 'harness', 'bus', topic, headers or {}, message)
+        return mock.Mock()
+
+    def reports(self, prefix='device_adapter/'):
+        return [(t, m) for t, h, m in self.published if t.startswith(prefix)]
 
 
 # =============================================================================================== the service
 def service_config(dnp3_names):
-    """The presentation service's configuration for both cases plus the served devices as their own formats, with a
-    canonical resource per device at the harness's topics. Returns the configuration and the 2030.5 mirror rows."""
+    """The presentation service's configuration for both cases plus the served devices as their own formats, a
+    canonical resource per device at the harness's topics and an OpenFMB reading and control alias per device.
+    Returns the configuration and the 2030.5 mirror rows."""
     sunspec_case = json.loads((SUNSPEC_CASE / 'presentation_config.json').read_text())
     dnp3_case = json.loads((DNP3_CASE / 'presentation_config.json').read_text())
     formats = {**sunspec_case['formats'], **dnp3_case['formats'], SERVED_FORMAT['DNP3']: dnp3_case['formats'][CLIENT_FORMAT['DNP3']]}
     transforms = sunspec_case['transforms'] + dnp3_case['transforms'] + \
         dnp3_device_transforms(SERVED_FORMAT['DNP3'], dnp3_names, served=True).definitions
-    mappings = []
-    for protocol in ('SunSpec', 'DNP3'):
-        for role, fmt in (('client', CLIENT_FORMAT[protocol]), ('served', SERVED_FORMAT[protocol])):
-            mappings += resource_mappings(fmt, device_topic(protocol, role), uai(protocol, role), {})
     registry = mirror_gen.load_registry(SUNSPEC_CASE / 'presentation_config.json')
     mirror = mirror_gen.discover_mirror(registry, 'fake_sunspec_pv')
-    for role, fmt, served in (('client', CLIENT_FORMAT['2030.5'], False), ('served', SERVED_FORMAT['2030.5'], True)):
-        fragment = mirror_gen.presentation_fragment(fmt, mirror, device_topic('2030.5', role), uai('2030.5', role), served=served)
+    for fmt, served in ((CLIENT_FORMAT['2030.5'], False), (SERVED_FORMAT['2030.5'], True)):
+        fragment = mirror_gen.presentation_fragment(fmt, mirror, 'unused', ['unused'], served=served)
         formats.update(fragment['formats'])
         transforms += fragment['transforms']
-        mappings += [m for m in fragment['mappings'] if m['resource_type'] == 'canonical']
+    mappings = []
+    for protocol in DEVICES:
+        family = OPENFMB_FAMILY[protocol]
+        for role, fmt in (('client', CLIENT_FORMAT[protocol]), ('served', SERVED_FORMAT[protocol])):
+            aliases = {}
+            for kind, index in (('reading', 0), ('control', 1)):
+                aliases[f'openfmb_{kind}'] = {'format': f'openfmb.{family}.{kind}', 'encoding': 'protobuf',
+                                              'parameters': {'mrid': MRID[(protocol, role)], 'name': f'{protocol} {role}'},
+                                              'uai': openfmb_alias(protocol, role, kind)}
+            mappings += resource_mappings(fmt, device_topic(protocol, role), uai(protocol, role), aliases)
     return {'formats': formats, 'transforms': transforms, 'mappings': mappings}, mirror_gen.registry_rows(mirror)
 
 
@@ -341,12 +430,12 @@ class DirectWriter:
     """The harness does the writing itself: lookup_scored with the message's fields, execute, set_multiple_points."""
     name = 'direct'
 
-    def __init__(self, service, parties):
-        self.registry, self.parties = service.transform_registry, parties
+    def __init__(self, service, parties, bus):
+        self.service, self.registry, self.parties, self.bus = service, service.transform_registry, parties, bus
 
-    def chain(self, src_fmt, dst_fmt, message):
+    def chain(self, src_fmt, dst_fmt, message, parameters=None):
         chain, retention, path = self.registry.lookup_scored(src_fmt, dst_fmt, fields=list(leaves(message)))
-        parser = TransformParser(context={'mrid': MRID, 'name': 'DER 1'})
+        parser = TransformParser(context=parameters or {'mrid': 'harness', 'name': 'DER 1'})
         return parser.build_transform_from_schema(chain).execute(message), retention, path
 
     def write(self, message, src_fmt, dst, prefix, **_):
@@ -357,25 +446,39 @@ class DirectWriter:
         r, e, n = party.write(party.interface(prefix), prefix, out)
         return path, f'retention {retention:.2f}, {summary(out)}, {len(r)}/{n} written' + (f', errors {list(e.items())[:2]}' if e else '')
 
+    def driver_rpc(self, path, items):
+        """platform.driver.set_multiple_points for the agents: the interface behind the device topic writes."""
+        party = next(p for p in self.parties.values() if path in (p.client_prefix, p.served_prefix))
+        iface = party.interface(path)
+        known = [(f'{path}/{k}', v) for k, v in items if f'{path}/{k}' in iface.point_map]
+        errors = {f'{path}/{k}': 'no such point on this device' for k, _ in items if f'{path}/{k}' not in iface.point_map}
+        if known:
+            _, e = iface.set_multiple_points(known)
+            errors.update(e)
+        return errors
+
 
 class AdapterWriter(DirectWriter):
     """A DeviceAdapterAgent does the writing: VOLTTRON is stubbed so that its RPCs reach the in-process service and
-    the interfaces, and the source's publication is delivered to the bridge for the path."""
+    the interfaces and its pubsub is the LocalBus; one bridge per device-to-device path, plus (``bus`` OpenFMB mode)
+    a bridge between each device and its OpenFMB reading and control topics."""
     name = 'device_adapter'
 
-    def __init__(self, service, parties):
-        super().__init__(service, parties)
+    def __init__(self, service, parties, bus):
+        super().__init__(service, parties, bus)
         from device_adapter import agent as adapter_module
         from device_adapter.agent import DeviceAdapterAgent
-        self.service, self.published = service, []
         with mock.patch.object(adapter_module.Agent, '__init__', return_value=None):
             self.agent = DeviceAdapterAgent.__new__(DeviceAdapterAgent)
             self.agent.vip, self.agent.core = mock.MagicMock(), mock.MagicMock()
             self.agent.core.connected = False
+            self.agent.core.identity = 'platform.device_adapter'
             self.agent.core.spawn.side_effect = lambda fn, *args: fn(*args)
             DeviceAdapterAgent.__init__(self.agent, config_path=None)
         self.agent.vip.rpc.call.side_effect = self.rpc
-        self.agent.vip.pubsub.publish.side_effect = lambda peer, topic, message=None, **kw: self.published.append((topic, message))
+        self.agent.vip.pubsub.subscribe.side_effect = bus.subscribe
+        self.agent.vip.pubsub.unsubscribe.side_effect = bus.unsubscribe
+        self.agent.vip.pubsub.publish.side_effect = bus.publish
         bridges = []
         for kind in ('telemetry', 'control'):
             for src in DEVICES:
@@ -384,6 +487,19 @@ class AdapterWriter(DirectWriter):
                         src_role, dst_role = roles(kind, src, dst)
                         bridges.append({'name': bridge_name(kind, src, dst), 'source': uai(src, src_role), 'target': uai(dst, dst_role),
                                         'write_unchanged': True})     # every path orders the same values; changes alone would hide repeats
+        if OPENFMB_MODE == 'bus':
+            for protocol in DEVICES:
+                tel_src, tel_dst = roles('telemetry', protocol, 'OpenFMB')[0], roles('telemetry', 'OpenFMB', protocol)[1]
+                ctl_src, ctl_dst = roles('control', protocol, 'OpenFMB')[0], roles('control', 'OpenFMB', protocol)[1]
+                bridges += [
+                    {'name': bridge_name('telemetry', protocol, 'OpenFMB'), 'source': uai(protocol, tel_src),
+                     'target': {'uai': openfmb_alias(protocol, tel_src, 'reading'), 'bus': True}},
+                    {'name': bridge_name('telemetry', 'OpenFMB', protocol), 'source': {'uai': openfmb_alias(protocol, tel_dst, 'reading'), 'bus': True},
+                     'target': uai(protocol, tel_dst), 'write_unchanged': True},
+                    {'name': bridge_name('control', protocol, 'OpenFMB'), 'source': uai(protocol, ctl_src),
+                     'target': {'uai': openfmb_alias(protocol, ctl_src, 'control'), 'bus': True}},
+                    {'name': bridge_name('control', 'OpenFMB', protocol), 'source': {'uai': openfmb_alias(protocol, ctl_dst, 'control'), 'bus': True},
+                     'target': uai(protocol, ctl_dst), 'write_unchanged': True}]
         self.agent.configure_main(None, 'NEW', {'bridges': bridges})
         assert len(self.agent.bridges) == len(bridges), f'device adapter bridges: {self.agent.list_bridges()}'
 
@@ -392,15 +508,7 @@ class AdapterWriter(DirectWriter):
         if peer == 'platform.presentation':
             reply.get.return_value = getattr(self.service, method)(*args, **kwargs)
         elif peer == 'platform.driver' and method == 'set_multiple_points':
-            path, items = args
-            party = next(p for p in self.parties.values() if path in (p.client_prefix, p.served_prefix))
-            iface = party.interface(path)
-            known = [(f'{path}/{k}', v) for k, v in items if f'{path}/{k}' in iface.point_map]
-            errors = {f'{path}/{k}': 'no such point on this device' for k, _ in items if f'{path}/{k}' not in iface.point_map}
-            if known:
-                _, e = iface.set_multiple_points(known)
-                errors.update(e)
-            reply.get.return_value = errors
+            reply.get.return_value = self.driver_rpc(*args)
         else:
             raise AssertionError(f'unexpected RPC {peer}.{method}')
         return reply
@@ -409,13 +517,63 @@ class AdapterWriter(DirectWriter):
         if kind is None:
             return super().write(message, src_fmt, dst, prefix)
         bridge = self.agent.bridges[bridge_name(kind, src, dst)]
-        self.published.clear()
-        result = self.agent.relay(bridge, bridge.source_topics[0], [message, {}])
+        before = len(self.bus.published)
+        result = self.agent.relay(bridge, bridge.source.topics[0], [message, {}])
         if result is None:
             return '?', 'the adapter wrote nothing (no change, an echo, or an empty chain output)'
-        topic, report = self.published[-1]
+        topic, report = [(t, m) for t, h, m in self.bus.published[before:] if t.startswith('device_adapter/')][-1]
         return report['path'], (f'retention {report["retention"]:.2f}, {len(result.written)}/{len(result.written) + len(result.errors)} written'
                                 + (f', errors {list(result.errors.items())[:2]}' if result.errors else '') + f' [{topic}]')
+
+
+class BusAdapterHarness:
+    """A MessageBusAdapter, VOLTTRON stubbed: its pubsub is the LocalBus, its RPCs reach the service and the Device
+    Adapter, and its (mock) proxy manager hands PUBLISH_REMOTE envelopes to the MQTT proxy so the broker sees them."""
+    def __init__(self, mode, service, writer, openfmb, bus):
+        from bus_adapter import agent as bus_module
+        from bus_adapter.agent import MessageBusAdapter
+        from bus_adapter.config import MessageBusAdapterConfig
+        self.openfmb, self.bus, self.writer = openfmb, bus, writer
+        with mock.patch.object(bus_module.Agent, '__init__', return_value=None):
+            self.agent = MessageBusAdapter.__new__(MessageBusAdapter)
+            self.agent.vip, self.agent.core = mock.MagicMock(), mock.MagicMock()
+            self.agent.core.connected = False
+            self.agent.core.identity = 'platform.bus_adapter'
+            MessageBusAdapter.__init__(self.agent)
+        self.agent.config = MessageBusAdapterConfig(bus_type='mqtt', mode=mode, adapters=[{'name': 'site', 'host': 'broker'}])
+        self.agent.vip.pubsub.subscribe.side_effect = bus.subscribe
+        self.agent.vip.pubsub.publish.side_effect = bus.publish
+
+        def rpc(peer, method, *args, **kwargs):
+            reply = mock.Mock()
+            if peer == 'platform.presentation':
+                reply.get.return_value = getattr(service, method)(*args, **kwargs)
+            elif peer == 'platform.device_adapter':
+                reply.get.return_value = getattr(writer.agent, method)(*args, **kwargs)
+            else:
+                raise AssertionError(f'unexpected RPC {peer}.{method}')
+            return reply
+        self.agent.vip.rpc.call.side_effect = rpc
+        self.peer = SimpleNamespace(proxy_id=uuid4(), token=uuid4(), socket_params=SocketParams('127.0.0.1', 1), proxy_name="('mqtt', 'site')")
+        self.manager = mock.MagicMock(spec=GeventProtocolProxyManager)
+        self.manager.peers = {self.peer.proxy_id: self.peer}
+        self.manager.proxy_class = mock.MagicMock(topic_delimiter=mock.Mock(return_value='/'))
+        self.manager.send.side_effect = lambda remote=None, message=None: (openfmb.publish_envelope(message.payload), True)[1]
+        self.agent.ppm = self.manager
+        self.headers = SimpleNamespace(sender_id=self.peer.proxy_id, sender_token=self.peer.token)
+        self._patch = mock.patch.object(GeventProtocolProxyManager, 'get_by_proxy_id', return_value=(self.manager, self.peer))
+        self._patch.start()
+        # The remote wants every device's reading and control profiles: served from local data.
+        outbound = [openfmb_bus.topic_of(openfmb_alias(p, roles(k, p, 'OpenFMB')[0], 'reading' if k == 'telemetry' else 'control'))
+                    for p in DEVICES for k in ('telemetry', 'control')]
+        self.agent._subscribe_local(self.manager, self.peer, outbound)
+
+    def inbound(self, raw_payload: bytes):
+        """A PUBLISH_LOCAL from the proxy: what the bus adapter does with a message from the remote."""
+        self.agent.handle_publish_local(self.manager, self.headers, raw_payload)
+
+    def stop(self):
+        self._patch.stop()
 
 
 def near(a, b, tol=1e-6):
@@ -445,6 +603,8 @@ def summary(out, n=6):
 def main():
     parties = {}
     openfmb = OpenFmb()
+    bus = LocalBus()
+    bus_adapter = None
     try:
         dnp3_rows = rows_of(DNP3_CASE / 'fake_dnp3_der.dnp3.csv')
         config, sep2_rows = service_config([r['Volttron Point Name'] for r in dnp3_rows])
@@ -453,9 +613,12 @@ def main():
         parties['SunSpec'] = setup_sunspec()
         parties['DNP3'] = setup_dnp3()
         parties['2030.5'] = setup_sep2(sep2_rows)
-        writer = AdapterWriter(service, parties) if WRITER == 'device_adapter' else DirectWriter(service, parties)
+        writer = AdapterWriter(service, parties, bus) if WRITER == 'device_adapter' else DirectWriter(service, parties, bus)
+        if OPENFMB_MODE != 'harness':
+            bus_adapter = BusAdapterHarness('relay' if OPENFMB_MODE == 'bus' else 'translate', service, writer, openfmb, bus)
         print(f'parties up in {time.time() - t0:.1f}s: modbus {len(parties["SunSpec"].client.point_map)} points, '
-              f'dnp3 {len(parties["DNP3"].client.point_map)}, 2030.5 {len(parties["2030.5"].client.point_map)}; writer: {writer.name}', flush=True)
+              f'dnp3 {len(parties["DNP3"].client.point_map)}, 2030.5 {len(parties["2030.5"].client.point_map)}; '
+              f'writer: {writer.name}; openfmb: {OPENFMB_MODE}', flush=True)
         S, D, E = parties['SunSpec'], parties['DNP3'], parties['2030.5']
 
         # ---- sources: what our side has in hand after the external party acted; (message, its format) ---------------
@@ -521,20 +684,6 @@ def main():
                 return E.client_agent.flat(E.client_prefix), CLIENT_FORMAT[src]
             raise ValueError(src)
 
-        def openfmb_reading(family):
-            key = 'solarReading' if family == 'solar' else 'essReading'
-            return {key: {'readingMMXU': {'W': {'net': {'cVal': {'mag': W}}}, 'Hz': {'mag': HZ}}}}
-
-        def openfmb_root(family):
-            return ('solarControl', 'solarControlFSCC', 'SolarControlScheduleFSCH') if family == 'solar' else \
-                   ('essControl', 'essControlFSCC', 'essControlScheduleFSCH')
-
-        def openfmb_control(family):
-            a, b, c = openfmb_root(family)
-            entry = {'startTime': {'seconds': int(time.time())},
-                     'control': {'limitWOperation': {'maxLimParameter': {'modEna': True}, 'wMaxSptVal': LIMIT_PCT}}}
-            return {a: {b: {c: {'ValDCSG': {'crvPts': [entry]}}}}}
-
         # ---- targets: prepare, then (after the write) look at the external party; (view, expected) -------------------
         def before(kind, dst):
             if kind == 'telemetry':
@@ -566,76 +715,90 @@ def main():
             wait_for(lambda: E.client_agent.flat(E.client_prefix).get('DERControl_opModMaxLimW') is not None, 20)
             return E.client_agent.flat(E.client_prefix), {'DERControl_opModMaxLimW': LIMIT_PCT}
 
-        def run(kind, src, dst, message, src_fmt):
-            """Write the message for the path (the configured writer for device-to-device paths, the harness for
-            OpenFMB sources) and check the external party; returns (ok, path, detail)."""
+        def run_device_path(kind, src, dst, message, src_fmt):
+            """A device-to-device path through the configured writer; returns (ok, path, detail)."""
             before(kind, dst)
             prefix = device_topic(dst, roles(kind, src, dst)[1])
-            if src == 'OpenFMB':
-                path, wrote = DirectWriter.write(writer, message, src_fmt, dst, prefix)
-            else:
-                path, wrote = writer.write(message, src_fmt, dst, prefix, kind=kind, src=src)
+            path, wrote = writer.write(message, src_fmt, dst, prefix, kind=kind, src=src)
             ok, why = compare(*after(kind, dst))
             return ok, path, f'{wrote}; {why}'
 
-        # ---- telemetry ---------------------------------------------------------------------------------------------
-        for src in PROTOCOLS:
-            for dst in PROTOCOLS:
-                if src == dst or not wanted('telemetry', src, dst):
-                    continue
-                path = detail = '?'
-                try:
-                    if src == 'OpenFMB':
-                        family = OPENFMB_FAMILY[dst]
-                        message = openfmb.receive(PROTO[family][0], openfmb_reading(family), f'openfmb/{family}module/reading/{MRID}')
-                        src_fmt = f'openfmb.{family}.reading'
-                    else:
-                        message, src_fmt = telemetry_source(src)
-                    if dst == 'OpenFMB':
-                        family = OPENFMB_FAMILY[src]
-                        out, retention, path = writer.chain(src_fmt, f'openfmb.{family}.reading', message)
-                        got = openfmb.publish(PROTO[family][0], out, f'openfmb/{family}module/reading/{MRID}')
-                        key = 'solarReading' if family == 'solar' else 'essReading'
-                        view = {'W': dig(got, key, 'readingMMXU', 'W', 'net', 'cVal', 'mag'), 'Hz': dig(got, key, 'readingMMXU', 'Hz', 'mag')}
-                        ok, why = compare(view, {'W': W, 'Hz': HZ})
-                        detail = f'retention {retention:.2f}, {summary(out)}; {why}'
-                    else:
-                        ok, path, detail = run('telemetry', src, dst, message, src_fmt)
-                except Exception as e:
-                    ok, detail = False, f'{type(e).__name__}: {e}'
-                    logging.exception('telemetry %s -> %s', src, dst)
-                record('telemetry', src, dst, ok, path, detail)
+        def run_to_openfmb(kind, src, message, src_fmt):
+            """A device publication becomes an OpenFMB profile at the broker."""
+            family = OPENFMB_FAMILY[src]
+            role = roles(kind, src, 'OpenFMB')[0]
+            proto = PROTO[family][0 if kind == 'telemetry' else 1]
+            alias_topic = openfmb_bus.topic_of(openfmb_alias(src, role, 'reading' if kind == 'telemetry' else 'control'))
+            if OPENFMB_MODE == 'harness':
+                out, retention, path = writer.chain(src_fmt, f'openfmb.{family}.{"reading" if kind == "telemetry" else "control"}', message)
+                got = openfmb.publish(proto, out, alias_topic)
+                how = f'retention {retention:.2f}, {summary(out)}'
+            else:
+                openfmb.client.publish.reset_mock()
+                before_reports = len(bus.published)
+                # The source device publishes: a poll on /all, a served device's pushes on /multi.
+                suffix = 'all' if role == 'client' else 'multi'
+                bus.publish('pubsub', topic=f'{device_topic(src, role)}/{suffix}', headers={}, message=[message, {}])
+                got = openfmb.broker_got(alias_topic, proto)
+                via = [m for t, h, m in bus.published[before_reports:] if t == f'device_adapter/{bridge_name(kind, src, "OpenFMB")}']
+                path = via[-1]['path'] if via else ['(bus adapter translate)']
+                how = f'{OPENFMB_MODE}: broker got {"a" if got is not None else "no"} {proto} on {alias_topic}'
+            if kind == 'telemetry':
+                ok, why = compare(reading_view(got or {}, family), {'W': W, 'Hz': HZ})
+            else:
+                view, count = control_view(got or {}, family)
+                ok, why = compare(view, {'wMaxSptVal': LIMIT_PCT, 'modEna': True})
+                how += f', {count} schedule entries'
+            return ok, path, f'{how}; {why}'
 
-        # ---- control -----------------------------------------------------------------------------------------------
-        for src in PROTOCOLS:
-            for dst in PROTOCOLS:
-                if src == dst or not wanted('control', src, dst):
-                    continue
-                path = detail = '?'
-                try:
-                    if src == 'OpenFMB':
-                        family = OPENFMB_FAMILY[dst]
-                        message = openfmb.receive(PROTO[family][1], openfmb_control(family), f'openfmb/{family}module/control/{MRID}')
-                        src_fmt = f'openfmb.{family}.control'
-                    else:
-                        message, src_fmt = control_source(src)
-                    if dst == 'OpenFMB':
-                        family = OPENFMB_FAMILY[src]
-                        out, retention, path = writer.chain(src_fmt, f'openfmb.{family}.control', message)
-                        got = openfmb.publish(PROTO[family][1], out, f'openfmb/{family}module/control/{MRID}')
-                        points = dig(got, *openfmb_root(family), 'ValDCSG', 'crvPts') or []
-                        now = [p for p in points if 'startTime' not in p or int(dig(p, 'startTime', 'seconds') or 0) <= time.time()]
-                        view = {'wMaxSptVal': dig(now[0], 'control', 'limitWOperation', 'wMaxSptVal') if now else None,
-                                'modEna': dig(now[0], 'control', 'limitWOperation', 'maxLimParameter', 'modEna') if now else None}
-                        ok, why = compare(view, {'wMaxSptVal': LIMIT_PCT, 'modEna': True})
-                        detail = f'retention {retention:.2f}, {len(points)} schedule entries; {why}'
-                    else:
-                        ok, path, detail = run('control', src, dst, message, src_fmt)
-                except Exception as e:
-                    ok, detail = False, f'{type(e).__name__}: {e}'
-                    logging.exception('control %s -> %s', src, dst)
-                record('control', src, dst, ok, path, detail)
+        def run_from_openfmb(kind, dst):
+            """An OpenFMB profile from the broker reaches the device."""
+            family = OPENFMB_FAMILY[dst]
+            role = roles(kind, 'OpenFMB', dst)[1]
+            proto = PROTO[family][0 if kind == 'telemetry' else 1]
+            payload = openfmb_reading(family) if kind == 'telemetry' else openfmb_control(family)
+            alias_topic = openfmb_bus.topic_of(openfmb_alias(dst, role, 'reading' if kind == 'telemetry' else 'control'))
+            message, raw = openfmb.receive(proto, payload, alias_topic)
+            before(kind, dst)
+            if OPENFMB_MODE == 'harness':
+                path, wrote = DirectWriter.write(writer, message, f'openfmb.{family}.{"reading" if kind == "telemetry" else "control"}', dst,
+                                                 device_topic(dst, role))
+            else:
+                openfmb.client.publish.reset_mock()
+                before_reports = len(bus.published)
+                bus_adapter.inbound(raw)
+                reports = [m for t, h, m in bus.published[before_reports:] if t == f'device_adapter/{bridge_name(kind, "OpenFMB", dst)}']
+                results_to_remote = [c.args[0] for c in openfmb.client.publish.call_args_list if c.args[0].endswith('/result')]
+                if reports:
+                    path, wrote = reports[-1]['path'], f'{OPENFMB_MODE}: {len(reports[-1]["written"])} written via bridge' + \
+                        (f', errors {list(reports[-1]["errors"].items())[:2]}' if reports[-1]['errors'] else '')
+                else:
+                    path, wrote = ['(bus adapter -> device adapter write RPC)'], f'{OPENFMB_MODE}: result to remote on {results_to_remote}'
+            ok, why = compare(*after(kind, dst))
+            return ok, path, f'{wrote}; {why}'
+
+        for kind, source_of in (('telemetry', telemetry_source), ('control', control_source)):
+            for src in PROTOCOLS:
+                for dst in PROTOCOLS:
+                    if src == dst or not wanted(kind, src, dst):
+                        continue
+                    path = detail = '?'
+                    try:
+                        if src == 'OpenFMB':
+                            ok, path, detail = run_from_openfmb(kind, dst)
+                        else:
+                            message, src_fmt = source_of(src)
+                            if dst == 'OpenFMB':
+                                ok, path, detail = run_to_openfmb(kind, src, message, src_fmt)
+                            else:
+                                ok, path, detail = run_device_path(kind, src, dst, message, src_fmt)
+                    except Exception as e:
+                        ok, detail = False, f'{type(e).__name__}: {e}'
+                        logging.exception('%s %s -> %s', kind, src, dst)
+                    record(kind, src, dst, ok, path, detail)
     finally:
+        if bus_adapter is not None:
+            bus_adapter.stop()
         for p in parties.values():
             p.stop()
     failed = [(k, s, d) for k, s, d, ok, *_ in results if not ok]

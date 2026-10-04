@@ -73,13 +73,23 @@ class ResourceData:
         # self.resource = Resource(**resource_def)
 
     def subscribe(self, callback: Callable):
+        """Subscribe to the canonical resource's publications and hand ``callback`` each one, transformed and encoded:
+        the device's ``.../all`` polls and, for a served device, the ``.../multi`` pushes its peer's writes arrive on."""
         def handle_incoming(peer, sender, bus, topic, headers, message):
             _log.debug(f'@@@@@ CANONICAL MESSAGE ({topic}): {message}')
             transformed_payload = self.encode(self.transform.execute(message))
             callback(peer, sender, bus, self.local_topic, headers, transformed_payload)
+        results = [self.agent.vip.pubsub.subscribe(peer='pubsub', prefix=topic, callback=handle_incoming).get()
+                   for topic in self.publication_topics()]
+        return results[0] if results else None
 
-        return self.agent.vip.pubsub.subscribe(peer='pubsub', prefix=self.resource_def['publication_topic'],
-                                               callback=handle_incoming).get()
+    def publication_topics(self) -> list[str]:
+        """The topics a canonical resource's values arrive on: its publication topic and, when that is a device's
+        ``/all`` topic, the device's ``/multi`` topic too (pushed values are published there)."""
+        topic = str(self.resource_def['publication_topic']).rstrip('/')
+        if topic.endswith('/all'):
+            return [topic, topic[:-len('all')] + 'multi']
+        return [topic]
 
     @classmethod
     def lookup(cls, agent, local_topic: tuple | list | str, delimiter='/'):
