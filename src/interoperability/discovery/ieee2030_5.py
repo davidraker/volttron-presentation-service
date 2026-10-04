@@ -183,9 +183,10 @@ def device_config(registry_name: str, *, server_url: str = 'https://127.0.0.1:84
             'interval': interval, 'publish_depth_first_all': True, 'timezone': 'UTC'}
 
 
-def mirror_transforms(mirror_format: str, mirror: DiscoveredMirror) -> DeviceTransforms:
+def mirror_transforms(mirror_format: str, mirror: DiscoveredMirror, *, served: bool = False) -> DeviceTransforms:
     """Plain copies between the mirror's flat points and ``2030.5``: every point when reading the mirror, only the
-    upward (writable) points when writing to it."""
+    upward (writable) points when writing to it. A ``served`` mirror is a 2030.5 server the platform itself serves
+    (the ieee2030_5 driver's server role): the platform writes the downward points too, so every point is written."""
     to_protocol: dict = {}
     rows = registry_rows(mirror)
     for row in rows:
@@ -195,18 +196,18 @@ def mirror_transforms(mirror_format: str, mirror: DiscoveredMirror) -> DeviceTra
             node = node.setdefault(segment, {})
         node[path[-1]] = f'transform[{row["Volttron Point Name"]}]()'
     from_protocol = {row['Volttron Point Name']: f'transform[{", ".join(row["Path"].split("."))}]()'
-                     for row in rows if row['Writable'] == 'TRUE'}
+                     for row in rows if served or row['Writable'] == 'TRUE'}
     return DeviceTransforms([{'input_format': mirror_format, 'output_format': '2030.5', 'pattern': {**DEVICE_STAGE_INPUT, **to_protocol}},
                              {'input_format': '2030.5', 'output_format': mirror_format, 'pattern': from_protocol}],
                             'driver', list(mirror.notes))
 
 
 def presentation_fragment(mirror_format: str, mirror: DiscoveredMirror, device_topic: str, uai: list[str],
-                          alias: str = 'sep2') -> dict:
+                          alias: str = 'sep2', *, served: bool = False) -> dict:
     """``formats``, ``transforms`` and ``mappings`` entries for the mirror, to merge into the service configuration."""
     rows = registry_rows(mirror)
     names = [row['Volttron Point Name'] for row in rows]
-    built = mirror_transforms(mirror_format, mirror)
+    built = mirror_transforms(mirror_format, mirror, served=served)
     return {'formats': {mirror_format: device_format_declaration(names, 'driver')},
             'transforms': built.definitions,
             'mappings': resource_mappings(mirror_format, device_topic, uai, {alias: '2030.5'})}

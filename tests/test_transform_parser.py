@@ -588,7 +588,9 @@ def test_bundled_openfmb_profiles_round_trip_through_61850_and_stay_valid(parser
     assert entries[0]['DVVR']['VVArCrv']['numPts'] == 4 and entries[0]['DVVR']['VVArCrv']['crvPts'][0] == {'xVal': 0.92, 'yVal': 0.44}
     assert entries[0]['DHFW'] == {'HzStr': 0.036, 'WGra': 0.05, 'ModEna': True}
     assert entries[1]['DFPF'] == {'ModEna': True, 'PFGnTgt': 0.95, 'PFExtSet': True}
-    assert 'DVVR' not in control                                   # schedule content stays in FSCH
+    # The entry in effect now (the latest start time already reached) is also lifted to the hub's top level.
+    assert all(control[ln] == value for ln, value in entries[1].items() if ln != 'StrTm')
+    assert 'DVVR' not in control                                   # the superseded first entry stays in FSCH only
     # Back to OpenFMB: each part validates as its profile, and the schedule points survive.
     back = _bundled_pipeline(parser, '61850', 'openfmb.ess')
     merged = {}
@@ -599,8 +601,11 @@ def test_bundled_openfmb_profiles_round_trip_through_61850_and_stay_valid(parser
     for profile, key in [('ESSReadingProfile', 'essReading'), ('ESSStatusProfile', 'essStatus'),
                          ('ESSCapabilityProfile', 'essCapability'), ('ESSControlProfile', 'essControl')]:
         PROFILES[profile].model_validate({key: result[key]})
-    points = result['essControl']['essControlFSCC']['essControlScheduleFSCH']['ValDCSG']['crvPts']
+    all_points = result['essControl']['essControlFSCC']['essControlScheduleFSCH']['ValDCSG']['crvPts']
+    points = [p for p in all_points if 'startTime' in p]
+    immediate = [p for p in all_points if 'startTime' not in p]
     assert [p['startTime']['seconds'] for p in points] == [1700000000, 1700003600]
+    assert len(immediate) == 1 and immediate[0]['control']['pFOperation'] == points[1]['control']['pFOperation']
     assert points[0]['control']['voltVarOperation']['crvPts'] == examples['ESSControlProfile']['essControl'][
         'essControlFSCC']['essControlScheduleFSCH']['ValDCSG']['crvPts'][0]['control']['voltVarOperation']['crvPts']
     assert result['essReading']['readingMMXU']['W']['net']['cVal']['mag'] == -25000.0

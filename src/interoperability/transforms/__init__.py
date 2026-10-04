@@ -402,6 +402,38 @@ def device_values():
     return conv
 
 
+def _immediate(entries, path):
+    if not isinstance(entries, (list, tuple)):
+        return MISSING
+    now = time.time()
+    active, started = MISSING, None
+    for entry in entries:
+        start = entry.get('startTime') if isinstance(entry, dict) else None
+        seconds = start.get('seconds') if isinstance(start, dict) else start
+        if seconds in (None, 0):
+            seconds = now                                  # no start time: in effect now
+        if isinstance(seconds, (int, float)) and seconds <= now and (started is None or seconds >= started):
+            active, started = entry, seconds
+    value = active
+    for segment in path:
+        value = value.get(segment, MISSING) if isinstance(value, dict) else MISSING
+        if value is MISSING:
+            break
+    return value
+
+
+def immediate(*path: str):
+    """
+        From a list of schedule entries (OpenFMB ``crvPts`` with ``startTime`` and ``control``), the entry in
+         effect now: the one with the latest ``startTime.seconds`` already reached, an entry without a start time
+         counting as starting now. The quoted ``path`` segments are then followed inside that entry; no entry in
+         effect, or a missing field, yields MISSING. This is the inverse of the ``as_list()`` convention that
+         emits the hub's top-level logical nodes as the "immediate" schedule entry, so a schedule round trip
+         through the hub carries its active entry twice: once immediate, once scheduled.
+    """
+    return c.call_func(_immediate, c.this, tuple(path))
+
+
 def _when(value, actual, expected):
     return value if actual is not None and actual == expected else MISSING
 

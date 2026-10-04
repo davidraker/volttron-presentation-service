@@ -199,8 +199,7 @@
       },
       "DHVT": {
         "EcpRef": "transform[AI, 71]()",
-        "": "transform[BI, 31]()",
-        "Mod": "transform[BI, 64]()",
+        "ModEna": "transform[BI, 64]()",
         "TrZnSt": {
           "PTOV": {
             "TmVCrv": {
@@ -243,8 +242,7 @@
       },
       "DHFT": {
         "EcpRef": "transform[AI, 77]()",
-        "": "transform[BI, 32]()",
-        "Mod": "transform[BI, 65]()",
+        "ModEna": "transform[BI, 65]()",
         "TrZnSt": {
           "PTOF": {
             "TmHzCrv": {
@@ -292,8 +290,7 @@
         "BlkZnTmms": "transform[AI, 99]()",
         "HoldTmms": "transform[AI, 100]()",
         "ReqA": "transform[AI, 101]()",
-        "": "transform[BI, 33]()",
-        "Mod": "transform[BI, 66]()"
+        "ModEna": "transform[BI, 66]()"
       },
       "MMXN2": {
         "Vol": "transform[AI, 88]()"
@@ -308,8 +305,7 @@
         "DbVWLo": "transform[AI, 112]()",
         "DbVWHi": "transform[AI, 113]()",
         "ReqWSet": "transform[AI, 114]()",
-        "": "transform[BI, 34]()",
-        "Mod": "transform[BI, 67]()"
+        "ModEna": "transform[BI, 67]()"
       },
       "DVWD 2": {
         "EcpRef": "transform[AI, 106]()",
@@ -340,7 +336,7 @@
         "ReqWLim": "transform[AI, 139]()",
         "SocUseMinPct": "transform[AI, 140]()",
         "SocUseMaxPct": "transform[AI, 141]()",
-        "Mod": "transform[BI, 68]()",
+        "ModEna": "transform[BI, 68]()",
         "HysEna": "transform[BI, 88]()",
         "SnptEna": "transform[BI, 89]()"
       },
@@ -361,15 +357,14 @@
         "RmpTms": "transform[AI, 144]()",
         "RvrtTms": "transform[AI, 145]()",
         "EcpRef": "transform[AI, 146]()",
-        "WLimPct": "transform[AI, 148]()",
-        "": "transform[BI, 36]()",
-        "Mod": "transform[BI, 69]()"
+        "LimW": "transform[AI, 148]()",
+        "ModEna": "transform[BI, 69]()"
       },
       "MMXU4": {
         "TotW": "transform[AI, 147]()"
       },
       "DWMN": {
-        "WLimPct": "transform[AI, 149]()"
+        "LimW": "transform[AI, 149]()"
       },
       "DWGC": {
         "ModPrio": "transform[AI, 150]()",
@@ -385,8 +380,7 @@
         "RpdChaRteMax": "transform[AI, 160]()",
         "SocUseMinPct": "transform[AI, 161]()",
         "SocUseMaxPct": "transform[AI, 162]()",
-        "": "transform[BI, 37]()",
-        "Mod": "transform[BI, 70]()",
+        "ModEna": "transform[BI, 70]()",
         "UseRmpRte": "transform[BI, 90]()"
       },
       "DTCD": {
@@ -403,8 +397,7 @@
         "SocDateTms": "transform[AI, 173]()",
         "ChaDurMax": "transform[AI, 174]()",
         "DschDurMax": "transform[AI, 175]()",
-        "": "transform[BI, 38]()",
-        "Mod": "transform[BI, 71]()"
+        "ModEna": "transform[BI, 71]()"
       },
       "DWFL1": {
         "ModPrio": "transform[AI, 176]()",
@@ -417,8 +410,7 @@
         "RpuRte": "transform[AI, 184]()",
         "RpdRte": "transform[AI, 185]()",
         "ReqW": "transform[AI, 186]()",
-        "": "transform[BI, 39]()",
-        "Mod": "transform[BI, 72]()"
+        "ModEna": "transform[BI, 72]()"
       },
       "MMXU5": {
         "TotW": "transform[AI, 181]()"
@@ -434,8 +426,7 @@
         "RpuRte": "transform[AI, 195]()",
         "RpdRte": "transform[AI, 196]()",
         "ReqW": "transform[AI, 197]()",
-        "": "transform[BI, 40]()",
-        "Mod": "transform[BI, 73]()"
+        "ModEna": "transform[BI, 73]()"
       },
       "MMXU6": {
         "TotW": "transform[AI, 192]()"
@@ -451,8 +442,7 @@
         "RpuRte": "transform[AI, 206]()",
         "RpdRte": "transform[AI, 207]()",
         "ReqW": "transform[AI, 208]()",
-        "": "transform[BI, 41]()",
-        "Mod": "transform[BI, 74]()"
+        "ModEna": "transform[BI, 74]()"
       },
       "MMXU7": {
         "TotW": "transform[AI, 203]()"
@@ -476,8 +466,7 @@
         "SocExpc": "transform[AI, 224]()",
         "SocWhExpc": "transform[AI, 225]()",
         "SocExpcTms": "transform[AI, 226]()",
-        "": "transform[BI, 42]()",
-        "Mod": "transform[BI, 75]()",
+        "ModEna": "transform[BI, 75]()",
         "UseRmpRte": "transform[BI, 91]()"
       },
       "DWSM": {
@@ -495,8 +484,7 @@
         "RpuChaRte": "transform[AI, 239]()",
         "RpdChaRte": "transform[AI, 240]()",
         "ReqWSet": "transform[AI, 241]()",
-        "": "transform[BI, 43]()",
-        "Mod": "transform[BI, 76]()"
+        "ModEna": "transform[BI, 76]()"
       },
       "MMXU8": {
         "TotW": "transform[AI, 232]()"
@@ -523,8 +511,7 @@
         "RpdRte": "transform[AI, 254]()",
         "RpuChaRte": "transform[AI, 255]()",
         "RpdChaRte": "transform[AI, 256]()",
-        "": "transform[BI, 44]()",
-        "Mod": "transform[BI, 77]()",
+        "ModEna": "transform[BI, 77]()",
         "UseRmpRte": "transform[BI, 92]()"
       },
       "MMXN4": {
@@ -549,7 +536,7 @@
         "ReqWLim": "transform[AI, 274]()",
         "SocUseMinPct": "transform[AI, 275]()",
         "SocUseMaxPct": "transform[AI, 276]()",
-        "Mod": "transform[BI, 78]()"
+        "ModEna": "transform[BI, 78]()"
       },
       "MMXU9": {
         "Hz": "transform[AI, 262]()"
@@ -562,11 +549,10 @@
         "WinTms": "transform[AI, 278]()",
         "RmpTms": "transform[AI, 279]()",
         "RvrtTms": "transform[AI, 280]()",
-        "VArTgtPct": "transform[AI, 281]()",
+        "VArTgt": "transform[AI, 281]()",
         "OplTmsMax[1]": "transform[AI, 282]()",
         "OplTmsMax[2]": "transform[AI, 283]()",
-        "": "transform[BI, 46]()",
-        "Mod": "transform[BI, 79]()"
+        "ModEna": "transform[BI, 79]()"
       },
       "DFPF": {
         "ModPrio": "transform[AI, 284]()",
@@ -577,8 +563,7 @@
         "PFLodTgt": "transform[AI, 289]()",
         "PFGnExtSet": "transform[BI, 29]()",
         "PFLodExtSet": "transform[BI, 30]()",
-        "": "transform[BI, 47]()",
-        "Mod": "transform[BI, 80]()"
+        "ModEna": "transform[BI, 80]()"
       },
       "DVVR": {
         "ModPrio": "transform[AI, 290]()",
@@ -599,7 +584,7 @@
         "OplTmsMax[2]": "transform[AI, 299]()",
         "VRefTmms": "transform[AI, 300]()",
         "ReqVAr": "transform[AI, 301]()",
-        "Mod": "transform[BI, 81]()",
+        "ModEna": "transform[BI, 81]()",
         "VRefAdjEna": "transform[BI, 93]()"
       },
       "MMXN5": {
@@ -622,8 +607,7 @@
         "OplTmsMax[1]": "transform[AI, 309]()",
         "OplTmsMax[2]": "transform[AI, 310]()",
         "ReqVAr": "transform[AI, 311]()",
-        "": "transform[BI, 49]()",
-        "Mod": "transform[BI, 82]()"
+        "ModEna": "transform[BI, 82]()"
       },
       "MMXU10": {
         "TotW": "transform[AI, 307]()"
@@ -641,8 +625,7 @@
             "max": "transform[AI, 320]()"
           }
         },
-        "": "transform[BI, 50]()",
-        "Mod": "transform[BI, 83]()"
+        "ModEna": "transform[BI, 83]()"
       },
       "MMXU11": {
         "TotPF": "transform[AI, 317]()"
@@ -655,8 +638,7 @@
         "PrcRef": "transform[AI, 325]()",
         "OplTmsMax[1]": "transform[AI, 326]()",
         "OplTmsMax[2]": "transform[AI, 327]()",
-        "": "transform[BI, 51]()",
-        "Mod": "transform[BI, 84]()"
+        "ModEna": "transform[BI, 84]()"
       },
       "DGSMn": {
         "InCrv": "transform[AI, 328]()",
@@ -1424,16 +1406,11 @@
         }
       },
       "DHFW": {
-        "": "transform[BI, 35]()",
         "HysEna": "transform[BI, 86]()",
         "SnptEna": "transform[BI, 87]()"
       },
-      "DFWC": {
-        "": "transform[BI, 45]()"
-      },
-      "DVVC": {
-        "": "transform[BI, 48]()"
-      },
+      "DFWC": {},
+      "DVVC": {},
       "PTOV": {
         "Blk": "transform[BI, 52]()",
         "Str": {
@@ -1605,7 +1582,7 @@
       },
       "DHVT": {
         "EcpRef": "transform[AO, 22]()",
-        "Mod": "transform[BO, 12]()",
+        "ModEna": "transform[BO, 12]()",
         "TrZnSt": {
           "PTOV": {
             "TmVCrv": {
@@ -1645,7 +1622,7 @@
       },
       "DHFT": {
         "EcpRef": "transform[AO, 27]()",
-        "Mod": "transform[BO, 13]()",
+        "ModEna": "transform[BO, 13]()",
         "TrZnSt": {
           "PTOF": {
             "TmHzCrv": {
@@ -1688,7 +1665,7 @@
         "BlkZnTmms": "transform[AO, 45]()",
         "HoldTmms": "transform[AO, 46]()",
         "HoldTmms[1]": "transform[AO, 47]()",
-        "Mod": "transform[BO, 14]()"
+        "ModEna": "transform[BO, 14]()"
       },
       "DVWD": {
         "ModPrio": "transform[AO, 48]()",
@@ -1699,7 +1676,7 @@
         "VWFilTms": "transform[AO, 54]()",
         "DbVWLo": "transform[AO, 55]()",
         "DbVWHi": "transform[AO, 56]()",
-        "Mod": "transform[BO, 15]()"
+        "ModEna": "transform[BO, 15]()"
       },
       "DVWD 2": {
         "EcpRef": "transform[AO, 52]()"
@@ -1725,7 +1702,7 @@
         "RtnRmpRte": "transform[AO, 78]()",
         "SocUseMin": "transform[AO, 80]()",
         "SocUseMax": "transform[AO, 81]()",
-        "Mod": "transform[BO, 16]()",
+        "ModEna": "transform[BO, 16]()",
         "HysEna": "transform[BO, 36]()",
         "SnptEna": "transform[BO, 37]()"
       },
@@ -1742,11 +1719,11 @@
         "RmpTms": "transform[AO, 84]()",
         "RvrtTms": "transform[AO, 85]()",
         "EcpRef": "transform[AO, 86]()",
-        "WLimPct": "transform[AO, 87]()",
-        "Mod": "transform[BO, 17]()"
+        "LimW": "transform[AO, 87]()",
+        "ModEna": "transform[BO, 17]()"
       },
       "DWMN": {
-        "WLimPct": "transform[AO, 88]()"
+        "LimW": "transform[AO, 88]()"
       },
       "DWGC": {
         "ModPrio": "transform[AO, 89]()",
@@ -1762,7 +1739,7 @@
         "ChaRpdRte": "transform[AO, 99]()",
         "SocUseMinPct": "transform[AO, 100]()",
         "SocUseMaxPct": "transform[AO, 101]()",
-        "Mod": "transform[BO, 18]()",
+        "ModEna": "transform[BO, 18]()",
         "UseRmpRte": "transform[BO, 38]()"
       },
       "DTCD": {
@@ -1779,7 +1756,7 @@
         "SocDateTms": "transform[AO, 112]()",
         "ChaDurMax": "transform[AO, 113]()",
         "DschDurMax": "transform[AO, 114]()",
-        "Mod": "transform[BO, 19]()"
+        "ModEna": "transform[BO, 19]()"
       },
       "DWFL1": {
         "ModPrio": "transform[AO, 115]()",
@@ -1791,7 +1768,7 @@
         "FolWPct": "transform[AO, 121]()",
         "RpuRte": "transform[AO, 122]()",
         "RpdRte": "transform[AO, 123]()",
-        "Mod": "transform[BO, 20]()"
+        "ModEna": "transform[BO, 20]()"
       },
       "DWFL2": {
         "ModPrio": "transform[AO, 124]()",
@@ -1803,7 +1780,7 @@
         "FolWPct": "transform[AO, 130]()",
         "RpuRte": "transform[AO, 131]()",
         "RpdRte": "transform[AO, 132]()",
-        "Mod": "transform[BO, 21]()"
+        "ModEna": "transform[BO, 21]()"
       },
       "DWFL3": {
         "ModPrio": "transform[AO, 133]()",
@@ -1815,7 +1792,7 @@
         "FolWPct": "transform[AO, 139]()",
         "RpuRte": "transform[AO, 140]()",
         "RpdRte": "transform[AO, 141]()",
-        "Mod": "transform[BO, 22]()"
+        "ModEna": "transform[BO, 22]()"
       },
       "DAGC": {
         "ModPrio": "transform[AO, 142]()",
@@ -1831,7 +1808,7 @@
         "ChaRpdRte": "transform[AO, 152]()",
         "SocUseMinPct": "transform[AO, 153]()",
         "SocUseMaxPct": "transform[AO, 154]()",
-        "Mod": "transform[BO, 23]()",
+        "ModEna": "transform[BO, 23]()",
         "UseRmpRte": "transform[BO, 39]()"
       },
       "DWSM": {
@@ -1848,7 +1825,7 @@
         "DschRpdRte": "transform[AO, 165]()",
         "ChaRpuRte": "transform[AO, 166]()",
         "ChaRpdRte": "transform[AO, 167]()",
-        "Mod": "transform[BO, 24]()"
+        "ModEna": "transform[BO, 24]()"
       },
       "DVWC": {
         "ModPrio": "transform[AO, 168]()",
@@ -1871,7 +1848,7 @@
         "DschRpdRte": "transform[AO, 178]()",
         "ChaRpuRte": "transform[AO, 179]()",
         "ChaRpdRte": "transform[AO, 180]()",
-        "Mod": "transform[BO, 25]()",
+        "ModEna": "transform[BO, 25]()",
         "UseRmpRte": "transform[BO, 40]()"
       },
       "DHFW2": {
@@ -1892,7 +1869,7 @@
         "RpdChaRte": "transform[AO, 196]()",
         "SocUseMinPct": "transform[AO, 197]()",
         "SocUseMaxPct": "transform[AO, 198]()",
-        "Mod": "transform[BO, 26]()"
+        "ModEna": "transform[BO, 26]()"
       },
       "DLFW2": {
         "HysCrv": "transform[AO, 188]()"
@@ -1902,10 +1879,10 @@
         "WinTms": "transform[AO, 200]()",
         "RmpTms": "transform[AO, 201]()",
         "RvrtTms": "transform[AO, 202]()",
-        "VArTgtPct": "transform[AO, 203]()",
+        "VArTgt": "transform[AO, 203]()",
         "OplTmsMax[1]": "transform[AO, 204]()",
         "OplTmsMax[2]": "transform[AO, 205]()",
-        "Mod": "transform[BO, 27]()"
+        "ModEna": "transform[BO, 27]()"
       },
       "DFPF": {
         "ModPrio": "transform[AO, 206]()",
@@ -1916,7 +1893,7 @@
         "PFLodTgt": "transform[AO, 211]()",
         "PFGnExtSet": "transform[BO, 10]()",
         "PFLodExtSet": "transform[BO, 11]()",
-        "Mod": "transform[BO, 28]()"
+        "ModEna": "transform[BO, 28]()"
       },
       "DVVR": {
         "ModPrio": "transform[AO, 212]()",
@@ -1935,7 +1912,7 @@
         "OplTmsMax[1]": "transform[AO, 218]()",
         "OplTmsMax[2]": "transform[AO, 219]()",
         "VRefTmms": "transform[AO, 220]()",
-        "Mod": "transform[BO, 29]()",
+        "ModEna": "transform[BO, 29]()",
         "VRefAdjEna": "transform[BO, 41]()"
       },
       "DWVR": {
@@ -1954,7 +1931,7 @@
         },
         "OplTmsMax[1]": "transform[AO, 227]()",
         "OplTmsMax[2]": "transform[AO, 228]()",
-        "Mod": "transform[BO, 30]()"
+        "ModEna": "transform[BO, 30]()"
       },
       "DPFC": {
         "ModPrio": "transform[AO, 229]()",
@@ -1978,7 +1955,7 @@
         "PrcRef": "transform[AO, 241]()",
         "OplTmsMax[1]": "transform[AO, 242]()",
         "OplTmsMax[2]": "transform[AO, 243]()",
-        "Mod": "transform[BO, 32]()"
+        "ModEna": "transform[BO, 32]()"
       },
       "DGSMn": {
         "InCrv": "transform[AO, 244]()",
@@ -2237,7 +2214,6 @@
       "DSTO": {
         "AGra": "transform[BO, 8]()"
       },
-      "": "transform[BO, 31]()",
       "DHFW": {
         "HysEna": "transform[BO, 34]()",
         "SnptEna": "transform[BO, 35]()"

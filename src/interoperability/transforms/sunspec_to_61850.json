@@ -204,11 +204,7 @@
         "WGra": "transform[711, Ctl, 0, Kuf]()"
       },
       "DCTE": {
-        "RtnSrvAuto": {
-          "DCTE": {
-            "RtnSrvAuth": "transform[703, ES]()"
-          }
-        },
+        "RtnSrvAuth": "transform[703, ES]()",
         "VHiLim": "transform[703, ESVHi]()",
         "VLoLim": "transform[703, ESVLo]()",
         "HzHiLim": "transform[703, ESHzHi]()",
@@ -217,16 +213,8 @@
         "RtnSrvRmpTim": "transform[703, ESRmpTms]()"
       },
       "DWMX": {
-        "ModEna": {
-          "DWMN": {
-            "ModEna": "transform[704, WMaxLimPctEna]()"
-          }
-        },
-        "LimW": {
-          "DWMN": {
-            "LimW": "transform[704, WMaxLimPct]()"
-          }
-        }
+        "ModEna": "transform[704, WMaxLimPctEna]()",
+        "LimW": "transform[704, WMaxLimPct]()"
       }
     }
   }

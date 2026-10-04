@@ -344,7 +344,8 @@ def _dnp3_functions(multiplier: float, offset: float, inverse: bool) -> str:
     return ', '.join(steps)
 
 
-def dnp3_device_transforms(device_format: str, point_names: list[str], *, scaling: str = 'transform') -> DeviceTransforms:
+def dnp3_device_transforms(device_format: str, point_names: list[str], *, scaling: str = 'transform',
+                           served: bool = False) -> DeviceTransforms:
     """Transform definitions between a DNP3 device format and the ``1815.2.inputs`` / ``1815.2.outputs`` formats.
 
     Multipliers and offsets come from the IEEE 1815.2 profile, so both directions can be scaled without
@@ -352,6 +353,8 @@ def dnp3_device_transforms(device_format: str, point_names: list[str], *, scalin
     and the inverse on writes); in ``driver`` scaling the driver does and values pass through. Reads produce
     both ``1815.2.inputs`` and ``1815.2.outputs`` (the read-back of AO and BO); writes come only from
     ``1815.2.outputs``, with curve write batches (``sequence``) carried to the device as lists of flat points.
+    A ``served`` device is an outstation the platform itself serves (the DNP3 driver's outstation role): its
+    inputs are written by the platform, so writes also come from ``1815.2.inputs``.
     """
     if scaling not in SCALING_MODES:
         raise ValueError(f'scaling must be one of {SCALING_MODES}, got {scaling!r}')
@@ -392,7 +395,7 @@ def dnp3_device_transforms(device_format: str, point_names: list[str], *, scalin
                                 'pattern': {**DEVICE_STAGE_INPUT, **to_protocol}})
             # Inputs (AI, BI, counters) are read-only on the device, so nothing is written back to them; writes
             # reach the device only through the outputs format, which also carries the ordered curve batches.
-            if fmt == '1815.2.outputs':
+            if fmt == '1815.2.outputs' or served:
                 definitions.append({'input_format': fmt, 'output_format': device_format, 'pattern': from_protocol})
     return DeviceTransforms(definitions, scaling, [])
 
