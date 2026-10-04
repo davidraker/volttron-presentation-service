@@ -118,13 +118,22 @@ class PresentationService(Agent):
         self.mapping_engine.ingest_mappings(message)
 
     @RPC.export
-    def resolve(self, uai: tuple, as_format: str | None = None, strict: bool = False) -> dict[str, str]:
+    def resolve(self, uai: tuple, as_format: str | None = None, strict: bool = False, fields: list | None = None,
+                direction: str = 'read') -> dict[str, str]:
         """The canonical resource a UAI leads to, as a dict, plus what a caller needs to present it in
-        ``as_format`` (or the outermost alias's format): ``target_format``, the ``transform`` chain,
-        ``parameters`` (the canonical resource's, overridden by each alias's, outermost winning) and, when the
-        presenting alias declares a non-JSON ``encoding``, a ``codec`` naming it and the format's protobuf
-        message. Returns ``{}`` when nothing canonical is found."""
-        _log.info(f'Resolving UAI: {uai}, AS FORMAT: {as_format}, STRICT: {strict}')
+        ``as_format`` (or the outermost alias's format): ``target_format``, the ``transform`` chain with the
+        ``path`` of formats it passes through and the ``retention`` it scored, ``parameters`` (the canonical
+        resource's, overridden by each alias's, outermost winning) and, when the presenting alias declares a
+        non-JSON ``encoding``, a ``codec`` naming it and the format's protobuf message. Returns ``{}`` when nothing
+        canonical is found.
+
+        ``direction`` is ``read`` (the chain presents the resource's publications in ``as_format``) or ``write``
+        (the chain turns a message in ``as_format`` into the resource's own format, for a caller about to write the
+        device). ``fields`` are the fields the message actually carries (dotted leaf paths, list indices as
+        digits): the chain is then chosen for how many of *those* it retains rather than of every field it could."""
+        _log.info(f'Resolving UAI: {uai}, AS FORMAT: {as_format}, STRICT: {strict}, DIRECTION: {direction}')
+        if direction not in ('read', 'write'):
+            raise ValueError(f"direction must be 'read' or 'write', not {direction!r}.")
         node, as_format, aliases = self.mapping_engine.resolve(uai, as_format, strict)
         if node and node.is_canonical:
             resource_dict = cast(ResourceNode, node).resource.model_dump()
@@ -138,8 +147,11 @@ class PresentationService(Agent):
                 # Add the target data format & transform definition to the response. An empty chain means the
                 # resource is already in that format; a missing chain raises TransformNotFoundError to the caller.
                 resource_dict['target_format'] = as_format
-                chain, retention, path = self.transform_registry.lookup_scored(resource_dict['data_format'], as_format)
+                source, target = ((resource_dict['data_format'], as_format) if direction == 'read'
+                                  else (as_format, resource_dict['data_format']))
+                chain, retention, path = self.transform_registry.lookup_scored(source, target, fields)
                 resource_dict['transform'] = chain
+                resource_dict['path'], resource_dict['retention'] = path, retention
                 _log.info(f'Transform {" -> ".join(path)} retains {retention:.0%} of the source fields.')
                 if encoding != 'json':
                     proto = self.transform_registry.format_spec(as_format).get('proto')

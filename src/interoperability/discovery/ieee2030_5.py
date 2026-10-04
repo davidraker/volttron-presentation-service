@@ -214,8 +214,9 @@ def presentation_fragment(mirror_format: str, mirror: DiscoveredMirror, device_t
 
 
 def write_case(registry: TransformRegistry, device_format: str, out: Path, *, mirror_format: str, device_topic: str,
-               uai: list[str], alias: str = 'sep2', **server) -> dict[str, Path]:
-    """Write the mirror's registry, device config, presentation fragment and discovery record."""
+               uai: list[str], alias: str = 'sep2', served: bool = False, **server) -> dict[str, Path]:
+    """Write the mirror's registry, device config, presentation fragment and discovery record. A ``served`` mirror is a
+    2030.5 server the platform itself serves (the ieee2030_5 driver's server role), whose downward points the platform writes."""
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     mirror = discover_mirror(registry, device_format)
@@ -226,7 +227,7 @@ def write_case(registry: TransformRegistry, device_format: str, out: Path, *, mi
     written['device'] = out / f'{mirror_format}.ieee2030_5.device.json'
     written['device'].write_text(json.dumps(device_config(f'registry_configs/{mirror_format}.ieee2030_5.csv', **server), indent=2) + '\n')
     written['presentation'] = out / f'{mirror_format}.presentation.json'
-    written['presentation'].write_text(json.dumps(presentation_fragment(mirror_format, mirror, device_topic, uai, alias), indent=2) + '\n')
+    written['presentation'].write_text(json.dumps(presentation_fragment(mirror_format, mirror, device_topic, uai, alias, served=served), indent=2) + '\n')
     written['discovery'] = out / f'{mirror_format}.discovery.json'
     written['discovery'].write_text(json.dumps({'device_format': device_format, 'mirror_format': mirror_format,
                                                 'points': [{'name': p.name, 'path': p.dotted, 'writable': p.writable,
@@ -257,10 +258,11 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument('--uai', nargs='+', default=['site1', 'der_sep2'])
     parser.add_argument('--server-url', default='https://127.0.0.1:8443')
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--served', action='store_true', help='the platform serves this 2030.5 server (driver_role server): its downward points are written by the platform')
     args = parser.parse_args(argv)
     registry = load_registry(args.config)
     written = write_case(registry, args.device_format, args.out, mirror_format=args.mirror_format or f'{args.device_format}_sep2',
-                         device_topic=args.device_topic, uai=args.uai, server_url=args.server_url)
+                         device_topic=args.device_topic, uai=args.uai, server_url=args.server_url, served=args.served)
     for kind, path in written.items():
         print(f'{kind}: {path}')
 

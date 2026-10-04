@@ -96,3 +96,19 @@ def test_immediate_reads_count_as_fields_beneath_the_list():
     fm = parser.field_map([{'DWMX': {'LimW': "transform[sched, crvPts](immediate('control', 'wMaxSptVal'))"}}])
     assert fm.retention({('sched', 'crvPts', '0', 'control', 'wMaxSptVal')}) == 1.0
     assert fm.retention({('sched', 'crvPts')}) == 0.0
+
+
+def test_discovery_tools_write_served_cases(tmp_path):
+    from interoperability.discovery import dnp3 as dnp3_gen
+    profile = next(Path(__file__).parent.glob('integration/fake_dnp3/**/discovery.json'))
+    case = json.loads(profile.read_text())
+    device = dnp3_gen.DiscoveredDnp3Device(profile_name='fake', points=[dnp3_gen.DiscoveredDnp3Point(**p) for p in case['points']], notes=[])
+    written = dnp3_gen.write_case(device, tmp_path / 'dnp3', device_format='os', device_topic='devices/os', uai=['s', 'os'],
+                                  scaling='transform', served=True)
+    config = json.loads(written['presentation_config'].read_text())
+    assert ('1815.2.inputs', 'os') in {(t['input_format'], t['output_format']) for t in config['transforms']}
+    registry = mirror_gen.load_registry(SUNSPEC_CASE / 'presentation_config.json')
+    written = mirror_gen.write_case(registry, 'fake_sunspec_pv', tmp_path / 'sep2', mirror_format='srv', device_topic='devices/srv',
+                                    uai=['s', 'srv'], served=True)
+    fragment = json.loads(written['presentation'].read_text())
+    assert 'DERControl_opModMaxLimW' in fragment['transforms'][1]['pattern']

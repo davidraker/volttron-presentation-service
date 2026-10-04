@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 import interoperability.agent as agent_module
+from interoperability.transform_parser import TransformParser
 
 CASE = Path(__file__).parent / 'integration' / 'fake_sunspec' / 'transform_scaling' / 'presentation_config.json'
 
@@ -62,3 +63,18 @@ def test_resolve_protobuf_without_proto_declaration_is_an_error(service):
                                                       'references': ['site1', 'pv_inverter']}}])
     with pytest.raises(ValueError, match='declares no "proto"'):
         svc.resolve(('site1', 'pv_binary'))
+
+
+def test_resolve_write_direction_and_field_hint(service):
+    """A caller about to write the device asks for the chain from its message's format into the device's own, scored on
+    the fields the message carries; the path and retention come back with the chain."""
+    svc, _ = service
+    read = svc.resolve(('site1', 'pv_inverter'), as_format='2030.5')
+    assert read['path'][0] == 'fake_sunspec_pv' and read['path'][-1] == '2030.5' and 0 < read['retention'] <= 1
+    write = svc.resolve(('site1', 'pv_inverter'), as_format='2030.5', direction='write', fields=['DERControl.opModMaxLimW'])
+    assert write['path'][0] == '2030.5' and write['path'][-1] == 'fake_sunspec_pv' and write['retention'] == 1.0
+    assert write['rpc_topic'] == 'devices/site1/feeder1/pv_inverter'
+    out = TransformParser().build_transform_from_schema(write['transform']).execute({'DERControl': {'opModMaxLimW': 50}})
+    assert out == {'704_WMaxLimPct': 50, '704_WMaxLimPctEna': 1}
+    with pytest.raises(ValueError):
+        svc.resolve(('site1', 'pv_inverter'), as_format='2030.5', direction='sideways')

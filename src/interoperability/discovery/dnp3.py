@@ -163,7 +163,9 @@ def device_config(driver: str, registry_name: str, *, interval: float = 5, outst
 
 def write_case(device: DiscoveredDnp3Device, out: Path, *, device_format: str, device_topic: str, uai: list[str],
                scaling: str, outstation_ip: str = '127.0.0.1', port: int = 20000, master_id: int = 2,
-               outstation_id: int = 1, alias_formats: dict[str, str] | None = None) -> dict[str, Path]:
+               outstation_id: int = 1, alias_formats: dict[str, str] | None = None, served: bool = False) -> dict[str, Path]:
+    """Write the device's registries, driver configs and presentation fragment. A ``served`` device is an outstation the
+    platform itself serves (the DNP3 driver's outstation role), whose inputs the platform writes."""
     out.mkdir(parents=True, exist_ok=True)
     alias_formats = alias_formats or {'der_sunspec': 'sunspec', 'der_2030_5': '2030.5', 'der_61850': '61850'}
     stem = device_format
@@ -178,7 +180,7 @@ def write_case(device: DiscoveredDnp3Device, out: Path, *, device_format: str, d
     written['dnp3_device'].write_text(json.dumps(device_config(
         'dnp3', f'registry_configs/{stem}.dnp3.csv', outstation_ip=outstation_ip, port=port, master_id=master_id,
         outstation_id=outstation_id), indent=2) + '\n')
-    built = dnp3_device_transforms(device_format, device.point_names, scaling=scaling)
+    built = dnp3_device_transforms(device_format, device.point_names, scaling=scaling, served=served)
     config = {'formats': {device_format: device_format_declaration(device.point_names, scaling)},
               'transforms': built.definitions,
               'mappings': resource_mappings(device_format, device_topic, uai, alias_formats)}
@@ -211,10 +213,12 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument('--uai', default='site1/der')
     parser.add_argument('--outstation-ip', default='127.0.0.1')
     parser.add_argument('--port', type=int, default=20000)
+    parser.add_argument('--served', action='store_true', help='the platform serves this outstation (driver_role outstation): its inputs are written by the platform')
     args = parser.parse_args(argv)
     device = discover_profile(args.profile)
     written = write_case(device, args.out, device_format=args.format_name, device_topic=args.device_topic,
-                         uai=args.uai.split('/'), scaling=args.scaling, outstation_ip=args.outstation_ip, port=args.port)
+                         uai=args.uai.split('/'), scaling=args.scaling, outstation_ip=args.outstation_ip, port=args.port,
+                         served=args.served)
     print(f'{device.profile_name}: {len(device.points)} points, scaling by {args.scaling}')
     for name, path in written.items():
         print(f'  {name:<20} {path}')

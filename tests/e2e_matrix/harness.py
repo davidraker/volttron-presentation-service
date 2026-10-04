@@ -1,5 +1,5 @@
 """End-to-end matrix: telemetry and control between every ordered pair of SunSpec, DNP3, IEEE 2030.5 and OpenFMB,
-through the real driver interfaces and proxies in both roles, bypassing the service's (deferred) DeviceWriter.
+through the real driver interfaces and proxies in both roles and the interoperability service's chains.
 
 Every protocol is stood up twice in this process, through one real proxy subprocess per protocol:
 
@@ -14,19 +14,25 @@ Every protocol is stood up twice in this process, through one real proxy subproc
 
 A served device and a client-role device of the same protocol are different devices to the service, with their own
 device formats: the served ones are generated with ``served=True`` (an outstation's inputs and a server's downward
-resources are then written by the platform), the client ones as the discovery tools write them today.
+resources are then written by the platform), the client ones as the discovery tools write them today. The service
+itself runs in-process (``PresentationService`` with VOLTTRON stubbed) on those formats, transforms and mappings.
 
-For each path the harness does what the DeviceWriter will do: takes the message the source interface produced (a poll,
-or the pushes a served interface received), resolves the chain with the registry's ``lookup_scored`` (hinting the
-fields the message carries), executes it and writes the result through the target interface's ``set_multiple_points``
-(or publishes it through the MQTT proxy). The check is made at the external party: the master reads the served unit,
-the served interface receives the master's write, the client interface receives the server's control, the published
-protobuf decodes.
+For each path the message the source interface produced (a poll, or the pushes a served interface received) is turned
+into the target's points and written through the target interface, then the value is checked at the external party:
+the master reads the served unit, the served interface receives the master's write, the client interface receives the
+server's control, the published protobuf decodes. Who does the transforming and writing is the *writer*:
+
+* ``direct`` (default): the harness itself resolves the chain with ``lookup_scored`` (hinting the fields the message
+  carries), executes it and calls ``set_multiple_points`` on the target interface.
+* ``device_adapter`` (``E2E_WRITER=device_adapter``): a DeviceAdapterAgent (VOLTTRON stubbed; its RPCs reach the
+  in-process service and the interfaces) is configured with one bridge per device-to-device path and the source's
+  publication is delivered to it. OpenFMB paths stay with the harness: they are the message bus adapter's job.
 
 Exit status is non-zero if any path fails. Run by test_e2e_matrix.py; ``E2E_LOG`` names the log file.
 Arguments: [work dir] [paths], paths as ``telemetry:SunSpec>DNP3,control:OpenFMB>2030.5`` to run a subset."""
 from gevent import monkey; monkey.patch_all()
 import csv, json, logging, os, socket, sys, tempfile, time, traceback
+from importlib import resources
 from pathlib import Path
 from types import SimpleNamespace
 from unittest import mock
@@ -49,9 +55,10 @@ from protocol_proxy.protocol.ieee2030_5.identity import lfdi_from_cert
 from protocol_proxy.protocol.mqtt import mqtt_proxy as mqtt_module
 from protocol_proxy.protocol.mqtt.mqtt_proxy import MQTTProxy
 
+import interoperability.agent as service_module
 from interoperability.codecs.openfmb import decode, encode
 from interoperability.discovery import ieee2030_5 as mirror_gen
-from interoperability.discovery.device_formats import dnp3_device_transforms, dnp3_scaling
+from interoperability.discovery.device_formats import dnp3_device_transforms, dnp3_scaling, resource_mappings
 from interoperability.transform_parser import TransformParser
 
 sys.path.insert(0, str(Path(os.environ.get('IEEE2030_5_DRIVER_REPO', Path(sep2_package.__file__).resolve().parents[5])) / 'tests' / 'e2e_loopback'))
@@ -63,8 +70,10 @@ SUNSPEC_CASE = TESTS / 'integration' / 'fake_sunspec' / 'transform_scaling'
 DNP3_CASE = TESTS / 'integration' / 'fake_dnp3' / 'transform_scaling'
 WORK = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(tempfile.mkdtemp(prefix='e2e-matrix-'))
 ONLY = set(sys.argv[2].split(',')) if len(sys.argv) > 2 else None
+WRITER = os.environ.get('E2E_WRITER', 'direct')
 
 PROTOCOLS = ('SunSpec', 'DNP3', '2030.5', 'OpenFMB')
+DEVICES = ('SunSpec', 'DNP3', '2030.5')
 CLIENT_FORMAT = {'SunSpec': 'fake_sunspec_pv', 'DNP3': 'fake_dnp3_der', '2030.5': 'fake_sunspec_pv_sep2'}
 SERVED_FORMAT = {'SunSpec': 'fake_sunspec_pv', 'DNP3': 'fake_dnp3_der_served', '2030.5': 'fake_sunspec_pv_sep2_served'}
 OPENFMB_FAMILY = {'SunSpec': 'solar', 'DNP3': 'ess', '2030.5': 'ess'}           # the OpenFMB profile family used with each partner
@@ -136,6 +145,25 @@ def wanted(kind, src, dst):
     return ONLY is None or f'{kind}:{src}>{dst}' in ONLY
 
 
+def uai(protocol, role):
+    return ['matrix', protocol, role]
+
+
+def device_topic(protocol, role):
+    return f'devices/matrix/{protocol}/{role}'
+
+
+def roles(kind, src, dst):
+    """Which role of each party a path uses: our side's device at the source and at the target."""
+    if kind == 'telemetry':
+        return ('served' if src == '2030.5' else 'client'), ('client' if dst == '2030.5' else 'served')
+    return ('client' if src == '2030.5' else 'served'), ('served' if dst == '2030.5' else 'client')
+
+
+def bridge_name(kind, src, dst):
+    return f'{kind}_{src}_{dst}'.replace('.', '_')
+
+
 # =============================================================================================== the parties
 class Party:
     """One protocol in both roles: ``client`` (master/DER client) and ``served`` (slave/outstation/server)."""
@@ -143,10 +171,13 @@ class Party:
         self.name = name
         self.client = self.served = None
         self.client_agent, self.served_agent = Agent(), Agent()
-        self.client_prefix, self.served_prefix = f'devices/matrix/{name}/client', f'devices/matrix/{name}/served'
+        self.client_prefix, self.served_prefix = device_topic(name, 'client'), device_topic(name, 'served')
+
+    def interface(self, prefix):
+        return self.client if prefix == self.client_prefix else self.served
 
     def write(self, iface, prefix, values):
-        """The DeviceWriter's job: write a chain's output through an interface, skipping points it does not have."""
+        """Write a chain's output through an interface, skipping points it does not have (the direct writer)."""
         items = [(f'{prefix}/{k}', v) for k, v in values.items() if f'{prefix}/{k}' in iface.point_map]
         if not items:
             return {}, {}, 0
@@ -268,30 +299,123 @@ class OpenFmb:
         return decode(proto, bytes.fromhex(local['payload']))
 
 
-# =============================================================================================== the registry
-def build_registry(dnp3_names):
-    """The service's registry with both cases, plus the served devices as their own formats."""
-    registry = mirror_gen.load_registry(SUNSPEC_CASE / 'presentation_config.json')
+# =============================================================================================== the service
+def service_config(dnp3_names):
+    """The presentation service's configuration for both cases plus the served devices as their own formats, with a
+    canonical resource per device at the harness's topics. Returns the configuration and the 2030.5 mirror rows."""
+    sunspec_case = json.loads((SUNSPEC_CASE / 'presentation_config.json').read_text())
     dnp3_case = json.loads((DNP3_CASE / 'presentation_config.json').read_text())
-    for name, spec in dnp3_case['formats'].items():
-        registry.declare_format(name, **spec)
-        registry.declare_format(SERVED_FORMAT['DNP3'], **spec)
-    registry.update_registry(dnp3_case['transforms'])
-    registry.update_registry(dnp3_device_transforms(SERVED_FORMAT['DNP3'], dnp3_names, served=True).definitions)
+    formats = {**sunspec_case['formats'], **dnp3_case['formats'], SERVED_FORMAT['DNP3']: dnp3_case['formats'][CLIENT_FORMAT['DNP3']]}
+    transforms = sunspec_case['transforms'] + dnp3_case['transforms'] + \
+        dnp3_device_transforms(SERVED_FORMAT['DNP3'], dnp3_names, served=True).definitions
+    mappings = []
+    for protocol in ('SunSpec', 'DNP3'):
+        for role, fmt in (('client', CLIENT_FORMAT[protocol]), ('served', SERVED_FORMAT[protocol])):
+            mappings += resource_mappings(fmt, device_topic(protocol, role), uai(protocol, role), {})
+    registry = mirror_gen.load_registry(SUNSPEC_CASE / 'presentation_config.json')
     mirror = mirror_gen.discover_mirror(registry, 'fake_sunspec_pv')
-    for name, served in ((CLIENT_FORMAT['2030.5'], False), (SERVED_FORMAT['2030.5'], True)):
-        fragment = mirror_gen.presentation_fragment(name, mirror, f'devices/matrix/2030.5/{"served" if served else "client"}',
-                                                    ['matrix', name], served=served)
-        registry.declare_format(name, **fragment['formats'][name])
-        registry.update_registry(fragment['transforms'])
-    return registry, mirror_gen.registry_rows(mirror)
+    for role, fmt, served in (('client', CLIENT_FORMAT['2030.5'], False), ('served', SERVED_FORMAT['2030.5'], True)):
+        fragment = mirror_gen.presentation_fragment(fmt, mirror, device_topic('2030.5', role), uai('2030.5', role), served=served)
+        formats.update(fragment['formats'])
+        transforms += fragment['transforms']
+        mappings += [m for m in fragment['mappings'] if m['resource_type'] == 'canonical']
+    return {'formats': formats, 'transforms': transforms, 'mappings': mappings}, mirror_gen.registry_rows(mirror)
 
 
-def run_chain(registry, src_fmt, dst_fmt, message):
-    chain, retention, path = registry.lookup_scored(src_fmt, dst_fmt, fields=list(leaves(message)))
-    parser = TransformParser(context={'mrid': MRID, 'name': 'DER 1'})
-    out = parser.build_transform_from_schema(chain).execute(message)
-    return out, retention, path
+def start_service(config):
+    """The interoperability service in-process, VOLTTRON stubbed, on the bundled plus the harness's definitions."""
+    class FakeConfig:
+        def set_default(self, *a): pass
+        def subscribe(self, *a, **k): pass
+    with mock.patch.object(service_module.Agent, '__init__', lambda self, **kw: setattr(self, 'vip', SimpleNamespace(config=FakeConfig()))):
+        service = service_module.PresentationService()
+    root = resources.files('interoperability')
+    service.configure_main(None, 'NEW', {'formats': {**service._load_bundled_formats(root.joinpath('formats')), **config['formats']},
+                                         'transforms': service._load_bundled_definitions(root.joinpath('transforms')) + config['transforms'],
+                                         'mappings': config['mappings']})
+    return service
+
+
+# =============================================================================================== the writers
+class DirectWriter:
+    """The harness does the writing itself: lookup_scored with the message's fields, execute, set_multiple_points."""
+    name = 'direct'
+
+    def __init__(self, service, parties):
+        self.registry, self.parties = service.transform_registry, parties
+
+    def chain(self, src_fmt, dst_fmt, message):
+        chain, retention, path = self.registry.lookup_scored(src_fmt, dst_fmt, fields=list(leaves(message)))
+        parser = TransformParser(context={'mrid': MRID, 'name': 'DER 1'})
+        return parser.build_transform_from_schema(chain).execute(message), retention, path
+
+    def write(self, message, src_fmt, dst, prefix, **_):
+        """Transform ``message`` for the device at ``prefix`` (a party's client or served device) and write it."""
+        dst_fmt = SERVED_FORMAT[dst] if prefix.endswith('/served') else CLIENT_FORMAT[dst]
+        out, retention, path = self.chain(src_fmt, dst_fmt, message)
+        party = self.parties[dst]
+        r, e, n = party.write(party.interface(prefix), prefix, out)
+        return path, f'retention {retention:.2f}, {summary(out)}, {len(r)}/{n} written' + (f', errors {list(e.items())[:2]}' if e else '')
+
+
+class AdapterWriter(DirectWriter):
+    """A DeviceAdapterAgent does the writing: VOLTTRON is stubbed so that its RPCs reach the in-process service and
+    the interfaces, and the source's publication is delivered to the bridge for the path."""
+    name = 'device_adapter'
+
+    def __init__(self, service, parties):
+        super().__init__(service, parties)
+        from device_adapter import agent as adapter_module
+        from device_adapter.agent import DeviceAdapterAgent
+        self.service, self.published = service, []
+        with mock.patch.object(adapter_module.Agent, '__init__', return_value=None):
+            self.agent = DeviceAdapterAgent.__new__(DeviceAdapterAgent)
+            self.agent.vip, self.agent.core = mock.MagicMock(), mock.MagicMock()
+            self.agent.core.connected = False
+            self.agent.core.spawn.side_effect = lambda fn, *args: fn(*args)
+            DeviceAdapterAgent.__init__(self.agent, config_path=None)
+        self.agent.vip.rpc.call.side_effect = self.rpc
+        self.agent.vip.pubsub.publish.side_effect = lambda peer, topic, message=None, **kw: self.published.append((topic, message))
+        bridges = []
+        for kind in ('telemetry', 'control'):
+            for src in DEVICES:
+                for dst in DEVICES:
+                    if src != dst:
+                        src_role, dst_role = roles(kind, src, dst)
+                        bridges.append({'name': bridge_name(kind, src, dst), 'source': uai(src, src_role), 'target': uai(dst, dst_role),
+                                        'write_unchanged': True})     # every path orders the same values; changes alone would hide repeats
+        self.agent.configure_main(None, 'NEW', {'bridges': bridges})
+        assert len(self.agent.bridges) == len(bridges), f'device adapter bridges: {self.agent.list_bridges()}'
+
+    def rpc(self, peer, method, *args, **kwargs):
+        reply = mock.Mock()
+        if peer == 'platform.presentation':
+            reply.get.return_value = getattr(self.service, method)(*args, **kwargs)
+        elif peer == 'platform.driver' and method == 'set_multiple_points':
+            path, items = args
+            party = next(p for p in self.parties.values() if path in (p.client_prefix, p.served_prefix))
+            iface = party.interface(path)
+            known = [(f'{path}/{k}', v) for k, v in items if f'{path}/{k}' in iface.point_map]
+            errors = {f'{path}/{k}': 'no such point on this device' for k, _ in items if f'{path}/{k}' not in iface.point_map}
+            if known:
+                _, e = iface.set_multiple_points(known)
+                errors.update(e)
+            reply.get.return_value = errors
+        else:
+            raise AssertionError(f'unexpected RPC {peer}.{method}')
+        return reply
+
+    def write(self, message, src_fmt, dst, prefix, *, kind=None, src=None):
+        if kind is None:
+            return super().write(message, src_fmt, dst, prefix)
+        bridge = self.agent.bridges[bridge_name(kind, src, dst)]
+        self.published.clear()
+        result = self.agent.relay(bridge, bridge.source_topics[0], [message, {}])
+        if result is None:
+            return '?', 'the adapter wrote nothing (no change, an echo, or an empty chain output)'
+        topic, report = self.published[-1]
+        return report['path'], (f'retention {report["retention"]:.2f}, {len(result.written)}/{len(result.written) + len(result.errors)} written'
+                                + (f', errors {list(result.errors.items())[:2]}' if result.errors else '') + f' [{topic}]')
 
 
 def near(a, b, tol=1e-6):
@@ -323,13 +447,15 @@ def main():
     openfmb = OpenFmb()
     try:
         dnp3_rows = rows_of(DNP3_CASE / 'fake_dnp3_der.dnp3.csv')
-        registry, sep2_rows = build_registry([r['Volttron Point Name'] for r in dnp3_rows])
+        config, sep2_rows = service_config([r['Volttron Point Name'] for r in dnp3_rows])
+        service = start_service(config)
         t0 = time.time()
         parties['SunSpec'] = setup_sunspec()
         parties['DNP3'] = setup_dnp3()
         parties['2030.5'] = setup_sep2(sep2_rows)
+        writer = AdapterWriter(service, parties) if WRITER == 'device_adapter' else DirectWriter(service, parties)
         print(f'parties up in {time.time() - t0:.1f}s: modbus {len(parties["SunSpec"].client.point_map)} points, '
-              f'dnp3 {len(parties["DNP3"].client.point_map)}, 2030.5 {len(parties["2030.5"].client.point_map)}', flush=True)
+              f'dnp3 {len(parties["DNP3"].client.point_map)}, 2030.5 {len(parties["2030.5"].client.point_map)}; writer: {writer.name}', flush=True)
         S, D, E = parties['SunSpec'], parties['DNP3'], parties['2030.5']
 
         # ---- sources: what our side has in hand after the external party acted; (message, its format) ---------------
@@ -361,6 +487,17 @@ def main():
                 return E.served_agent.flat(E.served_prefix), SERVED_FORMAT[src]
             raise ValueError(src)
 
+        RESET_PCT = 99
+
+        def reset_sep2_control():
+            """The DER client pushes a control topic only when its value changes, and every path orders the same limit:
+            move the served control to a distinct value first and wait until the client has it, then clear the pushes."""
+            r, e = E.served.set_multiple_points([(f'{E.served_prefix}/DERControl_opModMaxLimW', RESET_PCT)])
+            assert not e, f'2030.5 served reset write failed: {e}'
+            assert wait_for(lambda: E.client_agent.flat(E.client_prefix).get('DERControl_opModMaxLimW') == RESET_PCT, 20), \
+                f'client never saw the reset control: {E.client_agent.flat(E.client_prefix)}'
+            E.client_agent.clear()
+
         def control_source(src):
             """The external controller orders an enabled 50 % active power limit."""
             if src == 'SunSpec':
@@ -384,17 +521,6 @@ def main():
                 return E.client_agent.flat(E.client_prefix), CLIENT_FORMAT[src]
             raise ValueError(src)
 
-        RESET_PCT = 99
-
-        def reset_sep2_control():
-            """The DER client pushes a control topic only when its value changes, and every path orders the same limit:
-            move the served control to a distinct value first and wait until the client has it, then clear the pushes."""
-            r, e = E.served.set_multiple_points([(f'{E.served_prefix}/DERControl_opModMaxLimW', RESET_PCT)])
-            assert not e, f'2030.5 served reset write failed: {e}'
-            assert wait_for(lambda: E.client_agent.flat(E.client_prefix).get('DERControl_opModMaxLimW') == RESET_PCT, 20), \
-                f'client never saw the reset control: {E.client_agent.flat(E.client_prefix)}'
-            E.client_agent.clear()
-
         def openfmb_reading(family):
             key = 'solarReading' if family == 'solar' else 'essReading'
             return {key: {'readingMMXU': {'W': {'net': {'cVal': {'mag': W}}}, 'Hz': {'mag': HZ}}}}
@@ -409,40 +535,48 @@ def main():
                      'control': {'limitWOperation': {'maxLimParameter': {'modEna': True}, 'wMaxSptVal': LIMIT_PCT}}}
             return {a: {b: {c: {'ValDCSG': {'crvPts': [entry]}}}}}
 
-        # ---- targets: deliver the chain output and look at the external party; (view, expected, write detail) --------
-        def deliver_telemetry(dst, out):
-            if dst == 'SunSpec':
-                r, e, n = S.write(S.served, S.served_prefix, out)
-                view, errs = S.client.get_multiple_points([f'{S.client_prefix}/701_W', f'{S.client_prefix}/701_Hz'])
-                return strip(view, S.client_prefix), {'701_W': W, '701_Hz': HZ * 1000}, f'{len(r)}/{n} written' + (f', errors {list(e.items())[:2]}' if e else '')
-            if dst == 'DNP3':
-                r, e, n = D.write(D.served, D.served_prefix, out)
-                view, errs = D.client.get_multiple_points([f'{D.client_prefix}/AI_537', f'{D.client_prefix}/AI_536'])
-                return strip(view, D.client_prefix), {'AI_537': W, 'AI_536': HZ}, f'{len(r)}/{n} written' + (f', errors {list(e.items())[:2]}' if e else '') + (f' read errors {errs}' if errs else '')
-            if dst == '2030.5':
-                E.served_agent.clear()
-                r, e, n = E.write(E.client, E.client_prefix, out)
-                wait_for(lambda: {'MirrorMeterReading_W', 'MirrorMeterReading_Hz'} <= set(E.served_agent.flat(E.served_prefix)), 15)
-                return E.served_agent.flat(E.served_prefix), {'MirrorMeterReading_W': W, 'MirrorMeterReading_Hz': HZ}, f'{len(r)}/{n} written' + (f', errors {list(e.items())[:3]}' if e else '')
-            raise ValueError(dst)
-
-        def deliver_control(dst, out):
-            if dst == 'SunSpec':
+        # ---- targets: prepare, then (after the write) look at the external party; (view, expected) -------------------
+        def before(kind, dst):
+            if kind == 'telemetry':
+                if dst == '2030.5':
+                    E.served_agent.clear()
+            elif dst == 'SunSpec':
                 S.served_agent.clear()
-                r, e, n = S.write(S.client, S.client_prefix, out)
-                wait_for(lambda: '704_WMaxLimPct' in S.served_agent.flat(S.served_prefix))
-                return S.served_agent.flat(S.served_prefix), {'704_WMaxLimPct': LIMIT_PCT, '704_WMaxLimPctEna': 1}, f'{len(r)}/{n} written' + (f', errors {list(e.items())[:2]}' if e else '')
-            if dst == 'DNP3':
+            elif dst == 'DNP3':
                 D.served_agent.clear()
-                r, e, n = D.write(D.client, D.client_prefix, out)
-                wait_for(lambda: 'AO_87' in D.served_agent.flat(D.served_prefix))
-                return D.served_agent.flat(D.served_prefix), {'AO_87': AO_87_RAW, 'BO_17': True}, f'{len(r)}/{n} written' + (f', errors {list(e.items())[:2]}' if e else '')
-            if dst == '2030.5':
+            elif dst == '2030.5':
                 reset_sep2_control()
-                r, e, n = E.write(E.served, E.served_prefix, out)
-                wait_for(lambda: E.client_agent.flat(E.client_prefix).get('DERControl_opModMaxLimW') is not None, 20)
-                return E.client_agent.flat(E.client_prefix), {'DERControl_opModMaxLimW': LIMIT_PCT}, f'{len(r)}/{n} written' + (f', errors {list(e.items())[:2]}' if e else '')
-            raise ValueError(dst)
+
+        def after(kind, dst):
+            if kind == 'telemetry':
+                if dst == 'SunSpec':
+                    view, _ = S.client.get_multiple_points([f'{S.client_prefix}/701_W', f'{S.client_prefix}/701_Hz'])
+                    return strip(view, S.client_prefix), {'701_W': W, '701_Hz': HZ * 1000}
+                if dst == 'DNP3':
+                    view, _ = D.client.get_multiple_points([f'{D.client_prefix}/AI_537', f'{D.client_prefix}/AI_536'])
+                    return strip(view, D.client_prefix), {'AI_537': W, 'AI_536': HZ}
+                wait_for(lambda: {'MirrorMeterReading_W', 'MirrorMeterReading_Hz'} <= set(E.served_agent.flat(E.served_prefix)), 15)
+                return E.served_agent.flat(E.served_prefix), {'MirrorMeterReading_W': W, 'MirrorMeterReading_Hz': HZ}
+            if dst == 'SunSpec':
+                wait_for(lambda: '704_WMaxLimPct' in S.served_agent.flat(S.served_prefix))
+                return S.served_agent.flat(S.served_prefix), {'704_WMaxLimPct': LIMIT_PCT, '704_WMaxLimPctEna': 1}
+            if dst == 'DNP3':
+                wait_for(lambda: 'AO_87' in D.served_agent.flat(D.served_prefix))
+                return D.served_agent.flat(D.served_prefix), {'AO_87': AO_87_RAW, 'BO_17': True}
+            wait_for(lambda: E.client_agent.flat(E.client_prefix).get('DERControl_opModMaxLimW') is not None, 20)
+            return E.client_agent.flat(E.client_prefix), {'DERControl_opModMaxLimW': LIMIT_PCT}
+
+        def run(kind, src, dst, message, src_fmt):
+            """Write the message for the path (the configured writer for device-to-device paths, the harness for
+            OpenFMB sources) and check the external party; returns (ok, path, detail)."""
+            before(kind, dst)
+            prefix = device_topic(dst, roles(kind, src, dst)[1])
+            if src == 'OpenFMB':
+                path, wrote = DirectWriter.write(writer, message, src_fmt, dst, prefix)
+            else:
+                path, wrote = writer.write(message, src_fmt, dst, prefix, kind=kind, src=src)
+            ok, why = compare(*after(kind, dst))
+            return ok, path, f'{wrote}; {why}'
 
         # ---- telemetry ---------------------------------------------------------------------------------------------
         for src in PROTOCOLS:
@@ -459,18 +593,14 @@ def main():
                         message, src_fmt = telemetry_source(src)
                     if dst == 'OpenFMB':
                         family = OPENFMB_FAMILY[src]
-                        out, retention, path = run_chain(registry, src_fmt, f'openfmb.{family}.reading', message)
+                        out, retention, path = writer.chain(src_fmt, f'openfmb.{family}.reading', message)
                         got = openfmb.publish(PROTO[family][0], out, f'openfmb/{family}module/reading/{MRID}')
                         key = 'solarReading' if family == 'solar' else 'essReading'
                         view = {'W': dig(got, key, 'readingMMXU', 'W', 'net', 'cVal', 'mag'), 'Hz': dig(got, key, 'readingMMXU', 'Hz', 'mag')}
                         ok, why = compare(view, {'W': W, 'Hz': HZ})
                         detail = f'retention {retention:.2f}, {summary(out)}; {why}'
                     else:
-                        dst_fmt = CLIENT_FORMAT[dst] if dst == '2030.5' else SERVED_FORMAT[dst]
-                        out, retention, path = run_chain(registry, src_fmt, dst_fmt, message)
-                        view, expected, wrote = deliver_telemetry(dst, out)
-                        ok, why = compare(view, expected)
-                        detail = f'retention {retention:.2f}, {summary(out)}, {wrote}; {why}'
+                        ok, path, detail = run('telemetry', src, dst, message, src_fmt)
                 except Exception as e:
                     ok, detail = False, f'{type(e).__name__}: {e}'
                     logging.exception('telemetry %s -> %s', src, dst)
@@ -491,7 +621,7 @@ def main():
                         message, src_fmt = control_source(src)
                     if dst == 'OpenFMB':
                         family = OPENFMB_FAMILY[src]
-                        out, retention, path = run_chain(registry, src_fmt, f'openfmb.{family}.control', message)
+                        out, retention, path = writer.chain(src_fmt, f'openfmb.{family}.control', message)
                         got = openfmb.publish(PROTO[family][1], out, f'openfmb/{family}module/control/{MRID}')
                         points = dig(got, *openfmb_root(family), 'ValDCSG', 'crvPts') or []
                         now = [p for p in points if 'startTime' not in p or int(dig(p, 'startTime', 'seconds') or 0) <= time.time()]
@@ -500,11 +630,7 @@ def main():
                         ok, why = compare(view, {'wMaxSptVal': LIMIT_PCT, 'modEna': True})
                         detail = f'retention {retention:.2f}, {len(points)} schedule entries; {why}'
                     else:
-                        dst_fmt = SERVED_FORMAT[dst] if dst == '2030.5' else CLIENT_FORMAT[dst]
-                        out, retention, path = run_chain(registry, src_fmt, dst_fmt, message)
-                        view, expected, wrote = deliver_control(dst, out)
-                        ok, why = compare(view, expected)
-                        detail = f'retention {retention:.2f}, {summary(out)}, {wrote}; {why}'
+                        ok, path, detail = run('control', src, dst, message, src_fmt)
                 except Exception as e:
                     ok, detail = False, f'{type(e).__name__}: {e}'
                     logging.exception('control %s -> %s', src, dst)
