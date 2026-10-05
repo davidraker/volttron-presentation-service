@@ -90,3 +90,21 @@ def test_resolve_reports_the_uais_and_transform_chain_scores_fields(service):
     chain = svc.transform_chain('fake_sunspec_pv', 'openfmb.solar.reading', fields=['701_W', '701_W_SF'])
     assert chain['path'][0] == 'fake_sunspec_pv' and chain['path'][-1] == 'openfmb.solar.reading' and chain['transform'] and 0 < chain['retention'] <= 1
     assert svc.transform_chain('sunspec', 'sunspec') == {'transform': [], 'path': ['sunspec'], 'retention': 1.0}
+
+
+def test_a_stored_config_builds_on_the_bundled_definitions(monkeypatch):
+    """A deployment's config entry carries only its device formats, transforms and mappings (what the discovery tools
+    write); the bundled hub transforms and OpenFMB formats must still be there."""
+    class FakeConfig:
+        def set_default(self, name, value): self.default = (name, value)
+        def subscribe(self, callback, actions=None, pattern=None): pass
+    monkeypatch.setattr(agent_module.Agent, '__init__', lambda self, **kwargs: setattr(self, 'vip', type('V', (), {'config': FakeConfig()})()))
+    svc = agent_module.PresentationService()
+    assert svc.vip.config.default == ('config', {})
+    svc.configure_main(None, 'NEW', json.loads(CASE.read_text()))
+    chain, retention, path = svc.transform_registry.lookup_scored('fake_sunspec_pv', 'openfmb.solar.reading')
+    assert path[0] == 'fake_sunspec_pv' and path[-1] == 'openfmb.solar.reading' and chain
+    assert svc.transform_registry.format_spec('openfmb.ess.reading')['proto'] == 'essmodule.ESSReadingProfile'
+    assert svc.resolve(('site1', 'pv_inverter'))['data_format'] == 'fake_sunspec_pv'
+    svc.configure_main(None, 'UPDATE', {})                                   # an empty entry keeps the bundled base
+    assert svc.transform_registry.lookup('sunspec', '61850')
