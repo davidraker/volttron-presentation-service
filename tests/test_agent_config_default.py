@@ -56,11 +56,12 @@ def _build_service(monkeypatch):
 
 
 def test_set_default_is_called_with_a_name_and_the_bundled_value(monkeypatch):
-    _, fake_config = _build_service(monkeypatch)
+    service, fake_config = _build_service(monkeypatch)
 
     assert len(fake_config.set_default_calls) == 1
     name, value = fake_config.set_default_calls[0]
-    assert value == {'mappings': STUB_MAPPINGS, 'transforms': STUB_TRANSFORMS, 'formats': STUB_FORMATS}
+    assert value == {}                                   # the bundled definitions are the base, not the default entry
+    assert service._bundled == {'mappings': STUB_MAPPINGS, 'transforms': STUB_TRANSFORMS, 'formats': STUB_FORMATS}
     assert isinstance(name, str) and name
 
 

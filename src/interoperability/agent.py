@@ -34,12 +34,15 @@ class PresentationService(Agent):
         known_mappings = self._load_bundled_definitions(package_root.joinpath('mappings'))
         known_formats = self._load_bundled_formats(package_root.joinpath('formats'))
 
+        # The bundled definitions are the base every configuration builds on: a stored "config" entry adds the
+        # deployment's device formats, transforms and mappings (a transform for a pair already bundled replaces
+        # it), so the hub-to-hub transforms stay available whatever the entry declares.
+        self._bundled = {'mappings': known_mappings, 'transforms': known_transforms, 'formats': known_formats}
         # Both the fastlib compatibility layer and upstream VOLTTRON key their
         # config store by name and match a subscription pattern against that
         # same name with fnmatch, so the default must be stored under the
         # name subscribed to below.
-        self.vip.config.set_default('config', {'mappings': known_mappings, 'transforms': known_transforms,
-                                               'formats': known_formats})
+        self.vip.config.set_default('config', {})
         self.mapping_engine = UAITree()
         self.transform_registry = TransformRegistry()
 
@@ -81,12 +84,14 @@ class PresentationService(Agent):
         return formats
 
     def configure_main(self, _, __, contents):
-        self.mapping_engine.ingest_mappings(contents.get('mappings', []))
+        contents = contents or {}
+        self.mapping_engine.ingest_mappings(self._bundled['mappings'] + list(contents.get('mappings') or []))
         # Optional per-format declarations: {"acme_inverter": {"hub": false, "fields": ["W", "V.PhaseA", ...]},
         #                                    "openfmb.ess.reading": {"proto": "essmodule.ESSReadingProfile"}}
-        for name, spec in (contents.get('formats') or {}).items():
+        for name, spec in {**self._bundled['formats'], **(contents.get('formats') or {})}.items():
             self.transform_registry.declare_format(name, **spec)
-        self.transform_registry.update_registry(contents.get('transforms', []))
+        self.transform_registry.update_registry(self._bundled['transforms'])
+        self.transform_registry.update_registry(list(contents.get('transforms') or []))
 
     @RPC.export
     def lookup_transform(self, input_format: str, output_format: str) -> list[dict]:
