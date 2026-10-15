@@ -204,3 +204,34 @@ def test_group_copy_before_deep_mappings_keeps_the_fields():
     composed = wrapper.compose(deep)
     assert composed.retention({('essControl', 'limitW', 'wMaxSptVal')}) == 1.0
     assert composed.retention({('essControl', 'other')}) == 0.0
+
+
+def test_edge_retention_credits_the_fields_beneath_a_group_copy():
+    """A profile wrapper's single whole-group copy carries every field beneath the group, so measured against a
+    leaf-level universe the edge retains those fields rather than scoring zero."""
+    from interoperability.transform_parser import TransformParser
+    fm = TransformParser().field_map([{'essReading': 'transform[essReading]()'}])
+    universe = {('essReading', 'readingMMXU', 'W', 'mag'), ('essReading', 'readingMMXU', 'A', 'mag'),
+                ('readingMessageInfo', 'messageInfo', 'mRID'), ('essStatus', 'state')}
+    assert fm.retention(universe) == pytest.approx(0.5)
+    assert fm.fidelity_of(('essReading', 'readingMMXU', 'W', 'mag')) == 1.0
+    assert fm.fidelity_of(('essStatus', 'state')) == 0.0
+    # A group path in the universe is still not a field a copy beneath it would carry.
+    deep = TransformParser().field_map([{'W': 'transform[essReading, readingMMXU, W, mag]()'}])
+    assert deep.retention({('essReading',)}) == 0.0
+    from interoperability.transform_parser import expand_groups
+    assert expand_groups(fm.sources(), universe) == {('essReading', 'readingMMXU', 'W', 'mag'),
+                                                     ('essReading', 'readingMMXU', 'A', 'mag')}
+    assert expand_groups(fm.sources(), {('other',)}) == {('essReading',)}
+
+
+def test_lookup_from_a_profile_format_scores_on_the_leaf_fields():
+    """A chain starting with a group copy (profile -> hub -> ...) is scored on the fields beneath the group, so
+    its retention tells the profile's fields apart from the ones the next steps drop."""
+    registry = TransformRegistry(hubs={'hub'})
+    registry.declare_format('profile', fields=['body.W.mag', 'body.A.mag', 'header.mRID'])
+    registry.register('profile', 'hub', {'body': 'transform[body]()'})
+    registry.register('hub', 'out', {'W': 'transform[body, W, mag]()'})
+    assert registry.edge_info('profile', 'hub')['retention'] == pytest.approx(2 / 3)
+    _, retention, path = registry.lookup_scored('profile', 'out')
+    assert path == ['profile', 'hub', 'out'] and retention == pytest.approx(0.5)

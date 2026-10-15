@@ -370,35 +370,56 @@
       "name": "DERControl_opModEnergize",
       "path": "DERControl.opModEnergize",
       "writable": false,
-      "via": "2030.5 > 1547 > sunspec",
+      "via": "2030.5 > sunspec",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERControl_opModFixedPFAbsorbW_displacement",
+      "path": "DERControl.opModFixedPFAbsorbW.displacement",
+      "writable": false,
+      "via": "2030.5 > sunspec",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERControl_opModFixedPFAbsorbW_excitation",
+      "path": "DERControl.opModFixedPFAbsorbW.excitation",
+      "writable": false,
+      "via": "2030.5 > sunspec",
       "fidelity": 1.0
     },
     {
       "name": "DERControl_opModFixedPFInjectW_displacement",
       "path": "DERControl.opModFixedPFInjectW.displacement",
       "writable": false,
-      "via": "2030.5 > 1547 > sunspec",
+      "via": "2030.5 > sunspec",
       "fidelity": 1.0
     },
     {
       "name": "DERControl_opModFixedPFInjectW_excitation",
       "path": "DERControl.opModFixedPFInjectW.excitation",
       "writable": false,
-      "via": "2030.5 > 1547 > sunspec",
+      "via": "2030.5 > sunspec",
       "fidelity": 1.0
     },
     {
       "name": "DERControl_opModFixedVar",
       "path": "DERControl.opModFixedVar",
       "writable": false,
-      "via": "2030.5 > 1547 > sunspec",
+      "via": "2030.5 > sunspec",
       "fidelity": 1.0
     },
     {
       "name": "DERControl_opModMaxLimW",
       "path": "DERControl.opModMaxLimW",
       "writable": false,
-      "via": "2030.5 > 1547 > sunspec",
+      "via": "2030.5 > sunspec",
+      "fidelity": 1.0
+    },
+    {
+      "name": "DERControl_opModTargetVar",
+      "path": "DERControl.opModTargetVar",
+      "writable": false,
+      "via": "2030.5 > sunspec",
       "fidelity": 1.0
     },
     {
@@ -412,98 +433,98 @@
       "name": "DERCurve_opModHFRTMustTrip_CurveData",
       "path": "DERCurve.opModHFRTMustTrip.CurveData",
       "writable": false,
-      "via": "2030.5 > 1547 > sunspec",
+      "via": "2030.5 > sunspec",
       "fidelity": 0.3
     },
     {
       "name": "DERCurve_opModHVRTMomentaryCessation_CurveData",
       "path": "DERCurve.opModHVRTMomentaryCessation.CurveData",
       "writable": false,
-      "via": "2030.5 > 1547 > sunspec",
+      "via": "2030.5 > sunspec",
       "fidelity": 0.3
     },
     {
       "name": "DERCurve_opModHVRTMustTrip_CurveData",
       "path": "DERCurve.opModHVRTMustTrip.CurveData",
       "writable": false,
-      "via": "2030.5 > 1547 > sunspec",
+      "via": "2030.5 > sunspec",
       "fidelity": 0.3
     },
     {
       "name": "DERCurve_opModLFRTMustTrip_CurveData",
       "path": "DERCurve.opModLFRTMustTrip.CurveData",
       "writable": false,
-      "via": "2030.5 > 1547 > sunspec",
+      "via": "2030.5 > sunspec",
       "fidelity": 0.3
     },
     {
       "name": "DERCurve_opModLVRTMomentaryCessation_CurveData",
       "path": "DERCurve.opModLVRTMomentaryCessation.CurveData",
       "writable": false,
-      "via": "2030.5 > 1547 > sunspec",
+      "via": "2030.5 > sunspec",
       "fidelity": 0.3
     },
     {
       "name": "DERCurve_opModLVRTMustTrip_CurveData",
       "path": "DERCurve.opModLVRTMustTrip.CurveData",
       "writable": false,
-      "via": "2030.5 > 1547 > sunspec",
+      "via": "2030.5 > sunspec",
       "fidelity": 0.3
     },
     {
       "name": "DERCurve_opModVoltVar_CurveData",
       "path": "DERCurve.opModVoltVar.CurveData",
       "writable": false,
-      "via": "2030.5 > 1547 > sunspec",
+      "via": "2030.5 > sunspec",
       "fidelity": 0.3
     },
     {
       "name": "DERCurve_opModVoltVar_autonomousVRefEnable",
       "path": "DERCurve.opModVoltVar.autonomousVRefEnable",
       "writable": false,
-      "via": "2030.5 > 1547 > sunspec",
+      "via": "2030.5 > sunspec",
       "fidelity": 1.0
     },
     {
       "name": "DERCurve_opModVoltVar_autonomousVRefTimeConstant",
       "path": "DERCurve.opModVoltVar.autonomousVRefTimeConstant",
       "writable": false,
-      "via": "2030.5 > 1547 > sunspec",
+      "via": "2030.5 > sunspec",
       "fidelity": 1.0
     },
     {
       "name": "DERCurve_opModVoltVar_openLoopTms",
       "path": "DERCurve.opModVoltVar.openLoopTms",
       "writable": false,
-      "via": "2030.5 > 1547 > sunspec",
+      "via": "2030.5 > sunspec",
       "fidelity": 1.0
     },
     {
       "name": "DERCurve_opModVoltVar_vRef",
       "path": "DERCurve.opModVoltVar.vRef",
       "writable": false,
-      "via": "2030.5 > 1547 > sunspec",
+      "via": "2030.5 > sunspec",
       "fidelity": 1.0
     },
     {
       "name": "DERCurve_opModVoltWatt_CurveData",
       "path": "DERCurve.opModVoltWatt.CurveData",
       "writable": false,
-      "via": "2030.5 > 1547 > sunspec",
+      "via": "2030.5 > sunspec",
       "fidelity": 0.3
     },
     {
       "name": "DERCurve_opModVoltWatt_openLoopTms",
       "path": "DERCurve.opModVoltWatt.openLoopTms",
       "writable": false,
-      "via": "2030.5 > 1547 > sunspec",
+      "via": "2030.5 > sunspec",
       "fidelity": 1.0
     },
     {
       "name": "DERCurve_opModWattVar_CurveData",
       "path": "DERCurve.opModWattVar.CurveData",
       "writable": false,
-      "via": "2030.5 > 1547 > sunspec",
+      "via": "2030.5 > sunspec",
       "fidelity": 0.3
     }
   ],

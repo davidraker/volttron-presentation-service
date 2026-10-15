@@ -5,7 +5,7 @@ from typing import Callable, Iterable
 import networkx as nx
 
 from .field_universe import models_provider, parse_declared_fields
-from .transform_parser import FieldMap, TransformParser
+from .transform_parser import FieldMap, TransformParser, expand_groups
 
 _log = logging.getLogger(__name__)
 
@@ -226,6 +226,8 @@ class TransformRegistry:
             start = set()
             for path in paths:
                 start |= self.registry[path[0]][path[1]]['field_map'].sources()
+            # A first step that copies a whole group (a profile wrapper) is scored on the fields beneath it.
+            start = expand_groups(start, self.field_universe(input_format))
         scored = []
         for path in paths:
             retention = maps[tuple(path)].retention(start)

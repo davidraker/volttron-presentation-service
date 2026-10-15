@@ -533,8 +533,11 @@ fidelity. Fidelity is 1 for a plain copy or an invertible function, and lower fo
 that lose information (`scale_int` and `take` 0.9, guards such as `when_equal` 0.7, `mean`
 0.5, `count` 0.3, `const` 0). An author can mark an approximate mapping with `approx(f)`,
 which copies the value unchanged but records that only a fraction `f` of its meaning carries
-over. Field maps compose along a chain, so a field dropped at the first hop cannot reappear
-later.
+over. A plain copy of a whole group (`"essReading": "transform[essReading]()"`, as the OpenFMB
+profile wrappers do) carries every field beneath the group, and is scored as such: against a
+leaf-level universe the edge retains those fields, and a chain that starts with such a copy is
+scored on the fields beneath the group rather than on the group path itself. Field maps compose
+along a chain, so a field dropped at the first hop cannot reappear later.
 
 A lookup enumerates every chain of up to four hops whose intermediate formats are hubs,
 scores each on the same set of source fields (the fields a resource publishes if the caller

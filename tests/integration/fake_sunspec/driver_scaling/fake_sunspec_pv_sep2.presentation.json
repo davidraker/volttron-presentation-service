@@ -26,10 +26,13 @@
         "DERCapability_type",
         "DERControlList",
         "DERControl_opModEnergize",
+        "DERControl_opModFixedPFAbsorbW_displacement",
+        "DERControl_opModFixedPFAbsorbW_excitation",
         "DERControl_opModFixedPFInjectW_displacement",
         "DERControl_opModFixedPFInjectW_excitation",
         "DERControl_opModFixedVar",
         "DERControl_opModMaxLimW",
+        "DERControl_opModTargetVar",
         "DERCurve_opModHFRTMustTrip_CurveData",
         "DERCurve_opModHVRTMomentaryCessation_CurveData",
         "DERCurve_opModHVRTMustTrip_CurveData",
@@ -155,12 +158,17 @@
         },
         "DERControl": {
           "opModEnergize": "transform[DERControl_opModEnergize]()",
+          "opModFixedPFAbsorbW": {
+            "displacement": "transform[DERControl_opModFixedPFAbsorbW_displacement]()",
+            "excitation": "transform[DERControl_opModFixedPFAbsorbW_excitation]()"
+          },
           "opModFixedPFInjectW": {
             "displacement": "transform[DERControl_opModFixedPFInjectW_displacement]()",
             "excitation": "transform[DERControl_opModFixedPFInjectW_excitation]()"
           },
           "opModFixedVar": "transform[DERControl_opModFixedVar]()",
-          "opModMaxLimW": "transform[DERControl_opModMaxLimW]()"
+          "opModMaxLimW": "transform[DERControl_opModMaxLimW]()",
+          "opModTargetVar": "transform[DERControl_opModTargetVar]()"
         },
         "DERControlList": "transform[DERControlList]()",
         "DERCurve": {

@@ -296,6 +296,26 @@ def path_matches(a: tuple, b: tuple) -> bool:
     return True
 
 
+def expand_groups(fields: set[tuple], universe: set[tuple]) -> set[tuple]:
+    """``fields`` with every group path (one ``universe`` knows fields strictly beneath) replaced by those
+    fields, so a chain that starts with a whole-group copy is scored on the leaf fields the copy carries.
+    One pass over the universe; paths with wildcards are never groups."""
+    groups = {f for f in fields if f and WILDCARD not in f}
+    if not groups:
+        return set(fields)
+    beneath: dict[tuple, set[tuple]] = {}
+    for field in universe:
+        for length in range(1, len(field)):
+            prefix = field[:length]
+            if prefix in groups:
+                beneath.setdefault(prefix, set()).add(field)
+    expanded = set(fields)
+    for group, members in beneath.items():
+        expanded.discard(group)
+        expanded |= members
+    return expanded
+
+
 class FieldMapping:
     """One source field carried to one target field with a fidelity between 0 (lost) and 1 (exact)."""
     __slots__ = ('source', 'target', 'fidelity', 'functions')
@@ -404,15 +424,25 @@ class FieldMap:
 
     def retention(self, fields: set[tuple] | None = None) -> float:
         """Fraction of ``fields`` (default: this map's own sources) that reach a target, weighted by the best
-        fidelity each achieves."""
+        fidelity each achieves. A plain copy of a whole group (``"essReading": "transform[essReading]()"``)
+        carries every field beneath the group, so those fields count as retained at the copy's fidelity."""
         universe = self.sources() if fields is None else set(fields)
         if not universe:
             return 1.0
         total = 0.0
         for field in universe:
-            total += max((m.fidelity for m in self._by_source.candidates(field) if path_matches(m.source, field)),
-                         default=0.0)
+            total += self.fidelity_of(field)
         return total / len(universe)
+
+    def fidelity_of(self, field: tuple) -> float:
+        """Best fidelity at which one source field reaches a target: by a mapping of the field itself or by a
+        whole-group copy of a group enclosing it; 0 when nothing carries it."""
+        best = max((m.fidelity for m in self._by_source.candidates(field) if path_matches(m.source, field)),
+                   default=0.0)
+        for length in range(1, len(field)):
+            for m in self._group_copies.get(field[:length], ()):
+                best = max(best, m.fidelity)
+        return best
 
     def __repr__(self):
         return f'FieldMap({len(self.mappings)} mappings, {len(self.nulls)} nulls)'
