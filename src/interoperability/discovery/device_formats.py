@@ -134,9 +134,9 @@ def is_scale_factor_point(point_name: str) -> bool:
 def infer_scaling(rows: list[dict]) -> str:
     """Which side scales, from an existing registry: rows with a ``Transform`` entry mean the driver does;
     ``_SF`` points present with no transforms mean the transform must."""
-    if any((row.get('Transform') or '').strip() for row in rows):
+    if any((row.get('transform') or '').strip() for row in rows):
         return 'driver'
-    names = [row.get('Volttron Point Name', '') for row in rows]
+    names = [row.get('volttron_point_name', '') for row in rows]
     if any(is_scale_factor_point(n) for n in names if n):
         return 'transform'
     raise ValueError('cannot infer scaling: the registry has neither Transform entries nor scale factor points')

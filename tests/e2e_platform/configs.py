@@ -139,9 +139,9 @@ def served_rows(rows: list[dict], remote_writable_from_writable: bool) -> list[d
     Modbus unit the master may write what the device's registry called writable."""
     out = []
     for row in rows:
-        new = {k: v for k, v in row.items() if k != 'Writable'}
+        new = {k: v for k, v in row.items() if k != 'writable'}
         if remote_writable_from_writable:
-            new['Remote Writable'] = 'TRUE' if row.get('Writable', '').strip().upper() == 'TRUE' else 'FALSE'
+            new['remote_writable'] = 'TRUE' if row.get('writable', '').strip().upper() == 'TRUE' else 'FALSE'
         out.append(new)
     return out
 
@@ -166,8 +166,8 @@ def build(work: Path, ep: Endpoints, openfmb_mode: str, rtc: bool = False) -> Pl
     # The 1815.2 profile scales analog outputs with multipliers, so they travel as integers: the reference outstation
     # accepts g41v1/g41v2 commands only. The case's registry (variation 4, 32-bit float) is overridden to variation 1.
     for row in dnp3_rows:
-        if str(row.get('Group')) == '40':
-            row['Variation'] = '1'
+        if str(row.get('object_group')) == '40':
+            row['variation'] = '1'
     registry = mirror_gen.load_registry(SUNSPEC_CASE / 'presentation_config.json')
     mirror = mirror_gen.discover_mirror(registry, 'fake_sunspec_pv')
     sep2_rows = mirror_gen.registry_rows(mirror)
@@ -202,7 +202,7 @@ def build(work: Path, ep: Endpoints, openfmb_mode: str, rtc: bool = False) -> Pl
     dnp3_case = json.loads((DNP3_CASE / 'presentation_config.json').read_text())
     formats = {**sunspec_case['formats'], **dnp3_case['formats'], SERVED_FORMAT['DNP3']: dnp3_case['formats'][CLIENT_FORMAT['DNP3']]}
     transforms = sunspec_case['transforms'] + dnp3_case['transforms'] + \
-        dnp3_device_transforms(SERVED_FORMAT['DNP3'], [r['Volttron Point Name'] for r in dnp3_rows], served=True).definitions
+        dnp3_device_transforms(SERVED_FORMAT['DNP3'], [r['volttron_point_name'] for r in dnp3_rows], served=True).definitions
     for fmt, served in ((CLIENT_FORMAT['2030.5'], False), (SERVED_FORMAT['2030.5'], True)):
         fragment = mirror_gen.presentation_fragment(fmt, mirror, 'unused', ['unused'], served=served)
         formats.update(fragment['formats'])
@@ -288,7 +288,7 @@ def build(work: Path, ep: Endpoints, openfmb_mode: str, rtc: bool = False) -> Pl
                 {'name': bridge_name('telemetry', 'RTC', 'OpenFMB'), 'source': status_end,
                  'target': {'uai': openfmb_alias('RTC', 'rtc', 'reading'), 'bus': True}}]
         store(RTC_IDENTITY, 'config', {
-            'ctrl_eval_engine_app_path': CEE_APP_PATH, 'julia_path': JULIA_PATH, 'resolution': ep.poll_interval,
+            'ctrl_eval_engine_app_path': CEE_APP_PATH, 'julia_path': JULIA_PATH, 'mode_package': 'engine', 'resolution': ep.poll_interval,
             'ess': {'class_name': 'FakeESS', 'power_capacity_kw': RTC_CAPACITY_KW, 'energy_capacity_kwh': 2 * RTC_CAPACITY_KW,
                     'initial_soc': RTC_SOC},
             'controller': {}, 'hub_topic': RTC_CONTROL_TOPIC, 'status_topic': RTC_STATUS_TOPIC, 'modes_topic': RTC_MODES_TOPIC,

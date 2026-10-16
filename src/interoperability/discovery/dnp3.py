@@ -119,10 +119,10 @@ def dnp3_registry_rows(device: DiscoveredDnp3Device, scaling: str, variations: d
         transform = ''
         if scaling == 'driver' and (p.multiplier != 1 or p.offset):
             transform = ', '.join(([f'scale({p.multiplier!r})'] if p.multiplier != 1 else []) + ([f'add({p.offset!r})'] if p.offset else []))
-        rows.append({'Point Name': p.uid, 'Volttron Point Name': p.name, 'Group': DNP3_GROUPS[p.table],
-                     'Variation': variations[p.table], 'Index': p.index,
-                     'Scaling': p.multiplier if scaling == 'driver' else 1, 'Units': p.units,
-                     'Writable': 'TRUE' if p.writable else 'FALSE', 'Transform': transform, 'Notes': p.description})
+        rows.append({'point_name': p.uid, 'volttron_point_name': p.name, 'object_group': DNP3_GROUPS[p.table],
+                     'variation': variations[p.table], 'index': p.index,
+                     'scaling': p.multiplier if scaling == 'driver' else 1, 'units': p.units,
+                     'writable': 'TRUE' if p.writable else 'FALSE', 'transform': transform, 'notes': p.description})
     return rows
 
 
@@ -137,9 +137,9 @@ def fake_registry_rows(device: DiscoveredDnp3Device, scaling: str) -> list[dict]
             value = int(value)
         elif kind == 'float' and scaling == 'transform' and isinstance(value, (int, float)) and float(value).is_integer():
             value, kind = int(value), 'int'                 # raw DNP3 analogs are integers
-        rows.append({'Point Name': p.uid, 'Volttron Point Name': p.name, 'Units': p.units, 'Units Details': p.description,
-                     'Writable': 'TRUE' if p.writable else 'FALSE', 'Starting Value': value, 'Type': kind,
-                     'Notes': f'DNP3 {p.table} {p.index}' + (f', multiplier {p.multiplier}' if p.multiplier != 1 else '')})
+        rows.append({'point_name': p.uid, 'volttron_point_name': p.name, 'units': p.units, 'units_details': p.description,
+                     'writable': 'TRUE' if p.writable else 'FALSE', 'starting_value': value, 'type': kind,
+                     'notes': f'DNP3 {p.table} {p.index}' + (f', multiplier {p.multiplier}' if p.multiplier != 1 else '')})
     return rows
 
 

@@ -40,13 +40,13 @@ def test_mirror_points_follow_the_client_polarity(mirror):
 
 def test_registry_rows_validate_against_the_driver_schema(mirror):
     rows = ieee2030_5.registry_rows(mirror)
-    by_name = {r['Volttron Point Name']: r for r in rows}
-    assert by_name['DERSettings_setMaxW'] == {'Volttron Point Name': 'DERSettings_setMaxW', 'Path': 'DERSettings.setMaxW', 'Writable': 'TRUE',
-                                             'Multiplier': 0, 'Scaling': 1, 'Units': 'W', 'Starting Value': 0, 'Notes': 'via sunspec > 2030.5'}
-    assert by_name['MirrorMeterReading_W']['Units'] == 'W' and by_name['MirrorMeterReading_W']['Multiplier'] == ''
-    assert by_name['DERCapability_type']['Starting Value'] == 83 and 'required by the schema' in by_name['DERCapability_type']['Notes']
-    assert by_name['DERControl_opModMaxLimW']['Units'] == '% x100' and by_name['DERControl_opModMaxLimW']['Writable'] == 'FALSE'
-    assert by_name['DERSettings_setGradW']['Units'] == '% x100/s'
+    by_name = {r['volttron_point_name']: r for r in rows}
+    assert by_name['DERSettings_setMaxW'] == {'volttron_point_name': 'DERSettings_setMaxW', 'path': 'DERSettings.setMaxW', 'writable': 'TRUE',
+                                             'multiplier': 0, 'scaling': 1, 'units': 'W', 'starting_value': 0, 'notes': 'via sunspec > 2030.5'}
+    assert by_name['MirrorMeterReading_W']['units'] == 'W' and by_name['MirrorMeterReading_W']['multiplier'] == ''
+    assert by_name['DERCapability_type']['starting_value'] == 83 and 'required by the schema' in by_name['DERCapability_type']['notes']
+    assert by_name['DERControl_opModMaxLimW']['units'] == '% x100' and by_name['DERControl_opModMaxLimW']['writable'] == 'FALSE'
+    assert by_name['DERSettings_setGradW']['units'] == '% x100/s'
     assert list(rows[0]) == ieee2030_5.COLUMNS
 
 
@@ -93,10 +93,10 @@ def test_inverter_to_mirror_chain_through_the_service(registry, mirror):
     registry.update_registry(fragment['transforms'])
     chain, retention, path = registry.lookup_scored('fake_sunspec_pv', 'fake_sunspec_pv_sep2')
     assert path == ['fake_sunspec_pv', 'sunspec', '2030.5', 'fake_sunspec_pv_sep2'] and retention > 0
-    from tests.test_integration_fake_sunspec import fake_driver_all_message
-    flat = TransformParser().execute_chain(chain, [fake_driver_all_message('transform'), {}]) \
-        if hasattr(TransformParser(), 'execute_chain') else TransformParser().build_transform_from_schema(chain).execute([fake_driver_all_message('transform'), {}])
+    from case_helpers import fake_driver_all_message
+    flat = TransformParser().execute_chain(chain, [fake_driver_all_message(CASE, 'transform'), {}]) \
+        if hasattr(TransformParser(), 'execute_chain') else TransformParser().build_transform_from_schema(chain).execute([fake_driver_all_message(CASE, 'transform'), {}])
     assert flat['DERSettings_setMaxW'] == pytest.approx(flat['DERSettings_setMaxW']) and 'MirrorMeterReading_W' in flat
     assert all(not k.startswith('DERControl') for k in flat)         # controls do not flow into the server
-    sunspec = TransformParser().build_transform_from_schema(registry.lookup('fake_sunspec_pv', 'sunspec')).execute([fake_driver_all_message('transform'), {}])
+    sunspec = TransformParser().build_transform_from_schema(registry.lookup('fake_sunspec_pv', 'sunspec')).execute([fake_driver_all_message(CASE, 'transform'), {}])
     assert flat['MirrorMeterReading_W'] == pytest.approx(sunspec['701']['W'])

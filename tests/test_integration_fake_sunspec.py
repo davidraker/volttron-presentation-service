@@ -10,7 +10,6 @@ pysunspec2 device description ``device_1547.json``.
 """
 from __future__ import annotations
 
-import csv
 import json
 from importlib import resources
 from pathlib import Path
@@ -25,23 +24,18 @@ from interoperability.transform_registry import TransformNotFoundError, Transfor
 
 pytest.importorskip('sunspec2')
 from interoperability.discovery.sunspec import discover_file, fake_registry_rows, modbus_registry_rows  # noqa: E402
+import case_helpers  # noqa: E402
 
 CASE = Path(__file__).parent / 'integration' / 'fake_sunspec'
 MODES = ('transform', 'driver')
 
 
-def _rows(path: Path) -> list[dict]:
-    with path.open() as f:
-        return list(csv.DictReader(f))
+from case_helpers import rows_of as _rows  # noqa: E402
 
 
 def fake_driver_all_message(mode: str) -> dict:
     """What the fake driver publishes on devices/site1/feeder1/pv_inverter/all: the registry's starting values."""
-    def value(row):
-        raw, kind = row['Starting Value'], row['Type']
-        return float(raw) if kind == 'float' else int(raw) if kind == 'int' else raw
-    return {row['Volttron Point Name']: value(row) for row in _rows(CASE / f'{mode}_scaling' / 'fake_sunspec_pv.fake.csv')
-            if row['Starting Value'] != ''}
+    return case_helpers.fake_driver_all_message(CASE, mode)
 
 
 @pytest.fixture(scope='module')
@@ -106,7 +100,7 @@ def test_generated_case_is_current(device, mode):
     assert _rows(out / 'fake_sunspec_pv.fake.csv') == [{k: str(v) for k, v in r.items()} for r in fake_registry_rows(device, mode)]
     assert _rows(out / 'fake_sunspec_pv.modbus.csv') == [{k: str(v) for k, v in r.items()} for r in modbus_registry_rows(device, mode)]
     config = json.loads((out / 'presentation_config.json').read_text())
-    names = [r['Volttron Point Name'] for r in _rows(out / 'fake_sunspec_pv.fake.csv')]
+    names = [r['volttron_point_name'] for r in _rows(out / 'fake_sunspec_pv.fake.csv')]
     assert config['formats']['fake_sunspec_pv'] == {'hub': False, 'scaling': mode, 'fields': sorted(names)}
     assert config['transforms'] == sunspec_device_transforms('fake_sunspec_pv', names, scaling=mode,
                                                              scale_factors=device.scale_factors).definitions
@@ -115,16 +109,16 @@ def test_generated_case_is_current(device, mode):
 
 
 def test_registries_reflect_the_scaling_mode(device):
-    transform_rows = {r['Volttron Point Name']: r for r in modbus_registry_rows(device, 'transform')}
-    driver_rows = {r['Volttron Point Name']: r for r in modbus_registry_rows(device, 'driver')}
+    transform_rows = {r['volttron_point_name']: r for r in modbus_registry_rows(device, 'transform')}
+    driver_rows = {r['volttron_point_name']: r for r in modbus_registry_rows(device, 'driver')}
     assert '701_W_SF' in transform_rows and '701_W_SF' not in driver_rows          # SF points only when the transform scales
-    assert transform_rows['701_Hz']['Transform'] == '' and driver_rows['701_Hz']['Transform'] == 'scale_reg_pow_10(701_Hz_SF)'
-    assert transform_rows['701_Hz']['Data Type'] == 'UINT32' and transform_rows['701_Hz']['Point Address'] == 40070 + 17
-    assert transform_rows['1_Mn']['Data Type'] == 'string[32]'
-    fake_transform = {r['Volttron Point Name']: r for r in fake_registry_rows(device, 'transform')}
-    fake_driver = {r['Volttron Point Name']: r for r in fake_registry_rows(device, 'driver')}
-    assert fake_transform['701_Hz']['Starting Value'] == 60010 and fake_driver['701_Hz']['Starting Value'] == 60.01
-    assert fake_transform['705_Crv1_Pt1_V']['Starting Value'] == 9200 and fake_driver['705_Crv1_Pt1_V']['Starting Value'] == 92.0
+    assert transform_rows['701_Hz']['transform'] == '' and driver_rows['701_Hz']['transform'] == 'scale_reg_pow_10(701_Hz_SF)'
+    assert transform_rows['701_Hz']['data_type'] == 'UINT32' and transform_rows['701_Hz']['address'] == 40070 + 17
+    assert transform_rows['1_Mn']['data_type'] == 'string[32]'
+    fake_transform = {r['volttron_point_name']: r for r in fake_registry_rows(device, 'transform')}
+    fake_driver = {r['volttron_point_name']: r for r in fake_registry_rows(device, 'driver')}
+    assert fake_transform['701_Hz']['starting_value'] == 60010 and fake_driver['701_Hz']['starting_value'] == 60.01
+    assert fake_transform['705_Crv1_Pt1_V']['starting_value'] == 9200 and fake_driver['705_Crv1_Pt1_V']['starting_value'] == 92.0
 
 
 def test_point_names_scale_factors_and_underscored_names():
@@ -247,6 +241,32 @@ def test_device_used_as_openfmb_solar_reading_profile(service, mode, config):
     decoded = codec.decode('solarmodule.SolarReadingProfile', data)
     assert decoded['solarReading']['readingMMXU']['Hz']['mag'] == 60.01
     assert decoded['solarInverter']['conductingEquipment']['mRID'] == alias['resource']['parameters']['mrid']
+
+
+def test_device_control_state_encodes_as_openfmb_solar_control_profile(service, mode):
+    """The device's control state as the OpenFMB solar control profile, on the wire. The curve functions' enable
+    registers (705/706/712 Ena, SunSpec enum16) must arrive as booleans: protobuf's JSON parser refuses an integer in a
+    bool field and the whole profile is dropped (seen on the real platform as a ParseError per relayed profile)."""
+    tree, registry = service
+    chain, retention, path = registry.lookup_scored('fake_sunspec_pv', 'openfmb.solar.control')
+    assert path[-1] == 'openfmb.solar.control' and retention > 0
+    pipeline = TransformParser(context={'mrid': '7d1a2b3c-0000-4000-8000-000000000001', 'name': 'PV inverter 1'}) \
+        .build_transform_from_schema(chain)
+    values = fake_driver_all_message(mode)
+    assert values['705_Ena'] == 1 and values['706_Ena'] == 0           # enabled volt-var, disabled volt-watt, as enum16
+    result = pipeline.execute([values, {name: {'units': ''} for name in values}])
+    point = result['solarControl']['solarControlFSCC']['SolarControlScheduleFSCH']['ValDCSG']['crvPts'][0]['control']
+    assert point['voltVarOperation']['vVarParameter']['modEna'] is True
+    assert point['voltWOperation']['voltWParameter']['modEna'] is False
+    pytest.importorskip('google.protobuf')
+    from interoperability.codecs import openfmb as codec
+    decoded = codec.decode('solarmodule.SolarControlProfile', codec.encode('solarmodule.SolarControlProfile', result))
+    control = decoded['solarControl']['solarControlFSCC']['SolarControlScheduleFSCH']['ValDCSG']['crvPts'][0]['control']
+    assert control['voltVarOperation']['vVarParameter']['modEna'] is True
+    # And back: a boolean enable from OpenFMB lands in the enum16 register as an integer.
+    back = TransformParser().build_transform_from_schema(registry.lookup('openfmb.solar.control', 'sunspec')).execute(result)
+    assert back['705']['Ena'] == 1 and isinstance(back['705']['Ena'], int) and not isinstance(back['705']['Ena'], bool)
+    assert back['706']['Ena'] == 0 and not isinstance(back['706']['Ena'], bool)
 
 
 def test_unmapped_alias_format_is_reported_not_silent(service):

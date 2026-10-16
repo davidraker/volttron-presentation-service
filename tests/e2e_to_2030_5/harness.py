@@ -57,12 +57,12 @@ def fake_driver_message(registry_csv):
     """What the fake driver publishes: [values, meta] from the registry's starting values."""
     values, meta = {}, {}
     for row in rows_of(registry_csv):
-        raw, kind = row['Starting Value'], row['Type']
+        raw, kind = row['starting_value'], row['type']
         if raw == '':
             continue
-        values[row['Volttron Point Name']] = float(raw) if kind == 'float' else int(raw) if kind == 'int' else \
+        values[row['volttron_point_name']] = float(raw) if kind == 'float' else int(raw) if kind == 'int' else \
             raw.strip().lower() == 'true' if kind == 'boolean' else raw
-        meta[row['Volttron Point Name']] = {'units': row.get('Units', ''), 'type': kind, 'tz': 'UTC'}
+        meta[row['volttron_point_name']] = {'units': row.get('units', ''), 'type': kind, 'tz': 'UTC'}
     return [values, meta]
 
 def driver_message(iface, results):
@@ -128,9 +128,9 @@ try:
           and dnp3_path == ['fake_dnp3_der', '1815.2.inputs', '2030.5', 'fake_dnp3_der_sep2'], f'{sunspec_path} {dnp3_path}')
 
     # ---- 2. The ieee2030_5 interface for the mirror, registry = union of both mirrors' rows ---------------------------
-    rows = {r['Volttron Point Name']: r for r in rows_of(SUNSPEC_CASE / 'fake_sunspec_pv_sep2.ieee2030_5.csv')}
+    rows = {r['volttron_point_name']: r for r in rows_of(SUNSPEC_CASE / 'fake_sunspec_pv_sep2.ieee2030_5.csv')}
     for r in mirror_gen.registry_rows(dnp3_mirror):
-        rows.setdefault(r['Volttron Point Name'], r)
+        rows.setdefault(r['volttron_point_name'], r)
     Ieee2030_5.default_config = {}
     sep2 = Ieee2030_5(RemoteConfig(driver_type='ieee2030_5', server_url=server.url, cert_path=str(certs['device_cert']),
                                    key_path=str(certs['device_key']), ca_path=str(certs['ca']), subscribe=True,

@@ -31,7 +31,7 @@ UPWARD_RESOURCES = ('DERCapability', 'DERSettings', 'DERStatus', 'DERAvailabilit
 DOWNWARD_RESOURCES = ('DERControl', 'DefaultDERControl', 'DERCurve', 'DERControlList', 'DERProgram')
 #: Attributes carried as one list-valued point: the path is cut at the list.
 LIST_ATTRIBUTES = {'CurveData', 'DERControlList'}
-COLUMNS = ['Volttron Point Name', 'Path', 'Writable', 'Multiplier', 'Scaling', 'Units', 'Starting Value', 'Notes']
+COLUMNS = ['volttron_point_name', 'path', 'writable', 'multiplier', 'scaling', 'units', 'starting_value', 'notes']
 #: Schema-required attributes of the upward resources that the device may not supply; given starting values so the
 #: first PUT is complete (the proxy would otherwise send zeros with a warning).
 REQUIRED_STARTING_VALUES = {('DERCapability', 'type'): 83, ('DERCapability', 'rtgMaxW'): 0, ('DERCapability', 'modesSupported'): '0',
@@ -149,15 +149,15 @@ def registry_rows(mirror: DiscoveredMirror) -> list[dict]:
     rows = []
     for p in mirror.points:
         starting = REQUIRED_STARTING_VALUES.get(p.path, '') if p.writable else ''
-        rows.append({'Volttron Point Name': p.name, 'Path': p.dotted, 'Writable': 'TRUE' if p.writable else 'FALSE',
-                     'Multiplier': 0 if p.writable and p.path[0] != 'MirrorMeterReading' else '', 'Scaling': 1,
-                     'Units': _units(p), 'Starting Value': starting,
-                     'Notes': f'via {p.via}' + ('' if p.fidelity == 1 else f', fidelity {p.fidelity:.2f}')})
+        rows.append({'volttron_point_name': p.name, 'path': p.dotted, 'writable': 'TRUE' if p.writable else 'FALSE',
+                     'multiplier': 0 if p.writable and p.path[0] != 'MirrorMeterReading' else '', 'scaling': 1,
+                     'units': _units(p), 'starting_value': starting,
+                     'notes': f'via {p.via}' + ('' if p.fidelity == 1 else f', fidelity {p.fidelity:.2f}')})
     for path, value in REQUIRED_STARTING_VALUES.items():
         if not any(p.path == path for p in mirror.points):
-            rows.append({'Volttron Point Name': '_'.join(path), 'Path': '.'.join(path), 'Writable': 'TRUE', 'Multiplier': 0,
-                         'Scaling': 1, 'Units': _units(MirrorPoint(path, True, '')), 'Starting Value': value,
-                         'Notes': 'required by the schema; not supplied by the device'})
+            rows.append({'volttron_point_name': '_'.join(path), 'path': '.'.join(path), 'writable': 'TRUE', 'multiplier': 0,
+                         'scaling': 1, 'units': _units(MirrorPoint(path, True, '')), 'starting_value': value,
+                         'notes': 'required by the schema; not supplied by the device'})
     return rows
 
 
@@ -190,13 +190,13 @@ def mirror_transforms(mirror_format: str, mirror: DiscoveredMirror, *, served: b
     to_protocol: dict = {}
     rows = registry_rows(mirror)
     for row in rows:
-        path = tuple(row['Path'].split('.'))
+        path = tuple(row['path'].split('.'))
         node = to_protocol
         for segment in path[:-1]:
             node = node.setdefault(segment, {})
-        node[path[-1]] = f'transform[{row["Volttron Point Name"]}]()'
-    from_protocol = {row['Volttron Point Name']: f'transform[{", ".join(row["Path"].split("."))}]()'
-                     for row in rows if served or row['Writable'] == 'TRUE'}
+        node[path[-1]] = f'transform[{row["volttron_point_name"]}]()'
+    from_protocol = {row['volttron_point_name']: f'transform[{", ".join(row["path"].split("."))}]()'
+                     for row in rows if served or row['writable'] == 'TRUE'}
     return DeviceTransforms([{'input_format': mirror_format, 'output_format': '2030.5', 'pattern': {**DEVICE_STAGE_INPUT, **to_protocol}},
                              {'input_format': '2030.5', 'output_format': mirror_format, 'pattern': from_protocol}],
                             'driver', list(mirror.notes))
@@ -206,7 +206,7 @@ def presentation_fragment(mirror_format: str, mirror: DiscoveredMirror, device_t
                           alias: str = 'sep2', *, served: bool = False) -> dict:
     """``formats``, ``transforms`` and ``mappings`` entries for the mirror, to merge into the service configuration."""
     rows = registry_rows(mirror)
-    names = [row['Volttron Point Name'] for row in rows]
+    names = [row['volttron_point_name'] for row in rows]
     built = mirror_transforms(mirror_format, mirror, served=served)
     return {'formats': {mirror_format: device_format_declaration(names, 'driver')},
             'transforms': built.definitions,

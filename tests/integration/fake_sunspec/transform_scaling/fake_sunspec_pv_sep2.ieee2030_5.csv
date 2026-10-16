@@ -1,4 +1,4 @@
-Volttron Point Name,Path,Writable,Multiplier,Scaling,Units,Starting Value,Notes
+volttron_point_name,path,writable,multiplier,scaling,units,starting_value,notes
 DERCapability_modesSupported,DERCapability.modesSupported,TRUE,0,1,,0,via sunspec > 2030.5
 DERCapability_rtgAbnormalCategory,DERCapability.rtgAbnormalCategory,TRUE,0,1,,,via sunspec > 2030.5
 DERCapability_rtgMaxA,DERCapability.rtgMaxA,TRUE,0,1,A,,via sunspec > 2030.5

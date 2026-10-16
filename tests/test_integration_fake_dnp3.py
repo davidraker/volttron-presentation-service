@@ -33,10 +33,10 @@ def _rows(path: Path) -> list[dict]:
 
 def fake_driver_all_message(mode: str, **overrides) -> dict:
     def value(row):
-        raw, kind = row['Starting Value'], row['Type']
+        raw, kind = row['starting_value'], row['type']
         return float(raw) if kind == 'float' else int(raw) if kind == 'int' else raw == 'True' if kind == 'boolean' else raw
-    message = {row['Volttron Point Name']: value(row) for row in _rows(CASE / f'{mode}_scaling' / 'fake_dnp3_der.fake.csv')
-               if row['Starting Value'] != ''}
+    message = {row['volttron_point_name']: value(row) for row in _rows(CASE / f'{mode}_scaling' / 'fake_dnp3_der.fake.csv')
+               if row['starting_value'] != ''}
     message.update(overrides)
     return message
 
@@ -112,16 +112,16 @@ def test_generated_case_is_current(device, mode):
 
 
 def test_registries_reflect_the_scaling_mode(device):
-    transform_rows = {r['Volttron Point Name']: r for r in dnp3_registry_rows(device, 'transform')}
-    driver_rows = {r['Volttron Point Name']: r for r in dnp3_registry_rows(device, 'driver')}
-    assert transform_rows['AI_2'] == {'Point Name': 'DGEN.VMinRtg', 'Volttron Point Name': 'AI_2', 'Group': 30, 'Variation': 6,
-                                      'Index': 2, 'Scaling': 1, 'Units': 'Volts', 'Writable': 'FALSE', 'Transform': '',
-                                      'Notes': 'Nameplate Minimum Voltage Rating'}
-    assert driver_rows['AI_2']['Scaling'] == 0.1 and driver_rows['AI_2']['Transform'] == 'scale(0.1)'
-    assert driver_rows['AO_217']['Group'] == 40 and driver_rows['AO_217']['Transform'] == ''      # multiplier 1: nothing to apply
-    assert {r['Volttron Point Name']: r['Group'] for r in dnp3_registry_rows(device, 'transform') if r['Volttron Point Name'] in ('BI_0', 'BO_3', 'CTR_5000')} == {'BI_0': 1, 'BO_3': 10, 'CTR_5000': 20}
-    fake = {r['Volttron Point Name']: r for r in fake_registry_rows(device, 'transform')}
-    assert fake['BI_0']['Type'] == 'boolean' and fake['CTR_5000']['Type'] == 'int' and fake['AI_2']['Type'] == 'int'
+    transform_rows = {r['volttron_point_name']: r for r in dnp3_registry_rows(device, 'transform')}
+    driver_rows = {r['volttron_point_name']: r for r in dnp3_registry_rows(device, 'driver')}
+    assert transform_rows['AI_2'] == {'point_name': 'DGEN.VMinRtg', 'volttron_point_name': 'AI_2', 'object_group': 30, 'variation': 6,
+                                      'index': 2, 'scaling': 1, 'units': 'Volts', 'writable': 'FALSE', 'transform': '',
+                                      'notes': 'Nameplate Minimum Voltage Rating'}
+    assert driver_rows['AI_2']['scaling'] == 0.1 and driver_rows['AI_2']['transform'] == 'scale(0.1)'
+    assert driver_rows['AO_217']['object_group'] == 40 and driver_rows['AO_217']['transform'] == ''      # multiplier 1: nothing to apply
+    assert {r['volttron_point_name']: r['object_group'] for r in dnp3_registry_rows(device, 'transform') if r['volttron_point_name'] in ('BI_0', 'BO_3', 'CTR_5000')} == {'BI_0': 1, 'BO_3': 10, 'CTR_5000': 20}
+    fake = {r['volttron_point_name']: r for r in fake_registry_rows(device, 'transform')}
+    assert fake['BI_0']['type'] == 'boolean' and fake['CTR_5000']['type'] == 'int' and fake['AI_2']['type'] == 'int'
 
 
 def test_point_names_and_profile_scaling():

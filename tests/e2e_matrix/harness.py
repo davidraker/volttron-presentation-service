@@ -261,7 +261,7 @@ def setup_sunspec():
     p.served = Modbus(RemoteConfig(driver_type='modbus', driver_role='slave', transport_protocol='tcp', bind_host='127.0.0.1',
                                    port=port, unit_id=1), driver_agent=p.served_agent)
     # Served rows: the platform writes every point (so no Writable column); the master may write the control points.
-    served_rows = [{**{k: v for k, v in r.items() if k != 'Writable'}, 'remote_writable': r['Writable'].strip().upper() == 'TRUE'} for r in rows]
+    served_rows = [{**{k: v for k, v in r.items() if k != 'writable'}, 'remote_writable': r['writable'].strip().upper() == 'TRUE'} for r in rows]
     for row in p.served.prepare_registry_config(served_rows, p.served.config):
         p.served.insert_register(p.served.create_register(ModbusPointConfig(**row)), p.served_prefix)
     p.served.finalize_setup(initial_setup=True)
@@ -284,7 +284,7 @@ def setup_dnp3():
     Dnp3.default_config = {}
     p.served = Dnp3(RemoteConfig(driver_type='dnp3', driver_role='outstation', bind_host='127.0.0.1', port=port,
                                  master_id=device['master_id'], outstation_id=device['outstation_id']), driver_agent=p.served_agent)
-    served_rows = [{k: v for k, v in r.items() if k != 'Writable'} for r in rows]
+    served_rows = [{k: v for k, v in r.items() if k != 'writable'} for r in rows]
     for row in p.served.prepare_registry_config(served_rows, p.served.config):
         p.served.insert_register(p.served.create_register(Dnp3PointConfig(**row)), p.served_prefix)
     p.served.finalize_setup(initial_setup=True)
@@ -310,7 +310,7 @@ def setup_sep2(rows):
                                        state_dir=str(WORK / 'state')), driver_agent=p.served_agent)
     # In the server role 'writable' means written by the platform (the downward resources); the mirror rows' Writable
     # column describes the client role, so it is dropped and the server-role default applies.
-    served_rows = [{k: v for k, v in r.items() if k != 'Writable'} for r in rows]
+    served_rows = [{k: v for k, v in r.items() if k != 'writable'} for r in rows]
     for row in p.served.prepare_registry_config(served_rows, p.served.config):
         p.served.insert_register(p.served.create_register(Ieee2030_5PointConfig(**row)), p.served_prefix)
     p.served.finalize_setup(initial_setup=True)
@@ -580,7 +580,7 @@ class RtcParty:
         self.agent.vip.pubsub.publish.side_effect = bus.publish
         self.agent.core.schedule.side_effect = lambda *a, **k: mock.Mock()      # the harness ticks the loop itself
         self.agent.configure_main(None, 'NEW', {
-            'ctrl_eval_engine_app_path': CEE_APP_PATH, 'julia_path': JULIA_PATH, 'resolution': 1.0,
+            'ctrl_eval_engine_app_path': CEE_APP_PATH, 'julia_path': JULIA_PATH, 'mode_package': 'engine', 'resolution': 1.0,
             'ess': {'class_name': 'FakeESS', 'power_capacity_kw': RTC_CAPACITY_KW, 'energy_capacity_kwh': 2 * RTC_CAPACITY_KW},
             'controller': {}, 'hub_topic': RTC_CONTROL_TOPIC, 'status_topic': RTC_STATUS_TOPIC, 'modes_topic': RTC_MODES_TOPIC,
             'modes': [{'name': 'schedule', 'class_name': 'ChargeDischargeStorage', 'priority': 2, 'WSpt': W / 1000},
@@ -686,7 +686,7 @@ def main():
     bus_adapter = None
     try:
         dnp3_rows = rows_of(DNP3_CASE / 'fake_dnp3_der.dnp3.csv')
-        config, sep2_rows = service_config([r['Volttron Point Name'] for r in dnp3_rows])
+        config, sep2_rows = service_config([r['volttron_point_name'] for r in dnp3_rows])
         service = start_service(config)
         t0 = time.time()
         parties['SunSpec'] = setup_sunspec()

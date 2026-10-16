@@ -1,4 +1,4 @@
-Volttron Point Name,Point Address,Data Type,Table,Writable,Units,Transform,Register Name,Default Value,Description
+volttron_point_name,address,data_type,table,writable,units,transform,register_name,default_value,description
 1_Mn,40004,string[32],holding,FALSE,,,1_Mn,SunSpecTest,Manufacturer
 1_Md,40020,string[32],holding,FALSE,,,1_Md,Test-1547-1,Model
 1_Opt,40036,string[16],holding,FALSE,,,1_Opt,opt_a_b_c,Options

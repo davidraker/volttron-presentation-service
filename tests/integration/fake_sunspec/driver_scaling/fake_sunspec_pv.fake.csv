@@ -1,4 +1,4 @@
-Point Name,Volttron Point Name,Units,Units Details,Writable,Starting Value,Type,Notes
+point_name,volttron_point_name,units,units_details,writable,starting_value,type,notes
 1_Mn,1_Mn,,Manufacturer,FALSE,SunSpecTest,str,SunSpec string at 40004
 1_Md,1_Md,,Model,FALSE,Test-1547-1,str,SunSpec string at 40020
 1_Opt,1_Opt,,Options,FALSE,opt_a_b_c,str,SunSpec string at 40036

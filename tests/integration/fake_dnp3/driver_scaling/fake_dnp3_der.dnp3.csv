@@ -1,4 +1,4 @@
-Point Name,Volttron Point Name,Group,Variation,Index,Scaling,Units,Writable,Transform,Notes
+point_name,volttron_point_name,object_group,variation,index,scaling,units,writable,transform,notes
 DGEN.VMinRtg,AI_2,30,6,2,0.1,Volts,FALSE,scale(0.1),Nameplate Minimum Voltage Rating
 DGEN.VMaxRtg,AI_3,30,6,3,0.1,Volts,FALSE,scale(0.1),Nameplate Maximum Voltage Rating
 DGEN.WMaxRtg,AI_4,30,6,4,1.0,Watts,FALSE,,Nameplate Active Generation Power Rating at Unity Power Factor

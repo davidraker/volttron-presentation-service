@@ -46,10 +46,10 @@ def build_database(registry_csv: str, overrides: dict) -> Database:
     with open(registry_csv, newline='') as f:
         rows = list(csv.DictReader(f))
     for row in rows:
-        name = row['Volttron Point Name']
+        name = row['volttron_point_name']
         table, index = name.split('_', 1)
         index = int(index)
-        raw = overrides.get(name, row['Starting Value'])
+        raw = overrides.get(name, row['starting_value'])
         if table == 'AI':
             db.add_analog_input(index, AnalogInputConfig(event_class=EventClass.CLASS_1))
             db.update_analog_input(index, float(raw or 0), quality=AnalogQuality.ONLINE)

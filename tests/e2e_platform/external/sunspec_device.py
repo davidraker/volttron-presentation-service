@@ -28,10 +28,10 @@ class PointTable:
         self.defaults: dict[str, object] = {}
         with Path(registry_csv).open(newline='') as f:
             for row in csv.DictReader(f):
-                name, dtype = row['Volttron Point Name'], row['Data Type'].strip()
-                address = int(row['Point Address'])
+                name, dtype = row['volttron_point_name'], row['data_type'].strip()
+                address = int(row['address'])
                 self.points[name] = (address, dtype, self.count_of(dtype))
-                default = row.get('Default Value', '')
+                default = row.get('default_value', '')
                 if default not in ('', None):
                     self.defaults[name] = self.parse(dtype, default)
 

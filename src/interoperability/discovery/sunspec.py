@@ -179,10 +179,10 @@ def modbus_registry_rows(device: DiscoveredDevice, scaling: str) -> list[dict]:
         transform = ''
         if scaling == 'driver' and p.scale_factor is not None and not p.is_scale_factor:
             transform = f'scale({10.0 ** p.scale_factor!r})' if isinstance(p.scale_factor, int) else f'scale_reg_pow_10({p.scale_factor})'
-        rows.append({'Volttron Point Name': p.name, 'Point Address': p.address, 'Data Type': data_type, 'Table': 'holding',
-                     'Writable': 'TRUE' if p.writable else 'FALSE', 'Units': p.units, 'Transform': transform,
-                     'Register Name': p.name, 'Default Value': '' if p.value is None else p.value,
-                     'Description': p.description})
+        rows.append({'volttron_point_name': p.name, 'address': p.address, 'data_type': data_type, 'table': 'holding',
+                     'writable': 'TRUE' if p.writable else 'FALSE', 'units': p.units, 'transform': transform,
+                     'register_name': p.name, 'default_value': '' if p.value is None else p.value,
+                     'description': p.description})
     return rows
 
 
@@ -198,9 +198,9 @@ def fake_registry_rows(device: DiscoveredDevice, scaling: str) -> list[dict]:
             kind = 'float'
         else:
             kind = 'int'
-        rows.append({'Point Name': p.name, 'Volttron Point Name': p.name, 'Units': p.units, 'Units Details': p.description,
-                     'Writable': 'TRUE' if p.writable else 'FALSE', 'Starting Value': '' if value is None else value,
-                     'Type': kind, 'Notes': f'SunSpec {p.type} at {p.address}' + (f', scale factor {p.scale_factor}' if p.scale_factor is not None else '')})
+        rows.append({'point_name': p.name, 'volttron_point_name': p.name, 'units': p.units, 'units_details': p.description,
+                     'writable': 'TRUE' if p.writable else 'FALSE', 'starting_value': '' if value is None else value,
+                     'type': kind, 'notes': f'SunSpec {p.type} at {p.address}' + (f', scale factor {p.scale_factor}' if p.scale_factor is not None else '')})
     return rows
 
 

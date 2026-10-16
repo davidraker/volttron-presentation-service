@@ -1,4 +1,4 @@
-Point Name,Volttron Point Name,Units,Units Details,Writable,Starting Value,Type,Notes
+point_name,volttron_point_name,units,units_details,writable,starting_value,type,notes
 DGEN.VMinRtg,AI_2,Volts,Nameplate Minimum Voltage Rating,FALSE,0,int,"DNP3 AI 2, multiplier 0.1"
 DGEN.VMaxRtg,AI_3,Volts,Nameplate Maximum Voltage Rating,FALSE,0,int,"DNP3 AI 3, multiplier 0.1"
 DGEN.WMaxRtg,AI_4,Watts,Nameplate Active Generation Power Rating at Unity Power Factor,FALSE,0,int,DNP3 AI 4
