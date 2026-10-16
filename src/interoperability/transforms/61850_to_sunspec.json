@@ -60,7 +60,7 @@
         "PFWInjEna": "transform[DFPF, ModEna](cast_value(int))",
         "PFWInj": {
           "PF": "transform[DFPF, PFGnTgt]()",
-          "Ext": "transform[DFPF, PFExtSet]()"
+          "Ext": "transform[DFPF, PFExtSet](select(0, 1))"
         },
         "VarSetEna": "transform[DVAR, ModEna](cast_value(int))",
         "VarSetPct": "transform[DVAR, VArTgt]()",
@@ -68,7 +68,7 @@
         "WMaxLimPct": "transform[DWMX, LimW]()"
       },
       "705": {
-        "Ena": "transform[DVVR, ModEna]()",
+        "Ena": "transform[DVVR, ModEna](cast_value(int))",
         "Crv[#]": {
           "#": "transform[DVVR](as_list())",
           "ActPt": "transform[#, VVArCrv, crvPts](count())",
@@ -83,7 +83,7 @@
         }
       },
       "712": {
-        "Ena": "transform[DWVR, ModEna]()",
+        "Ena": "transform[DWVR, ModEna](cast_value(int))",
         "Crv[#]": {
           "#": "transform[DWVR](as_list())",
           "ActPt": "transform[#, WVArCrv, crvPts](count())",
@@ -94,7 +94,7 @@
         }
       },
       "706": {
-        "Ena": "transform[DVWC, ModEna]()",
+        "Ena": "transform[DVWC, ModEna](cast_value(int))",
         "Crv[#]": {
           "#": "transform[DVWC](as_list())",
           "ActPt": "transform[#, VWCrv, crvPts](count())",
@@ -178,7 +178,7 @@
         }
       },
       "703": {
-        "ES": "transform[DCTE, RtnSrvAuth]()",
+        "ES": "transform[DCTE, RtnSrvAuth](cast_value(int))",
         "ESVHi": "transform[DCTE, VHiLim]()",
         "ESVLo": "transform[DCTE, VLoLim]()",
         "ESHzHi": "transform[DCTE, HzHiLim]()",

@@ -57,6 +57,10 @@ FIDELITY = {
     'mean': 0.5,           # several fields collapse into one
     'count': 0.3,          # only the length survives
     'when': 0.7,           # present for some messages only
+    'equals': 0.9,         # an enumeration collapses to one flag
+    'select': 1.0,
+    'whole_seconds': 0.9, 'nanoseconds': 0.9,   # each carries half of a duration
+    'from_clearing_time': 1.0,
     'when_equal': 0.7,
     'const': 0.0,          # the source value itself is not carried
     'param': 0.0, 'uuid4': 0.0, 'timestamp': 0.0,     # produced, not carried from the source
@@ -439,6 +443,61 @@ def immediate(*path: str):
     conv = c.call_func(_immediate, c.this, tuple(path))
     conv.fidelity = 1.0                                        # picking the active entry loses nothing
     return conv
+
+
+def _equals(value, expected):
+    return MISSING if value is None else value == expected
+
+
+def equals(expected):
+    """
+        The value becomes the flag "equal to ``expected``": an enumeration code turns into a boolean, e.g. SunSpec's
+         excitation ``Ext`` (0 over-excited, 1 under-excited) into 61850's ``PFExtSet`` (TRUE over-excited) with
+         ``equals(0)``.
+    """
+    return c.call_func(_equals, c.this, expected)
+
+
+def _select(value, if_true, if_false):
+    return MISSING if value is None else (if_true if _flag(value) else if_false)
+
+
+def select(if_true, if_false):
+    """
+        A flag becomes one of two values: ``select(0, 1)`` encodes TRUE as 0 and FALSE as 1, the inverse of
+         ``equals(0)``.
+    """
+    return c.call_func(_select, c.this, if_true, if_false)
+
+
+def _whole_seconds(value):
+    return MISSING if value is None else int(float(value) // 1)
+
+
+def whole_seconds():
+    """The integer seconds of a duration given in seconds (``0.05`` -> ``0``), for a protobuf ``seconds`` field."""
+    return c.call_func(_whole_seconds, c.this)
+
+
+def _nanoseconds(value):
+    return MISSING if value is None else int(round((float(value) - float(value) // 1) * 1_000_000_000))
+
+
+def nanoseconds():
+    """The fractional part of a duration given in seconds, as integer nanoseconds (``0.05`` -> ``50000000``)."""
+    return c.call_func(_nanoseconds, c.this)
+
+
+def _from_clearing_time(value):
+    if isinstance(value, dict):
+        return float(value.get('seconds') or 0) + float(value.get('nanoseconds') or 0) / 1_000_000_000
+    return MISSING if value is None else float(value)
+
+
+def from_clearing_time():
+    """A protobuf ``{seconds, nanoseconds}`` duration (OpenFMB ``ClearingTime``, ``ControlTimestamp``) as float seconds;
+    the inverse of ``whole_seconds`` and ``nanoseconds`` together."""
+    return c.call_func(_from_clearing_time, c.this)
 
 
 def _when(value, actual, expected):

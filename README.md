@@ -300,6 +300,10 @@ Functions available in `src/interoperability/transforms/__init__.py`:
 | `const(v)`                        | Replace the value with the literal `v` (only emitted when the source is present).            |
 | `when(path, v)`                   | Pass the value through only when the field at the quoted dotted `path` equals `v`; otherwise treat it as missing. |
 | `when_equal(path_a, path_b)`      | Pass the value through only when both fields are present and equal, e.g. `when_equal('AI.328', 'AI.297')`. |
+| `equals(v)`                       | The value becomes the flag "equals `v`": an enumeration code turns into a boolean, e.g. SunSpec's excitation `Ext` (0 over-excited) into 61850's `PFExtSet` with `equals(0)`. |
+| `select(if_true, if_false)`       | A flag becomes one of two values; `select(0, 1)` is the inverse of `equals(0)`.               |
+| `whole_seconds()`, `nanoseconds()` | The integer seconds and the fractional nanoseconds of a duration given in seconds, for protobuf `{seconds, nanoseconds}` durations (OpenFMB `ClearingTime`). |
+| `from_clearing_time()`            | A `{seconds, nanoseconds}` duration back to float seconds.                                    |
 
 Functions after a guard such as `when` are skipped once the value has become missing. Paths
 given to `take`, `when`, `when_equal`, `scale_reg` and `scale_reg_pow_10` are resolved against the

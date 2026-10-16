@@ -227,7 +227,8 @@
                         "setVal": "transform[#, DVVR, VRefTmms]()"
                       },
                       "OplTmmsMax": {
-                        "seconds": "transform[#, DVVR, OpnLoopMax]()"
+                        "seconds": "transform[#, DVVR, OpnLoopMax](whole_seconds())",
+                        "nanoseconds": "transform[#, DVVR, OpnLoopMax](nanoseconds())"
                       }
                     },
                     "crvPts[#]": {
@@ -240,7 +241,8 @@
                     "voltWParameter": {
                       "modEna": "transform[#, DVWC, ModEna]()",
                       "OplTmmsMax": {
-                        "seconds": "transform[#, DVWC, OpnLoopMax]()"
+                        "seconds": "transform[#, DVWC, OpnLoopMax](whole_seconds())",
+                        "nanoseconds": "transform[#, DVWC, OpnLoopMax](nanoseconds())"
                       }
                     },
                     "crvPts[#]": {
@@ -267,7 +269,8 @@
                     "overHzWParameter": {
                       "modEna": "transform[#, DHFW, ModEna]()",
                       "OplTmmsMax": {
-                        "seconds": "transform[#, DHFW, OpnLoopMax]()"
+                        "seconds": "transform[#, DHFW, OpnLoopMax](whole_seconds())",
+                        "nanoseconds": "transform[#, DHFW, OpnLoopMax](nanoseconds())"
                       }
                     },
                     "underHzWPt": {
@@ -277,7 +280,8 @@
                     "underHzWParameter": {
                       "modEna": "transform[#, DLFW, ModEna]()",
                       "OplTmmsMax": {
-                        "seconds": "transform[#, DLFW, OpnLoopMax]()"
+                        "seconds": "transform[#, DLFW, OpnLoopMax](whole_seconds())",
+                        "nanoseconds": "transform[#, DLFW, OpnLoopMax](nanoseconds())"
                       }
                     }
                   },
@@ -333,14 +337,16 @@
                       "#": "transform[#, DHVT, TrZnSt, PTOV, TmVCrv, crvPts]()",
                       "voltVal": "transform[#, xVal]()",
                       "tmVal": {
-                        "seconds": "transform[#, yVal]()"
+                        "seconds": "transform[#, yVal](whole_seconds())",
+                        "nanoseconds": "transform[#, yVal](nanoseconds())"
                       }
                     },
                     "underCrvPts[#]": {
                       "#": "transform[#, DLVT, TrZnSt, PTUV, TmVCrv, crvPts]()",
                       "voltVal": "transform[#, xVal]()",
                       "tmVal": {
-                        "seconds": "transform[#, yVal]()"
+                        "seconds": "transform[#, yVal](whole_seconds())",
+                        "nanoseconds": "transform[#, yVal](nanoseconds())"
                       }
                     }
                   },
@@ -349,14 +355,16 @@
                       "#": "transform[#, DHFT, TrZnSt, PTOF, TmHzCrv, crvPts]()",
                       "hzVal": "transform[#, xVal]()",
                       "tmVal": {
-                        "seconds": "transform[#, yVal]()"
+                        "seconds": "transform[#, yVal](whole_seconds())",
+                        "nanoseconds": "transform[#, yVal](nanoseconds())"
                       }
                     },
                     "underCrvPts[#]": {
                       "#": "transform[#, DLFT, TrZnSt, PTUF, TmHzCrv, crvPts]()",
                       "hzVal": "transform[#, xVal]()",
                       "tmVal": {
-                        "seconds": "transform[#, yVal]()"
+                        "seconds": "transform[#, yVal](whole_seconds())",
+                        "nanoseconds": "transform[#, yVal](nanoseconds())"
                       }
                     }
                   }
@@ -377,7 +385,8 @@
                         "setVal": "transform[#, DVVR, VRefTmms]()"
                       },
                       "OplTmmsMax": {
-                        "seconds": "transform[#, DVVR, OpnLoopMax]()"
+                        "seconds": "transform[#, DVVR, OpnLoopMax](whole_seconds())",
+                        "nanoseconds": "transform[#, DVVR, OpnLoopMax](nanoseconds())"
                       }
                     },
                     "crvPts[#]": {
@@ -390,7 +399,8 @@
                     "voltWParameter": {
                       "modEna": "transform[#, DVWC, ModEna]()",
                       "OplTmmsMax": {
-                        "seconds": "transform[#, DVWC, OpnLoopMax]()"
+                        "seconds": "transform[#, DVWC, OpnLoopMax](whole_seconds())",
+                        "nanoseconds": "transform[#, DVWC, OpnLoopMax](nanoseconds())"
                       }
                     },
                     "crvPts[#]": {
@@ -417,7 +427,8 @@
                     "overHzWParameter": {
                       "modEna": "transform[#, DHFW, ModEna]()",
                       "OplTmmsMax": {
-                        "seconds": "transform[#, DHFW, OpnLoopMax]()"
+                        "seconds": "transform[#, DHFW, OpnLoopMax](whole_seconds())",
+                        "nanoseconds": "transform[#, DHFW, OpnLoopMax](nanoseconds())"
                       }
                     },
                     "underHzWPt": {
@@ -427,7 +438,8 @@
                     "underHzWParameter": {
                       "modEna": "transform[#, DLFW, ModEna]()",
                       "OplTmmsMax": {
-                        "seconds": "transform[#, DLFW, OpnLoopMax]()"
+                        "seconds": "transform[#, DLFW, OpnLoopMax](whole_seconds())",
+                        "nanoseconds": "transform[#, DLFW, OpnLoopMax](nanoseconds())"
                       }
                     }
                   },
@@ -483,14 +495,16 @@
                       "#": "transform[#, DHVT, TrZnSt, PTOV, TmVCrv, crvPts]()",
                       "voltVal": "transform[#, xVal]()",
                       "tmVal": {
-                        "seconds": "transform[#, yVal]()"
+                        "seconds": "transform[#, yVal](whole_seconds())",
+                        "nanoseconds": "transform[#, yVal](nanoseconds())"
                       }
                     },
                     "underCrvPts[#]": {
                       "#": "transform[#, DLVT, TrZnSt, PTUV, TmVCrv, crvPts]()",
                       "voltVal": "transform[#, xVal]()",
                       "tmVal": {
-                        "seconds": "transform[#, yVal]()"
+                        "seconds": "transform[#, yVal](whole_seconds())",
+                        "nanoseconds": "transform[#, yVal](nanoseconds())"
                       }
                     }
                   },
@@ -499,14 +513,16 @@
                       "#": "transform[#, DHFT, TrZnSt, PTOF, TmHzCrv, crvPts]()",
                       "hzVal": "transform[#, xVal]()",
                       "tmVal": {
-                        "seconds": "transform[#, yVal]()"
+                        "seconds": "transform[#, yVal](whole_seconds())",
+                        "nanoseconds": "transform[#, yVal](nanoseconds())"
                       }
                     },
                     "underCrvPts[#]": {
                       "#": "transform[#, DLFT, TrZnSt, PTUF, TmHzCrv, crvPts]()",
                       "hzVal": "transform[#, xVal]()",
                       "tmVal": {
-                        "seconds": "transform[#, yVal]()"
+                        "seconds": "transform[#, yVal](whole_seconds())",
+                        "nanoseconds": "transform[#, yVal](nanoseconds())"
                       }
                     }
                   }
@@ -720,7 +736,8 @@
                         "setVal": "transform[#, DVVR, VRefTmms]()"
                       },
                       "OplTmmsMax": {
-                        "seconds": "transform[#, DVVR, OpnLoopMax]()"
+                        "seconds": "transform[#, DVVR, OpnLoopMax](whole_seconds())",
+                        "nanoseconds": "transform[#, DVVR, OpnLoopMax](nanoseconds())"
                       }
                     },
                     "crvPts[#]": {
@@ -733,7 +750,8 @@
                     "voltWParameter": {
                       "modEna": "transform[#, DVWC, ModEna]()",
                       "OplTmmsMax": {
-                        "seconds": "transform[#, DVWC, OpnLoopMax]()"
+                        "seconds": "transform[#, DVWC, OpnLoopMax](whole_seconds())",
+                        "nanoseconds": "transform[#, DVWC, OpnLoopMax](nanoseconds())"
                       }
                     },
                     "crvPts[#]": {
@@ -760,7 +778,8 @@
                     "overHzWParameter": {
                       "modEna": "transform[#, DHFW, ModEna]()",
                       "OplTmmsMax": {
-                        "seconds": "transform[#, DHFW, OpnLoopMax]()"
+                        "seconds": "transform[#, DHFW, OpnLoopMax](whole_seconds())",
+                        "nanoseconds": "transform[#, DHFW, OpnLoopMax](nanoseconds())"
                       }
                     },
                     "underHzWPt": {
@@ -770,7 +789,8 @@
                     "underHzWParameter": {
                       "modEna": "transform[#, DLFW, ModEna]()",
                       "OplTmmsMax": {
-                        "seconds": "transform[#, DLFW, OpnLoopMax]()"
+                        "seconds": "transform[#, DLFW, OpnLoopMax](whole_seconds())",
+                        "nanoseconds": "transform[#, DLFW, OpnLoopMax](nanoseconds())"
                       }
                     }
                   },
@@ -826,14 +846,16 @@
                       "#": "transform[#, DHVT, TrZnSt, PTOV, TmVCrv, crvPts]()",
                       "voltVal": "transform[#, xVal]()",
                       "tmVal": {
-                        "seconds": "transform[#, yVal]()"
+                        "seconds": "transform[#, yVal](whole_seconds())",
+                        "nanoseconds": "transform[#, yVal](nanoseconds())"
                       }
                     },
                     "underCrvPts[#]": {
                       "#": "transform[#, DLVT, TrZnSt, PTUV, TmVCrv, crvPts]()",
                       "voltVal": "transform[#, xVal]()",
                       "tmVal": {
-                        "seconds": "transform[#, yVal]()"
+                        "seconds": "transform[#, yVal](whole_seconds())",
+                        "nanoseconds": "transform[#, yVal](nanoseconds())"
                       }
                     }
                   },
@@ -842,14 +864,16 @@
                       "#": "transform[#, DHFT, TrZnSt, PTOF, TmHzCrv, crvPts]()",
                       "hzVal": "transform[#, xVal]()",
                       "tmVal": {
-                        "seconds": "transform[#, yVal]()"
+                        "seconds": "transform[#, yVal](whole_seconds())",
+                        "nanoseconds": "transform[#, yVal](nanoseconds())"
                       }
                     },
                     "underCrvPts[#]": {
                       "#": "transform[#, DLFT, TrZnSt, PTUF, TmHzCrv, crvPts]()",
                       "hzVal": "transform[#, xVal]()",
                       "tmVal": {
-                        "seconds": "transform[#, yVal]()"
+                        "seconds": "transform[#, yVal](whole_seconds())",
+                        "nanoseconds": "transform[#, yVal](nanoseconds())"
                       }
                     }
                   }
@@ -870,7 +894,8 @@
                         "setVal": "transform[#, DVVR, VRefTmms]()"
                       },
                       "OplTmmsMax": {
-                        "seconds": "transform[#, DVVR, OpnLoopMax]()"
+                        "seconds": "transform[#, DVVR, OpnLoopMax](whole_seconds())",
+                        "nanoseconds": "transform[#, DVVR, OpnLoopMax](nanoseconds())"
                       }
                     },
                     "crvPts[#]": {
@@ -883,7 +908,8 @@
                     "voltWParameter": {
                       "modEna": "transform[#, DVWC, ModEna]()",
                       "OplTmmsMax": {
-                        "seconds": "transform[#, DVWC, OpnLoopMax]()"
+                        "seconds": "transform[#, DVWC, OpnLoopMax](whole_seconds())",
+                        "nanoseconds": "transform[#, DVWC, OpnLoopMax](nanoseconds())"
                       }
                     },
                     "crvPts[#]": {
@@ -910,7 +936,8 @@
                     "overHzWParameter": {
                       "modEna": "transform[#, DHFW, ModEna]()",
                       "OplTmmsMax": {
-                        "seconds": "transform[#, DHFW, OpnLoopMax]()"
+                        "seconds": "transform[#, DHFW, OpnLoopMax](whole_seconds())",
+                        "nanoseconds": "transform[#, DHFW, OpnLoopMax](nanoseconds())"
                       }
                     },
                     "underHzWPt": {
@@ -920,7 +947,8 @@
                     "underHzWParameter": {
                       "modEna": "transform[#, DLFW, ModEna]()",
                       "OplTmmsMax": {
-                        "seconds": "transform[#, DLFW, OpnLoopMax]()"
+                        "seconds": "transform[#, DLFW, OpnLoopMax](whole_seconds())",
+                        "nanoseconds": "transform[#, DLFW, OpnLoopMax](nanoseconds())"
                       }
                     }
                   },
@@ -976,14 +1004,16 @@
                       "#": "transform[#, DHVT, TrZnSt, PTOV, TmVCrv, crvPts]()",
                       "voltVal": "transform[#, xVal]()",
                       "tmVal": {
-                        "seconds": "transform[#, yVal]()"
+                        "seconds": "transform[#, yVal](whole_seconds())",
+                        "nanoseconds": "transform[#, yVal](nanoseconds())"
                       }
                     },
                     "underCrvPts[#]": {
                       "#": "transform[#, DLVT, TrZnSt, PTUV, TmVCrv, crvPts]()",
                       "voltVal": "transform[#, xVal]()",
                       "tmVal": {
-                        "seconds": "transform[#, yVal]()"
+                        "seconds": "transform[#, yVal](whole_seconds())",
+                        "nanoseconds": "transform[#, yVal](nanoseconds())"
                       }
                     }
                   },
@@ -992,14 +1022,16 @@
                       "#": "transform[#, DHFT, TrZnSt, PTOF, TmHzCrv, crvPts]()",
                       "hzVal": "transform[#, xVal]()",
                       "tmVal": {
-                        "seconds": "transform[#, yVal]()"
+                        "seconds": "transform[#, yVal](whole_seconds())",
+                        "nanoseconds": "transform[#, yVal](nanoseconds())"
                       }
                     },
                     "underCrvPts[#]": {
                       "#": "transform[#, DLFT, TrZnSt, PTUF, TmHzCrv, crvPts]()",
                       "hzVal": "transform[#, xVal]()",
                       "tmVal": {
-                        "seconds": "transform[#, yVal]()"
+                        "seconds": "transform[#, yVal](whole_seconds())",
+                        "nanoseconds": "transform[#, yVal](nanoseconds())"
                       }
                     }
                   }
