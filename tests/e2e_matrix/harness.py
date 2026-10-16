@@ -81,6 +81,8 @@ ONLY = set(sys.argv[2].split(',')) if len(sys.argv) > 2 else None
 OPENFMB_MODE = os.environ.get('E2E_OPENFMB', 'harness')                    # harness | rpc | bus
 WRITER = 'device_adapter' if OPENFMB_MODE != 'harness' else os.environ.get('E2E_WRITER', 'direct')
 assert OPENFMB_MODE in ('harness', 'rpc', 'bus'), OPENFMB_MODE
+RTC_ENABLED = os.environ.get('E2E_RTC') == '1'          # fifth party: the real-time control agent (MESA modes in the CtrlEvalEngine)
+assert not RTC_ENABLED or OPENFMB_MODE == 'bus', 'E2E_RTC=1 needs E2E_OPENFMB=bus (Device Adapter bus ends carry the hub format)'
 
 PROTOCOLS = ('SunSpec', 'DNP3', '2030.5', 'OpenFMB')
 DEVICES = ('SunSpec', 'DNP3', '2030.5')
@@ -99,6 +101,16 @@ W, HZ = 4321, 60
 LIMIT_PCT = 50
 AO_87_RAW = round(LIMIT_PCT / dnp3_scaling('AO_87')[0])      # the 1815.2 profile gives AO_87 a 0.1 multiplier: tenths of a percent
 PIN = 111115
+# The RTC agent: a bus-only resource in the `rtc_controller` format (plain copies of the 61850 hub's logical nodes).
+# Controls reach it on RTC_CONTROL_TOPIC through a Device Adapter bus end; it publishes its status on RTC_STATUS_TOPIC.
+RTC_UAI = ['matrix', 'RTC']
+RTC_FORMAT = 'rtc_controller'
+RTC_CONTROL_TOPIC, RTC_STATUS_TOPIC, RTC_MODES_TOPIC = 'rtc/matrix/control', 'rtc/matrix/status', 'rtc/matrix/modes'
+RTC_CAPACITY_KW = 10.0                                     # its (fake) storage: WMax; the 50 % limit is 5 kW, its power W = 4.321 kW
+MRID[('RTC', 'rtc')] = 'a1b2c3d4-0000-4000-8000-000000000021'
+OPENFMB_FAMILY['RTC'] = 'ess'
+CEE_APP_PATH = os.environ.get('CEE_APP_PATH', str(TESTS.parents[1] / 'ctrl-eval-engine' / 'app'))
+JULIA_PATH = os.environ.get('JULIA', str(Path.home() / '.juliaup' / 'bin' / 'julia'))
 
 
 def free_port():
@@ -408,6 +420,13 @@ def service_config(dnp3_names):
                                               'parameters': {'mrid': MRID[(protocol, role)], 'name': f'{protocol} {role}'},
                                               'uai': openfmb_alias(protocol, role, kind)}
             mappings += resource_mappings(fmt, device_topic(protocol, role), uai(protocol, role), aliases)
+    if RTC_ENABLED:
+        mappings.append({'uai': RTC_UAI, 'resource_type': 'canonical',
+                         'resource': {'data_format': RTC_FORMAT, 'owner': RtcParty.IDENTITY, 'publication_topic': RTC_STATUS_TOPIC}})
+        for kind in ('reading', 'control'):
+            mappings.append({'uai': openfmb_alias('RTC', 'rtc', kind), 'resource_type': 'alias',
+                             'resource': {'data_format': f'openfmb.ess.{kind}', 'owner': RtcParty.IDENTITY, 'references': RTC_UAI,
+                                          'encoding': 'protobuf', 'parameters': {'mrid': MRID[('RTC', 'rtc')], 'name': 'RTC agent'}}})
     return {'formats': formats, 'transforms': transforms, 'mappings': mappings}, mirror_gen.registry_rows(mirror)
 
 
@@ -500,6 +519,22 @@ class AdapterWriter(DirectWriter):
                      'target': {'uai': openfmb_alias(protocol, ctl_src, 'control'), 'bus': True}},
                     {'name': bridge_name('control', 'OpenFMB', protocol), 'source': {'uai': openfmb_alias(protocol, ctl_dst, 'control'), 'bus': True},
                      'target': uai(protocol, ctl_dst), 'write_unchanged': True}]
+        if RTC_ENABLED:
+            # One control sub-topic per source: the agent applies a source's changes, not its re-assertions.
+            def control_end(source):
+                return {'uai': RTC_UAI, 'bus': True, 'topic': f'{RTC_CONTROL_TOPIC}/{source}'}
+            status_end = {'uai': RTC_UAI, 'bus': True, 'topic': RTC_STATUS_TOPIC}
+            for protocol in DEVICES:        # every path orders the same values: carry repeats, as for the device bridges
+                bridges += [
+                    {'name': bridge_name('control', protocol, 'RTC'), 'source': uai(protocol, roles('control', protocol, 'RTC')[0]),
+                     'target': control_end(protocol), 'write_unchanged': True},
+                    {'name': bridge_name('telemetry', 'RTC', protocol), 'source': status_end,
+                     'target': uai(protocol, roles('telemetry', 'RTC', protocol)[1]), 'write_unchanged': True}]
+            bridges += [
+                {'name': bridge_name('control', 'OpenFMB', 'RTC'), 'source': {'uai': openfmb_alias('RTC', 'rtc', 'control'), 'bus': True},
+                 'target': control_end('OpenFMB'), 'write_unchanged': True},
+                {'name': bridge_name('telemetry', 'RTC', 'OpenFMB'), 'source': status_end,
+                 'target': {'uai': openfmb_alias('RTC', 'rtc', 'reading'), 'bus': True}, 'write_unchanged': True}]
         self.agent.configure_main(None, 'NEW', {'bridges': bridges})
         assert len(self.agent.bridges) == len(bridges), f'device adapter bridges: {self.agent.list_bridges()}'
 
@@ -524,6 +559,48 @@ class AdapterWriter(DirectWriter):
         topic, report = [(t, m) for t, h, m in self.bus.published[before:] if t.startswith('device_adapter/')][-1]
         return report['path'], (f'retention {report["retention"]:.2f}, {len(result.written)}/{len(result.written) + len(result.errors)} written'
                                 + (f', errors {list(result.errors.items())[:2]}' if result.errors else '') + f' [{topic}]')
+
+
+class RtcParty:
+    """The real-time control agent in-process: VOLTTRON stubbed, its pubsub the LocalBus, its MESA modes in the
+    CtrlEvalEngine through PyJulia. A 10 kW fake storage follows a 4.321 kW setpoint; its Active Power Limit mode starts
+    disabled at 100 % so that every control path can enable a 50 % limit."""
+    IDENTITY = 'der.rtc'
+
+    def __init__(self, bus):
+        from rt_control import agent as rtc_module
+        from rt_control.agent import RTControlAgent
+        with mock.patch.object(rtc_module.Agent, '__init__', return_value=None), \
+             mock.patch.object(rtc_module, 'load_config', return_value={}):
+            self.agent = RTControlAgent.__new__(RTControlAgent)
+            self.agent.vip, self.agent.core = mock.MagicMock(), mock.MagicMock()
+            self.agent.core.identity = self.IDENTITY
+            RTControlAgent.__init__(self.agent, config_path=None)
+        self.agent.vip.pubsub.subscribe.side_effect = bus.subscribe
+        self.agent.vip.pubsub.publish.side_effect = bus.publish
+        self.agent.core.schedule.side_effect = lambda *a, **k: mock.Mock()      # the harness ticks the loop itself
+        self.agent.configure_main(None, 'NEW', {
+            'ctrl_eval_engine_app_path': CEE_APP_PATH, 'julia_path': JULIA_PATH, 'resolution': 1.0,
+            'ess': {'class_name': 'FakeESS', 'power_capacity_kw': RTC_CAPACITY_KW, 'energy_capacity_kwh': 2 * RTC_CAPACITY_KW},
+            'controller': {}, 'hub_topic': RTC_CONTROL_TOPIC, 'status_topic': RTC_STATUS_TOPIC, 'modes_topic': RTC_MODES_TOPIC,
+            'modes': [{'name': 'schedule', 'class_name': 'ChargeDischargeStorage', 'priority': 2, 'WSpt': W / 1000},
+                      {'name': 'limit', 'class_name': 'ActivePowerLimit', 'priority': 1, 'enabled': False, 'LimWMax': 100.0}]})
+        self.agent.ess.states.soc = 50.0
+
+    def tick(self):
+        self.agent.loop()
+
+    def reset(self):
+        """Back to an unlimited, disabled limit so that the next control path has a change to make."""
+        self.agent.apply_hub_values({'DWMX': {'LimW': 100.0, 'ModEna': False}})
+        self.agent.reset_hub_memory()
+        self.tick()
+
+    def limit_view(self):
+        params = self.agent.get_mode_parameters('limit')
+        status = self.agent.get_status()
+        return {'LimW': params.get('LimWMax'), 'ModEna': params.get('ModEna'), 'bound_hi_kw': status['bound_hi_kw'],
+                'output_kw': status['output_kw']}
 
 
 class BusAdapterHarness:
@@ -566,6 +643,8 @@ class BusAdapterHarness:
         # The remote wants every device's reading and control profiles: served from local data.
         outbound = [openfmb_bus.topic_of(openfmb_alias(p, roles(k, p, 'OpenFMB')[0], 'reading' if k == 'telemetry' else 'control'))
                     for p in DEVICES for k in ('telemetry', 'control')]
+        if RTC_ENABLED:
+            outbound.append(openfmb_bus.topic_of(openfmb_alias('RTC', 'rtc', 'reading')))
         self.agent._subscribe_local(self.manager, self.peer, outbound)
 
     def inbound(self, raw_payload: bytes):
@@ -777,6 +856,60 @@ def main():
             ok, why = compare(*after(kind, dst))
             return ok, path, f'{wrote}; {why}'
 
+        rtc = RtcParty(bus) if RTC_ENABLED else None
+
+        def rtc_after_telemetry(dst):
+            """The RTC agent reports no frequency, so its telemetry is checked on W alone."""
+            if dst == 'SunSpec':
+                view, _ = S.client.get_multiple_points([f'{S.client_prefix}/701_W'])
+                return strip(view, S.client_prefix), {'701_W': W}
+            if dst == 'DNP3':
+                view, _ = D.client.get_multiple_points([f'{D.client_prefix}/AI_537'])
+                return strip(view, D.client_prefix), {'AI_537': W}
+            wait_for(lambda: 'MirrorMeterReading_W' in E.served_agent.flat(E.served_prefix), 15)
+            return E.served_agent.flat(E.served_prefix), {'MirrorMeterReading_W': W}
+
+        def run_rtc_telemetry(dst):
+            """The RTC agent publishes its status; the Device Adapter carries its power to the device or the broker."""
+            before_reports = len(bus.published)
+            if dst == 'OpenFMB':
+                openfmb.client.publish.reset_mock()
+                alias_topic = openfmb_bus.topic_of(openfmb_alias('RTC', 'rtc', 'reading'))
+                rtc.tick()
+                got = openfmb.broker_got(alias_topic, PROTO['ess'][0])
+                ok, why = compare(reading_view(got or {}, 'ess'), {'W': W})
+                detail = f'broker got {"a" if got is not None else "no"} {PROTO["ess"][0]} on {alias_topic}'
+            else:
+                before('telemetry', dst)
+                rtc.tick()
+                ok, why = compare(*rtc_after_telemetry(dst))
+                detail = 'status published'
+            via = [m for t, h, m in bus.published[before_reports:] if t == f'device_adapter/{bridge_name("telemetry", "RTC", dst)}']
+            path = via[-1]['path'] if via else '?'
+            if via:
+                detail += f', retention {via[-1]["retention"]:.2f}, {len(via[-1].get("written", []))} written'
+            return ok, path, f'{detail}; {why}'
+
+        def run_rtc_control(src):
+            """An external controller's enabled 50 % limit reaches the RTC agent's Active Power Limit mode."""
+            rtc.reset()
+            before_reports = len(bus.published)
+            if src == 'OpenFMB':
+                openfmb.client.publish.reset_mock()
+                alias_topic = openfmb_bus.topic_of(openfmb_alias('RTC', 'rtc', 'control'))
+                _, raw = openfmb.receive(PROTO['ess'][1], openfmb_control('ess'), alias_topic)
+                bus_adapter.inbound(raw)
+                wrote = 'bus adapter relay, bridge to the agent'
+            else:
+                message, src_fmt = control_source(src)
+                _, wrote = writer.write(message, src_fmt, 'RTC', None, kind='control', src=src)
+            rtc.tick()
+            via = [m for t, h, m in bus.published[before_reports:] if t == f'device_adapter/{bridge_name("control", src, "RTC")}']
+            path = via[-1]['path'] if via else '?'
+            ok, why = compare(rtc.limit_view(), {'LimW': LIMIT_PCT, 'ModEna': True, 'bound_hi_kw': RTC_CAPACITY_KW * LIMIT_PCT / 100,
+                                                 'output_kw': W / 1000})
+            return ok, path, f'{wrote}; {why}'
+
         for kind, source_of in (('telemetry', telemetry_source), ('control', control_source)):
             for src in PROTOCOLS:
                 for dst in PROTOCOLS:
@@ -792,6 +925,19 @@ def main():
                                 ok, path, detail = run_to_openfmb(kind, src, message, src_fmt)
                             else:
                                 ok, path, detail = run_device_path(kind, src, dst, message, src_fmt)
+                    except Exception as e:
+                        ok, detail = False, f'{type(e).__name__}: {e}'
+                        logging.exception('%s %s -> %s', kind, src, dst)
+                    record(kind, src, dst, ok, path, detail)
+        if rtc is not None:
+            for kind, runner, pairs in (('control', run_rtc_control, [(p, 'RTC') for p in PROTOCOLS]),
+                                        ('telemetry', run_rtc_telemetry, [('RTC', p) for p in PROTOCOLS])):
+                for src, dst in pairs:
+                    if not wanted(kind, src, dst):
+                        continue
+                    path = '?'
+                    try:
+                        ok, path, detail = runner(dst if src == 'RTC' else src)
                     except Exception as e:
                         ok, detail = False, f'{type(e).__name__}: {e}'
                         logging.exception('%s %s -> %s', kind, src, dst)

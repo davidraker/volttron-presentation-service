@@ -6,6 +6,7 @@ mappings (a canonical resource per device and an OpenFMB reading and control ali
 bridges (device to device, plus device to OpenFMB topic in ``bus`` mode) and the Message Bus Adapter."""
 import csv
 import json
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -30,7 +31,25 @@ MRID = {('SunSpec', 'client'): '7d1a2b3c-0000-4000-8000-000000000001', ('SunSpec
         ('2030.5', 'client'): '5e6f7a80-0000-4000-8000-000000000003', ('2030.5', 'served'): '5e6f7a80-0000-4000-8000-000000000013'}
 DNP3_TELEMETRY_POINTS = ['AI_536', 'AI_537', 'AI_3', 'AI_2']
 SUNSPEC_METER_POINTS = ['701_W', '701_W_SF', '701_Hz', '701_Hz_SF']           # the OpenFMB party feeds var and voltage
+# Telemetry bridges carry a device's measurements, nameplate and status, never its control settings: on the hub a
+# control's read-back (DWMX.LimW) is the same data object as the setpoint, so a telemetry bridge that carried it would
+# write one source's limit into every target and the targets would flap between the sources' values.
+SUNSPEC_TELEMETRY_GROUPS = ('1_', '701_', '702_', '713_')
+SEP2_TELEMETRY_GROUPS = ('DeviceInformation_', 'DERCapability_', 'DERSettings_', 'DERStatus_', 'MirrorMeterReading_')
 DEVICE_ADAPTER, BUS_ADAPTER, SERVICE, DRIVER = 'platform.device_adapter', 'platform.bus_adapter', 'platform.presentation', 'platform.driver'
+# The real-time control agent (``--rtc``): a bus-only resource in the `rtc_controller` format (plain copies of the 61850
+# hub's logical nodes). Controls reach it on RTC_CONTROL_TOPIC through a Device Adapter bus end; it publishes its status
+# on RTC_STATUS_TOPIC every tick. Its fake 10 kW storage follows a 4.321 kW setpoint at 50 % state of charge.
+RTC_IDENTITY = 'der.rtc'
+RTC_UAI = ['matrix', 'RTC']
+RTC_FORMAT = 'rtc_controller'
+RTC_CONTROL_TOPIC, RTC_STATUS_TOPIC, RTC_MODES_TOPIC = 'rtc/matrix/control', 'rtc/matrix/status', 'rtc/matrix/modes'
+RTC_CAPACITY_KW, RTC_W, RTC_SOC = 10.0, 4321, 50.0
+for _role in ('rtc', 'client', 'served'):
+    MRID[('RTC', _role)] = 'a1b2c3d4-0000-4000-8000-000000000021'
+OPENFMB_FAMILY['RTC'] = 'ess'
+CEE_APP_PATH = os.environ.get('CEE_APP_PATH', str(TESTS.parents[1] / 'ctrl-eval-engine' / 'app'))
+JULIA_PATH = os.environ.get('JULIA', str(Path.home() / '.juliaup' / 'bin' / 'julia'))
 
 
 def uai(protocol, role):
@@ -127,7 +146,7 @@ def served_rows(rows: list[dict], remote_writable_from_writable: bool) -> list[d
     return out
 
 
-def build(work: Path, ep: Endpoints, openfmb_mode: str) -> PlatformConfigs:
+def build(work: Path, ep: Endpoints, openfmb_mode: str, rtc: bool = False) -> PlatformConfigs:
     """Write every configuration file under ``work`` and describe what to store where."""
     work.mkdir(parents=True, exist_ok=True)
     entries: list[StoreEntry] = []
@@ -196,6 +215,13 @@ def build(work: Path, ep: Endpoints, openfmb_mode: str) -> PlatformConfigs:
                                            'parameters': {'mrid': MRID[(protocol, role)], 'name': f'{protocol} {role}'},
                                            'uai': openfmb_alias(protocol, role, kind)} for kind in ('reading', 'control')}
             mappings += resource_mappings(fmt, device_topic(protocol, role), uai(protocol, role), aliases)
+    if rtc:
+        mappings.append({'uai': RTC_UAI, 'resource_type': 'canonical',
+                         'resource': {'data_format': RTC_FORMAT, 'owner': RTC_IDENTITY, 'publication_topic': RTC_STATUS_TOPIC}})
+        for kind in ('reading', 'control'):
+            mappings.append({'uai': openfmb_alias('RTC', 'rtc', kind), 'resource_type': 'alias',
+                             'resource': {'data_format': f'openfmb.ess.{kind}', 'owner': RTC_IDENTITY, 'references': RTC_UAI,
+                                          'encoding': 'protobuf', 'parameters': {'mrid': MRID[('RTC', 'rtc')], 'name': 'RTC agent'}}})
     store(SERVICE, 'config', {'formats': formats, 'transforms': transforms, 'mappings': mappings})
 
     # ---- device adapter ---------------------------------------------------------------------------------------------
@@ -214,6 +240,10 @@ def build(work: Path, ep: Endpoints, openfmb_mode: str) -> PlatformConfigs:
                         # The inverter's meter only, so the ratings and settings the 2030.5 client reports have the
                         # served outstation's nameplate points to themselves (scale factors travel with the values).
                         bridge['points'] = SUNSPEC_METER_POINTS
+                    elif kind == 'telemetry' and src == 'SunSpec':
+                        bridge['points'] = [n for n in formats[CLIENT_FORMAT['SunSpec']]['fields'] if n.startswith(SUNSPEC_TELEMETRY_GROUPS)]
+                    elif kind == 'telemetry' and src == '2030.5':
+                        bridge['points'] = [n for n in formats[SERVED_FORMAT['2030.5']]['fields'] if n.startswith(SEP2_TELEMETRY_GROUPS)]
                     bridges.append(bridge)
     outbound, inbound = [], []
     for protocol in DEVICES:
@@ -231,6 +261,39 @@ def build(work: Path, ep: Endpoints, openfmb_mode: str) -> PlatformConfigs:
                  'target': {'uai': openfmb_alias(protocol, ctl_src, 'control'), 'bus': True}},
                 {'name': bridge_name('control', 'OpenFMB', protocol), 'source': {'uai': openfmb_alias(protocol, ctl_dst, 'control'), 'bus': True},
                  'target': uai(protocol, ctl_dst)}]
+    if rtc:
+        # One control sub-topic per source: the agent applies a source's changes, not its per-poll re-assertions. The
+        # status (measurements) goes to every target; the modes' parameters and read-backs only to the served outstation,
+        # whose read-back inputs are distinct from its control outputs (on the hub DWMX.LimW is both).
+        def control_end(source):
+            return {'uai': RTC_UAI, 'bus': True, 'topic': f'{RTC_CONTROL_TOPIC}/{source}'}
+        status_end = {'uai': RTC_UAI, 'bus': True, 'topic': RTC_STATUS_TOPIC}
+        modes_end = {'uai': RTC_UAI, 'bus': True, 'topic': RTC_MODES_TOPIC}
+        # Only the limit's points travel to the agent: a device's other points would land in modes it does not run.
+        control_points = {'SunSpec': ['704_WMaxLimPct', '704_WMaxLimPctEna', '704_WMaxLimPct_SF'], 'DNP3': ['AO_87', 'BO_17'],
+                          '2030.5': ['DERControl_opModMaxLimW']}
+        for protocol in DEVICES:
+            bridges += [
+                {'name': bridge_name('control', protocol, 'RTC'), 'source': uai(protocol, roles('control', protocol, 'RTC')[0]),
+                 'target': control_end(protocol), 'points': control_points[protocol]},
+                {'name': bridge_name('telemetry', 'RTC', protocol), 'source': status_end,
+                 'target': uai(protocol, roles('telemetry', 'RTC', protocol)[1])}]
+        bridges.append({'name': bridge_name('status', 'RTC', 'DNP3'), 'source': modes_end, 'target': uai('DNP3', 'served')})
+        outbound.append(topic_of(openfmb_alias('RTC', 'rtc', 'reading')))
+        inbound.append(topic_of(openfmb_alias('RTC', 'rtc', 'control')))
+        if openfmb_mode == 'bus':
+            bridges += [
+                {'name': bridge_name('control', 'OpenFMB', 'RTC'), 'source': {'uai': openfmb_alias('RTC', 'rtc', 'control'), 'bus': True},
+                 'target': control_end('OpenFMB')},
+                {'name': bridge_name('telemetry', 'RTC', 'OpenFMB'), 'source': status_end,
+                 'target': {'uai': openfmb_alias('RTC', 'rtc', 'reading'), 'bus': True}}]
+        store(RTC_IDENTITY, 'config', {
+            'ctrl_eval_engine_app_path': CEE_APP_PATH, 'julia_path': JULIA_PATH, 'resolution': ep.poll_interval,
+            'ess': {'class_name': 'FakeESS', 'power_capacity_kw': RTC_CAPACITY_KW, 'energy_capacity_kwh': 2 * RTC_CAPACITY_KW,
+                    'initial_soc': RTC_SOC},
+            'controller': {}, 'hub_topic': RTC_CONTROL_TOPIC, 'status_topic': RTC_STATUS_TOPIC, 'modes_topic': RTC_MODES_TOPIC,
+            'modes': [{'name': 'schedule', 'class_name': 'ChargeDischargeStorage', 'priority': 2, 'WSpt': RTC_W / 1000},
+                      {'name': 'limit', 'class_name': 'ActivePowerLimit', 'priority': 1, 'enabled': False, 'LimWMax': 100.0}]})
     store(DEVICE_ADAPTER, 'config', {'presentation_service': SERVICE, 'driver': DRIVER, 'bridges': bridges, 'echo_window': 5.0})
 
     # ---- message bus adapter ----------------------------------------------------------------------------------------

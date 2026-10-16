@@ -19,6 +19,7 @@ Adapter's write RPC) or in ``relay`` mode with the Device Adapter's bus ends (``
 Exit status is non-zero if any path fails. Takes several minutes (the first platform start builds its poetry project).
 """
 import argparse
+import ast
 import copy
 import json
 import logging
@@ -51,7 +52,7 @@ VAR, V_PHASE = -120, 240        # what the OpenFMB party reports (the other sour
 # Each source orders its own limit, so a write that merely repeats the last value (which the bridges skip) is never
 # mistaken for a new one at a target several sources share. DNP3 carries it in tenths of a percent (AO_87, multiplier 0.1).
 LIMIT = {'SunSpec': 50, 'DNP3': 40, '2030.5': 30, 'OpenFMB': 20}
-TARGET_OFFSET = {'SunSpec': 0, 'DNP3': 1, '2030.5': 2, 'OpenFMB': 3}     # ... and a different one for each of its targets
+TARGET_OFFSET = {'SunSpec': 0, 'DNP3': 1, '2030.5': 2, 'OpenFMB': 3, 'RTC': 4}     # ... and a different one for each of its targets
 WMAX = 9876                     # a SunSpec WMax the platform carries up as DERSettings.setMaxW
 RTG_MAX_V_RAW = 2640            # DNP3 AI_3 (0.1 V): 264 V, carried up as DERCapability.rtgMaxV
 PIN = 111115
@@ -152,6 +153,8 @@ class Matrix:
         self.openfmb = OpenFmbParty(port=ports['mqtt'])
         outbound = [topic_of(openfmb_alias(p, roles(k, p, 'OpenFMB')[0], 'reading' if k == 'telemetry' else 'control'))
                     for p in DEVICES for k in ('telemetry', 'control')]
+        if self.args.rtc:
+            outbound.append(topic_of(openfmb_alias('RTC', 'rtc', 'reading')))
         self.openfmb.start(outbound)
         self.endpoints = configs.Endpoints(
             sunspec_device=(self.sunspec_device.host, self.sunspec_device.port), sunspec_served_port=ports['sunspec_served'],
@@ -162,14 +165,14 @@ class Matrix:
         self.log.info('external parties up: %s', ports)
 
     def start_platform(self):
-        built = configs.build(self.work / 'configs', self.endpoints, self.args.openfmb)
+        built = configs.build(self.work / 'configs', self.endpoints, self.args.openfmb, rtc=self.args.rtc)
         self.configs = built
         self.platform = Platform(self.work / 'volttron_home', 'der-e2e')
         t0 = time.time()
         self.platform.start()
         self.log.info('platform up in %.0fs', time.time() - t0)
         self.platform.store_all(built.entries, self.log.info)
-        self.platform.install_all(self.log.info)
+        self.platform.install_all(self.log.info, include_rtc=self.args.rtc)
         status = self.platform.vctl('status')
         self.log.info('vctl status:\n%s', status)
         if not wait_for(lambda: port_open('127.0.0.1', self.ports['sep2_served']), 120, 2):
@@ -191,6 +194,17 @@ class Matrix:
         self.log.info('first reading profile at the broker: %s', 'yes' if first else 'no')
         if not first:
             raise RuntimeError('no reading profile reached the broker within 120 s:\n' + self.platform.log_tail(80))
+        if self.args.rtc:
+            # The agent's modes reach the served outstation (DWMX.LimW read-back as AI 148) through the Device Adapter;
+            # an independent 1815.2 master reads it there, as for every other observation of the platform's black box.
+            # Devices re-assert their standing limits on start-up (the SunSpec unit's register default is 10000), so the
+            # first read-back is whatever the last source said; its presence is what proves the chain, and rtc_reset
+            # restores a known state before each control path.
+            view = wait_for(lambda: (lambda v: v if v.get('LimWMax') is not None else None)(self.rtc_limit_view()), 240, 5)
+            self.log.info('RTC agent limit read-back at the served outstation: %s', view)
+            if not view:
+                raise RuntimeError('the RTC agent\'s limit never reached the served outstation (Julia start-up or install failure):\n'
+                                   + self.platform.log_tail(80))
 
     def stop(self):
         logs = self.work / 'logs'
@@ -213,6 +227,52 @@ class Matrix:
     def record(self, kind, src, dst, ok, detail):
         self.results.append((kind, src, dst, bool(ok), detail))
         print(f'{"PASS" if ok else "FAIL"} {kind:9} {src:>7} -> {dst:<7} {detail}', flush=True)
+
+    # ---- the RTC agent: observed through its status topic, commanded through its hub topic ----------------------
+    def rtc_limit_view(self):
+        """The agent's Active Power Limit as an independent 1815.2 master reads it from the served outstation: AI 148 is
+        the DWMX.LimW read-back (raw tenths... per the profile's multiplier). The enable (BI 69) is a binary input the
+        reference control station does not report, so it is not observable this way."""
+        from interoperability.discovery.device_formats import dnp3_scaling
+        raw = self.dnp3_read([148], 30).get(148)
+        return {'LimWMax': None if raw is None else raw * dnp3_scaling('AI_148')[0]}
+
+    def rtc_reset(self):
+        """Back to an unlimited, disabled limit so that the next control path has a change to make."""
+        self.platform.vctl('publish', configs.RTC_CONTROL_TOPIC, json.dumps({'DWMX': {'LimW': 100, 'ModEna': False}}), timeout=60)
+        wait_for(lambda: near(self.rtc_limit_view().get('LimWMax'), 100), 90, 2)
+
+    def telemetry_rtc(self, dst):
+        """The RTC agent's status (its power and state of charge) reaches the external party at ``dst``."""
+        from protocol_proxy.protocol.ieee2030_5.models import sep
+        soc = configs.RTC_SOC
+        if dst == 'OpenFMB':
+            topic = topic_of(openfmb_alias('RTC', 'rtc', 'reading'))
+            got = self.openfmb.wait_for(topic, PROTO['ess'][0],
+                                        lambda m: near(dig(m, 'essReading', 'readingMMXU', 'W', 'net', 'cVal', 'mag'), configs.RTC_W), timeout=60)
+            return self.expect({'W': dig(got or {}, 'essReading', 'readingMMXU', 'W', 'net', 'cVal', 'mag')}, {'W': configs.RTC_W})
+        if dst == 'SunSpec':
+            def read():
+                sf = self.sunspec_master.read_point('713_Pct_SF') or 0
+                raw = self.sunspec_master.read_point('713_SoC')
+                return {'713_SoC_pct': None if raw is None else raw * 10 ** sf}
+            got = wait_for(lambda: (lambda g: g if near(g['713_SoC_pct'], soc) else None)(read()), 60, 2) or read()
+            return self.expect(got, {'713_SoC_pct': soc})
+        if dst == 'DNP3':
+            # DSTO.UseSocPct (AI 48) as the raw integer the profile's multiplier gives; the limit read-back (AI 148) is
+            # what the control paths into the agent observe.
+            from interoperability.discovery.device_formats import dnp3_scaling
+            return self.observe_telemetry(dst, expected_dnp3={48: round(soc / dnp3_scaling('AI_48')[0])}, timeout=90)
+        if dst == '2030.5':
+            def read():
+                status = self.go_server.fetch('/edev/1/der/1/ders', sep.DERStatus)
+                value = getattr(getattr(status, 'stateOfChargeStatus', None), 'value', None)
+                return {'stateOfChargeStatus': value}
+            def ok(v):
+                return v is not None and (near(v, soc) or near(v, soc * 100))      # percent, or 2030.5's hundredths of a percent
+            got = wait_for(lambda: (lambda g: g if ok(g['stateOfChargeStatus']) else None)(read()), 90, 3) or read()
+            return ok(got['stateOfChargeStatus']), f'observed {got}, expected {soc} % (as percent or hundredths)'
+        raise ValueError(dst)
 
     def wanted(self, kind, src, dst):
         only = self.args.only
@@ -285,6 +345,12 @@ class Matrix:
             wait_for(lambda: raw in read(), timeout, 1)
             ao = read()
             return raw in ao, f'outstation received AO87 {ao[-4:]} (expected {raw}); BO17 operates are not logged by the outstation'
+        if dst == 'RTC':
+            # The limit's value at the agent, read back at the served outstation; the enable is not readable there.
+            read = self.rtc_limit_view
+            expected = {'LimWMax': limit}
+            got = wait_for(lambda: (lambda g: g if all(near(g.get(k), v) for k, v in expected.items()) else None)(read()), timeout, 2) or read()
+            return self.expect(got, expected)
         if dst == '2030.5':
             # The Go client applies opModMaxLimW as hundredths of a percent of its 10 kW rating, so a limit of N (our
             # convention: percent) caps its reported P at about N W: the value is visible in its report lines.
@@ -328,6 +394,27 @@ class Matrix:
                     ok, detail = False, f'{type(e).__name__}: {e}'
                     self.log.exception('control %s -> %s', src, dst)
                 self.record('control', src, dst, ok, detail)
+        # ---- the RTC agent: controls into its modes, its status out ----
+        if self.args.rtc:
+            for src in PROTOCOLS:
+                if not self.wanted('control', src, 'RTC'):
+                    continue
+                try:
+                    self.rtc_reset()
+                    ok, detail = self.control(src, 'RTC')
+                except Exception as e:
+                    ok, detail = False, f'{type(e).__name__}: {e}'
+                    self.log.exception('control %s -> RTC', src)
+                self.record('control', src, 'RTC', ok, detail)
+            for dst in PROTOCOLS:
+                if not self.wanted('telemetry', 'RTC', dst):
+                    continue
+                try:
+                    ok, detail = self.telemetry_rtc(dst)
+                except Exception as e:
+                    ok, detail = False, f'{type(e).__name__}: {e}'
+                    self.log.exception('telemetry RTC -> %s', dst)
+                self.record('telemetry', 'RTC', dst, ok, detail)
 
     def telemetry(self, src, dst):
         """Telemetry is standing state at the external source; the check is that the external target sees it."""
@@ -405,6 +492,10 @@ class Matrix:
                 wrote = master.wait_for_log(rf'wrote AO87 = {limit * 10}', 30)
                 if not wrote:
                     return False, 'the reference control station never wrote AO87 to the served outstation: ' + master.logs()[-500:]
+                if dst == 'RTC':
+                    # The agent's read-back is observed by another master on the same single-connection outstation.
+                    master.stop()
+                    master = None
             elif src == '2030.5':
                 created = self.go_server.create_control(limit)
                 self.log.info('go server control %s: opModMaxLimW %s', created, limit)
@@ -459,6 +550,7 @@ class Matrix:
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--openfmb', choices=('rpc', 'bus'), default='bus')
+    parser.add_argument('--rtc', action='store_true', help='also install the real-time control agent and run its eight paths')
     parser.add_argument('--work', default=os.environ.get('E2E_PLATFORM_WORK', '/tmp/e2e-platform'))
     parser.add_argument('--keep', action='store_true', help='leave the platform and the containers running afterwards')
     parser.add_argument('--keep-work', action='store_true', help='do not wipe the work directory first')

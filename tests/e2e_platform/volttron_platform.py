@@ -12,13 +12,15 @@ sys.path.insert(0, str(PYMODBUS_TESTS))
 import platform_cli                                                   # noqa: E402
 from platform_cli import PlatformCLI, PlatformError                    # noqa: E402
 
-EXCLUDED = {'protocol-proxy-dnp3', 'dnp3py', 'volttron-lib-dnp3-driver', 'volttron-testing'}   # unlockable git/path sources; a pytest<8 pin
+EXCLUDED = {'protocol-proxy-dnp3', 'dnp3py', 'volttron-lib-dnp3-driver', 'volttron-testing',
+            'volttron-realtime-control'}   # unlockable git/path sources; a pytest<8 pin; the RTC agent's classic-volttron pin
 _original_project = platform_cli.poetry_project_for_current_environment
 
 AGENTS = [('/home/dmr/Projects/volttron/modular/drivers/platform-driver-agent', 'platform.driver', 'driver'),
           ('/home/dmr/Projects/der_control_modules/interoperability_service', 'platform.presentation', 'interop'),
           ('/home/dmr/Projects/der_control_modules/device-adapter', 'platform.device_adapter', 'device_adapter'),
           ('/home/dmr/Projects/der_control_modules/message-bus-adapter', 'platform.bus_adapter', 'bus_adapter')]
+RTC_AGENT = ('/home/dmr/Projects/der_control_modules/rtc_agent', 'der.rtc', 'rtc')     # the real-time control agent (--rtc)
 
 
 def poetry_project() -> str:
@@ -39,9 +41,9 @@ class Platform(PlatformCLI):
         platform_cli.poetry_project_for_current_environment = poetry_project
         super().start(timeout)
 
-    def install_all(self, log=print):
+    def install_all(self, log=print, include_rtc=False):
         import time
-        for source, identity, tag in AGENTS:
+        for source, identity, tag in AGENTS + ([RTC_AGENT] if include_rtc else []):
             t0 = time.time()
             self.install_agent(source, identity, tag)
             log(f'installed {identity} in {time.time() - t0:.0f}s')

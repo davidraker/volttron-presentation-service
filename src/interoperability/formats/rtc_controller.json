@@ -1,0 +1,6 @@
+{
+  "rtc_controller": {
+    "hub": false,
+    "description": "The real-time controller agent's view of the 61850 hub: plain copies of the MESA/IEEE 1815.2 logical nodes its modes support, the FSCH schedule entries, and its status (DECP.MMXU, DSTO)."
+  }
+}

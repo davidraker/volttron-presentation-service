@@ -26,10 +26,13 @@ for image in ('sep2server:e2e', 'inverterclient:e2e', 'eclipse-mosquitto:2', 'ie
 RUN = Path(__file__).with_name('e2e_platform') / 'run.py'
 
 
-@pytest.mark.parametrize('openfmb_mode', ['bus', 'rpc'])
-def test_real_platform_matrix(tmp_path, openfmb_mode):
-    proc = subprocess.run([sys.executable, str(RUN), '--openfmb', openfmb_mode, '--work', str(tmp_path / 'work')],
+@pytest.mark.parametrize('openfmb_mode, rtc, expected', [('bus', False, 24), ('rpc', False, 24), ('bus', True, 32)])
+def test_real_platform_matrix(tmp_path, openfmb_mode, rtc, expected):
+    if rtc:
+        pytest.importorskip('rt_control')
+        pytest.importorskip('julia')
+    proc = subprocess.run([sys.executable, str(RUN), '--openfmb', openfmb_mode, '--work', str(tmp_path / 'work')] + (['--rtc'] if rtc else []),
                           capture_output=True, text=True, timeout=3600)
     report = proc.stdout + proc.stderr
     assert proc.returncode == 0, report
-    assert '24/24 passed' in proc.stdout, report
+    assert f'{expected}/{expected} passed' in proc.stdout, report
