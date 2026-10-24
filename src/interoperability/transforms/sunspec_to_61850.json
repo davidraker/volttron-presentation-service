@@ -26,7 +26,9 @@
       },
       "DSTO": {
         "WChaUnPFRtg": "transform[702, WChaRteMaxRtg]()",
-        "VAMaxChaRtg": "transform[702, WChaRteMaxRtg]()",
+        "VAMaxChaRtg": "transform[702, VAChaRteMaxRtg]()",
+        "WChaMax": "transform[702, WChaRteMax]()",
+        "VAChaMax": "transform[702, VAChaRteMax]()",
         "WhRtg": null,
         "DERState": {
           "1": "transform[701, ConnSt]()"
@@ -34,7 +36,7 @@
         "SocUsePct": "transform[713, SoC]()"
       },
       "DECP": {
-        "VRef": "transform[705, Crv, 0, VRef]()",
+        "VRef": "transform[702, VNomRtg]()",
         "MMXU": {
           "TotW": "transform[701, W]()",
           "TotVAr": "transform[701, Var]()",
@@ -66,13 +68,15 @@
       "DFPF": {
         "ModEna": "transform[704, PFWInjEna](cast_value(bool))",
         "PFGnTgt": "transform[704, PFWInj, PF]()",
-        "PFLodTgt": "transform[704, PFWInj, PF]()",
-        "PFExtSet": "transform[704, PFWInj, Ext](equals(0))"
+        "PFLodTgt": "transform[704, PFWAbs, PF]()",
+        "PFExtSet": "transform[704, PFWInj, Ext](equals(0))",
+        "PFLodExtSet": "transform[704, PFWAbs, Ext](equals(0))"
       },
       "DVVR": {
         "ModEna": "transform[705, Ena](cast_value(bool))",
         "VRefAdjEna": "transform[705, Crv, 0, VRefAutoEna]()",
         "VRefTmms": "transform[705, Crv, 0, VRefAutoTms]()",
+        "VRef": "transform[705, Crv, 0, VRef]()",
         "VVArCrv": {
           "numPts": "transform[705, Crv, 0, ActPt]()",
           "crvPts[#]": {
@@ -207,6 +211,7 @@
         "HzHiLim": "transform[703, ESHzHi]()",
         "HzLoLim": "transform[703, ESHzLo]()",
         "RtnSrvDlyTim": "transform[703, ESDlyTms]()",
+        "RtnSrvRndTim": "transform[703, ESRndTms]()",
         "RtnSrvRmpTim": "transform[703, ESRmpTms]()"
       },
       "DWMX": {

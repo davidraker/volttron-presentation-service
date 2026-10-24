@@ -72,7 +72,9 @@ class Sampler:
         if str(path[-1]) in self.COUNT_NAMES:
             return 1
         self.counter += 1
-        value = float(self.counter)
+        # Quadratic spacing: the mean of any run of sample values is not itself a sample value, so an averaged
+        # output cannot be mistaken for a copied one.
+        value = 1000.0 + self.counter + 0.001 * self.counter * self.counter
         self.origin[value] = (data_format, path)
         return value
 

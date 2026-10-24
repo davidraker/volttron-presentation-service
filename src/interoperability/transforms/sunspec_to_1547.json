@@ -63,7 +63,7 @@
       "Constant PF": {
         "Enable": "transform[704, PFWInjEna]()",
         "Injection/Absorption setting": "transform[704, PFWInj, PF]()",
-        "Excitation setting": "transform[704, PFWInj, Ext]()"
+        "Excitation setting": "transform[704, PFWInj, Ext](cast_value(bool))"
       },
       "Volt-VAR": {
         "Enable": "transform[705, Ena]()",

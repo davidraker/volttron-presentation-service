@@ -63,7 +63,7 @@
       "Constant PF": {
         "Enable": "transform[DFPF, ModEna]()",
         "Injection/Absorption setting": "transform[DFPF, PFGnTgt]()",
-        "Excitation setting": "transform[DFPF, PFExtSet]()"
+        "Excitation setting": "transform[DFPF, PFExtSet](select(0, 1), cast_value(bool))"
       },
       "Volt-VAR": {
         "Enable": "transform[DVVR, ModEna]()",

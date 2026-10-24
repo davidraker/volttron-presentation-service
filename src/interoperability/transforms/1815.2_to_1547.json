@@ -117,7 +117,7 @@
       },
       "Limit Watt": {
         "Enable": "transform[BI, 69]()",
-        "Watt Setting": "transform[AI, 149]()"
+        "Watt Setting": "transform[AI, 148]()"
       }
     }
   },
@@ -239,7 +239,7 @@
       },
       "Limit Watt": {
         "Enable": "transform[BO, 17]()",
-        "Watt Setting": "transform[AO, 88]()"
+        "Watt Setting": "transform[AO, 87]()"
       }
     }
   }

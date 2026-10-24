@@ -73,7 +73,7 @@
         "PFWInjEna": "transform['Constant PF', Enable]()",
         "PFWInj": {
           "PF": "transform['Constant PF', 'Injection/Absorption setting']()",
-          "Ext": "transform['Constant PF', 'Excitation setting']()"
+          "Ext": "transform['Constant PF', 'Excitation setting'](cast_value(int))"
         },
         "PFWAbsEna": null,
         "PFWAbs": {

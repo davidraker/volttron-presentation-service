@@ -35,8 +35,8 @@
         "setMaxVA": "transform[DGEN, VAMax]()",
         "setMaxVar": null,
         "setMaxVarNeg": null,
-        "setMaxChargeRateW": null,
-        "setMaxChargeRateVA": null,
+        "setMaxChargeRateW": "transform[DSTO, WChaMax]()",
+        "setMaxChargeRateVA": "transform[DSTO, VAChaMax]()",
         "setVNom": null,
         "setMaxV": "transform[DGEN, Vmax]()",
         "setMinV": "transform[DGEN, Vmin]()",
@@ -47,7 +47,7 @@
         "setESHighFreq": "transform[DCTE, HzHiLim]()",
         "setESLowFreq": "transform[DCTE, HzLoLim]()",
         "setESDelay": "transform[DCTE, RtnSrvDlyTim]()",
-        "setESRandomDelay": null,
+        "setESRandomDelay": "transform[DCTE, RtnSrvRndTim]()",
         "setESRampTms": "transform[DCTE, RtnSrvRmpTim]()"
       },
       "MirrorMeterReading": {
@@ -72,11 +72,11 @@
       "DERControl": {
         "opModFixedPFInjectW": {
           "displacement": "transform[DFPF, PFGnTgt]()",
-          "excitation": "transform[DFPF, PFExtSet]()"
+          "excitation": "transform[DFPF, PFExtSet](select(0, 1), cast_value(bool))"
         },
         "opModFixedPFAbsorbW": {
           "displacement": "transform[DFPF, PFLodTgt]()",
-          "excitation": "transform[DFPF, PFLodExtSet]()"
+          "excitation": "transform[DFPF, PFLodExtSet](select(0, 1), cast_value(bool))"
         },
         "opModVoltVar": null,
         "opModWattVar": null,
@@ -166,7 +166,7 @@
         "setESHighFreq": "transform[DCTE, HzHiLim]()",
         "setESLowFreq": "transform[DCTE, HzLoLim]()",
         "setESDelay": "transform[DCTE, RtnSrvDlyTim]()",
-        "setESRandomDelay": null,
+        "setESRandomDelay": "transform[DCTE, RtnSrvRndTim]()",
         "setESRampTms": "transform[DCTE, RtnSrvRmpTim]()"
       },
       "DERControlList[#]": {
@@ -178,11 +178,11 @@
         "DERControl": {
           "opModFixedPFInjectW": {
             "displacement": "transform[#, DFPF, PFGnTgt]()",
-            "excitation": "transform[#, DFPF, PFExtSet]()"
+            "excitation": "transform[#, DFPF, PFExtSet](select(0, 1), cast_value(bool))"
           },
           "opModFixedPFAbsorbW": {
             "displacement": "transform[#, DFPF, PFLodTgt]()",
-            "excitation": "transform[#, DFPF, PFLodExtSet]()"
+            "excitation": "transform[#, DFPF, PFLodExtSet](select(0, 1), cast_value(bool))"
           },
           "opModFixedVar": "transform[#, DVAR, VArTgt]()",
           "opModFreqDroop": {

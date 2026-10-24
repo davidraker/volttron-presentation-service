@@ -30,20 +30,12 @@ PACKAGE = Path(__file__).resolve().parents[1] / 'src' / 'interoperability'
 # values name the hub convention at issue. Each is a strict xfail: fixing the conflict makes the test pass and
 # the entry must then be removed.
 KNOWN_CONFLICTS = {
-    ('1547', 'sunspec'): 'average line voltages: direct maps to 701.LLV/LNV, the 2030.5 route to one phase (VL2L3/VL2)',
-    ('sunspec', '1547'): 'average line voltages: direct reads 701.LLV/LNV, the 2030.5 route one phase (VL2L3/VL2)',
-    ('1815.2.inputs', '1547'): 'watt limit: the 1547 edge reads AI149 (DWMN), every other route AI148 (DWMX)',
-    ('1815.2.inputs', '61850'): 'watt limit: DWMX.LimW from AI148 direct, AI149 through the 1547 edge',
-    ('1815.2.inputs', 'sunspec'): 'watt limit: 704.WMaxLimPct from AI148 direct, AI149 through the 1547 edge',
-    ('2030.5', 'sunspec'): 'hub folds DERSettings charge-rate settings into the DSTO ratings; setESRandomDelay versus '
-                           'setESDelay; PF excitation polarity; 705 VRef from the curve versus rtgVNom',
-    ('sunspec', '2030.5'): 'DSTO.VAMaxChaRtg fed from 702.WChaRteMaxRtg by sunspec_to_61850; rtgVNom versus curve VRef; '
-                           'PF excitation polarity',
-    ('sunspec', '61850'): 'sunspec_to_61850 writes DSTO.VAMaxChaRtg from the W rating and DFPF.PFLodTgt from PFWInj where the '
-                          '2030.5 route uses PFWAbs; DECP.VRef from the 705 curve versus 702.VNomRtg; PFExtSet polarity',
-    ('61850', 'sunspec'): 'PF excitation polarity (704.PFWInj.Ext) between 61850_to_sunspec and the 1547 route',
+    ('1815.2.inputs', '61850'): 'PF excitation polarity of BI29/BI30: the 1815.2_to_61850 edge copies the flag as the hub '
+                                'sense (true = over-excited) while 1815.2_to_2030.5 copies it as 2030.5\'s (true = under-excited); '
+                                'IEEE 1815.2-2025 does not state the point\'s polarity in the text, decision open',
     ('61850', '1815.2.inputs'): 'the 1815.2 edge reads numbered or renamed hub keys (DHFW1, DLFW1, DCTE1, DGEN.IvarMaxRtg, '
-                                'DVWC.OplTmsMax) that no other edge writes, so hub values from other sources never reach it',
+                                'DVWC.OplTmsMax) that no other edge writes, so hub values from other sources never reach it; '
+                                'it also writes BI flags as booleans where sunspec_to_1815.2 writes integers',
     ('61850', '1815.2.outputs'): 'same numbered or renamed hub keys as the inputs edge (DCTE1, DVWC.OplTmsMax[1], ...)',
 }
 
@@ -80,8 +72,9 @@ def test_hub_edges_are_classified_and_subset_edges_are_known(registry):
                if a in registry.hubs and b in registry.hubs}
     assert {r['classification'] for r in reports.values()} <= {'no alternative', 'adds coverage', 'subset of alternative'}
     subset = sorted(k for k, r in reports.items() if r['classification'] == 'subset of alternative')
-    # The 1547 cross-reference drafts reach 1815.2 through SunSpec with more fields than they carry directly.
-    assert subset == [('1547', '1815.2.inputs'), ('1547', '1815.2.outputs')]
+    # The 1547 cross-reference drafts reach 1815.2 through SunSpec with more fields than they carry directly, and
+    # the 1815.2 inputs reach 1547 through SunSpec with at least the same fields.
+    assert subset == [('1547', '1815.2.inputs'), ('1547', '1815.2.outputs'), ('1815.2.inputs', '1547')]
     assert all(not reports[k]['needed_for_reachability'] for k in subset)
     assert [(r['input_format'], r['output_format']) for r in registry.prune_candidates()] == subset
     # The OpenFMB hubs are pure spokes of 61850.
@@ -144,6 +137,8 @@ def test_direct_and_alternative_routes_agree(registry, samples, edge, request):
         # A leaf is compared when at least one route's value traces to a sampled source field, or when both are
         # flags or enumerations. Two untraced numbers are derived constants (point counts, defaults) whose values
         # depend on the sample's shape rather than on the routes.
+        if any(isinstance(v, float) and not isinstance(v, bool) and v not in sampler.origin for v in (a, b)):
+            return False       # an arithmetic result (a mean, a scaling): not comparable with a copied value
         traced = any(isinstance(v, float) and v in sampler.origin for v in (a, b))
         return traced or all(isinstance(v, (bool, int)) and not isinstance(v, float) for v in (a, b)) and (isinstance(a, bool) or isinstance(b, bool))
 

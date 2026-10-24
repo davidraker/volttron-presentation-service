@@ -28,6 +28,8 @@
       "DSTO": {
         "WChaUnPFRtg": "transform[DERCapability, rtgMaxChargeRateW]()",
         "VAMaxChaRtg": "transform[DERCapability, rtgMaxChargeRateVA]()",
+        "WChaMax": "transform[DERSettings, setMaxChargeRateW]()",
+        "VAChaMax": "transform[DERSettings, setMaxChargeRateVA]()",
         "WhRtg": "transform[DERCapability, rtgMaxWh]()",
         "DERState": {
           "1": "transform[DERStatus, connectStatus]()"
@@ -79,9 +81,9 @@
       "DFPF": {
         "ModEna": "transform[DERControl, opModFixedPFInjectW, displacement](const(1), cast_value(bool))",
         "PFGnTgt": "transform[DERControl, opModFixedPFInjectW, displacement]()",
-        "PFExtSet": "transform[DERControl, opModFixedPFInjectW, excitation]()",
+        "PFExtSet": "transform[DERControl, opModFixedPFInjectW, excitation](equals(0))",
         "PFLodTgt": "transform[DERControl, opModFixedPFAbsorbW, displacement]()",
-        "PFLodExtSet": "transform[DERControl, opModFixedPFAbsorbW, excitation]()"
+        "PFLodExtSet": "transform[DERControl, opModFixedPFAbsorbW, excitation](equals(0))"
       },
       "DVVR": {
         "ModEna": null,
@@ -214,6 +216,7 @@
         "HzHiLim": "transform[DERSettings, setESHighFreq]()",
         "HzLoLim": "transform[DERSettings, setESLowFreq]()",
         "RtnSrvDlyTim": "transform[DERSettings, setESDelay]()",
+        "RtnSrvRndTim": "transform[DERSettings, setESRandomDelay]()",
         "RtnSrvRmpTim": "transform[DERSettings, setESRampTms]()"
       },
       "DWMX": {
@@ -230,9 +233,9 @@
           "SchdIntv": "transform[#, interval, duration]()",
           "DFPF": {
             "PFGnTgt": "transform[#, DERControl, opModFixedPFInjectW, displacement]()",
-            "PFExtSet": "transform[#, DERControl, opModFixedPFInjectW, excitation]()",
+            "PFExtSet": "transform[#, DERControl, opModFixedPFInjectW, excitation](equals(0))",
             "PFLodTgt": "transform[#, DERControl, opModFixedPFAbsorbW, displacement]()",
-            "PFLodExtSet": "transform[#, DERControl, opModFixedPFAbsorbW, excitation]()",
+            "PFLodExtSet": "transform[#, DERControl, opModFixedPFAbsorbW, excitation](equals(0))",
             "ModEna": "transform[#, DERControl, opModFixedPFInjectW, displacement](const(1), cast_value(bool))"
           },
           "DVVR": {

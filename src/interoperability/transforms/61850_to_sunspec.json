@@ -27,8 +27,8 @@
         "VAMax": "transform[DGEN, VAMax]()",
         "IntIslandCat": "transform[DGEN, RegCap]()",
         "VarMaxAbsRtg": "transform[DGEN, VarMaxAbgRtg]()",
-        "WChaRteMax": "transform[DSTO, WChaUnPFRtg]()",
-        "VAChaRteMax": "transform[DSTO, VAMaxChaRtg]()",
+        "WChaRteMax": "transform[DSTO, WChaMax]()",
+        "VAChaRteMax": "transform[DSTO, VAChaMax]()",
         "Vnom": "transform[DECP, VRef]()"
       },
       "1": {
@@ -62,6 +62,10 @@
           "PF": "transform[DFPF, PFGnTgt]()",
           "Ext": "transform[DFPF, PFExtSet](select(0, 1))"
         },
+        "PFWAbs": {
+          "PF": "transform[DFPF, PFLodTgt]()",
+          "Ext": "transform[DFPF, PFLodExtSet](select(0, 1))"
+        },
         "VarSetEna": "transform[DVAR, ModEna](cast_value(int))",
         "VarSetPct": "transform[DVAR, VArTgt]()",
         "WMaxLimPctEna": "transform[DWMX, ModEna](cast_value(int))",
@@ -72,7 +76,7 @@
         "Crv[#]": {
           "#": "transform[DVVR](as_list())",
           "ActPt": "transform[#, VVArCrv, crvPts](count())",
-          "VRef": "transform[DECP, VRef]()",
+          "VRef": "transform[#, VRef]()",
           "VRefAutoEna": "transform[#, VRefAdjEna]()",
           "VRefAutoTms": "transform[#, VRefTmms]()",
           "RspTms": "transform[#, OpnLoopMax]()",
@@ -184,7 +188,7 @@
         "ESHzHi": "transform[DCTE, HzHiLim]()",
         "ESHzLo": "transform[DCTE, HzLoLim]()",
         "ESDlyTms": "transform[DCTE, RtnSrvDlyTim]()",
-        "ESRndTms": "transform[DCTE, RtnSrvDlyTim]()",
+        "ESRndTms": "transform[DCTE, RtnSrvRndTim]()",
         "ESRmpTms": "transform[DCTE, RtnSrvRmpTim]()"
       }
     }

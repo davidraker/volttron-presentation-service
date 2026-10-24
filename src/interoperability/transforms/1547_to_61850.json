@@ -79,7 +79,7 @@
       "DFPF": {
         "ModEna": "transform['Constant PF', Enable]()",
         "PFGnTgt": "transform['Constant PF', 'Injection/Absorption setting']()",
-        "PFExtSet": "transform['Constant PF', 'Excitation setting']()",
+        "PFExtSet": "transform['Constant PF', 'Excitation setting'](equals(0))",
         "PFLodTgt": null,
         "PFLodExtSet": null
       },
