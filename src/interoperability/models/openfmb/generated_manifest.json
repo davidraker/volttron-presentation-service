@@ -1,0 +1,107 @@
+{
+  "source": "../../../../../openfmb/psm-protobuf-python/openfmb",
+  "modules": {
+    "breaker_module": {
+      "proto": "breakermodule",
+      "messages": 10,
+      "enums": 0,
+      "profiles": 4
+    },
+    "cap_bank_module": {
+      "proto": "capbankmodule",
+      "messages": 18,
+      "enums": 0,
+      "profiles": 5
+    },
+    "circuit_segment_service_module": {
+      "proto": "circuitsegmentservicemodule",
+      "messages": 11,
+      "enums": 1,
+      "profiles": 3
+    },
+    "common_module": {
+      "proto": "commonmodule",
+      "messages": 169,
+      "enums": 30,
+      "profiles": 0
+    },
+    "environment_module": {
+      "proto": "environmentmodule",
+      "messages": 2,
+      "enums": 0,
+      "profiles": 1
+    },
+    "ess_module": {
+      "proto": "essmodule",
+      "messages": 29,
+      "enums": 0,
+      "profiles": 7
+    },
+    "evse_module": {
+      "proto": "evsemodule",
+      "messages": 59,
+      "enums": 9,
+      "profiles": 7
+    },
+    "generation_module": {
+      "proto": "generationmodule",
+      "messages": 28,
+      "enums": 0,
+      "profiles": 7
+    },
+    "interconnection_module": {
+      "proto": "interconnectionmodule",
+      "messages": 7,
+      "enums": 0,
+      "profiles": 2
+    },
+    "load_module": {
+      "proto": "loadmodule",
+      "messages": 16,
+      "enums": 0,
+      "profiles": 4
+    },
+    "meter_module": {
+      "proto": "metermodule",
+      "messages": 2,
+      "enums": 0,
+      "profiles": 1
+    },
+    "recloser_module": {
+      "proto": "reclosermodule",
+      "messages": 10,
+      "enums": 0,
+      "profiles": 4
+    },
+    "regulator_module": {
+      "proto": "regulatormodule",
+      "messages": 19,
+      "enums": 0,
+      "profiles": 5
+    },
+    "reserve_module": {
+      "proto": "reservemodule",
+      "messages": 6,
+      "enums": 0,
+      "profiles": 2
+    },
+    "resource_module": {
+      "proto": "resourcemodule",
+      "messages": 12,
+      "enums": 0,
+      "profiles": 4
+    },
+    "solar_module": {
+      "proto": "solarmodule",
+      "messages": 27,
+      "enums": 0,
+      "profiles": 7
+    },
+    "switch_module": {
+      "proto": "switchmodule",
+      "messages": 12,
+      "enums": 0,
+      "profiles": 4
+    }
+  }
+}
