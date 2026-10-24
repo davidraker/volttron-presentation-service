@@ -135,9 +135,22 @@ _MODEL_FORMATS = {
 _cache: dict[str, set[tuple]] = {}
 
 
+def register_model_format(data_format: str, builder) -> None:
+    """Make ``builder()`` (returning a set of field paths) the universe of ``data_format``. This is how a
+    versioned format (``2030.5-2023``, ``openfmb.ess@2.1``) or a format with a new model package joins the
+    registry's scoring without editing the table above; the name is the one transforms and resources use."""
+    _MODEL_FORMATS[data_format] = builder
+    _cache.pop(data_format, None)
+
+
+def model_formats() -> tuple[str, ...]:
+    """The formats whose universes come from model packages, bundled or registered."""
+    return tuple(_MODEL_FORMATS)
+
+
 def models_provider(data_format: str) -> set[tuple] | None:
-    """Field universe provider backed by the bundled model packages. Extend ``_MODEL_FORMATS`` as models for
-    further formats (61850, 1547, ...) are added."""
+    """Field universe provider backed by the bundled model packages (``_MODEL_FORMATS``) and anything added with
+    :func:`register_model_format`."""
     builder = _MODEL_FORMATS.get(data_format)
     if builder is None:
         return None

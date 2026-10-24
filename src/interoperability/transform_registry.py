@@ -182,6 +182,69 @@ class TransformRegistry:
                 'unmapped_targets': len(field_map.nulls), 'lossiness_override': data.get('lossiness'),
                 'universe': len(self.field_universe(input_format))}
 
+    # ---- graph hygiene ----
+
+    def _coverage(self, field_map: FieldMap, source_format: str) -> set[tuple]:
+        """Source fields a (composed) transform carries: those of the source universe it retains, or, for a
+        format without a universe, the fields its mappings read."""
+        universe = self.field_universe(source_format)
+        if universe:
+            return {field for field in universe if field_map.fidelity_of(field) > 0}
+        return set(field_map.sources())
+
+    def _reachable_hub_pairs(self, graph) -> set[tuple[str, str]]:
+        hubs = sorted(self.hubs & set(graph.nodes))
+        subgraph = graph.subgraph(hubs)
+        return {(a, b) for a in hubs for b in hubs if a != b
+                and nx.has_path(subgraph, a, b) and nx.shortest_path_length(subgraph, a, b) <= MAX_HOPS}
+
+    def edge_report(self, input_format: str, output_format: str) -> dict:
+        """What a registered direct transform contributes beside the alternative chains between the same formats.
+
+        ``classification`` is ``'no alternative'`` (the edge is the only route), ``'adds coverage'`` (it carries
+        source fields no alternative chain carries) or ``'subset of alternative'`` (some alternative chain carries
+        every field it does; the edge then only saves hops). ``alternative`` is the alternative chain with the
+        largest coverage, ``only_direct`` / ``only_alternative`` the fields each carries that the other does not,
+        and ``needed_for_reachability`` whether removing the edge would leave some pair of hub formats without a
+        chain of at most MAX_HOPS. Structural only: agreement of the values the routes produce is a matter for
+        tests with sample messages.
+        """
+        data = self.registry.get_edge_data(input_format, output_format)
+        if data is None:
+            raise TransformNotFoundError(input_format, output_format, 'no transform is registered for the pair')
+        direct = self._coverage(data['field_map'], input_format)
+        alternatives = [path for path in self.candidate_paths(input_format, output_format) if len(path) > 2]
+        best_path, best_cov = None, set()
+        for path in alternatives:
+            coverage = self._coverage(self._chain_map(path), input_format)
+            if best_path is None or len(coverage) > len(best_cov):
+                best_path, best_cov = path, coverage
+        if best_path is None:
+            classification = 'no alternative'
+        elif direct - best_cov:
+            classification = 'adds coverage'
+        else:
+            classification = 'subset of alternative'
+        without = self.registry.copy()
+        without.remove_edge(input_format, output_format)
+        needed = self._reachable_hub_pairs(self.registry) - self._reachable_hub_pairs(without)
+        return {'input_format': input_format, 'output_format': output_format, 'classification': classification,
+                'alternative': best_path, 'only_direct': sorted(direct - best_cov),
+                'only_alternative': sorted(best_cov - direct), 'coverage': len(direct),
+                'needed_for_reachability': bool(needed), 'pairs_lost_without': sorted(needed)}
+
+    def prune_candidates(self) -> list[dict]:
+        """Edge reports of the direct transforms between hub formats that carry nothing an alternative chain does
+        not and whose removal keeps every pair of hub formats reachable. Advisory: the values the routes produce
+        should agree before an edge is dropped (see the graph invariant tests)."""
+        reports = []
+        for a, b in sorted(self.registry.edges):
+            if a in self.hubs and b in self.hubs:
+                report = self.edge_report(a, b)
+                if report['classification'] == 'subset of alternative' and not report['needed_for_reachability']:
+                    reports.append(report)
+        return reports
+
     # ---- lookup ----
 
     def candidate_paths(self, input_format: str, output_format: str) -> list[list[str]]:
