@@ -73,30 +73,36 @@ def ieee1815_2_fields(tables: tuple[str, ...]) -> set[tuple]:
 # The service's 2030.5 convention: resource name, then attribute; curves under DERCurve.<curveType>; readings
 # under MirrorMeterReading.<unit> with voltages by phase (see the README's bundled-transform conventions).
 _SEP2_RESOURCES = ('DERCapability', 'DERSettings', 'DERStatus', 'DefaultDERControl', 'DeviceInformation')
-_SEP2_CURVE_TYPES = ('opModVoltVar', 'opModWattVar', 'opModVoltWatt', 'opModHVRTMustTrip', 'opModLVRTMustTrip',
-                     'opModHVRTMomentaryCessation', 'opModLVRTMomentaryCessation', 'opModHFRTMustTrip', 'opModLFRTMustTrip',
-                     'opModFreqWatt')
 _SEP2_READINGS = ('W', 'var', 'VA', 'Hz', 'A', 'PF')
 _SEP2_PHASES = ('PhaseA', 'PhaseB', 'PhaseC', 'PhaseAB', 'PhaseBC', 'PhaseCA')
+# Which schema type a convention path's first segments address, for edition filtering.
+_SEP2_TYPE_OF = {'DERControl': 'DERControlBase', 'MirrorMeterReading': 'MirrorMeterReading'}
 
 
-def ieee2030_5_fields() -> set[tuple]:
-    """Every attribute path of the 2030.5 convention, from the generated sep models."""
-    from .models.ieee2030_5 import sep
+def ieee2030_5_fields(edition: str | None = None) -> set[tuple]:
+    """Every attribute path of the 2030.5 convention, from the generated sep models (the newest edition). With
+    ``edition`` (``'2013'``, ``'2018'``, ``'2023'``) only the attributes that edition defines, so a remote speaking
+    an older edition is a profile of the same models. Revision markers (``*_r2_3``) and ``xs:any`` extension
+    points are not fields of the convention."""
+    from .models.ieee2030_5 import EDITIONS, LATEST_EDITION, sep
     skip = {'href', 'mRID', 'description', 'version', 'creationTime', 'replyTo', 'responseRequired', 'subscribable'}
 
     def attributes(cls):
-        return [n for n in cls.model_fields if n not in skip]
+        return [n for n, info in cls.model_fields.items() if n not in skip
+                and not (isinstance(info.json_schema_extra, dict)
+                         and (info.json_schema_extra.get('revision_marker') or info.json_schema_extra.get('xml') == 'any'))]
 
     def scalar_or_group(cls, prefix):
         for name in attributes(cls):
             info = cls.model_fields[name]
             sub = _group_type(info.annotation, sep.SepBase)
-            # Quantities with a multiplier (FixedPointType and friends) are single values in the convention,
-            # since multipliers are not applied; real sub-structures (displacement/excitation, droop settings)
+            # Quantities with a multiplier (FixedPointType and friends), dated statuses (ConnectStatusType and friends)
+            # and the 2023 control wrappers (PerCentControlType and friends: a value plus a ``disabled`` flag) are
+            # single values in the convention, since multipliers are not applied, the time of a status is not carried
+            # and a disabled control is simply absent; real sub-structures (displacement/excitation, droop settings)
             # keep their attributes.
             if sub and not sub[1] and sub[0].__name__ not in ('Link', 'ListLink') \
-                    and not set(attributes(sub[0])) <= {'value', 'multiplier'}:
+                    and not set(attributes(sub[0])) <= {'value', 'multiplier', 'dateTime', 'disabled'}:
                 for inner in attributes(sub[0]):
                     if inner != 'multiplier':
                         yield prefix + (name, inner)
@@ -109,7 +115,7 @@ def ieee2030_5_fields() -> set[tuple]:
     universe |= set(scalar_or_group(sep.DERControlBase, ('DERControl',)))
     universe |= set(scalar_or_group(sep.DERControlBase, ('DERControlList', WILDCARD, 'DERControl')))
     universe |= {('DERControlList', WILDCARD, 'interval', 'start'), ('DERControlList', WILDCARD, 'interval', 'duration')}
-    for curve in _SEP2_CURVE_TYPES:
+    for _, curve in EDITIONS[LATEST_EDITION].curve_types:
         for prefix in ((('DERCurve', curve),), (('DERControlList', WILDCARD, 'DERCurve', curve),)):
             base = prefix[0]
             universe |= {base + (a,) for a in attributes(sep.DERCurve) if a != 'CurveData'}
@@ -117,11 +123,42 @@ def ieee2030_5_fields() -> set[tuple]:
     for reading in _SEP2_READINGS:
         universe.add(('MirrorMeterReading', reading))
     universe |= {('MirrorMeterReading', 'V', phase) for phase in _SEP2_PHASES}
-    return universe
+    if edition is None or edition == LATEST_EDITION:
+        return universe
+    return {path for path in universe if _sep2_in_edition(path, edition)}
+
+
+def _sep2_in_edition(path: tuple, edition: str) -> bool:
+    """Whether a convention path exists in ``edition``: the resource type must be defined and the attribute (the
+    first segment after the resource, or after the curve type / list wildcard) must be one of its elements."""
+    from .models.ieee2030_5 import EDITIONS
+    ed = EDITIONS[edition]
+    segments = list(path)
+    if segments[0] == 'DERControlList':
+        segments = segments[2:]                       # the wildcard entry
+        if segments[0] == 'interval':
+            return ed.defines('DateTimeInterval')
+    resource = segments[0]
+    if resource == 'MirrorMeterReading':
+        return ed.defines('MirrorMeterReading')
+    if resource == 'DERCurve':
+        curve_type = segments[1]
+        if curve_type not in {name for _, name in ed.curve_types}:
+            return False
+        attribute = segments[2] if len(segments) > 2 else None
+        if attribute == 'CurveData':
+            return ed.defines('CurveData') and (len(segments) < 5 or segments[4] in ed.fields_of('CurveData'))
+        return attribute is None or attribute in ed.fields_of('DERCurve')
+    type_name = _SEP2_TYPE_OF.get(resource, resource)
+    if not ed.defines(type_name):
+        return False
+    return len(segments) < 2 or segments[1] in ed.fields_of(type_name)
 
 
 _MODEL_FORMATS = {
     '2030.5': ieee2030_5_fields,
+    # One format per edition for remotes that speak an older schema: the same models, filtered by what the edition defines.
+    **{f'2030.5-{edition}': (lambda e=edition: ieee2030_5_fields(e)) for edition in ('2013', '2018', '2023')},
     'sunspec': sunspec_fields,
     'openfmb': openfmb_fields,
     'openfmb.ess': lambda: openfmb_fields('ESS'),

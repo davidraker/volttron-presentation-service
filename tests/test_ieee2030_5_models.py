@@ -7,7 +7,7 @@ from interoperability.models.ieee2030_5 import (
     DERCapability,
     DERControl,
     DERControlList,
-    List_type,
+    List,
     RtgNormalCategoryType,
     SepBase,
     SubscribableList,
@@ -50,7 +50,7 @@ def test_inheritance_and_lists():
     lst = DERControlList.model_validate({'all': 1, 'results': 1, 'DERControl': [ctl.model_dump(exclude_none=True)]})
     assert issubclass(DERControlList, SubscribableList) and issubclass(SubscribableList, SepBase)
     assert lst.DERControl[0].mRID == 'ABCD'
-    assert List_type.xml_name() == 'List' and DERControlList.xml_name() == 'DERControlList'
+    assert List.xml_name() == 'List' and DERControlList.xml_name() == 'DERControlList'
 
 
 def test_field_shadowing_a_type_name_still_validates():
