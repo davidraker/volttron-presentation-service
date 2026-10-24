@@ -106,7 +106,7 @@ class Status(SunSpecModel):
     ActVArhQ4: int | None = Field(default=None, description='AC lifetime reactive energy output in quadrant 4.', json_schema_extra={'type': 'acc64', 'size': 4, 'units': 'varh', 'label': 'ActVArhQ4'})
     VArAval: int | None = Field(default=None, description='Amount of VARs available without impacting watts output.', json_schema_extra={'type': 'int16', 'size': 1, 'units': 'var', 'sf': 'VArAval_SF', 'label': 'VArAval'})
     VArAval_SF: int | None = Field(default=None, description='Scale factor for available VARs.', json_schema_extra={'type': 'sunssf', 'size': 1, 'label': 'VArAval_SF'})
-    WAval: int | None = Field(default=None, description='Amount of Watts available.', json_schema_extra={'type': 'uint16', 'size': 1, 'units': 'var', 'sf': 'WAval_SF', 'label': 'WAval'})
+    WAval: int | None = Field(default=None, description='Amount of Watts available.', json_schema_extra={'type': 'uint16', 'size': 1, 'units': 'W', 'sf': 'WAval_SF', 'label': 'WAval'})
     WAval_SF: int | None = Field(default=None, description='Scale factor for available Watts.', json_schema_extra={'type': 'sunssf', 'size': 1, 'label': 'WAval_SF'})
     StSetLimMsk: StatusStSetLimMsk | int | None = Field(default=None, description='Setpoint limit(s) reached.', union_mode='left_to_right', json_schema_extra={'type': 'bitfield32', 'size': 2, 'label': 'StSetLimMsk'})
     StActCtl: StatusStActCtl | int | None = Field(default=None, description='Which inverter controls are currently active.', union_mode='left_to_right', json_schema_extra={'type': 'bitfield32', 'size': 2, 'label': 'StActCtl'})
