@@ -2,7 +2,7 @@
 
 Source: the OpenFMB Users Group ``psm-protobuf-python`` repository (generated Python bindings
 for the OpenFMB Platform Specific Model, v2.2), a copy of which lives at
-``openfmb/psm-protobuf-python`` in this workspace. The protobuf descriptors are the authority
+``1547_standards/openfmb/psm-protobuf-python`` in this workspace (the standards share). The protobuf descriptors are the authority
 for message shapes; the classes here mirror protobuf's JSON mapping, which is what OpenFMB
 adapters publish on MQTT and NATS: field names as in the ``.proto`` files, enumerations by
 name, well-known wrapper types collapsed to their scalar, 64 bit integers accepted as strings
@@ -12,7 +12,7 @@ Requires ``protobuf>=6.31`` (7.x works) at generation time only; the generated p
 alone. Run from the ``interoperability_service`` directory::
 
     PYTHONPATH=/path/with/protobuf python src/interoperability/models/openfmb/generate_models.py \\
-        [--source ../openfmb/psm-protobuf-python/openfmb] [--out src/interoperability/models/openfmb]
+        [--source ../1547_standards/openfmb/psm-protobuf-python/openfmb] [--out src/interoperability/models/openfmb]
 
 Outputs, all overwritten in place:
 
@@ -35,7 +35,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-DEFAULT_SOURCE = HERE.parents[4] / 'openfmb' / 'psm-protobuf-python' / 'openfmb'
+DEFAULT_SOURCE = HERE.parents[4] / '1547_standards' / 'openfmb' / 'psm-protobuf-python' / 'openfmb'
 
 # Protobuf module name -> generated package name. Matches the directories the earlier package used.
 PACKAGE_NAMES = {

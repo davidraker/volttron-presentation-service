@@ -1,5 +1,5 @@
 {
-  "source": "../../../../../openfmb/psm-protobuf-python/openfmb",
+  "source": "../../../../../1547_standards/openfmb/psm-protobuf-python/openfmb",
   "modules": {
     "breaker_module": {
       "proto": "breakermodule",

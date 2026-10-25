@@ -1,7 +1,7 @@
 # OpenFMB protobuf bindings (vendored)
 
 Generated Python bindings for the OpenFMB Platform Specific Model v2.2, copied unchanged from the OpenFMB
-Users Group `psm-protobuf-python` repository (workspace copy `openfmb/psm-protobuf-python`, commit
+Users Group `psm-protobuf-python` repository (workspace copy `1547_standards/openfmb/psm-protobuf-python`, commit
 `873351f06524ada335f345dfffe98ba44979ddb7`, 2025-07-30). Licence: see `LICENSE` in this directory.
 
 Layout is the original one: `uml_pb2.py` at the top and one `<module>/<module>_pb2.py` per OpenFMB module. The
