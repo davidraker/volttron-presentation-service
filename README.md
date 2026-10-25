@@ -621,7 +621,7 @@ interoperability_service/
     formats/                      Bundled format declarations (the OpenFMB profile formats and their protobuf messages)
     mappings/                     Bundled default mappings (currently none)
     models/openfmb/               OpenFMB pydantic models generated from the protobuf PSM, plus profile builders and sample generator
-    models/openfmb/proto/         the vendored psm-protobuf-python bindings the codec and the model generator read
+    models/openfmb/descriptors/   one protobuf FileDescriptorSet per OpenFMB edition (1.0, 2.0, 2.1, 2.2) and their manifest
     models/sunspec/               Generated SunSpec Modbus models (one module per model id), SunSpecDevice container, builders
     models/ieee1815_2/            Generated IEEE 1815.2 (MESA-DER) point enums, function-group profiles, PointDatabase, builders
     models/ieee2030_5/            Generated IEEE 2030.5 schema types, enums and builders
@@ -653,11 +653,20 @@ only pydantic. `profile_builders.py` offers hand-written constructors for the DE
 `generate_samples.py` writes example messages to `solar_json_output/`. The `openfmb` field
 universe used by the transform registry is derived from these classes.
 
-The protobuf bindings themselves are vendored in `models/openfmb/proto/` (see its `SOURCE.md`),
-and `interoperability.codecs.openfmb` uses them to turn a transform's output dict into protobuf
-bytes and back (`encode`, `decode`), keyed by the message name the format declares as `proto`.
-This needs the `protobuf` runtime, installed by the `openfmb` extra; nothing else in the service
-does.
+The protobuf side knows every OpenFMB edition at once. `generate_descriptors.py` reads the serialised
+file descriptors out of the `psm-protobuf-python` bindings at each release tag (`v1.0.0` to `v2.2.0`)
+and stores one `FileDescriptorSet` per edition under `models/openfmb/descriptors/`; at runtime
+`models/openfmb/descriptors.py` loads each into a private descriptor pool, because protobuf's shared
+default pool refuses a second edition of the same `.proto` file. `interoperability.codecs.openfmb`
+turns a transform's output dict into protobuf bytes and back (`encode`, `decode`), keyed by the
+message name the format declares as `proto` and by the edition the alias declares (`edition`, in
+the alias's resource; unset means the newest). Nothing on the wire names the edition, so the alias
+has to; a 2.1 participant's messages decode through the 2.1 pool and a 2.2 participant's through the
+2.2 pool, and both reach the same transforms, since shared messages keep their field names across
+editions. The `openfmb.*-<edition>` formats (`openfmb.ess.reading-2.1`) are the same universes
+filtered by what that edition's descriptors define, for scoring and validation; the newest edition's
+descriptor universe is identical to the one derived from the pydantic models. This needs the
+`protobuf` runtime, installed by the `openfmb` extra; nothing else in the service does.
 
 ### SunSpec, IEEE 1815.2 and IEEE 2030.5 models
 

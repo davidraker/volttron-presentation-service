@@ -51,11 +51,16 @@ def sunspec_fields() -> set[tuple]:
     return {(str(model_id),) + field for model_id, cls in MODEL_REGISTRY.items() for field in _group_fields(cls, (), SunSpecGroup)}
 
 
-def openfmb_fields(prefix: str = '', suffix: str = 'Profile') -> set[tuple]:
+def openfmb_fields(prefix: str = '', suffix: str = 'Profile', edition: str | None = None) -> set[tuple]:
     """Every leaf of every OpenFMB profile whose name starts with ``prefix`` (``ESS``, ``Solar``, or all) and ends
     with ``suffix`` (``Profile`` for all of a device's profiles, ``ReadingProfile`` for one), as published in
     protobuf JSON form; repeated fields as wildcards. Profiles do not share top-level names, so their paths are
-    simply unioned."""
+    simply unioned. Without ``edition`` the universe comes from the generated pydantic models (the newest edition);
+    with one (``'2.1'``) it comes from that edition's protobuf descriptors, so an alias on an older release is scored
+    and validated against what that release defines."""
+    if edition is not None:
+        from .models.openfmb import descriptors
+        return descriptors.profile_fields(edition, prefix, suffix)
     from .models.openfmb import PROFILES, OpenFMBMessage
     universe = set()
     for name, cls in PROFILES.items():
@@ -155,6 +160,15 @@ def _sep2_in_edition(path: tuple, edition: str) -> bool:
     return len(segments) < 2 or segments[1] in ed.fields_of(type_name)
 
 
+def _openfmb_editions() -> tuple[str, ...]:
+    """The OpenFMB editions with stored descriptors (the manifest is plain JSON; no protobuf needed to list them)."""
+    from .models.openfmb import descriptors
+    try:
+        return descriptors.editions()
+    except (FileNotFoundError, KeyError):
+        return ()
+
+
 _MODEL_FORMATS = {
     '2030.5': ieee2030_5_fields,
     # One format per edition for remotes that speak an older schema: the same models, filtered by what the edition defines.
@@ -166,6 +180,13 @@ _MODEL_FORMATS = {
     # One profile each, with its header: the leaf formats an adapter publishes on one topic (see transforms/openfmb_profiles.json).
     **{f'openfmb.{device}.{kind}': (lambda p=prefix, k=kind: openfmb_fields(p, f'{k.capitalize()}Profile'))
        for device, prefix in (('ess', 'ESS'), ('solar', 'Solar')) for kind in ('reading', 'status', 'capability', 'control')},
+    # The same OpenFMB formats per edition (``openfmb.ess.reading-2.1``): what that release's descriptors define.
+    **{f'openfmb-{edition}': (lambda e=edition: openfmb_fields(edition=e)) for edition in _openfmb_editions()},
+    **{f'openfmb.{device}-{edition}': (lambda p=prefix, e=edition: openfmb_fields(p, edition=e))
+       for device, prefix in (('ess', 'ESS'), ('solar', 'Solar')) for edition in _openfmb_editions()},
+    **{f'openfmb.{device}.{kind}-{edition}': (lambda p=prefix, k=kind, e=edition: openfmb_fields(p, f'{k.capitalize()}Profile', e))
+       for device, prefix in (('ess', 'ESS'), ('solar', 'Solar')) for kind in ('reading', 'status', 'capability', 'control')
+       for edition in _openfmb_editions()},
     '1815.2.inputs': lambda: ieee1815_2_fields(('AI', 'BI', 'CTR')),
     '1815.2.outputs': lambda: ieee1815_2_fields(('AO', 'BO')),
 }

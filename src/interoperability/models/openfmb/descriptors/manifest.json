@@ -1,0 +1,109 @@
+{
+  "generated": "2026-10-24",
+  "source": "psm-protobuf-python (OpenFMB Users Group)",
+  "editions": {
+    "1.0": {
+      "tag": "v1.0.0",
+      "commit": "ffbdfca62f56140b102de026701ea231d0719a13",
+      "date": "2019-04-26",
+      "files": [
+        "uml.proto",
+        "commonmodule/commonmodule.proto",
+        "breakermodule/breakermodule.proto",
+        "coordinationservicemodule/coordinationservicemodule.proto",
+        "essmodule/essmodule.proto",
+        "generationmodule/generationmodule.proto",
+        "interconnectionmodule/interconnectionmodule.proto",
+        "loadmodule/loadmodule.proto",
+        "metermodule/metermodule.proto",
+        "regulatormodule/regulatormodule.proto",
+        "solarmodule/solarmodule.proto",
+        "switchmodule/switchmodule.proto",
+        "optimizermodule/optimizermodule.proto",
+        "reclosermodule/reclosermodule.proto",
+        "resourcemodule/resourcemodule.proto"
+      ],
+      "messages": 263,
+      "borrowed": [
+        "uml.proto from v2.0.0"
+      ]
+    },
+    "2.0": {
+      "tag": "v2.0.0",
+      "commit": "176540fa8236c322e3e91f95f78714d578cdaf4b",
+      "date": "2021-07-30",
+      "files": [
+        "uml.proto",
+        "commonmodule/commonmodule.proto",
+        "breakermodule/breakermodule.proto",
+        "capbankmodule/capbankmodule.proto",
+        "circuitsegmentservicemodule/circuitsegmentservicemodule.proto",
+        "essmodule/essmodule.proto",
+        "generationmodule/generationmodule.proto",
+        "interconnectionmodule/interconnectionmodule.proto",
+        "loadmodule/loadmodule.proto",
+        "metermodule/metermodule.proto",
+        "reclosermodule/reclosermodule.proto",
+        "regulatormodule/regulatormodule.proto",
+        "reservemodule/reservemodule.proto",
+        "resourcemodule/resourcemodule.proto",
+        "solarmodule/solarmodule.proto",
+        "switchmodule/switchmodule.proto"
+      ],
+      "messages": 306,
+      "borrowed": []
+    },
+    "2.1": {
+      "tag": "v2.1.0",
+      "commit": "2a5252e7d86219deb7d3eebc0f2e6648c6fa82b9",
+      "date": "2023-05-12",
+      "files": [
+        "uml.proto",
+        "commonmodule/commonmodule.proto",
+        "breakermodule/breakermodule.proto",
+        "capbankmodule/capbankmodule.proto",
+        "circuitsegmentservicemodule/circuitsegmentservicemodule.proto",
+        "essmodule/essmodule.proto",
+        "generationmodule/generationmodule.proto",
+        "interconnectionmodule/interconnectionmodule.proto",
+        "loadmodule/loadmodule.proto",
+        "metermodule/metermodule.proto",
+        "reclosermodule/reclosermodule.proto",
+        "regulatormodule/regulatormodule.proto",
+        "reservemodule/reservemodule.proto",
+        "resourcemodule/resourcemodule.proto",
+        "solarmodule/solarmodule.proto",
+        "switchmodule/switchmodule.proto"
+      ],
+      "messages": 371,
+      "borrowed": []
+    },
+    "2.2": {
+      "tag": "v2.2.0",
+      "commit": "873351f06524ada335f345dfffe98ba44979ddb7",
+      "date": "2025-07-30",
+      "files": [
+        "uml.proto",
+        "commonmodule/commonmodule.proto",
+        "breakermodule/breakermodule.proto",
+        "capbankmodule/capbankmodule.proto",
+        "circuitsegmentservicemodule/circuitsegmentservicemodule.proto",
+        "environmentmodule/environmentmodule.proto",
+        "essmodule/essmodule.proto",
+        "evsemodule/evsemodule.proto",
+        "generationmodule/generationmodule.proto",
+        "interconnectionmodule/interconnectionmodule.proto",
+        "loadmodule/loadmodule.proto",
+        "metermodule/metermodule.proto",
+        "reclosermodule/reclosermodule.proto",
+        "regulatormodule/regulatormodule.proto",
+        "reservemodule/reservemodule.proto",
+        "resourcemodule/resourcemodule.proto",
+        "solarmodule/solarmodule.proto",
+        "switchmodule/switchmodule.proto"
+      ],
+      "messages": 437,
+      "borrowed": []
+    }
+  }
+}

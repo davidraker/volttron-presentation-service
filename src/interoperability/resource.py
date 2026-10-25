@@ -28,6 +28,9 @@ class Resource(BaseModel):
     #: Wire encoding of the resource's messages: ``json`` (the default when unset) or ``protobuf``. For an alias it
     #: is the encoding its remote topic carries; the format declaration names the protobuf message (``proto``).
     encoding: str | None = None
+    #: The edition of the wire format's standard the remote speaks, when the codec depends on it: the OpenFMB release
+    #: (``'2.1'``, ``'2.2'``) whose protobuf descriptors encode and decode this alias. Unset means the newest known.
+    edition: str | None = None
     #: Per-resource values transform expressions reach with ``param('name')``, e.g. ``{"mrid": "..."}`` for the
     #: device mRID an OpenFMB header carries. An alias's parameters are merged over the canonical resource's.
     parameters: dict[str, Any] = Field(default_factory=dict)

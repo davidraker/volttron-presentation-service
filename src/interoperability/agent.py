@@ -156,6 +156,7 @@ class PresentationService(Agent):
             resource_dict['parameters'] = parameters
             encoding = next((a.resource.encoding for a in aliases if a.resource.encoding), None) or 'json'
             resource_dict['encoding'] = encoding
+            edition = next((a.resource.edition for a in aliases if a.resource.edition), None)
             resource_dict['canonical_uai'] = list(node.uai)
             resource_dict['alias_uais'] = [list(a.uai) for a in aliases]        # outermost first; empty for a canonical UAI
             if not as_format and not aliases:
@@ -178,6 +179,8 @@ class PresentationService(Agent):
                         raise ValueError(f'Alias for {uai} asks for protobuf, but format "{as_format}" declares no'
                                          f' "proto" message name in its formats entry.')
                     resource_dict['codec'] = {'encoding': encoding, 'proto': proto}
+                if edition and 'codec' in resource_dict:
+                    resource_dict['codec']['edition'] = edition
             _log.info(f'Returning canonical node: {node}, with transform {resource_dict["data_format"]} -> {as_format}')
             return resource_dict
         else:

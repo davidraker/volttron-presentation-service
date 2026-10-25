@@ -108,3 +108,22 @@ def test_a_stored_config_builds_on_the_bundled_definitions(monkeypatch):
     assert svc.resolve(('site1', 'pv_inverter'))['data_format'] == 'fake_sunspec_pv'
     svc.configure_main(None, 'UPDATE', {})                                   # an empty entry keeps the bundled base
     assert svc.transform_registry.lookup('sunspec', '61850')
+
+
+def test_resolve_alias_edition_reaches_the_codec_block(monkeypatch):
+    class FakeConfig:
+        def set_default(self, name, value): pass
+        def subscribe(self, callback, actions=None, pattern=None): pass
+
+    monkeypatch.setattr(agent_module.Agent, '__init__', lambda self, **kwargs: setattr(self, 'vip', type('V', (), {'config': FakeConfig()})()))
+    svc = agent_module.PresentationService()
+    package_root = resources.files('interoperability')
+    case = json.loads(CASE.read_text())
+    alias = next(m for m in case['mappings'] if m['resource']['data_format'] == 'openfmb.solar.reading')
+    alias['resource']['edition'] = '2.1'                       # the participant on this topic speaks OpenFMB 2.1
+    svc.configure_main(None, 'NEW', {
+        'formats': {**svc._load_bundled_formats(package_root.joinpath('formats')), **case['formats']},
+        'transforms': svc._load_bundled_definitions(package_root.joinpath('transforms')) + case['transforms'],
+        'mappings': case['mappings']})
+    result = svc.resolve(tuple(alias['uai']))
+    assert result['codec'] == {'encoding': 'protobuf', 'proto': 'solarmodule.SolarReadingProfile', 'edition': '2.1'}

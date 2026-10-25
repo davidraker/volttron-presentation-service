@@ -2,8 +2,9 @@
 
 A transform chain produces a plain dict. Whether that dict travels as JSON text (the default) or as
 protobuf bytes is the presenting alias's ``encoding``; ``resolve`` returns it as a ``codec`` block,
-``{"encoding": "protobuf", "proto": "essmodule.ESSReadingProfile"}``, and :class:`~interoperability.resource.ResourceData`
-applies the matching encoder after the chain (and decoder before it, for inbound bytes).
+``{"encoding": "protobuf", "proto": "essmodule.ESSReadingProfile", "edition": "2.1"}`` (``edition`` only when the alias
+declares one; the newest otherwise), and :class:`~interoperability.resource.ResourceData` applies the matching encoder
+after the chain (and decoder before it, for inbound bytes).
 """
 from __future__ import annotations
 
@@ -22,7 +23,7 @@ def encoder_for(codec: dict | None) -> Callable[[Any], Any]:
         return _identity
     if encoding == 'protobuf':
         from .openfmb import encode
-        return partial(encode, _require_proto(codec))
+        return partial(encode, _require_proto(codec), edition=codec.get('edition'))
     raise ValueError(f'Unknown encoding {encoding!r}; expected "json" or "protobuf".')
 
 
@@ -34,10 +35,10 @@ def decoder_for(codec: dict | None) -> Callable[[Any], Any]:
         return _identity
     if encoding == 'protobuf':
         from .openfmb import decode
-        proto = _require_proto(codec)
+        proto, edition = _require_proto(codec), codec.get('edition')
 
         def decode_bytes(payload: Any) -> Any:
-            return decode(proto, payload) if isinstance(payload, (bytes, bytearray)) else payload
+            return decode(proto, payload, edition=edition) if isinstance(payload, (bytes, bytearray)) else payload
         return decode_bytes
     raise ValueError(f'Unknown encoding {encoding!r}; expected "json" or "protobuf".')
 

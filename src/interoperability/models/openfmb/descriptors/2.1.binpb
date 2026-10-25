@@ -1,0 +1,2038 @@
+
+À
+	uml.protouml google/protobuf/descriptor.proto:>
+option_parent_message.google.protobuf.FieldOptions–Ü (:>
+option_required_field.google.protobuf.FieldOptions—Ü (:@
+option_multiplicity_min.google.protobuf.FieldOptions“Ü (:@
+option_multiplicity_max.google.protobuf.FieldOptions”Ü (:4
+option_uuid.google.protobuf.FieldOptions‘Ü (:3
+
+option_key.google.protobuf.FieldOptions’Ü (:A
+option_openfmb_profile.google.protobuf.MessageOptions∏é (B]
+openfmbPZFgitlab.com/openfmb/psm/ops/protobuf/go-openfmb-ops-protobuf/v2/openfmb™openfmbbproto3
+ÎÏ
+commonmodule/commonmodule.protocommonmodule	uml.protogoogle/protobuf/wrappers.proto"N
+Optional_FaultDirectionKind/
+value (2 .commonmodule.FaultDirectionKind"X
+ Optional_PhaseFaultDirectionKind4
+value (2%.commonmodule.PhaseFaultDirectionKind"å
+ACD>
+
+dirGeneral (2 .commonmodule.FaultDirectionKindBàµêµ?
+dirNeut (2..commonmodule.Optional_PhaseFaultDirectionKind?
+dirPhsA (2..commonmodule.Optional_PhaseFaultDirectionKind?
+dirPhsB (2..commonmodule.Optional_PhaseFaultDirectionKind?
+dirPhsC (2..commonmodule.Optional_PhaseFaultDirectionKind
+general (Bàµêµ(
+neut (2.google.protobuf.BoolValue(
+phsA (2.google.protobuf.BoolValue(
+phsB	 (2.google.protobuf.BoolValue(
+phsC
+ (2.google.protobuf.BoolValue"£
+IdentifiedObject1
+description (2.google.protobuf.StringValue0
+mRID (2.google.protobuf.StringValueB†µ*
+name (2.google.protobuf.StringValue"≤
+ACDCTerminal>
+identifiedObject (2.commonmodule.IdentifiedObjectBÄµ-
+	connected (2.google.protobuf.BoolValue3
+sequenceNumber (2.google.protobuf.Int32Value"F
+Optional_UnitSymbolKind+
+value (2.commonmodule.UnitSymbolKind"N
+Optional_UnitMultiplierKind/
+value (2 .commonmodule.UnitMultiplierKind"≠
+ActivePower=
+
+multiplier (2).commonmodule.Optional_UnitMultiplierKind3
+unit (2%.commonmodule.Optional_UnitSymbolKind*
+value (2.google.protobuf.FloatValue"D
+Optional_PhaseCodeKind*
+value (2.commonmodule.PhaseCodeKind"}
+Unit=
+
+multiplier (2).commonmodule.Optional_UnitMultiplierKind6
+SIUnit (2.commonmodule.UnitSymbolKindBàµêµ"B
+Optional_ValidityKind)
+value (2.commonmodule.ValidityKind"˘
+
+DetailQual
+badReference (Bàµêµ
+failure (Bàµêµ
+
+inaccurate (Bàµêµ
+inconsistent (Bàµêµ
+oldData (Bàµêµ
+oscillatory (Bàµêµ
+
+outOfRange (Bàµêµ
+overflow (Bàµêµ">
+Optional_SourceKind'
+value (2.commonmodule.SourceKind"Ë
+Quality6
+
+detailQual (2.commonmodule.DetailQualBàµêµ!
+operatorBlocked (Bàµêµ2
+source (2.commonmodule.SourceKindBàµêµ
+test (Bàµêµ6
+validity (2.commonmodule.ValidityKindBàµêµ"J
+Optional_TimeAccuracyKind-
+value (2.commonmodule.TimeAccuracyKind"π
+TimeQuality
+clockFailure (Bàµêµ&
+clockNotSynchronized (Bàµêµ"
+leapSecondsKnown (Bàµêµ>
+timeAccuracy (2.commonmodule.TimeAccuracyKindBàµêµ"r
+	Timestamp
+seconds (Bàµêµ%
+tq (2.commonmodule.TimeQuality
+nanoseconds (BàµêµJ"Ñ
+MV
+mag (Bàµêµ 
+q (2.commonmodule.Quality"
+t (2.commonmodule.Timestamp!
+units (2.commonmodule.Unit"M
+LogicalNode>
+identifiedObject (2.commonmodule.IdentifiedObjectBÄµ"Ø
+AnalogEventAndStatusGGIO4
+logicalNode (2.commonmodule.LogicalNodeBÄµ(
+AnIn (2.commonmodule.MVBàµêµ3
+Phase (2$.commonmodule.Optional_PhaseCodeKind"l
+NamedObject1
+description (2.google.protobuf.StringValue*
+name (2.google.protobuf.StringValue"e
+ApplicationSystem4
+namedObject (2.commonmodule.NamedObjectBÄµ
+mRID (	B†µàµêµ"
+ASG
+setMag (Bàµêµ"k
+BCR
+actVal (Bàµêµ 
+q (2.commonmodule.Quality"
+t (2.commonmodule.TimestampJ"j
+	StatusSPS 
+q (2.commonmodule.Quality
+stVal (Bàµêµ"
+t (2.commonmodule.Timestamp"∂
+BooleanEventAndStatusGGIO4
+logicalNode (2.commonmodule.LogicalNodeBÄµ.
+Ind (2.commonmodule.StatusSPSBàµêµ3
+Phase (2$.commonmodule.Optional_PhaseCodeKind"ä
+MessageInfo>
+identifiedObject (2.commonmodule.IdentifiedObjectBÄµ;
+messageTimeStamp (2.commonmodule.TimestampBàµêµ"M
+CapabilityMessageInfo4
+messageInfo (2.commonmodule.MessageInfoBÄµ"w
+CheckConditions2
+interlockCheck (2.google.protobuf.BoolValue0
+synchroCheck (2.google.protobuf.BoolValue"N
+ClearingTime
+seconds (Bàµêµ
+nanoseconds (BàµêµJ"J
+Vector)
+ang (2.google.protobuf.DoubleValue
+mag (Bàµêµ"
+CMV,
+cVal (2.commonmodule.VectorBàµêµ 
+q (2.commonmodule.Quality"
+t (2.commonmodule.TimestampJ"k
+ConductingEquipment4
+namedObject (2.commonmodule.NamedObjectBÄµ
+mRID (	B®µ†µàµêµ"x
+Terminal6
+aCDCTerminal (2.commonmodule.ACDCTerminalBÄµ4
+phases (2$.commonmodule.Optional_PhaseCodeKind"X
+"ConductingEquipmentTerminalReading2
+terminal (2.commonmodule.TerminalBàµêµ"&
+
+ControlAPC
+ctlVal (Bàµêµ"&
+
+ControlDPC
+ctlVal (Bàµêµ"R
+ControlTimestamp
+seconds (Bàµêµ
+nanoseconds (BàµêµJ"T
+Optional_ScheduleParameterKind2
+value (2#.commonmodule.ScheduleParameterKind"~
+ENG_ScheduleParameterL
+scheduleParameterType (2#.commonmodule.ScheduleParameterKindBàµêµ
+value (Bàµêµ"ñ
+SchedulePointH
+scheduleParameter (2#.commonmodule.ENG_ScheduleParameterBàµêµ;
+	startTime (2.commonmodule.ControlTimestampBàµêµ"D
+ScheduleCSG5
+schPts (2.commonmodule.SchedulePointBàµêµ"K
+ControlScheduleFSCH4
+ValACSG (2.commonmodule.ScheduleCSGBàµêµ"M
+LogicalNodeForControl4
+logicalNode (2.commonmodule.LogicalNodeBÄµ"›
+ControlFSCCH
+logicalNodeForControl (2#.commonmodule.LogicalNodeForControlBÄµ>
+controlScheduleFSCH (2!.commonmodule.ControlScheduleFSCHD
+islandControlScheduleFSCH (2!.commonmodule.ControlScheduleFSCH"&
+
+ControlINC
+ctlVal (Bàµêµ"I
+
+ControlING
+setVal (Bàµêµ!
+units (2.commonmodule.Unit"&
+
+ControlISC
+ctlVal (Bàµêµ"J
+ControlMessageInfo4
+messageInfo (2.commonmodule.MessageInfoBÄµ"&
+
+ControlSPC
+ctlVal (Bàµêµ"•
+ControlValue>
+identifiedObject (2.commonmodule.IdentifiedObjectBÄµ*
+modBlk (2.google.protobuf.BoolValue)
+reset (2.google.protobuf.BoolValue"P
+CumulativeTime
+seconds (Bàµêµ
+nanoseconds (BàµêµJ"h
+DateTimeInterval(
+end (2.google.protobuf.Int64Value*
+start (2.google.protobuf.Int64Value"k
+DEL 
+phsAB (2.commonmodule.CMV 
+phsBC (2.commonmodule.CMV 
+phsCA (2.commonmodule.CMV"™
+PhaseDPC&
+phs3 (2.commonmodule.ControlDPC&
+phsA (2.commonmodule.ControlDPC&
+phsB (2.commonmodule.ControlDPC&
+phsC (2.commonmodule.ControlDPC"°
+DiscreteControlXCBRH
+logicalNodeForControl (2#.commonmodule.LogicalNodeForControlBÄµ#
+Pos (2.commonmodule.PhaseDPC0
+ProtectionMode (2.commonmodule.ControlINC0
+RecloseEnabled (2.commonmodule.ControlSPC7
+ResetProtectionPickup (2.commonmodule.ControlSPC"å
+EnergyConsumerD
+conductingEquipment (2!.commonmodule.ConductingEquipmentBÄµ4
+operatingLimit (2.google.protobuf.StringValue"F
+Optional_CalcMethodKind+
+value (2.commonmodule.CalcMethodKind"L
+ENG_CalcMethodKind6
+setVal (2.commonmodule.CalcMethodKindBàµêµ"P
+Optional_GridConnectModeKind0
+value (2!.commonmodule.GridConnectModeKind"ç
+ENG_GridConnectModeKind;
+setVal (2!.commonmodule.GridConnectModeKindBàµêµ5
+setValExtension (2.google.protobuf.StringValue">
+Optional_PFSignKind'
+value (2.commonmodule.PFSignKind"D
+ENG_PFSignKind2
+setVal (2.commonmodule.PFSignKindBàµêµ"L
+Optional_BehaviourModeKind.
+value (2.commonmodule.BehaviourModeKind"ó
+ENS_BehaviourModeKind 
+q (2.commonmodule.Quality8
+stVal (2.commonmodule.BehaviourModeKindBàµêµ"
+t (2.commonmodule.Timestamp"T
+Optional_DERGeneratorStateKind2
+value (2#.commonmodule.DERGeneratorStateKind"ü
+ENS_DERGeneratorStateKind 
+q (2.commonmodule.Quality<
+stVal (2#.commonmodule.DERGeneratorStateKindBàµêµ"
+t (2.commonmodule.Timestamp"H
+Optional_DynamicTestKind,
+value (2.commonmodule.DynamicTestKind"ì
+ENS_DynamicTestKind 
+q (2.commonmodule.Quality6
+stVal (2.commonmodule.DynamicTestKindBàµêµ"
+t (2.commonmodule.Timestamp"w
+ENS_GridConnectModeKind:
+stVal (2!.commonmodule.GridConnectModeKindBàµêµ 
+stValExtension (	Bàµêµ">
+Optional_HealthKind'
+value (2.commonmodule.HealthKind"l
+ENS_HealthKind'
+d (2.google.protobuf.StringValue1
+stVal (2.commonmodule.HealthKindBàµêµ"X
+ Optional_SwitchingCapabilityKind4
+value (2%.commonmodule.SwitchingCapabilityKind"â
+ENS_SwitchingCapabilityKind*
+blkEna (2.google.protobuf.BoolValue>
+stVal (2%.commonmodule.SwitchingCapabilityKindBàµêµ"µ
+OperationDCTE5
+	rndDlTmms (2.commonmodule.ControlINGBàµêµ5
+	rtnDlTmms (2.commonmodule.ControlINGBàµêµ6
+
+rtnRmpTmms (2.commonmodule.ControlINGBàµêµ"ﬂ
+EnterServiceAPCD
+enterServiceParameter (2.commonmodule.OperationDCTEBàµêµ
+hzHiLim (Bàµêµ
+hzLoLim (Bàµêµ
+
+rtnSrvAuto (Bàµêµ
+vHiLim (Bàµêµ
+vLoLim (Bàµêµ"K
+ESSD
+conductingEquipment (2!.commonmodule.ConductingEquipmentBÄµ"H
+EventMessageInfo4
+messageInfo (2.commonmodule.MessageInfoBÄµ"x
+
+EventValue>
+identifiedObject (2.commonmodule.IdentifiedObjectBÄµ*
+modBlk (2.google.protobuf.BoolValue"U
+ForecastValueSource>
+identifiedObject (2.commonmodule.IdentifiedObjectBÄµ"ú
+ForecastIEDD
+forecastValueSource (2!.commonmodule.ForecastValueSourceBÄµ%
+sourceApplicationID (	Bàµêµ 
+sourceDateTime (Bàµêµ"O
+ForecastValue>
+identifiedObject (2.commonmodule.IdentifiedObjectBÄµ"c
+OperationDHFW
+modEna (Bàµêµ8
+
+OplTmmsMax (2.commonmodule.ClearingTimeBàµêµ"c
+OperationDLFW
+modEna (Bàµêµ8
+
+OplTmmsMax (2.commonmodule.ClearingTimeBàµêµ"G
+HzWPoint
+deadbandHzVal (Bàµêµ
+slopeVal (Bàµêµ"ˆ
+HzWAPC3
+	overHzWPt (2.commonmodule.HzWPointBàµêµ?
+overHzWParameter (2.commonmodule.OperationDHFWBàµêµ4
+
+underHzWPt (2.commonmodule.HzWPointBàµêµ@
+underHzWParameter (2.commonmodule.OperationDLFWBàµêµ"j
+	StatusINS 
+q (2.commonmodule.Quality
+stVal (Bàµêµ"
+t (2.commonmodule.Timestamp"∏
+IntegerEventAndStatusGGIO4
+logicalNode (2.commonmodule.LogicalNodeBÄµ0
+IntIn (2.commonmodule.StatusINSBàµêµ3
+Phase (2$.commonmodule.Optional_PhaseCodeKind")
+OperationDWMX
+modEna (Bàµêµ")
+OperationDWMN
+modEna (Bàµêµ"«
+	LimitWAPC>
+maxLimParameter (2.commonmodule.OperationDWMXBàµêµ>
+minLimParameter (2.commonmodule.OperationDWMNBàµêµ
+
+wMaxSptVal (Bàµêµ
+
+wMinSptVal (Bàµêµ"è
+LogicalNodeForEventAndStatus4
+logicalNode (2.commonmodule.LogicalNodeBÄµ0
+Beh (2#.commonmodule.ENS_BehaviourModeKind.
+EEHealth (2.commonmodule.ENS_HealthKind+
+
+HotLineTag (2.commonmodule.StatusSPS*
+	RemoteBlk (2.commonmodule.StatusSPS"R
+MeasurementValue>
+identifiedObject (2.commonmodule.IdentifiedObjectBÄµ"M
+MeterD
+conductingEquipment (2!.commonmodule.ConductingEquipmentBÄµ"Ü
+NameplateValue>
+identifiedObject (2.commonmodule.IdentifiedObjectBÄµ+
+model (2.google.protobuf.StringValue,
+sernum (2.google.protobuf.StringValue+
+swRev (2.google.protobuf.StringValue,
+vendor (2.google.protobuf.StringValue"e
+OperationDFPF
+modEna (Bàµêµ
+pFExtSet (Bàµêµ
+pFGnTgtMxVal (Bàµêµ",
+OperationDVAR
+	varTgtSpt (Bàµêµ"œ
+OperationDVVR
+modEna (Bàµêµ8
+
+OplTmmsMax (2.commonmodule.ClearingTimeBàµêµ
+VRef (Bàµêµ
+
+VRefAdjEna (Bàµêµ4
+VRefTmms (2.commonmodule.ControlINGBàµêµ"c
+OperationDVWC
+modEna (Bàµêµ8
+
+OplTmmsMax (2.commonmodule.ClearingTimeBàµêµ"'
+OperationDWGC
+wSpt (Bàµêµ")
+OperationDWVR
+modEna (Bàµêµ"O
+OptimizationMessageInfo4
+messageInfo (2.commonmodule.MessageInfoBÄµ"]
+PFSPC
+ctlVal (Bàµêµ:
+pFParameter (2.commonmodule.OperationDFPFBàµêµ"™
+PhaseAPC&
+phs3 (2.commonmodule.ControlAPC&
+phsA (2.commonmodule.ControlAPC&
+phsB (2.commonmodule.ControlAPC&
+phsC (2.commonmodule.ControlAPC"<
+Optional_DbPosKind&
+value (2.commonmodule.DbPosKind"É
+	StatusDPS 
+q (2.commonmodule.Quality0
+stVal (2.commonmodule.DbPosKindBàµêµ"
+t (2.commonmodule.Timestamp"¶
+PhaseDPS%
+phs3 (2.commonmodule.StatusDPS%
+phsA (2.commonmodule.StatusDPS%
+phsB (2.commonmodule.StatusDPS%
+phsC (2.commonmodule.StatusDPS"¶
+PhaseINS%
+phs3 (2.commonmodule.StatusINS%
+phsA (2.commonmodule.StatusINS%
+phsB (2.commonmodule.StatusINS%
+phsC (2.commonmodule.StatusINS"™
+PhaseISC&
+phs3 (2.commonmodule.ControlISC&
+phsA (2.commonmodule.ControlISC&
+phsB (2.commonmodule.ControlISC&
+phsC (2.commonmodule.ControlISC"˛
+ReadingMMTN4
+logicalNode (2.commonmodule.LogicalNodeBÄµ!
+DmdVAh (2.commonmodule.BCR"
+DmdVArh (2.commonmodule.BCR 
+DmdWh (2.commonmodule.BCR!
+SupVAh (2.commonmodule.BCR"
+SupVArh (2.commonmodule.BCR 
+SupWh (2.commonmodule.BCR!
+TotVAh (2.commonmodule.BCR"
+TotVArh	 (2.commonmodule.BCR 
+TotWh
+ (2.commonmodule.BCR"Ñ
+	PhaseMMTN'
+phsA (2.commonmodule.ReadingMMTN(
+phsAB (2.commonmodule.ReadingMMTN'
+phsB (2.commonmodule.ReadingMMTN(
+phsBC (2.commonmodule.ReadingMMTN'
+phsC (2.commonmodule.ReadingMMTN(
+phsCA (2.commonmodule.ReadingMMTN"L
+Optional_RecloseActionKind.
+value (2.commonmodule.RecloseActionKind"Ù
+PhaseRecloseAction6
+phs3 (2(.commonmodule.Optional_RecloseActionKind6
+phsA (2(.commonmodule.Optional_RecloseActionKind6
+phsB (2(.commonmodule.Optional_RecloseActionKind6
+phsC (2(.commonmodule.Optional_RecloseActionKind"™
+PhaseSPC&
+phs3 (2.commonmodule.ControlSPC&
+phsA (2.commonmodule.ControlSPC&
+phsB (2.commonmodule.ControlSPC&
+phsC (2.commonmodule.ControlSPC"¶
+PhaseSPS%
+phs3 (2.commonmodule.StatusSPS%
+phsA (2.commonmodule.StatusSPS%
+phsB (2.commonmodule.StatusSPS%
+phsC (2.commonmodule.StatusSPS"Ñ
+PMG
+net (2.commonmodule.MV
+phsA (2.commonmodule.MV
+phsB (2.commonmodule.MV
+phsC (2.commonmodule.MV"ñ
+RampRateD
+negativeReactivePowerKVArPerMin (2.google.protobuf.FloatValue>
+negativeRealPowerKWPerMin (2.google.protobuf.FloatValueD
+positiveReactivePowerKVArPerMin (2.google.protobuf.FloatValue>
+positiveRealPowerKWPerMin (2.google.protobuf.FloatValue"J
+ReadingMessageInfo4
+messageInfo (2.commonmodule.MessageInfoBÄµ"˛
+ReadingMMTR4
+logicalNode (2.commonmodule.LogicalNodeBÄµ!
+DmdVAh (2.commonmodule.BCR"
+DmdVArh (2.commonmodule.BCR 
+DmdWh (2.commonmodule.BCR!
+SupVAh (2.commonmodule.BCR"
+SupVArh (2.commonmodule.BCR 
+SupWh (2.commonmodule.BCR!
+TotVAh (2.commonmodule.BCR"
+TotVArh	 (2.commonmodule.BCR 
+TotWh
+ (2.commonmodule.BCR"…
+WYE
+net (2.commonmodule.CMV
+neut (2.commonmodule.CMV
+phsA (2.commonmodule.CMV
+phsB (2.commonmodule.CMV
+phsC (2.commonmodule.CMV
+res (2.commonmodule.CMV"õ
+ReadingMMXU4
+logicalNode (2.commonmodule.LogicalNodeBÄµ
+A (2.commonmodule.WYE0
+ClcMth (2 .commonmodule.ENG_CalcMethodKind
+Hz (2.commonmodule.MV
+PF (2.commonmodule.WYE,
+PFSign (2.commonmodule.ENG_PFSignKind
+PhV (2.commonmodule.WYE
+PPV (2.commonmodule.DEL
+VA	 (2.commonmodule.WYE
+VAr
+ (2.commonmodule.WYE
+W (2.commonmodule.WYE"¸
+SourceCapabilityConfiguration4
+logicalNode (2.commonmodule.LogicalNodeBÄµ
+AMax (2.commonmodule.ASG 
+VAMax (2.commonmodule.ASG$
+	VarMaxAbs (2.commonmodule.ASG$
+	VarMaxInj (2.commonmodule.ASG
+VMax (2.commonmodule.ASG
+VMin (2.commonmodule.ASG
+VNom (2.commonmodule.ASG
+WMax	 (2.commonmodule.ASG"
+WOvrExt
+ (2.commonmodule.ASG$
+	WOvrExtPF (2.commonmodule.ASG"
+WUndExt (2.commonmodule.ASG$
+	WUndExtPF (2.commonmodule.ASG"B
+Optional_NorOpCatKind)
+value (2.commonmodule.NorOpCatKind"B
+Optional_AbnOpCatKind)
+value (2.commonmodule.AbnOpCatKind"Â
+SourceCapabilityRatings4
+logicalNode (2.commonmodule.LogicalNodeBÄµ9
+AbnOpCatRtg (2.commonmodule.AbnOpCatKindBàµêµ"
+AMaxRtg (2.commonmodule.ASG/
+
+FreqNomRtg (2.commonmodule.ASGBàµêµ9
+NorOpCatRtg (2.commonmodule.NorOpCatKindBàµêµ4
+ReactSusceptRtg (2.commonmodule.ASGBàµêµ-
+VAMaxRtg (2.commonmodule.ASGBàµêµ1
+VarMaxAbsRtg (2.commonmodule.ASGBàµêµ1
+VarMaxInjRtg	 (2.commonmodule.ASGBàµêµ,
+VMaxRtg
+ (2.commonmodule.ASGBàµêµ,
+VMinRtg (2.commonmodule.ASGBàµêµ,
+VNomRtg (2.commonmodule.ASGBàµêµ,
+WMaxRtg (2.commonmodule.ASGBàµêµ/
+
+WOvrExtRtg (2.commonmodule.ASGBàµêµ1
+WOvrExtRtgPF (2.commonmodule.ASGBàµêµ/
+
+WUndExtRtg (2.commonmodule.ASGBàµêµ1
+WUndExtRtgPF (2.commonmodule.ASGBàµêµ"í
+StatusAndEventXCBRV
+logicalNodeForEventAndStatus (2*.commonmodule.LogicalNodeForEventAndStatusBÄµ6
+DynamicTest (2!.commonmodule.ENS_DynamicTestKind#
+Pos (2.commonmodule.PhaseDPS+
+ProtectionPickup (2.commonmodule.ACD/
+ProtectionMode (2.commonmodule.StatusINS.
+RecloseEnabled (2.commonmodule.PhaseSPS9
+ReclosingAction (2 .commonmodule.PhaseRecloseAction"j
+	StatusINC 
+q (2.commonmodule.Quality
+stVal (Bàµêµ"
+t (2.commonmodule.Timestamp"j
+	StatusISC 
+q (2.commonmodule.Quality
+stVal (Bàµêµ"
+t (2.commonmodule.Timestamp"I
+StatusMessageInfo4
+messageInfo (2.commonmodule.MessageInfoBÄµ"y
+StatusValue>
+identifiedObject (2.commonmodule.IdentifiedObjectBÄµ*
+modBlk (2.google.protobuf.BoolValue"d
+VSS 
+q (2.commonmodule.Quality
+stVal (	Bàµêµ"
+t (2.commonmodule.Timestamp"±
+StringEventAndStatusGGIO4
+logicalNode (2.commonmodule.LogicalNodeBÄµ3
+Phase (2$.commonmodule.Optional_PhaseCodeKind*
+StrIn (2.commonmodule.VSSBàµêµ"{
+SwitchPoint/
+Pos (2.commonmodule.ControlDPCBàµêµ;
+	startTime (2.commonmodule.ControlTimestampBàµêµ"@
+	SwitchCSG3
+crvPts (2.commonmodule.SwitchPointBàµêµ"Y
+	TmHzPoint
+hzVal (Bàµêµ3
+tmVal (2.commonmodule.ClearingTimeBàµêµ"x
+TmHzCSG5
+
+overCrvPts (2.commonmodule.TmHzPointBàµêµ6
+underCrvPts (2.commonmodule.TmHzPointBàµêµ"]
+TmVoltPoint3
+tmVal (2.commonmodule.ClearingTimeBàµêµ
+voltVal (Bàµêµ"~
+	TmVoltCSG7
+
+overCrvPts (2.commonmodule.TmVoltPointBàµêµ8
+underCrvPts (2.commonmodule.TmVoltPointBàµêµ"_
+VarSPC
+modEna (Bàµêµ;
+varParameter (2.commonmodule.OperationDVARBàµêµ"C
+VoltVarPoint
+varVal (Bàµêµ
+voltVal (Bàµêµ"Ä
+
+VoltVarCSG4
+crvPts (2.commonmodule.VoltVarPointBàµêµ<
+vVarParameter (2.commonmodule.OperationDVVRBàµêµ"?
+
+VoltWPoint
+voltVal (Bàµêµ
+wVal (Bàµêµ"}
+VoltWCSG2
+crvPts (2.commonmodule.VoltWPointBàµêµ=
+voltWParameter (2.commonmodule.OperationDVWCBàµêµ"
+VSC
+ctlVal (	Bàµêµ"[
+WSPC
+modEna (Bàµêµ9
+
+wParameter (2.commonmodule.OperationDWGCBàµêµ"=
+	WVarPoint
+varVal (Bàµêµ
+wVal (Bàµêµ"z
+WVarCSG1
+crvPts (2.commonmodule.WVarPointBàµêµ<
+wVarParameter (2.commonmodule.OperationDWVRBàµêµ":
+Optional_AlrmKind%
+value (2.commonmodule.AlrmKind"H
+Optional_ControlModeKind,
+value (2.commonmodule.ControlModeKind"L
+Optional_DirectionModeKind.
+value (2.commonmodule.DirectionModeKind"X
+ Optional_GridConnectionStateKind4
+value (2%.commonmodule.GridConnectionStateKind"N
+Optional_OperatingStateKind/
+value (2 .commonmodule.OperatingStateKind"Z
+!Optional_ReactivePowerControlKind5
+value (2&.commonmodule.ReactivePowerControlKind"R
+Optional_RealPowerControlKind1
+value (2".commonmodule.RealPowerControlKind"<
+Optional_StateKind&
+value (2.commonmodule.StateKind"L
+Optional_VoltLimitModeKind.
+value (2.commonmodule.VoltLimitModeKind*¥
+FaultDirectionKind 
+FaultDirectionKind_UNDEFINED 
+FaultDirectionKind_unknown
+FaultDirectionKind_forward
+FaultDirectionKind_backward
+FaultDirectionKind_both*∞
+PhaseFaultDirectionKind%
+!PhaseFaultDirectionKind_UNDEFINED #
+PhaseFaultDirectionKind_unknown#
+PhaseFaultDirectionKind_forward$
+ PhaseFaultDirectionKind_backward*ı
+UnitSymbolKind
+UnitSymbolKind_none 
+UnitSymbolKind_meter
+UnitSymbolKind_gram
+UnitSymbolKind_Amp
+UnitSymbolKind_deg	
+UnitSymbolKind_rad
+
+UnitSymbolKind_degC
+UnitSymbolKind_Farad
+UnitSymbolKind_sec
+UnitSymbolKind_Henry
+UnitSymbolKind_V
+UnitSymbolKind_ohm
+UnitSymbolKind_Joule
+UnitSymbolKind_Newton 
+UnitSymbolKind_Hz!
+UnitSymbolKind_W&
+UnitSymbolKind_Pa'
+UnitSymbolKind_m2)
+UnitSymbolKind_Siemens5
+UnitSymbolKind_VA=
+UnitSymbolKind_VAr?
+UnitSymbolKind_wPerVAA
+UnitSymbolKind_VAhG
+UnitSymbolKind_WhH
+UnitSymbolKind_VArhI
+UnitSymbolKind_hzPerSK
+UnitSymbolKind_wPerSQ
+UnitSymbolKind_otherd
+UnitSymbolKind_Ahj
+UnitSymbolKind_minü
+UnitSymbolKind_hour†
+UnitSymbolKind_m3¶
+UnitSymbolKind_wPerM2≥
+UnitSymbolKind_degFó
+UnitSymbolKind_mphÙ*ñ
+UnitMultiplierKind 
+UnitMultiplierKind_UNDEFINED 
+UnitMultiplierKind_none
+UnitMultiplierKind_other
+UnitMultiplierKind_centi
+UnitMultiplierKind_deci
+UnitMultiplierKind_Giga
+UnitMultiplierKind_kilo
+UnitMultiplierKind_Mega
+UnitMultiplierKind_micro
+UnitMultiplierKind_milli	
+UnitMultiplierKind_nano
+
+UnitMultiplierKind_pico
+UnitMultiplierKind_Tera*°
+PhaseCodeKind
+PhaseCodeKind_none 
+PhaseCodeKind_other
+PhaseCodeKind_N
+PhaseCodeKind_C 
+PhaseCodeKind_CN!
+PhaseCodeKind_AC(
+PhaseCodeKind_ACN)
+PhaseCodeKind_B@
+PhaseCodeKind_BNA
+PhaseCodeKind_BCB
+PhaseCodeKind_BCNa
+PhaseCodeKind_AÄ
+PhaseCodeKind_ANÅ
+PhaseCodeKind_ABÑ
+PhaseCodeKind_ABN¡
+PhaseCodeKind_ABC‡
+PhaseCodeKind_ABCN·
+PhaseCodeKind_s2Ä
+PhaseCodeKind_s2NÅ
+PhaseCodeKind_s1Ä
+PhaseCodeKind_s1NÅ
+PhaseCodeKind_s12Ä
+PhaseCodeKind_s12NÅ*ï
+ValidityKind
+ValidityKind_UNDEFINED 
+ValidityKind_good
+ValidityKind_invalid
+ValidityKind_reserved
+ValidityKind_questionable*Z
+
+SourceKind
+SourceKind_UNDEFINED 
+SourceKind_process
+SourceKind_substituted*Í
+TimeAccuracyKind
+TimeAccuracyKind_UNDEFINED 
+TimeAccuracyKind_T0
+TimeAccuracyKind_T1
+
+TimeAccuracyKind_T2
+TimeAccuracyKind_T3
+TimeAccuracyKind_T4
+TimeAccuracyKind_T5 
+TimeAccuracyKind_unspecified*Ë
+ScheduleParameterKind#
+ScheduleParameterKind_UNDEFINED 
+ScheduleParameterKind_none
+ScheduleParameterKind_other#
+ScheduleParameterKind_A_net_mag$
+ ScheduleParameterKind_A_neut_mag$
+ ScheduleParameterKind_A_phsA_mag$
+ ScheduleParameterKind_A_phsB_mag$
+ ScheduleParameterKind_A_phsC_mag 
+ScheduleParameterKind_Hz_mag$
+ ScheduleParameterKind_PF_net_mag	%
+!ScheduleParameterKind_PF_neut_mag
+%
+!ScheduleParameterKind_PF_phsA_mag%
+!ScheduleParameterKind_PF_phsB_mag%
+!ScheduleParameterKind_PF_phsC_mag%
+!ScheduleParameterKind_PhV_net_ang%
+!ScheduleParameterKind_PhV_net_mag&
+"ScheduleParameterKind_PhV_neut_ang&
+"ScheduleParameterKind_PhV_neut_mag&
+"ScheduleParameterKind_PhV_phsA_ang&
+"ScheduleParameterKind_PhV_phsA_mag&
+"ScheduleParameterKind_PhV_phsB_ang&
+"ScheduleParameterKind_PhV_phsB_mag&
+"ScheduleParameterKind_PhV_phsC_ang&
+"ScheduleParameterKind_PhV_phsC_mag'
+#ScheduleParameterKind_PPV_phsAB_ang'
+#ScheduleParameterKind_PPV_phsAB_mag'
+#ScheduleParameterKind_PPV_phsBC_ang'
+#ScheduleParameterKind_PPV_phsBC_mag'
+#ScheduleParameterKind_PPV_phsCA_ang'
+#ScheduleParameterKind_PPV_phsCA_mag$
+ ScheduleParameterKind_VA_net_mag%
+!ScheduleParameterKind_VA_neut_mag%
+!ScheduleParameterKind_VA_phsA_mag %
+!ScheduleParameterKind_VA_phsB_mag!%
+!ScheduleParameterKind_VA_phsC_mag"%
+!ScheduleParameterKind_VAr_net_mag#&
+"ScheduleParameterKind_VAr_neut_mag$&
+"ScheduleParameterKind_VAr_phsA_mag%&
+"ScheduleParameterKind_VAr_phsB_mag&&
+"ScheduleParameterKind_VAr_phsC_mag'#
+ScheduleParameterKind_W_net_mag($
+ ScheduleParameterKind_W_neut_mag)$
+ ScheduleParameterKind_W_phsA_mag*$
+ ScheduleParameterKind_W_phsB_mag+$
+ ScheduleParameterKind_W_phsC_mag,*
+CalcMethodKind
+CalcMethodKind_UNDEFINED 
+CalcMethodKind_P_CLASS
+CalcMethodKind_M_CLASS
+CalcMethodKind_DIFF*∂
+GridConnectModeKind!
+GridConnectModeKind_UNDEFINED 
+GridConnectModeKind_CSI
+GridConnectModeKind_VC_VSI
+GridConnectModeKind_CC_VSI
+GridConnectModeKind_noneb
+GridConnectModeKind_otherc
+GridConnectModeKind_VSI_PQ–
+GridConnectModeKind_VSI_VF— 
+GridConnectModeKind_VSI_ISO“*N
+
+PFSignKind
+PFSignKind_UNDEFINED 
+PFSignKind_IEC
+PFSignKind_EEI*»
+BehaviourModeKind
+BehaviourModeKind_UNDEFINED 
+BehaviourModeKind_on
+BehaviourModeKind_blocked
+BehaviourModeKind_test"
+BehaviourModeKind_test_blocked
+BehaviourModeKind_off*‡
+DERGeneratorStateKind#
+DERGeneratorStateKind_UNDEFINED '
+#DERGeneratorStateKind_Not_operating#
+DERGeneratorStateKind_Operating%
+!DERGeneratorStateKind_Starting_up'
+#DERGeneratorStateKind_Shutting_down-
+)DERGeneratorStateKind_At_disconnect_level*
+&DERGeneratorStateKind_Ramping_in_power3
+/DERGeneratorStateKind_Ramping_in_reactive_power!
+DERGeneratorStateKind_Standby0
+,DERGeneratorStateKind_Not_applicable_Unknownb
+DERGeneratorStateKind_Otherc*¢
+DynamicTestKind
+DynamicTestKind_UNDEFINED 
+DynamicTestKind_none
+DynamicTestKind_testing
+DynamicTestKind_operating
+DynamicTestKind_failed*|
+
+HealthKind
+HealthKind_UNDEFINED 
+HealthKind_none
+HealthKind_OK
+HealthKind_Warning
+HealthKind_Alarm*”
+SwitchingCapabilityKind%
+!SwitchingCapabilityKind_UNDEFINED  
+SwitchingCapabilityKind_none 
+SwitchingCapabilityKind_open!
+SwitchingCapabilityKind_close*
+&SwitchingCapabilityKind_open_and_close*~
+	DbPosKind
+DbPosKind_UNDEFINED 
+DbPosKind_transient
+DbPosKind_closed
+DbPosKind_open
+DbPosKind_invalid*é
+RecloseActionKind
+RecloseActionKind_UNDEFINED 
+RecloseActionKind_idle
+RecloseActionKind_cycling
+RecloseActionKind_lockout*R
+NorOpCatKind
+NorOpCatKind_UNDEFINED 
+NorOpCatKind_A
+NorOpCatKind_B*i
+AbnOpCatKind
+AbnOpCatKind_UNDEFINED 
+AbnOpCatKind_I
+AbnOpCatKind_II
+AbnOpCatKind_III*œ
+AlrmKind
+AlrmKind_ground_fault 
+AlrmKind_dc_over_voltage
+AlrmKind_ac_disconnect_open
+AlrmKind_dc_disconnect_open
+AlrmKind_grid_disconnect
+AlrmKind_cabinet_open
+AlrmKind_manual_shutdown
+AlrmKind_over_temperature"
+AlrmKind_frequency_above_limit"
+AlrmKind_frequency_under_limit	#
+AlrmKind_ac_voltage_above_limit
+#
+AlrmKind_ac_voltage_under_limit'
+#AlrmKind_blown_string_fuse_on_input
+AlrmKind_under_temperature2
+.AlrmKind_generic_memory_or_communication_error"
+AlrmKind_hardware_test_failure
+AlrmKind_manufacturer_alarm*†
+ControlModeKind
+ControlModeKind_UNDEFINED 
+ControlModeKind_auto
+ControlModeKind_manual
+ControlModeKind_override
+ControlModeKind_remote*æ
+DirectionModeKind
+DirectionModeKind_UNDEFINED $
+ DirectionModeKind_locked_forward$
+ DirectionModeKind_locked_reverse"
+DirectionModeKind_reverse_idle#
+DirectionModeKind_bidirectional"
+DirectionModeKind_neutral_idle"
+DirectionModeKind_cogeneration,
+(DirectionModeKind_reactive_bidirectional(
+$DirectionModeKind_bias_bidirectional'
+#DirectionModeKind_bias_cogeneration	*
+&DirectionModeKind_reverse_cogeneration
+*j
+GridConnectionStateKind(
+$GridConnectionStateKind_disconnected %
+!GridConnectionStateKind_connected*˝
+OperatingStateKind 
+OperatingStateKind_UNDEFINED 
+OperatingStateKind_off/
++OperatingStateKind_disconnected_and_standby1
+-OperatingStateKind_disconnected_and_available2
+.OperatingStateKind_disconnected_and_authorized1
+-OperatingStateKind_starting_and_synchronizing)
+%OperatingStateKind_connected_and_idle/
++OperatingStateKind_connected_and_generating.
+*OperatingStateKind_connected_and_consuming
+OperatingStateKind_stopping	/
++OperatingStateKind_disconnected_and_blocked
+6
+2OperatingStateKind_disconnected_and_in_maintenance)
+%OperatingStateKind_ceased_to_energize
+OperatingStateKind_failed*â
+ReactivePowerControlKind&
+"ReactivePowerControlKind_UNDEFINED %
+!ReactivePowerControlKind_advanced"
+ReactivePowerControlKind_droop$
+ ReactivePowerControlKind_voltage*
+&ReactivePowerControlKind_reactivePower(
+$ReactivePowerControlKind_powerFactor*«
+RealPowerControlKind"
+RealPowerControlKind_UNDEFINED !
+RealPowerControlKind_advanced
+RealPowerControlKind_droop$
+ RealPowerControlKind_isochronous"
+RealPowerControlKind_realPower*`
+	StateKind
+StateKind_UNDEFINED 
+StateKind_off
+StateKind_on
+StateKind_standby*∆
+VoltLimitModeKind
+VoltLimitModeKind_UNDEFINED 
+VoltLimitModeKind_off%
+!VoltLimitModeKind_high_limit_only$
+ VoltLimitModeKind_low_limit_only%
+!VoltLimitModeKind_high_low_limits*
+&VoltLimitModeKind_ivvc_high_limit_only)
+%VoltLimitModeKind_ivvc_low_limit_only*
+&VoltLimitModeKind_ivvc_high_low_limitsBÑ
+openfmb.commonmodulePZSgitlab.com/openfmb/psm/ops/protobuf/go-openfmb-ops-protobuf/v2/openfmb/commonmodule™openfmb.commonmodulebproto3
+¢
+!breakermodule/breakermodule.protobreakermodule	uml.protocommonmodule/commonmodule.proto"b
+BreakerDiscreteControlXCBRD
+discreteControlXCBR (2!.commonmodule.DiscreteControlXCBRBÄµ"Õ
+BreakerDiscreteControl6
+controlValue (2.commonmodule.ControlValueBÄµ,
+check (2.commonmodule.CheckConditionsM
+breakerDiscreteControlXCBR (2).breakermodule.BreakerDiscreteControlXCBR"O
+BreakerD
+conductingEquipment (2!.commonmodule.ConductingEquipmentBÄµ"Ì
+BreakerDiscreteControlProfileB
+controlMessageInfo (2 .commonmodule.ControlMessageInfoBÄµ1
+breaker (2.breakermodule.BreakerBàµêµO
+breakerDiscreteControl (2%.breakermodule.BreakerDiscreteControlBàµêµ:¿Û"Ä
+BreakerEvent2
+
+eventValue (2.commonmodule.EventValueBÄµ<
+statusAndEventXCBR (2 .commonmodule.StatusAndEventXCBR"À
+BreakerEventProfile>
+eventMessageInfo (2.commonmodule.EventMessageInfoBÄµ1
+breaker (2.breakermodule.BreakerBàµêµ;
+breakerEvent (2.breakermodule.BreakerEventBàµêµ:¿Û"¥
+BreakerReadingb
+"conductingEquipmentTerminalReading (20.commonmodule.ConductingEquipmentTerminalReadingBÄµ2
+diffReadingMMXU (2.commonmodule.ReadingMMXU*
+	phaseMMTN (2.commonmodule.PhaseMMTN.
+readingMMTR (2.commonmodule.ReadingMMTR.
+readingMMXU (2.commonmodule.ReadingMMXU"Ÿ
+BreakerReadingProfileB
+readingMessageInfo (2 .commonmodule.ReadingMessageInfoBÄµ1
+breaker (2.breakermodule.BreakerBàµêµC
+breakerReading (2.breakermodule.BreakerReadingBàµêµòµ:¿Û"É
+BreakerStatus4
+statusValue (2.commonmodule.StatusValueBÄµ<
+statusAndEventXCBR (2 .commonmodule.StatusAndEventXCBR"–
+BreakerStatusProfile@
+statusMessageInfo (2.commonmodule.StatusMessageInfoBÄµ1
+breaker (2.breakermodule.BreakerBàµêµ=
+breakerStatus (2.breakermodule.BreakerStatusBàµêµ:¿ÛBá
+openfmb.breakermodulePZTgitlab.com/openfmb/psm/ops/protobuf/go-openfmb-ops-protobuf/v2/openfmb/breakermodule™openfmb.breakermodulebproto3
+ƒ!
+!capbankmodule/capbankmodule.protocapbankmodule	uml.protocommonmodule/commonmodule.proto"U
+CapBankSystemD
+conductingEquipment (2!.commonmodule.ConductingEquipmentBÄµ"˙
+CapBankControlYPSH&
+AmpLmt (2.commonmodule.PhaseSPC(
+AmpThdHi (2.commonmodule.PhaseAPC(
+AmpThdLo (2.commonmodule.PhaseAPC-
+CtlModeAuto (2.commonmodule.ControlSPC.
+CtlModeOvrRd (2.commonmodule.ControlSPC,
+
+CtlModeRem (2.commonmodule.ControlSPC9
+DirMode (2(.commonmodule.Optional_DirectionModeKind#
+Pos (2.commonmodule.PhaseSPC)
+TempLmt	 (2.commonmodule.ControlSPC+
+	TempThdHi
+ (2.commonmodule.ControlAPC+
+	TempThdLo (2.commonmodule.ControlAPC&
+VArLmt (2.commonmodule.PhaseSPC(
+VArThdHi (2.commonmodule.PhaseAPC(
+VArThdLo (2.commonmodule.PhaseAPC&
+VolLmt (2.commonmodule.PhaseSPC(
+VolThdHi (2.commonmodule.PhaseAPC(
+VolThdLo (2.commonmodule.PhaseAPC"x
+CapBankPoint2
+control (2!.capbankmodule.CapBankControlYPSH4
+	startTime (2.commonmodule.TimestampBàµêµ"C
+
+CapBankCSG5
+crvPts (2.capbankmodule.CapBankPointBàµêµ"Q
+CapBankControlScheduleFSCH3
+ValCSG (2.capbankmodule.CapBankCSGBàµêµ"ô
+CapBankControlFSCC4
+controlFSCC (2.commonmodule.ControlFSCCBÄµM
+capBankControlScheduleFSCH (2).capbankmodule.CapBankControlScheduleFSCH"µ
+CapBankControl6
+controlValue (2.commonmodule.ControlValueBÄµ,
+check (2.commonmodule.CheckConditions=
+capBankControlFSCC (2!.capbankmodule.CapBankControlFSCC"·
+CapBankControlProfileB
+controlMessageInfo (2 .commonmodule.ControlMessageInfoBÄµ?
+capBankControl (2.capbankmodule.CapBankControlBàµêµ=
+capBankSystem (2.capbankmodule.CapBankSystemBàµêµ:¿Û"ö
+CapBankDiscreteControlYPSHH
+logicalNodeForControl (2#.commonmodule.LogicalNodeForControlBÄµ2
+control (2!.capbankmodule.CapBankControlYPSH"Õ
+CapBankDiscreteControl6
+controlValue (2.commonmodule.ControlValueBÄµ,
+check (2.commonmodule.CheckConditionsM
+capBankDiscreteControlYPSH (2).capbankmodule.CapBankDiscreteControlYPSH"Ò
+CapBankDiscreteControlProfileB
+controlMessageInfo (2 .commonmodule.ControlMessageInfoBÄµG
+capBankControl (2%.capbankmodule.CapBankDiscreteControlBàµêµ=
+capBankSystem (2.capbankmodule.CapBankSystemBàµêµ:¿Û"“
+CapBankEventAndStatusYPSHV
+logicalNodeForEventAndStatus (2*.commonmodule.LogicalNodeForEventAndStatusBÄµ&
+AmpLmt (2.commonmodule.PhaseSPS7
+CtlMode (2&.commonmodule.Optional_ControlModeKind&
+DirRev (2.commonmodule.PhaseSPS6
+DynamicTest (2!.commonmodule.ENS_DynamicTestKind#
+Pos (2.commonmodule.PhaseDPS'
+TempLmt (2.commonmodule.PhaseSPS&
+VArLmt (2.commonmodule.PhaseSPS&
+VolLmt	 (2.commonmodule.PhaseSPS"è
+CapBankEvent2
+
+eventValue (2.commonmodule.EventValueBÄµK
+CapBankEventAndStatusYPSH (2(.capbankmodule.CapBankEventAndStatusYPSH"◊
+CapBankEventProfile>
+eventMessageInfo (2.commonmodule.EventMessageInfoBÄµ;
+capBankEvent (2.capbankmodule.CapBankEventBàµêµ=
+capBankSystem (2.capbankmodule.CapBankSystemBàµêµ:¿Û"π
+CapBankReadingb
+"conductingEquipmentTerminalReading (20.commonmodule.ConductingEquipmentTerminalReadingBÄµ*
+	phaseMMTN (2.commonmodule.PhaseMMTN.
+readingMMTR (2.commonmodule.ReadingMMTR.
+readingMMXU (2.commonmodule.ReadingMMXU7
+secondaryReadingMMXU (2.commonmodule.ReadingMMXU"·
+CapBankReadingProfileB
+readingMessageInfo (2 .commonmodule.ReadingMessageInfoBÄµ?
+capBankReading (2.capbankmodule.CapBankReadingBàµêµ=
+capBankSystem (2.capbankmodule.CapBankSystemBàµêµ:¿Û"í
+CapBankStatus4
+statusValue (2.commonmodule.StatusValueBÄµK
+capBankEventAndStatusYPSH (2(.capbankmodule.CapBankEventAndStatusYPSH"‹
+CapBankStatusProfile@
+statusMessageInfo (2.commonmodule.StatusMessageInfoBÄµ=
+capBankStatus (2.capbankmodule.CapBankStatusBàµêµ=
+capBankSystem (2.capbankmodule.CapBankSystemBàµêµ:¿ÛBá
+openfmb.capbankmodulePZTgitlab.com/openfmb/psm/ops/protobuf/go-openfmb-ops-protobuf/v2/openfmb/capbankmodule™openfmb.capbankmodulebproto3
+Ä
+=circuitsegmentservicemodule/circuitsegmentservicemodule.protocircuitsegmentservicemodule	uml.protogoogle/protobuf/wrappers.protocommonmodule/commonmodule.proto"s
+&Optional_CircuitSegmentServiceModeKindI
+value (2:.circuitsegmentservicemodule.CircuitSegmentServiceModeKind"∞
+!ENG_CircuitSegmentServiceModeKindT
+setVal (2:.circuitsegmentservicemodule.CircuitSegmentServiceModeKindBàµêµ5
+setValExtension (2.google.protobuf.StringValue"Ú
+CircuitSegmentControlDCSCH
+logicalNodeForControl (2#.commonmodule.LogicalNodeForControlBÄµa
+CircuitSegmentServiceMode (2>.circuitsegmentservicemodule.ENG_CircuitSegmentServiceModeKind(
+Island (2.commonmodule.ControlDPC"Í
+CircuitSegmentControl>
+identifiedObject (2.commonmodule.IdentifiedObjectBÄµ,
+check (2.commonmodule.CheckConditionsc
+circuitSegmentControlDCSC (26.circuitsegmentservicemodule.CircuitSegmentControlDCSCBàµêµ"ã
+CircuitSegmentControlProfileB
+controlMessageInfo (2 .commonmodule.ControlMessageInfoBÄµD
+applicationSystem (2.commonmodule.ApplicationSystemBàµêµ[
+circuitSegmentControl (22.circuitsegmentservicemodule.CircuitSegmentControlBàµêµ:¿Û"€
+CircuitSegmentEventDCSC4
+logicalNode (2.commonmodule.LogicalNodeBÄµa
+CircuitSegmentServiceMode (2>.circuitsegmentservicemodule.ENG_CircuitSegmentServiceModeKind'
+Island (2.commonmodule.StatusSPS0
+PermissibleAuto (2.commonmodule.StatusSPS2
+PermissibleManual (2.commonmodule.StatusSPS3
+PermissibleNetzero (2.commonmodule.StatusSPS1
+PermissibleStart (2.commonmodule.StatusSPS0
+PermissibleStop (2.commonmodule.StatusSPS"∂
+CircuitSegmentEvent>
+identifiedObject (2.commonmodule.IdentifiedObjectBÄµ_
+circuitSegmentEventDCSC (24.circuitsegmentservicemodule.CircuitSegmentEventDCSCBàµêµ"Å
+CircuitSegmentEventProfile>
+eventMessageInfo (2.commonmodule.EventMessageInfoBÄµD
+applicationSystem (2.commonmodule.ApplicationSystemBàµêµW
+circuitSegmentEvent (20.circuitsegmentservicemodule.CircuitSegmentEventBàµêµ:¿Û"‹
+CircuitSegmentStatusDCSC4
+logicalNode (2.commonmodule.LogicalNodeBÄµa
+CircuitSegmentServiceMode (2>.circuitsegmentservicemodule.ENG_CircuitSegmentServiceModeKind'
+Island (2.commonmodule.StatusDPS0
+PermissibleAuto (2.commonmodule.StatusSPS2
+PermissibleManual (2.commonmodule.StatusSPS3
+PermissibleNetzero (2.commonmodule.StatusSPS1
+PermissibleStart (2.commonmodule.StatusSPS0
+PermissibleStop (2.commonmodule.StatusSPS"π
+CircuitSegmentStatus>
+identifiedObject (2.commonmodule.IdentifiedObjectBÄµa
+circuitSegmentStatusDCSC (25.circuitsegmentservicemodule.CircuitSegmentStatusDCSCBàµêµ"Ü
+CircuitSegmentStatusProfile@
+statusMessageInfo (2.commonmodule.StatusMessageInfoBÄµD
+applicationSystem (2.commonmodule.ApplicationSystemBàµêµY
+circuitSegmentStatus (21.circuitsegmentservicemodule.CircuitSegmentStatusBàµêµ:¿Û*¬
+CircuitSegmentServiceModeKind+
+'CircuitSegmentServiceModeKind_UNDEFINED &
+"CircuitSegmentServiceModeKind_none&
+"CircuitSegmentServiceModeKind_auto(
+$CircuitSegmentServiceModeKind_manual)
+%CircuitSegmentServiceModeKind_netzero'
+#CircuitSegmentServiceModeKind_start&
+"CircuitSegmentServiceModeKind_stopB±
+#openfmb.circuitsegmentservicemodulePZbgitlab.com/openfmb/psm/ops/protobuf/go-openfmb-ops-protobuf/v2/openfmb/circuitsegmentservicemodule™#openfmb.circuitsegmentservicemodulebproto3
+ôN
+essmodule/essmodule.proto	essmodule	uml.protogoogle/protobuf/wrappers.protocommonmodule/commonmodule.proto"ö
+ESSCapabilityConfigurationX
+sourceCapabilityConfiguration (2+.commonmodule.SourceCapabilityConfigurationBÄµ&
+VAChaRteMax (2.commonmodule.ASG)
+VADisChaRteMax (2.commonmodule.ASG%
+
+WChaRteMax (2.commonmodule.ASG(
+WDisChaRteMax (2.commonmodule.ASG"®
+ESSCapabilityOverride:
+nameplateValue (2.commonmodule.NameplateValueBÄµS
+essCapabilityConfiguration (2%.essmodule.ESSCapabilityConfigurationBàµêµ"„
+ESSCapabilityOverrideProfileH
+capabilityMessageInfo (2#.commonmodule.CapabilityMessageInfoBÄµ(
+ess (2.commonmodule.ESSBàµêµI
+essCapabilityOverride (2 .essmodule.ESSCapabilityOverrideBàµêµ:¿Û"Ë
+ESSCapabilityRatingsL
+sourceCapabilityRatings (2%.commonmodule.SourceCapabilityRatingsBÄµ3
+VAChaRteMaxRtg (2.commonmodule.ASGBàµêµ6
+VADisChaRteMaxRtg (2.commonmodule.ASGBàµêµ2
+WChaRteMaxRtg (2.commonmodule.ASGBàµêµ5
+WDisChaRteMaxRtg (2.commonmodule.ASGBàµêµ*
+WHRtg (2.commonmodule.ASGBàµêµ"ﬂ
+ESSCapability:
+nameplateValue (2.commonmodule.NameplateValueBÄµG
+essCapabilityRatings (2.essmodule.ESSCapabilityRatingsBàµêµI
+essCapabilityConfiguration (2%.essmodule.ESSCapabilityConfiguration"À
+ESSCapabilityProfileH
+capabilityMessageInfo (2#.commonmodule.CapabilityMessageInfoBÄµ(
+ess (2.commonmodule.ESSBàµêµ9
+essCapability (2.essmodule.ESSCapabilityBàµêµ:¿Û"˙
+FrequencyRegulation;
+frequencyDeadBandMinus (2.google.protobuf.FloatValue:
+frequencyDeadBandPlus (2.google.protobuf.FloatValue:
+frequencyRegulationCtl (2.google.protobuf.BoolValue6
+frequencySetPoint (2.google.protobuf.FloatValueA
+gridFrequencyStableBandMinus (2.google.protobuf.FloatValue@
+gridFrequencyStableBandPlus (2.google.protobuf.FloatValue7
+overFrequencyDroop (2.google.protobuf.FloatValue8
+underFrequencyDroop (2.google.protobuf.FloatValue"∂
+PeakShaving5
+baseShavingLimit (2.google.protobuf.FloatValue2
+peakShavingCtl (2.google.protobuf.BoolValue5
+peakShavingLimit (2.google.protobuf.FloatValueB
+socManagementAllowedHighLimit (2.google.protobuf.FloatValueA
+socManagementAllowedLowLimit (2.google.protobuf.FloatValue"ô
+SocLimit1
+socHighLimit (2.google.protobuf.FloatValue;
+socHighLimitHysteresis (2.google.protobuf.FloatValue/
+socLimitCtl (2.google.protobuf.BoolValue0
+socLowLimit (2.google.protobuf.FloatValue:
+socLowLimitHysteresis (2.google.protobuf.FloatValue"õ
+SOCManagement5
+socDeadBandMinus (2.google.protobuf.FloatValue4
+socDeadBandPlus (2.google.protobuf.FloatValue4
+socManagementCtl (2.google.protobuf.BoolValue5
+socPowerSetPoint (2.google.protobuf.FloatValue0
+socSetPoint (2.google.protobuf.FloatValue"≠
+VoltageRegulation5
+overVoltageDroop (2.google.protobuf.FloatValue6
+underVoltageDroop (2.google.protobuf.FloatValue9
+voltageDeadBandMinus (2.google.protobuf.FloatValue8
+voltageDeadBandPlus (2.google.protobuf.FloatValue4
+voltageSetPoint (2.google.protobuf.FloatValue"|
+VoltageDroop3
+voltageDroopCtl (2.google.protobuf.BoolValue7
+voltageRegulation (2.essmodule.VoltageRegulation"v
+	VoltagePI0
+voltagePICtl (2.google.protobuf.BoolValue7
+voltageRegulation (2.essmodule.VoltageRegulation"Ω
+CapacityFirming6
+capacityFirmingCtl (2.google.protobuf.BoolValue8
+limitNegative_dp_dt (2.google.protobuf.FloatValue8
+limitPositive_dp_dt (2.google.protobuf.FloatValue"‹
+ESSFunction3
+capacityFirming (2.essmodule.CapacityFirming;
+frequencyRegulation (2.essmodule.FrequencyRegulation+
+peakShaving (2.essmodule.PeakShaving%
+socLimit (2.essmodule.SocLimit/
+socManagement (2.essmodule.SOCManagement-
+voltageDroop (2.essmodule.VoltageDroop'
+	voltagePI (2.essmodule.VoltagePI"®
+ESSPoint3
+blackStartEnabled (2.commonmodule.ControlSPC(
+function (2.essmodule.ESSFunction3
+mode (2%.commonmodule.ENG_GridConnectModeKind)
+	rampRates (2.commonmodule.RampRate'
+reset
+ (2.commonmodule.ControlSPC/
+state (2 .commonmodule.Optional_StateKind?
+transToIslndOnGridLossEnabled (2.commonmodule.ControlSPC<
+enterServiceOperation (2.commonmodule.EnterServiceAPC*
+hzWOperation (2.commonmodule.HzWAPC0
+limitWOperation (2.commonmodule.LimitWAPC(
+pFOperation (2.commonmodule.PFSPC0
+tmHzTripOperation (2.commonmodule.TmHzCSG4
+tmVoltTripOperation (2.commonmodule.TmVoltCSG*
+vArOperation (2.commonmodule.VarSPC2
+voltVarOperation (2.commonmodule.VoltVarCSG.
+voltWOperation (2.commonmodule.VoltWCSG,
+wVarOperation (2.commonmodule.WVarCSG&
+
+wOperation (2.commonmodule.WSPCJJJJ	J	
+JJJ"|
+ESSCurvePoint.
+control (2.essmodule.ESSPointBàµêµ;
+	startTime (2.commonmodule.ControlTimestampBàµêµ"<
+ESSCSG2
+crvPts (2.essmodule.ESSCurvePointBàµêµ"F
+ESSControlScheduleFSCH,
+ValDCSG (2.essmodule.ESSCSGBàµêµ"â
+EssControlFSCC4
+controlFSCC (2.commonmodule.ControlFSCCBÄµA
+essControlScheduleFSCH (2!.essmodule.ESSControlScheduleFSCH"•
+
+ESSControl6
+controlValue (2.commonmodule.ControlValueBÄµ,
+check (2.commonmodule.CheckConditions1
+essControlFSCC (2.essmodule.EssControlFSCC"º
+ESSControlProfileB
+controlMessageInfo (2 .commonmodule.ControlMessageInfoBÄµ(
+ess (2.commonmodule.ESSBàµêµ3
+
+essControl (2.essmodule.ESSControlBàµêµ:¿Û"à
+ESSDiscreteControlDBATH
+logicalNodeForControl (2#.commonmodule.LogicalNodeForControlBÄµ$
+control (2.essmodule.ESSPoint"Ω
+ESSDiscreteControl6
+controlValue (2.commonmodule.ControlValueBÄµ,
+check (2.commonmodule.CheckConditionsA
+essDiscreteControlDBAT (2!.essmodule.ESSDiscreteControlDBAT"‘
+ESSDiscreteControlProfileB
+controlMessageInfo (2 .commonmodule.ControlMessageInfoBÄµ(
+ess (2.commonmodule.ESSBàµêµC
+essDiscreteControl (2.essmodule.ESSDiscreteControlBàµêµ:¿Û"Á
+EssEventZBATV
+logicalNodeForEventAndStatus (2*.commonmodule.LogicalNodeForEventAndStatusBÄµ&
+BatHi (2.commonmodule.StatusSPS&
+BatLo (2.commonmodule.StatusSPS&
+BatSt (2.commonmodule.StatusSPS
+Soc (2.commonmodule.MV&
+Stdby (2.commonmodule.StatusSPS
+SoH (2.commonmodule.MV!
+WHAvail (2.commonmodule.MV"ß	
+ESSPointStatus2
+blackStartEnabled (2.commonmodule.StatusSPS9
+frequencySetPointEnabled (2.commonmodule.StatusSPS(
+function (2.essmodule.ESSFunction3
+mode (2%.commonmodule.ENG_GridConnectModeKind/
+
+pctHzDroop (2.google.protobuf.FloatValue.
+	pctVDroop (2.google.protobuf.FloatValue)
+	rampRates (2.commonmodule.RampRate;
+reactivePwrSetPointEnabled (2.commonmodule.StatusSPS7
+realPwrSetPointEnabled	 (2.commonmodule.StatusSPS/
+state
+ (2 .commonmodule.Optional_StateKind/
+syncBackToGrid (2.commonmodule.StatusSPS>
+transToIslndOnGridLossEnabled (2.commonmodule.StatusSPS7
+voltageSetPointEnabled (2.commonmodule.StatusSPS<
+enterServiceOperation (2.commonmodule.EnterServiceAPC*
+hzWOperation (2.commonmodule.HzWAPC0
+limitWOperation (2.commonmodule.LimitWAPC(
+pFOperation (2.commonmodule.PFSPC0
+tmHzTripOperation (2.commonmodule.TmHzCSG4
+tmVoltTripOperation (2.commonmodule.TmVoltCSG*
+vArOperation (2.commonmodule.VarSPC2
+voltVarOperation (2.commonmodule.VoltVarCSG.
+voltWOperation (2.commonmodule.VoltWCSG,
+wVarOperation (2.commonmodule.WVarCSG"÷
+ESSEventAndStatusZGENV
+logicalNodeForEventAndStatus (2*.commonmodule.LogicalNodeForEventAndStatusBÄµ)
+AuxPwrSt (2.commonmodule.StatusSPS6
+DynamicTest (2!.commonmodule.ENS_DynamicTestKind(
+EmgStop (2.commonmodule.StatusSPS(
+GnSynSt (2.commonmodule.StatusSPS.
+PointStatus (2.essmodule.ESSPointStatus"U
+ESSEventZGENE
+eSSEventAndStatusZGEN (2 .essmodule.ESSEventAndStatusZGENBÄµ"ú
+ESSEvent2
+
+eventValue (2.commonmodule.EventValueBÄµ-
+essEventZBAT (2.essmodule.EssEventZBAT-
+essEventZGEN (2.essmodule.ESSEventZGEN"≤
+ESSEventProfile>
+eventMessageInfo (2.commonmodule.EventMessageInfoBÄµ(
+ess (2.commonmodule.ESSBàµêµ/
+essEvent (2.essmodule.ESSEventBàµêµ:¿Û"¸
+
+ESSReadingb
+"conductingEquipmentTerminalReading (20.commonmodule.ConductingEquipmentTerminalReadingBÄµ*
+	phaseMMTN (2.commonmodule.PhaseMMTN.
+readingMMTR (2.commonmodule.ReadingMMTR.
+readingMMXU (2.commonmodule.ReadingMMXU"º
+ESSReadingProfileB
+readingMessageInfo (2 .commonmodule.ReadingMessageInfoBÄµ(
+ess (2.commonmodule.ESSBàµêµ3
+
+essReading (2.essmodule.ESSReadingBàµêµ:¿Û"œ
+EssStatusZBATV
+logicalNodeForEventAndStatus (2*.commonmodule.LogicalNodeForEventAndStatusBÄµ&
+BatSt (2.commonmodule.StatusSPS5
+GriMod (2%.commonmodule.ENG_GridConnectModeKind
+Soc (2.commonmodule.MV&
+Stdby (2.commonmodule.StatusSPS
+SoH (2.commonmodule.MV!
+WHAvail (2.commonmodule.MV"V
+ESSStatusZGENE
+eSSEventAndStatusZGEN (2 .essmodule.ESSEventAndStatusZGENBÄµ"£
+	ESSStatus4
+statusValue (2.commonmodule.StatusValueBÄµ/
+essStatusZBAT (2.essmodule.EssStatusZBAT/
+essStatusZGEN (2.essmodule.ESSStatusZGEN"∑
+ESSStatusProfile@
+statusMessageInfo (2.commonmodule.StatusMessageInfoBÄµ(
+ess (2.commonmodule.ESSBàµêµ1
+	essStatus (2.essmodule.ESSStatusBàµêµ:¿ÛB{
+openfmb.essmodulePZPgitlab.com/openfmb/psm/ops/protobuf/go-openfmb-ops-protobuf/v2/openfmb/essmodule™openfmb.essmodulebproto3
+Ã?
+'generationmodule/generationmodule.protogenerationmodule	uml.protogoogle/protobuf/wrappers.protocommonmodule/commonmodule.proto"à
+GeneratingUnitD
+conductingEquipment (2!.commonmodule.ConductingEquipmentBÄµ0
+maxOperatingP (2.commonmodule.ActivePower"}
+!GenerationCapabilityConfigurationX
+sourceCapabilityConfiguration (2+.commonmodule.SourceCapabilityConfigurationBÄµ"»
+GenerationCapabilityOverride>
+identifiedObject (2.commonmodule.IdentifiedObjectBÄµh
+!generationCapabilityConfiguration (23.generationmodule.GenerationCapabilityConfigurationBàµêµ"ô
+#GenerationCapabilityOverrideProfileH
+capabilityMessageInfo (2#.commonmodule.CapabilityMessageInfoBÄµ^
+generationCapabilityOverride (2..generationmodule.GenerationCapabilityOverrideBàµêµB
+generatingUnit (2 .generationmodule.GeneratingUnitBàµêµ:¿Û"k
+GenerationCapabilityRatingsL
+sourceCapabilityRatings (2%.commonmodule.SourceCapabilityRatingsBÄµ"ê
+GenerationCapability:
+nameplateValue (2.commonmodule.NameplateValueBÄµ\
+generationCapabilityRatings (2-.generationmodule.GenerationCapabilityRatingsBàµêµ^
+!generationCapabilityConfiguration (23.generationmodule.GenerationCapabilityConfiguration"Å
+GenerationCapabilityProfileH
+capabilityMessageInfo (2#.commonmodule.CapabilityMessageInfoBÄµN
+generationCapability (2&.generationmodule.GenerationCapabilityBàµêµB
+generatingUnit (2 .generationmodule.GeneratingUnitBàµêµ:¿Û"∂	
+GenerationPoint3
+blackStartEnabled (2.commonmodule.ControlSPC:
+frequencySetPointEnabled (2.commonmodule.ControlSPC/
+
+pctHzDroop (2.google.protobuf.FloatValue.
+	pctVDroop (2.google.protobuf.FloatValue)
+	rampRates (2.commonmodule.RampRate<
+reactivePwrSetPointEnabled (2.commonmodule.ControlSPC8
+realPwrSetPointEnabled (2.commonmodule.ControlSPC'
+reset (2.commonmodule.ControlSPC/
+state	 (2 .commonmodule.Optional_StateKind0
+syncBackToGrid
+ (2.commonmodule.ControlSPC?
+transToIslndOnGridLossEnabled (2.commonmodule.ControlSPC8
+voltageSetPointEnabled (2.commonmodule.ControlSPC;
+	startTime (2.commonmodule.ControlTimestampBàµêµ<
+enterServiceOperation (2.commonmodule.EnterServiceAPC*
+hzWOperation (2.commonmodule.HzWAPC0
+limitWOperation (2.commonmodule.LimitWAPC(
+pFOperation (2.commonmodule.PFSPC0
+tmHzTripOperation (2.commonmodule.TmHzCSG4
+tmVoltTripOperation (2.commonmodule.TmVoltCSG*
+vArOperation (2.commonmodule.VarSPC2
+voltVarOperation (2.commonmodule.VoltVarCSG.
+voltWOperation (2.commonmodule.VoltWCSG,
+wVarOperation (2.commonmodule.WVarCSG"L
+GenerationCSG;
+crvPts (2!.generationmodule.GenerationPointBàµêµ"[
+GenerationControlScheduleFSCH:
+ValDCSG (2.generationmodule.GenerationCSGBàµêµ"•
+GenerationControlFSCC4
+controlFSCC (2.commonmodule.ControlFSCCBÄµV
+GenerationControlScheduleFSCH (2/.generationmodule.GenerationControlScheduleFSCH"¡
+GenerationControl6
+controlValue (2.commonmodule.ControlValueBÄµ,
+check (2.commonmodule.CheckConditionsF
+generationControlFSCC (2'.generationmodule.GenerationControlFSCC"Ú
+GenerationControlProfileB
+controlMessageInfo (2 .commonmodule.ControlMessageInfoBÄµB
+generatingUnit (2 .generationmodule.GeneratingUnitBàµêµH
+generationControl (2#.generationmodule.GenerationControlBàµêµ:¿Û"q
+DroopParameter*
+slope (2.google.protobuf.FloatValue3
+unloadedOffset (2.google.protobuf.FloatValue"à
+RealPowerControl7
+droopSetpoint (2 .generationmodule.DroopParameter8
+isochronousSetpoint (2.google.protobuf.FloatValueI
+realPowerControlMode (2+.commonmodule.Optional_RealPowerControlKind6
+realPowerSetpoint (2.google.protobuf.FloatValue"Œ
+ReactivePowerControl7
+droopSetpoint (2 .generationmodule.DroopParameter8
+powerFactorSetpoint (2.google.protobuf.FloatValueQ
+reactivePowerControlMode (2/.commonmodule.Optional_ReactivePowerControlKind:
+reactivePowerSetpoint (2.google.protobuf.FloatValue4
+voltageSetpoint (2.google.protobuf.FloatValue"Ö
+GenerationDiscreteControl6
+controlValue (2.commonmodule.ControlValueBÄµ,
+check (2.commonmodule.CheckConditionsD
+ReactivePowerControl (2&.generationmodule.ReactivePowerControl<
+RealPowerControl (2".generationmodule.RealPowerControl"ä
+ GenerationDiscreteControlProfileB
+controlMessageInfo (2 .commonmodule.ControlMessageInfoBÄµB
+generatingUnit (2 .generationmodule.GeneratingUnitBàµêµX
+generationDiscreteControl (2+.generationmodule.GenerationDiscreteControlBàµêµ:¿Û"É
+GenerationReadingb
+"conductingEquipmentTerminalReading (20.commonmodule.ConductingEquipmentTerminalReadingBÄµ*
+	phaseMMTN (2.commonmodule.PhaseMMTN.
+readingMMTR (2.commonmodule.ReadingMMTR.
+readingMMXU (2.commonmodule.ReadingMMXU"Ú
+GenerationReadingProfileB
+readingMessageInfo (2 .commonmodule.ReadingMessageInfoBÄµB
+generatingUnit (2 .generationmodule.GeneratingUnitBàµêµH
+generationReading (2#.generationmodule.GenerationReadingBàµêµ:¿Û"œ
+GenerationPointStatus2
+blackStartEnabled (2.commonmodule.StatusSPS9
+frequencySetPointEnabled (2.commonmodule.StatusSPS/
+
+pctHzDroop (2.google.protobuf.FloatValue.
+	pctVDroop (2.google.protobuf.FloatValue)
+	rampRates (2.commonmodule.RampRate;
+reactivePwrSetPointEnabled (2.commonmodule.StatusSPS7
+realPwrSetPointEnabled (2.commonmodule.StatusSPS/
+state (2 .commonmodule.Optional_StateKind/
+syncBackToGrid	 (2.commonmodule.StatusSPS>
+transToIslndOnGridLossEnabled
+ (2.commonmodule.StatusSPS7
+voltageSetPointEnabled (2.commonmodule.StatusSPS<
+enterServiceOperation (2.commonmodule.EnterServiceAPC*
+hzWOperation (2.commonmodule.HzWAPC0
+limitWOperation (2.commonmodule.LimitWAPC(
+pFOperation (2.commonmodule.PFSPC0
+tmHzTripOperation (2.commonmodule.TmHzCSG4
+tmVoltTripOperation (2.commonmodule.TmVoltCSG*
+vArOperation (2.commonmodule.VarSPC2
+voltVarOperation (2.commonmodule.VoltVarCSG.
+voltWOperation (2.commonmodule.VoltWCSG,
+wVarOperation (2.commonmodule.WVarCSG"›
+GenerationEventAndStatusZGENV
+logicalNodeForEventAndStatus (2*.commonmodule.LogicalNodeForEventAndStatusBÄµ)
+AuxPwrSt (2.commonmodule.StatusSPS6
+DynamicTest (2!.commonmodule.ENS_DynamicTestKind(
+EmgStop (2.commonmodule.StatusSPS(
+GnSynSt (2.commonmodule.StatusSPS<
+PointStatus (2'.generationmodule.GenerationPointStatus-
+Alrm (2.commonmodule.Optional_AlrmKindK
+GridConnectionState (2..commonmodule.Optional_GridConnectionStateKind1
+ManAlrmInfo	 (2.google.protobuf.StringValueA
+OperatingState
+ (2).commonmodule.Optional_OperatingStateKind"q
+GenerationEventZGENZ
+generationEventAndStatusZGEN (2..generationmodule.GenerationEventAndStatusZGENBÄµ"â
+GenerationEvent2
+
+eventValue (2.commonmodule.EventValueBÄµB
+generationEventZGEN (2%.generationmodule.GenerationEventZGEN"Ë
+GenerationEventProfile>
+eventMessageInfo (2.commonmodule.EventMessageInfoBÄµB
+generatingUnit (2 .generationmodule.GeneratingUnitBàµêµD
+generationEvent (2!.generationmodule.GenerationEventBàµêµ:¿Û"r
+GenerationStatusZGENZ
+generationEventAndStatusZGEN (2..generationmodule.GenerationEventAndStatusZGENBÄµ"é
+GenerationStatus4
+statusValue (2.commonmodule.StatusValueBÄµD
+generationStatusZGEN (2&.generationmodule.GenerationStatusZGEN"Ì
+GenerationStatusProfile@
+statusMessageInfo (2.commonmodule.StatusMessageInfoBÄµB
+generatingUnit (2 .generationmodule.GeneratingUnitBàµêµF
+generationStatus (2".generationmodule.GenerationStatusBàµêµ:¿ÛBê
+openfmb.generationmodulePZWgitlab.com/openfmb/psm/ops/protobuf/go-openfmb-ops-protobuf/v2/openfmb/generationmodule™openfmb.generationmodulebproto3
+À
+1interconnectionmodule/interconnectionmodule.protointerconnectionmodule	uml.protogoogle/protobuf/wrappers.protocommonmodule/commonmodule.proto"•
+InterconnectionPoint3
+blackStartEnabled (2.commonmodule.ControlSPC:
+frequencySetPointEnabled (2.commonmodule.ControlSPC(
+island (2.commonmodule.ControlSPC/
+
+pctHzDroop (2.google.protobuf.FloatValue.
+	pctVDroop (2.google.protobuf.FloatValue)
+	rampRates (2.commonmodule.RampRate<
+reactivePwrSetPointEnabled (2.commonmodule.ControlSPC8
+realPwrSetPointEnabled (2.commonmodule.ControlSPC8
+voltageSetPointEnabled	 (2.commonmodule.ControlSPC4
+	startTime
+ (2.commonmodule.TimestampBàµêµ"[
+InterconnectionCSGE
+crvPts (2+.interconnectionmodule.InterconnectionPointBàµêµ"j
+"InterconnectionControlScheduleFSCHD
+ValDCSG (2).interconnectionmodule.InterconnectionCSGBàµêµ"¿
+InterconnectionScheduleFSCC4
+controlFSCC (2.commonmodule.ControlFSCCBÄµk
+"interconnectionControlScheduleFSCH (29.interconnectionmodule.InterconnectionControlScheduleFSCHBêµ "Í
+InterconnectionSchedule>
+identifiedObject (2.commonmodule.IdentifiedObjectBÄµ,
+check (2.commonmodule.CheckConditionsa
+interconnectionScheduleFSCC (22.interconnectionmodule.InterconnectionScheduleFSCCBàµêµ"±
+%InterconnectionPlannedScheduleProfileB
+controlMessageInfo (2 .commonmodule.ControlMessageInfoBÄµQ
+requesterCircuitSegmentService (2.commonmodule.ApplicationSystemBàµêµY
+interconnectionSchedule (2..interconnectionmodule.InterconnectionScheduleBàµêµ=
+tiePoint (2!.commonmodule.ConductingEquipmentBàµêµQ
+responderCircuitSegmentService (2.commonmodule.ApplicationSystemBàµêµ:¿Û"≥
+'InterconnectionRequestedScheduleProfileB
+controlMessageInfo (2 .commonmodule.ControlMessageInfoBÄµQ
+requesterCircuitSegmentService (2.commonmodule.ApplicationSystemBàµêµY
+interconnectionSchedule (2..interconnectionmodule.InterconnectionScheduleBàµêµ=
+tiePoint (2!.commonmodule.ConductingEquipmentBàµêµQ
+responderCircuitSegmentService (2.commonmodule.ApplicationSystemBàµêµ:¿ÛBü
+openfmb.interconnectionmodulePZ\gitlab.com/openfmb/psm/ops/protobuf/go-openfmb-ops-protobuf/v2/openfmb/interconnectionmodule™openfmb.interconnectionmodulebproto3
+À
+loadmodule/loadmodule.proto
+loadmodule	uml.protogoogle/protobuf/wrappers.protocommonmodule/commonmodule.proto"≈
+	LoadPoint)
+	rampRates (2.commonmodule.RampRate<
+reactivePwrSetPointEnabled (2.commonmodule.ControlSPC8
+realPwrSetPointEnabled (2.commonmodule.ControlSPC'
+reset (2.commonmodule.ControlSPC/
+state (2 .commonmodule.Optional_StateKind;
+	startTime (2.commonmodule.ControlTimestampBàµêµ":
+LoadCSG/
+crvPts (2.loadmodule.LoadPointBàµêµ"I
+LoadControlScheduleFSCH.
+ValDCSG (2.loadmodule.LoadCSGBàµêµ"ç
+LoadControlFSCC4
+controlFSCC (2.commonmodule.ControlFSCCBÄµD
+loadControlScheduleFSCH (2#.loadmodule.LoadControlScheduleFSCH"©
+LoadControl6
+controlValue (2.commonmodule.ControlValueBÄµ,
+check (2.commonmodule.CheckConditions4
+loadControlFSCC (2.loadmodule.LoadControlFSCC"÷
+LoadControlProfileB
+controlMessageInfo (2 .commonmodule.ControlMessageInfoBÄµ>
+energyConsumer (2.commonmodule.EnergyConsumerBàµêµ6
+loadControl (2.loadmodule.LoadControlBàµêµ:¿Û"ã
+LoadPointStatus)
+	rampRates (2.commonmodule.RampRate;
+reactivePwrSetPointEnabled (2.commonmodule.StatusSPS7
+realPwrSetPointEnabled (2.commonmodule.StatusSPS&
+reset (2.commonmodule.StatusSPS/
+state (2 .commonmodule.Optional_StateKind"Ñ
+LoadEventAndStatusZGLDV
+logicalNodeForEventAndStatus (2*.commonmodule.LogicalNodeForEventAndStatusBÄµ6
+DynamicTest (2!.commonmodule.ENS_DynamicTestKind(
+EmgStop (2.commonmodule.StatusSPS0
+PointStatus (2.loadmodule.LoadPointStatus"Y
+LoadEventZGLDH
+loadEventAndStatusZGLD (2".loadmodule.LoadEventAndStatusZGLDBÄµ"q
+	LoadEvent2
+
+eventValue (2.commonmodule.EventValueBÄµ0
+loadEventZGLD (2.loadmodule.LoadEventZGLD"Ã
+LoadEventProfile>
+eventMessageInfo (2.commonmodule.EventMessageInfoBÄµ>
+energyConsumer (2.commonmodule.EnergyConsumerBàµêµ2
+	loadEvent (2.loadmodule.LoadEventBàµêµ:¿Û"˝
+LoadReadingb
+"conductingEquipmentTerminalReading (20.commonmodule.ConductingEquipmentTerminalReadingBÄµ*
+	phaseMMTN (2.commonmodule.PhaseMMTN.
+readingMMTR (2.commonmodule.ReadingMMTR.
+readingMMXU (2.commonmodule.ReadingMMXU"÷
+LoadReadingProfileB
+readingMessageInfo (2 .commonmodule.ReadingMessageInfoBÄµ>
+energyConsumer (2.commonmodule.EnergyConsumerBàµêµ6
+loadReading (2.loadmodule.LoadReadingBàµêµ:¿Û"Z
+LoadStatusZGLDH
+loadEventAndStatusZGLD (2".loadmodule.LoadEventAndStatusZGLDBÄµ"¨
+
+LoadStatus4
+statusValue (2.commonmodule.StatusValueBÄµ4
+isUncontrollable (2.google.protobuf.BoolValue2
+loadStatusZGLD (2.loadmodule.LoadStatusZGLD"—
+LoadStatusProfile@
+statusMessageInfo (2.commonmodule.StatusMessageInfoBÄµ>
+energyConsumer (2.commonmodule.EnergyConsumerBàµêµ4
+
+loadStatus (2.loadmodule.LoadStatusBàµêµ:¿ÛB~
+openfmb.loadmodulePZQgitlab.com/openfmb/psm/ops/protobuf/go-openfmb-ops-protobuf/v2/openfmb/loadmodule™openfmb.loadmodulebproto3
+∞
+metermodule/metermodule.protometermodule	uml.protocommonmodule/commonmodule.proto"˛
+MeterReadingb
+"conductingEquipmentTerminalReading (20.commonmodule.ConductingEquipmentTerminalReadingBÄµ*
+	phaseMMTN (2.commonmodule.PhaseMMTN.
+readingMMTR (2.commonmodule.ReadingMMTR.
+readingMMXU (2.commonmodule.ReadingMMXU"»
+MeterReadingProfileB
+readingMessageInfo (2 .commonmodule.ReadingMessageInfoBÄµ,
+meter (2.commonmodule.MeterBàµêµ9
+meterReading (2.metermodule.MeterReadingBàµêµ:¿ÛBÅ
+openfmb.metermodulePZRgitlab.com/openfmb/psm/ops/protobuf/go-openfmb-ops-protobuf/v2/openfmb/metermodule™openfmb.metermodulebproto3
+û
+#reclosermodule/reclosermodule.protoreclosermodule	uml.protogoogle/protobuf/wrappers.protocommonmodule/commonmodule.proto"c
+RecloserDiscreteControlXCBRD
+discreteControlXCBR (2!.commonmodule.DiscreteControlXCBRBÄµ"—
+RecloserDiscreteControl6
+controlValue (2.commonmodule.ControlValueBÄµ,
+check (2.commonmodule.CheckConditionsP
+recloserDiscreteControlXCBR (2+.reclosermodule.RecloserDiscreteControlXCBR"Ä
+RecloserD
+conductingEquipment (2!.commonmodule.ConductingEquipmentBÄµ.
+
+normalOpen (2.google.protobuf.BoolValue"Ù
+RecloserDiscreteControlProfileB
+controlMessageInfo (2 .commonmodule.ControlMessageInfoBÄµ4
+recloser (2.reclosermodule.RecloserBàµêµR
+recloserDiscreteControl (2'.reclosermodule.RecloserDiscreteControlBàµêµ:¿Û"Å
+RecloserEvent2
+
+eventValue (2.commonmodule.EventValueBÄµ<
+statusAndEventXCBR (2 .commonmodule.StatusAndEventXCBR"“
+RecloserEventProfile>
+eventMessageInfo (2.commonmodule.EventMessageInfoBÄµ4
+recloser (2.reclosermodule.RecloserBàµêµ>
+recloserEvent (2.reclosermodule.RecloserEventBàµêµ:¿Û"µ
+RecloserReadingb
+"conductingEquipmentTerminalReading (20.commonmodule.ConductingEquipmentTerminalReadingBÄµ2
+diffReadingMMXU (2.commonmodule.ReadingMMXU*
+	phaseMMTN (2.commonmodule.PhaseMMTN.
+readingMMTR (2.commonmodule.ReadingMMTR.
+readingMMXU (2.commonmodule.ReadingMMXU"‡
+RecloserReadingProfileB
+readingMessageInfo (2 .commonmodule.ReadingMessageInfoBÄµ4
+recloser (2.reclosermodule.RecloserBàµêµF
+recloserReading (2.reclosermodule.RecloserReadingBàµêµòµ:¿Û"Ñ
+RecloserStatus4
+statusValue (2.commonmodule.StatusValueBÄµ<
+statusAndEventXCBR (2 .commonmodule.StatusAndEventXCBR"◊
+RecloserStatusProfile@
+statusMessageInfo (2.commonmodule.StatusMessageInfoBÄµ4
+recloser (2.reclosermodule.RecloserBàµêµ@
+recloserStatus (2.reclosermodule.RecloserStatusBàµêµ:¿ÛBä
+openfmb.reclosermodulePZUgitlab.com/openfmb/psm/ops/protobuf/go-openfmb-ops-protobuf/v2/openfmb/reclosermodule™openfmb.reclosermodulebproto3
+¶'
+%regulatormodule/regulatormodule.protoregulatormodule	uml.protocommonmodule/commonmodule.proto"ê
+DirectionalATCC&
+BndWid (2.commonmodule.PhaseAPC)
+	CtlDlTmms (2.commonmodule.PhaseISC$
+LDCR (2.commonmodule.PhaseAPC$
+LDCX (2.commonmodule.PhaseAPC&
+VolSpt (2.commonmodule.PhaseAPC6
+voltageSetPointEnabled (2.commonmodule.PhaseDPC"å
+RegulatorControlATCCH
+logicalNodeForControl (2#.commonmodule.LogicalNodeForControlBÄµ0
+DirFwd (2 .regulatormodule.DirectionalATCC9
+DirMode (2(.commonmodule.Optional_DirectionModeKind0
+DirRev (2 .regulatormodule.DirectionalATCC&
+DirThd (2.commonmodule.PhaseAPC%
+ParOp (2.commonmodule.PhaseSPC)
+	rampRates (2.commonmodule.RampRate/
+state (2 .commonmodule.Optional_StateKind&
+TapOpL	 (2.commonmodule.PhaseSPC&
+TapOpR
+ (2.commonmodule.PhaseSPC(
+VolLmtHi (2.commonmodule.PhaseAPC(
+VolLmtLo (2.commonmodule.PhaseAPC<
+
+VolLmtMode (2(.commonmodule.Optional_VoltLimitModeKind"~
+RegulatorPoint6
+control (2%.regulatormodule.RegulatorControlATCC4
+	startTime (2.commonmodule.TimestampBàµêµ"I
+RegulatorCSG9
+crvPts (2.regulatormodule.RegulatorPointBàµêµ"X
+RegulatorControlScheduleFSCH8
+ValDCSG (2.regulatormodule.RegulatorCSGBàµêµ"°
+RegulatorControlFSCC4
+controlFSCC (2.commonmodule.ControlFSCCBÄµS
+regulatorControlScheduleFSCH (2-.regulatormodule.RegulatorControlScheduleFSCH"Ω
+RegulatorControl6
+controlValue (2.commonmodule.ControlValueBÄµ,
+check (2.commonmodule.CheckConditionsC
+regulatorControlFSCC (2%.regulatormodule.RegulatorControlFSCC"W
+RegulatorSystemD
+conductingEquipment (2!.commonmodule.ConductingEquipmentBÄµ"Ô
+RegulatorControlProfileB
+controlMessageInfo (2 .commonmodule.ControlMessageInfoBÄµE
+regulatorControl (2!.regulatormodule.RegulatorControlBàµêµC
+regulatorSystem (2 .regulatormodule.RegulatorSystemBàµêµ:¿Û"≈
+RegulatorDiscreteControl6
+controlValue (2.commonmodule.ControlValueBÄµ,
+check (2.commonmodule.CheckConditionsC
+regulatorControlATCC (2%.regulatormodule.RegulatorControlATCC"á
+RegulatorDiscreteControlProfileB
+controlMessageInfo (2 .commonmodule.ControlMessageInfoBÄµU
+regulatorDiscreteControl (2).regulatormodule.RegulatorDiscreteControlBàµêµC
+regulatorSystem (2 .regulatormodule.RegulatorSystemBàµêµ:¿Û"¨
+RegulatorEventAndStatusATCC!
+BndCtr (2.commonmodule.ASG!
+BndWid (2.commonmodule.ASG(
+BndWidHi (2.commonmodule.PhaseSPS(
+BndWidLo (2.commonmodule.PhaseSPS)
+	DirCtlRev (2.commonmodule.PhaseSPS'
+DirIndt (2.commonmodule.PhaseSPS&
+DirRev (2.commonmodule.PhaseSPS
+LDCR (2.commonmodule.ASG
+LDCX	 (2.commonmodule.ASG&
+ParOp
+ (2.commonmodule.StatusSPS)
+	rampRates (2.commonmodule.RampRate/
+state (2 .commonmodule.Optional_StateKind)
+StDlTmms (2.commonmodule.StatusINC)
+TapOpErr (2.commonmodule.StatusSPS&
+TapPos (2.commonmodule.PhaseINS(
+VolLmtHi (2.commonmodule.PhaseSPS(
+VolLmtLo (2.commonmodule.PhaseSPS&
+VolSpt (2.commonmodule.PhaseAPC7
+voltageSetPointEnabled (2.commonmodule.StatusSPS"
+RegulatorEventAndStatusANCRV
+logicalNodeForEventAndStatus (2*.commonmodule.LogicalNodeForEventAndStatusBÄµ6
+DynamicTest (2!.commonmodule.ENS_DynamicTestKindA
+PointStatus (2,.regulatormodule.RegulatorEventAndStatusATCC"ó
+RegulatorEvent2
+
+eventValue (2.commonmodule.EventValueBÄµQ
+regulatorEventAndStatusANCR (2,.regulatormodule.RegulatorEventAndStatusANCR"Â
+RegulatorEventProfile>
+eventMessageInfo (2.commonmodule.EventMessageInfoBÄµA
+regulatorEvent (2.regulatormodule.RegulatorEventBàµêµC
+regulatorSystem (2 .regulatormodule.RegulatorSystemBàµêµ:¿Û"ª
+RegulatorReadingb
+"conductingEquipmentTerminalReading (20.commonmodule.ConductingEquipmentTerminalReadingBÄµ*
+	phaseMMTN (2.commonmodule.PhaseMMTN.
+readingMMTR (2.commonmodule.ReadingMMTR.
+readingMMXU (2.commonmodule.ReadingMMXU7
+secondaryReadingMMXU (2.commonmodule.ReadingMMXU"Û
+RegulatorReadingProfileB
+readingMessageInfo (2 .commonmodule.ReadingMessageInfoBÄµI
+regulatorReading (2!.regulatormodule.RegulatorReadingBàµêµòµC
+regulatorSystem (2 .regulatormodule.RegulatorSystemBàµêµ:¿Û"ö
+RegulatorStatus4
+statusValue (2.commonmodule.StatusValueBÄµQ
+regulatorEventAndStatusANCR (2,.regulatormodule.RegulatorEventAndStatusANCR"Í
+RegulatorStatusProfile@
+statusMessageInfo (2.commonmodule.StatusMessageInfoBÄµC
+regulatorStatus (2 .regulatormodule.RegulatorStatusBàµêµC
+regulatorSystem (2 .regulatormodule.RegulatorSystemBàµêµ:¿ÛBç
+openfmb.regulatormodulePZVgitlab.com/openfmb/psm/ops/protobuf/go-openfmb-ops-protobuf/v2/openfmb/regulatormodule™openfmb.regulatormodulebproto3
+¸
+!reservemodule/reservemodule.protoreservemodule	uml.protocommonmodule/commonmodule.proto"¿
+ReserveMargin4
+logicalNode (2.commonmodule.LogicalNodeBÄµ
+A (2.commonmodule.PMG
+VA (2.commonmodule.PMG
+VAr (2.commonmodule.PMG
+W (2.commonmodule.PMG"±
+ReserveAvailability7
+incrementalMargin (2.reservemodule.ReserveMargin,
+margin (2.reservemodule.ReserveMargin3
+standbyMargin (2.reservemodule.ReserveMargin"£
+AllocatedMargin
+	requestID (	Bàµêµ5
+allocatedMargin (2.reservemodule.ReserveMargin<
+allocatedStandbyMargin (2.reservemodule.ReserveMargin"œ
+ReserveAvailabilityProfileB
+controlMessageInfo (2 .commonmodule.ControlMessageInfoBÄµ7
+allocatedMargin (2.reservemodule.AllocatedMarginQ
+requesterCircuitSegmentService (2.commonmodule.ApplicationSystemBàµêµI
+reserveAvailability (2".reservemodule.ReserveAvailabilityBàµêµQ
+responderCircuitSegmentService (2.commonmodule.ApplicationSystemBàµêµ=
+tiePoint (2!.commonmodule.ConductingEquipmentBàµêµ:¿Û"ê
+ReserveRequest
+	requestID (	Bàµêµ,
+margin (2.reservemodule.ReserveMargin3
+standbyMargin (2.reservemodule.ReserveMargin"á
+ReserveRequestProfileB
+controlMessageInfo (2 .commonmodule.ControlMessageInfoBÄµQ
+requesterCircuitSegmentService (2.commonmodule.ApplicationSystemBàµêµ?
+reserveRequest (2.reservemodule.ReserveRequestBàµêµQ
+responderCircuitSegmentService (2.commonmodule.ApplicationSystemBàµêµ=
+tiePoint (2!.commonmodule.ConductingEquipmentBàµêµ:¿ÛBá
+openfmb.reservemodulePZTgitlab.com/openfmb/psm/ops/protobuf/go-openfmb-ops-protobuf/v2/openfmb/reservemodule™openfmb.reservemodulebproto3
+Ú
+#resourcemodule/resourcemodule.protoresourcemodule	uml.protocommonmodule/commonmodule.proto"≤
+BooleanControlGGIO4
+logicalNode (2.commonmodule.LogicalNodeBÄµ3
+Phase (2$.commonmodule.Optional_PhaseCodeKind1
+SPCSO (2.commonmodule.ControlSPCBàµêµ"≤
+IntegerControlGGIO4
+logicalNode (2.commonmodule.LogicalNodeBÄµ1
+ISCSO (2.commonmodule.ControlINCBàµêµ3
+Phase (2$.commonmodule.Optional_PhaseCodeKind"´
+StringControlGGIO4
+logicalNode (2.commonmodule.LogicalNodeBÄµ3
+Phase (2$.commonmodule.Optional_PhaseCodeKind+
+StrOut (2.commonmodule.VSCBàµêµ"±
+AnalogControlGGIO4
+logicalNode (2.commonmodule.LogicalNodeBÄµ1
+AnOut (2.commonmodule.ControlAPCBàµêµ3
+Phase (2$.commonmodule.Optional_PhaseCodeKind"õ
+ResourceDiscreteControl>
+identifiedObject (2.commonmodule.IdentifiedObjectBÄµ,
+check (2.commonmodule.CheckConditionsB
+analogControlGGIO (2!.resourcemodule.AnalogControlGGIOBêµ D
+booleanControlGGIO (2".resourcemodule.BooleanControlGGIOBêµ D
+integerControlGGIO (2".resourcemodule.IntegerControlGGIOBêµ B
+stringControlGGIO (2!.resourcemodule.StringControlGGIOBêµ "à
+ResourceDiscreteControlProfileB
+controlMessageInfo (2 .commonmodule.ControlMessageInfoBÄµH
+conductingEquipment (2!.commonmodule.ConductingEquipmentBàµêµR
+resourceDiscreteControl (2'.resourcemodule.ResourceDiscreteControlBàµêµ:¿Û"Å
+ResourceReadingb
+"conductingEquipmentTerminalReading (20.commonmodule.ConductingEquipmentTerminalReadingBÄµ*
+	phaseMMTN (2.commonmodule.PhaseMMTN.
+readingMMTR (2.commonmodule.ReadingMMTR.
+readingMMXU (2.commonmodule.ReadingMMXU"¸
+ResourceReadingProfileB
+readingMessageInfo (2 .commonmodule.ReadingMessageInfoBÄµH
+conductingEquipment (2!.commonmodule.ConductingEquipmentBàµêµB
+resourceReading (2.resourcemodule.ResourceReadingBàµêµ:¿ÛJJ"ì
+ResourceEvent>
+identifiedObject (2.commonmodule.IdentifiedObjectBÄµN
+analogEventAndStatusGGIO (2&.commonmodule.AnalogEventAndStatusGGIOBêµ P
+booleanEventAndStatusGGIO (2'.commonmodule.BooleanEventAndStatusGGIOBêµ P
+integerEventAndStatusGGIO (2'.commonmodule.IntegerEventAndStatusGGIOBêµ N
+stringEventAndStatusGGIO (2&.commonmodule.StringEventAndStatusGGIOBêµ "Ê
+ResourceEventProfile>
+eventMessageInfo (2.commonmodule.EventMessageInfoBÄµH
+conductingEquipment (2!.commonmodule.ConductingEquipmentBàµêµ>
+resourceEvent (2.resourcemodule.ResourceEventBàµêµ:¿Û"î
+ResourceStatus>
+identifiedObject (2.commonmodule.IdentifiedObjectBÄµN
+analogEventAndStatusGGIO (2&.commonmodule.AnalogEventAndStatusGGIOBêµ P
+booleanEventAndStatusGGIO (2'.commonmodule.BooleanEventAndStatusGGIOBêµ P
+integerEventAndStatusGGIO (2'.commonmodule.IntegerEventAndStatusGGIOBêµ N
+stringEventAndStatusGGIO (2&.commonmodule.StringEventAndStatusGGIOBêµ "Î
+ResourceStatusProfile@
+statusMessageInfo (2.commonmodule.StatusMessageInfoBÄµH
+conductingEquipment (2!.commonmodule.ConductingEquipmentBàµêµ@
+resourceStatus (2.resourcemodule.ResourceStatusBàµêµ:¿ÛBä
+openfmb.resourcemodulePZUgitlab.com/openfmb/psm/ops/protobuf/go-openfmb-ops-protobuf/v2/openfmb/resourcemodule™openfmb.resourcemodulebproto3
+Ω5
+solarmodule/solarmodule.protosolarmodule	uml.protogoogle/protobuf/wrappers.protocommonmodule/commonmodule.proto"U
+SolarInverterD
+conductingEquipment (2!.commonmodule.ConductingEquipmentBÄµ"x
+SolarCapabilityConfigurationX
+sourceCapabilityConfiguration (2+.commonmodule.SourceCapabilityConfigurationBÄµ"¥
+SolarCapabilityOverride>
+identifiedObject (2.commonmodule.IdentifiedObjectBÄµY
+solarCapabilityConfiguration (2).solarmodule.SolarCapabilityConfigurationBàµêµ"˛
+SolarCapabilityOverrideProfileH
+capabilityMessageInfo (2#.commonmodule.CapabilityMessageInfoBÄµO
+solarCapabilityOverride (2$.solarmodule.SolarCapabilityOverrideBàµêµ;
+solarInverter (2.solarmodule.SolarInverterBàµêµ:¿Û"f
+SolarCapabilityRatingsL
+sourceCapabilityRatings (2%.commonmodule.SourceCapabilityRatingsBÄµ"Ì
+SolarCapability:
+nameplateValue (2.commonmodule.NameplateValueBÄµO
+solarCapabilityConfiguration (2).solarmodule.SolarCapabilityConfigurationM
+solarCapabilityRatings (2#.solarmodule.SolarCapabilityRatingsBàµêµ"Ê
+SolarCapabilityProfileH
+capabilityMessageInfo (2#.commonmodule.CapabilityMessageInfoBÄµ?
+solarCapability (2.solarmodule.SolarCapabilityBàµêµ;
+solarInverter (2.solarmodule.SolarInverterBàµêµ:¿Û"π
+
+SolarPoint3
+mode (2%.commonmodule.ENG_GridConnectModeKind)
+	rampRates (2.commonmodule.RampRate'
+reset (2.commonmodule.ControlSPC/
+state	 (2 .commonmodule.Optional_StateKind<
+enterServiceOperation (2.commonmodule.EnterServiceAPC*
+hzWOperation (2.commonmodule.HzWAPC0
+limitWOperation (2.commonmodule.LimitWAPC(
+pFOperation (2.commonmodule.PFSPC0
+tmHzTripOperation (2.commonmodule.TmHzCSG4
+tmVoltTripOperation (2.commonmodule.TmVoltCSG*
+vArOperation (2.commonmodule.VarSPC2
+voltVarOperation (2.commonmodule.VoltVarCSG.
+voltWOperation (2.commonmodule.VoltWCSG,
+wVarOperation (2.commonmodule.WVarCSG3
+blackStartEnabled (2.commonmodule.ControlSPC&
+
+wOperation (2.commonmodule.WSPCJJJJJJJ"Ç
+SolarCurvePoint2
+control (2.solarmodule.SolarPointBàµêµ;
+	startTime (2.commonmodule.ControlTimestampBàµêµ"B
+SolarCSG6
+crvPts (2.solarmodule.SolarCurvePointBàµêµ"L
+SolarControlScheduleFSCH0
+ValDCSG (2.solarmodule.SolarCSGBàµêµ"ë
+SolarControlFSCC4
+controlFSCC (2.commonmodule.ControlFSCCBÄµG
+SolarControlScheduleFSCH (2%.solarmodule.SolarControlScheduleFSCH"≠
+SolarControl6
+controlValue (2.commonmodule.ControlValueBÄµ,
+check (2.commonmodule.CheckConditions7
+solarControlFSCC (2.solarmodule.SolarControlFSCC"◊
+SolarControlProfileB
+controlMessageInfo (2 .commonmodule.ControlMessageInfoBÄµ9
+solarControl (2.solarmodule.SolarControlBàµêµ;
+solarInverter (2.solarmodule.SolarInverterBàµêµ:¿Û"å
+SolarDiscreteControlPVH
+logicalNodeForControl (2#.commonmodule.LogicalNodeForControlBÄµ(
+control (2.solarmodule.SolarPoint"¡
+SolarDiscreteControl6
+controlValue (2.commonmodule.ControlValueBÄµ,
+check (2.commonmodule.CheckConditionsC
+solarDiscreteControlPV (2#.solarmodule.SolarDiscreteControlPV"Ô
+SolarDiscreteControlProfileB
+controlMessageInfo (2 .commonmodule.ControlMessageInfoBÄµI
+solarDiscreteControl (2!.solarmodule.SolarDiscreteControlBàµêµ;
+solarInverter (2.solarmodule.SolarInverterBàµêµ:¿Û"√
+SolarPointStatus9
+frequencySetPointEnabled (2.commonmodule.StatusSPS3
+mode (2%.commonmodule.ENG_GridConnectModeKind/
+
+pctHzDroop (2.google.protobuf.FloatValue.
+	pctVDroop (2.google.protobuf.FloatValue)
+	rampRates (2.commonmodule.RampRate;
+reactivePwrSetPointEnabled (2.commonmodule.StatusSPS7
+realPwrSetPointEnabled (2.commonmodule.StatusSPS/
+state (2 .commonmodule.Optional_StateKind7
+voltageSetPointEnabled	 (2.commonmodule.StatusSPS3
+blackStartEnabled
+ (2.commonmodule.ControlSPC<
+enterServiceOperation (2.commonmodule.EnterServiceAPC,
+hzWOperation (2.commonmodule.HzWPoint0
+limitWOperation (2.commonmodule.LimitWAPC(
+pFOperation (2.commonmodule.PFSPC0
+syncBackToGrid (2.commonmodule.ControlSPC0
+tmHzTripOperation (2.commonmodule.TmHzCSG4
+tmVoltTripOperation (2.commonmodule.TmVoltCSG*
+vArOperation (2.commonmodule.VarSPC2
+voltVarOperation (2.commonmodule.VoltVarCSG.
+voltWOperation (2.commonmodule.VoltWCSG,
+wVarOperation (2.commonmodule.WVarCSG"Œ
+SolarEventAndStatusZGENV
+logicalNodeForEventAndStatus (2*.commonmodule.LogicalNodeForEventAndStatusBÄµ)
+AuxPwrSt (2.commonmodule.StatusSPS6
+DynamicTest (2!.commonmodule.ENS_DynamicTestKind(
+EmgStop (2.commonmodule.StatusSPS2
+PointStatus (2.solarmodule.SolarPointStatus-
+Alrm (2.commonmodule.Optional_AlrmKind(
+GnSynSt (2.commonmodule.StatusSPSK
+GridConnectionState (2..commonmodule.Optional_GridConnectionStateKind1
+ManAlrmInfo	 (2.google.protobuf.StringValueA
+OperatingState
+ (2).commonmodule.Optional_OperatingStateKind"î
+SolarEventZGENK
+solarEventAndStatusZGEN (2$.solarmodule.SolarEventAndStatusZGENBÄµ5
+GriMod (2%.commonmodule.ENG_GridConnectModeKind"u
+
+SolarEvent2
+
+eventValue (2.commonmodule.EventValueBÄµ3
+solarEventZGEN (2.solarmodule.SolarEventZGEN"Õ
+SolarEventProfile>
+eventMessageInfo (2.commonmodule.EventMessageInfoBÄµ5
+
+solarEvent (2.solarmodule.SolarEventBàµêµ;
+solarInverter (2.solarmodule.SolarInverterBàµêµ:¿Û"˛
+SolarReadingb
+"conductingEquipmentTerminalReading (20.commonmodule.ConductingEquipmentTerminalReadingBÄµ*
+	phaseMMTN (2.commonmodule.PhaseMMTN.
+readingMMTR (2.commonmodule.ReadingMMTR.
+readingMMXU (2.commonmodule.ReadingMMXU"◊
+SolarReadingProfileB
+readingMessageInfo (2 .commonmodule.ReadingMessageInfoBÄµ;
+solarInverter (2.solarmodule.SolarInverterBàµêµ9
+solarReading (2.solarmodule.SolarReadingBàµêµ:¿Û"ï
+SolarStatusZGENK
+solarEventAndStatusZGEN (2$.solarmodule.SolarEventAndStatusZGENBÄµ5
+GriMod (2%.commonmodule.ENG_GridConnectModeKind"z
+SolarStatus4
+statusValue (2.commonmodule.StatusValueBÄµ5
+solarStatusZGEN (2.solarmodule.SolarStatusZGEN"“
+SolarStatusProfile@
+statusMessageInfo (2.commonmodule.StatusMessageInfoBÄµ;
+solarInverter (2.solarmodule.SolarInverterBàµêµ7
+solarStatus (2.solarmodule.SolarStatusBàµêµ:¿ÛBÅ
+openfmb.solarmodulePZRgitlab.com/openfmb/psm/ops/protobuf/go-openfmb-ops-protobuf/v2/openfmb/solarmodule™openfmb.solarmodulebproto3
+Ó
+switchmodule/switchmodule.protoswitchmodule	uml.protocommonmodule/commonmodule.proto"√
+SwitchDiscreteControlXSWIH
+logicalNodeForControl (2#.commonmodule.LogicalNodeForControlBÄµ#
+Pos (2.commonmodule.PhaseDPC7
+ResetProtectionPickup (2.commonmodule.ControlSPC"…
+SwitchDiscreteControl6
+controlValue (2.commonmodule.ControlValueBÄµ,
+check (2.commonmodule.CheckConditionsJ
+switchDiscreteControlXSWI (2'.switchmodule.SwitchDiscreteControlXSWI"W
+ProtectedSwitchD
+conductingEquipment (2!.commonmodule.ConductingEquipmentBÄµ"¯
+SwitchDiscreteControlProfileB
+controlMessageInfo (2 .commonmodule.ControlMessageInfoBÄµ@
+protectedSwitch (2.switchmodule.ProtectedSwitchBàµêµL
+switchDiscreteControl (2#.switchmodule.SwitchDiscreteControlBàµêµ:¿Û"∆
+SwitchEventXSWIV
+logicalNodeForEventAndStatus (2*.commonmodule.LogicalNodeForEventAndStatusBÄµ6
+DynamicTest (2!.commonmodule.ENS_DynamicTestKind#
+Pos (2.commonmodule.PhaseDPS"y
+SwitchEvent2
+
+eventValue (2.commonmodule.EventValueBÄµ6
+switchEventXSWI (2.switchmodule.SwitchEventXSWI"÷
+SwitchEventProfile>
+eventMessageInfo (2.commonmodule.EventMessageInfoBÄµ@
+protectedSwitch (2.switchmodule.ProtectedSwitchBàµêµ8
+switchEvent (2.switchmodule.SwitchEventBàµêµ:¿Û"≥
+SwitchReadingb
+"conductingEquipmentTerminalReading (20.commonmodule.ConductingEquipmentTerminalReadingBÄµ2
+diffReadingMMXU (2.commonmodule.ReadingMMXU*
+	phaseMMTN (2.commonmodule.PhaseMMTN.
+readingMMTR (2.commonmodule.ReadingMMTR.
+readingMMXU (2.commonmodule.ReadingMMXU"‰
+SwitchReadingProfileB
+readingMessageInfo (2 .commonmodule.ReadingMessageInfoBÄµ@
+protectedSwitch (2.switchmodule.ProtectedSwitchBàµêµ@
+switchReading (2.switchmodule.SwitchReadingBàµêµòµ:¿Û"É
+SwitchStatusXSWIV
+logicalNodeForEventAndStatus (2*.commonmodule.LogicalNodeForEventAndStatusBÄµ6
+DynamicTest (2!.commonmodule.ENS_DynamicTestKind#
+Pos (2.commonmodule.PhaseDPS:
+ProtectionPickup (2.commonmodule.PhaseSPSBàµêµ"~
+SwitchStatus4
+statusValue (2.commonmodule.StatusValueBÄµ8
+switchStatusXSWI (2.switchmodule.SwitchStatusXSWI"€
+SwitchStatusProfile@
+statusMessageInfo (2.commonmodule.StatusMessageInfoBÄµ@
+protectedSwitch (2.switchmodule.ProtectedSwitchBàµêµ:
+switchStatus (2.switchmodule.SwitchStatusBàµêµ:¿ÛBÑ
+openfmb.switchmodulePZSgitlab.com/openfmb/psm/ops/protobuf/go-openfmb-ops-protobuf/v2/openfmb/switchmodule™openfmb.switchmodulebproto3
