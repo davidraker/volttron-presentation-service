@@ -1,5 +1,6 @@
 {
-  "source": "../../../../../1547_standards/openfmb/psm-protobuf-python/openfmb",
+  "source": "psm-protobuf-python",
+  "commit": "873351f06524ada335f345dfffe98ba44979ddb7",
   "modules": {
     "breaker_module": {
       "proto": "breakermodule",

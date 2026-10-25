@@ -1,9 +1,8 @@
 """The generated device configs and registries must validate with the modular volttron-platform-driver.
 
 That package (and its interface libraries) is the platform driver this framework targets. It is not a
-dependency of the service, so this test looks for a checkout, by default
-``/home/dmr/Projects/volttron/modular/drivers`` or the ``VOLTTRON_MODULAR_DRIVERS`` environment variable,
-and skips when none is present.
+dependency of the service, so this test looks for a checkout named by the ``VOLTTRON_MODULAR_DRIVERS``
+environment variable and skips when it is unset or missing.
 """
 from __future__ import annotations
 
@@ -17,8 +16,8 @@ from pathlib import Path
 import pytest
 
 CASES = Path(__file__).parent / 'integration'
-DRIVERS = Path(os.environ.get('VOLTTRON_MODULAR_DRIVERS', '/home/dmr/Projects/volttron/modular/drivers'))
-if not DRIVERS.is_dir():
+DRIVERS = Path(os.environ.get('VOLTTRON_MODULAR_DRIVERS') or '')
+if not os.environ.get('VOLTTRON_MODULAR_DRIVERS') or not DRIVERS.is_dir():
     pytest.skip('modular volttron-platform-driver checkout not found', allow_module_level=True)
 for sub in ('base-driver/src', 'interfaces/fake/src', 'interfaces/pymodbus/src', 'interfaces/dnp3/src', 'interfaces/ieee2030_5/src'):
     path = str(DRIVERS / sub)

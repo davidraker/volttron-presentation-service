@@ -1,8 +1,8 @@
 """Extract the protobuf file descriptors of every OpenFMB edition from the ``psm-protobuf-python`` bindings.
 
 Each edition of OpenFMB is a tag of the OpenFMB Users Group's ``psm-protobuf-python`` repository (``v1.0.0``,
-``v2.0.0``, ``v2.1.0``, ``v2.2.0``; a clone lives at ``1547_standards/openfmb/psm-protobuf-python`` in this
-workspace). A generated ``*_pb2.py`` module is, essentially, one serialised ``FileDescriptorProto``: this script
+``v2.0.0``, ``v2.1.0``, ``v2.2.0``; https://github.com/OpenFMB-Users-Group/psm-protobuf-python). Point the
+``OPENFMB_PSM_PROTOBUF_PYTHON`` environment variable at a clone with its tags fetched, or pass ``--clone``. A generated ``*_pb2.py`` module is, essentially, one serialised ``FileDescriptorProto``: this script
 reads that byte string out of each module's source at each tag (without importing the modules, which would
 register every edition in protobuf's shared default pool and fail on the second), orders the files by dependency
 and writes one binary ``FileDescriptorSet`` per edition into ``descriptors/<edition>.binpb``, plus
@@ -21,13 +21,14 @@ from __future__ import annotations
 import argparse
 import ast
 import json
+import os
 import re
 import subprocess
 from datetime import date
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-DEFAULT_CLONE = HERE.parents[4] / '1547_standards' / 'openfmb' / 'psm-protobuf-python'
+CLONE_ENV = 'OPENFMB_PSM_PROTOBUF_PYTHON'
 OUT = HERE / 'descriptors'
 
 
@@ -109,10 +110,14 @@ def ordered(files: dict[str, bytes]) -> list[bytes]:
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('--clone', type=Path, default=DEFAULT_CLONE)
+    parser.add_argument('--clone', type=Path, default=None, help=f'clone of psm-protobuf-python (default: ${CLONE_ENV})')
     parser.add_argument('--tags', nargs='*', default=None, help='tags to extract (default: every v* tag)')
     parser.add_argument('--out', type=Path, default=OUT)
     args = parser.parse_args(argv)
+    if args.clone is None:
+        if not os.environ.get(CLONE_ENV):
+            raise SystemExit(f'Set {CLONE_ENV} to a clone of https://github.com/OpenFMB-Users-Group/psm-protobuf-python or pass --clone.')
+        args.clone = Path(os.environ[CLONE_ENV]).expanduser()
     from google.protobuf import descriptor_pb2
     tags = args.tags or [t for t in git(args.clone, 'tag', '-l').split() if re.fullmatch(r'v\d+\.\d+\.\d+', t)]
     args.out.mkdir(parents=True, exist_ok=True)

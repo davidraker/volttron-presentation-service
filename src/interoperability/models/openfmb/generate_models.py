@@ -2,7 +2,8 @@
 
 Source: the OpenFMB Users Group ``psm-protobuf-python`` repository (generated Python bindings
 for the OpenFMB Platform Specific Model, v2.2), a copy of which lives at
-``1547_standards/openfmb/psm-protobuf-python`` in this workspace (the standards share). The protobuf descriptors are the authority
+https://github.com/OpenFMB-Users-Group/psm-protobuf-python; point ``OPENFMB_PSM_PROTOBUF_PYTHON`` at a clone or
+pass ``--source``). The protobuf descriptors are the authority
 for message shapes; the classes here mirror protobuf's JSON mapping, which is what OpenFMB
 adapters publish on MQTT and NATS: field names as in the ``.proto`` files, enumerations by
 name, well-known wrapper types collapsed to their scalar, 64 bit integers accepted as strings
@@ -12,7 +13,7 @@ Requires ``protobuf>=6.31`` (7.x works) at generation time only; the generated p
 alone. Run from the ``interoperability_service`` directory::
 
     PYTHONPATH=/path/with/protobuf python src/interoperability/models/openfmb/generate_models.py \\
-        [--source ../1547_standards/openfmb/psm-protobuf-python/openfmb] [--out src/interoperability/models/openfmb]
+        [--source PATH/psm-protobuf-python/openfmb] [--out src/interoperability/models/openfmb]
 
 Outputs, all overwritten in place:
 
@@ -35,7 +36,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-DEFAULT_SOURCE = HERE.parents[4] / '1547_standards' / 'openfmb' / 'psm-protobuf-python' / 'openfmb'
+CLONE_ENV = 'OPENFMB_PSM_PROTOBUF_PYTHON'
 
 # Protobuf module name -> generated package name. Matches the directories the earlier package used.
 PACKAGE_NAMES = {
@@ -247,6 +248,15 @@ def render_package(specs: dict[str, ModuleSpec]) -> str:
     return ''.join(lines)
 
 
+def _git_commit(source: Path) -> str | None:
+    """The commit of the clone ``source`` lies in, when it is a git checkout."""
+    import subprocess
+    try:
+        return subprocess.run(['git', '-C', str(source), 'rev-parse', 'HEAD'], capture_output=True, text=True, check=True).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        return None
+
+
 def load_specs(source: Path) -> dict[str, ModuleSpec]:
     sys.path.insert(0, str(source))
     specs = {}
@@ -263,8 +273,8 @@ def generate(source: Path, out: Path) -> dict:
         package_dir.mkdir(parents=True, exist_ok=True)
         (package_dir / '__init__.py').write_text(render_module(spec, specs))
     (out / '__init__.py').write_text(render_package(specs))
-    # Recorded relative to the package so the manifest does not depend on where the workspace lives.
-    manifest = {'source': os.path.relpath(source, out), 'modules': {s.package: {'proto': p, 'messages': len(s.messages), 'enums': len(s.enums),
+    # The source is recorded as the bindings repository and its commit, never as a path on one machine.
+    manifest = {'source': 'psm-protobuf-python', 'commit': _git_commit(source), 'modules': {s.package: {'proto': p, 'messages': len(s.messages), 'enums': len(s.enums),
                                                               'profiles': sum(n.endswith('Profile') for n in s.messages)}
                                                   for p, s in specs.items()}}
     (out / 'generated_manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
@@ -273,9 +283,13 @@ def generate(source: Path, out: Path) -> dict:
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('--source', type=Path, default=DEFAULT_SOURCE, help='psm-protobuf-python/openfmb directory')
+    parser.add_argument('--source', type=Path, default=None, help=f'the openfmb/ directory of a psm-protobuf-python clone (default: ${CLONE_ENV}/openfmb)')
     parser.add_argument('--out', type=Path, default=HERE, help='package directory to write')
     args = parser.parse_args(argv)
+    if args.source is None:
+        if not os.environ.get(CLONE_ENV):
+            raise SystemExit(f'Set {CLONE_ENV} to a clone of https://github.com/OpenFMB-Users-Group/psm-protobuf-python or pass --source.')
+        args.source = Path(os.environ[CLONE_ENV]).expanduser() / 'openfmb'
     manifest = generate(args.source, args.out)
     for package, counts in manifest['modules'].items():
         print(f"{package:<32} {counts['messages']:4d} messages {counts['enums']:3d} enums {counts['profiles']:3d} profiles")

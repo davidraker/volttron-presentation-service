@@ -13,12 +13,15 @@ Run from the ``interoperability_service`` directory (as a script, so a broken ge
 cannot stop regeneration)::
 
     python src/interoperability/models/ieee2030_5/generate_models.py
-        [--schema 1547_standards/2030.5/2023/.../sep.xsd]        # default: the newest edition found
-        [--editions 2013=PATH 2018=PATH 2023=PATH]                # default: every sep.xsd under 1547_standards/2030.5
-        [--source-dir DIR]                                        # pre-rendered xsdata output instead of --schema
+        [--schema PATH/sep.xsd]                      # default: the newest edition under $IEEE2030_5_SCHEMAS
+        [--editions 2013=PATH 2018=PATH 2023=PATH]   # default: every edition under $IEEE2030_5_SCHEMAS
+        [--source-dir DIR]                           # pre-rendered xsdata output instead of --schema
         [--enums-dir DIR] [--out DIR]
 
-Requires ``xsdata[cli]`` when ``--schema`` is used (``pip install "xsdata[cli]"``).
+The schemas are IEEE copyright and not distributed with this repository. Obtain the supplemental material of each
+edition of IEEE Std 2030.5 (2013, 2018, 2023) from IEEE and point ``IEEE2030_5_SCHEMAS`` at a directory holding one
+folder per edition named by its year (``2013/``, ``2018/``, ``2023/``), each containing that edition's files
+(``sep.xsd`` may sit at any depth). Requires ``xsdata[cli]`` when ``--schema`` is used (``pip install "xsdata[cli]"``).
 
 Outputs, all overwritten in place:
 
@@ -38,6 +41,7 @@ import argparse
 import ast
 import hashlib
 import keyword
+import os
 import re
 import subprocess
 import sys
@@ -51,10 +55,10 @@ from xml.etree import ElementTree as ET
 from pydantic import BaseModel
 
 HERE = Path(__file__).resolve().parent
-WORKSPACE = HERE.parents[4]
-# Vendored enums.py / constants.py (see sources/ieee2030_5/SOURCE.md) and the standards share with one folder per edition.
+# Vendored enums.py / constants.py (see sources/ieee2030_5/SOURCE.md).
 SOURCES_DIR = HERE.parents[3] / 'sources' / 'ieee2030_5'
-STANDARDS_DIR = WORKSPACE / '1547_standards' / '2030.5'
+#: Environment variable naming the directory of IEEE 2030.5 supplemental material, one folder per edition (by year).
+SCHEMAS_ENV = 'IEEE2030_5_SCHEMAS'
 LATEST_EDITION = '2023'
 COMMIT = '804bed4ae5d957341600765c21a99bf3c1daea64'
 BASE_URL = f'https://raw.githubusercontent.com/VOLTTRON/volttron/{COMMIT}/services/core/IEEE_2030_5/ieee_2030_5/models/'
@@ -136,10 +140,17 @@ def fetch_sources(source_dir: Path) -> None:
             target.write_bytes(resp.read())
 
 
-def discover_schemas(root: Path = STANDARDS_DIR) -> dict[str, Path]:
-    """``{edition: sep.xsd}`` for every edition folder (``2013``, ``2018``, ``2023``) under the standards share."""
+def schemas_root() -> Path | None:
+    value = os.environ.get(SCHEMAS_ENV)
+    return Path(value).expanduser() if value else None
+
+
+def discover_schemas(root: Path | None = None) -> dict[str, Path]:
+    """``{edition: sep.xsd}`` for every edition folder (``2013``, ``2018``, ``2023``) under ``root`` (default:
+    ``$IEEE2030_5_SCHEMAS``); empty when the variable is unset or the directory is missing."""
+    root = root or schemas_root()
     found: dict[str, Path] = {}
-    if not root.is_dir():
+    if root is None or not root.is_dir():
         return found
     for path in sorted(root.glob('*/**/sep.xsd')):
         if '__MACOSX' in path.parts:
@@ -704,11 +715,11 @@ def generate(sep_module: Path, out: Path, enums_dir: Path, source_note: str,
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--schema', type=Path, default=None,
-                        help='sep.xsd to render with xsdata (default: the newest edition under 1547_standards/2030.5)')
+                        help=f'sep.xsd to render with xsdata (default: the newest edition under ${SCHEMAS_ENV})')
     parser.add_argument('--source-dir', type=Path, default=None,
                         help='directory holding a pre-rendered xsdata sep.py instead of --schema')
     parser.add_argument('--editions', nargs='*', default=None, metavar='EDITION=PATH',
-                        help='sep.xsd per edition for editions.py (default: every edition found under 1547_standards/2030.5)')
+                        help=f'sep.xsd per edition for editions.py (default: every edition found under ${SCHEMAS_ENV})')
     parser.add_argument('--enums-dir', type=Path, default=SOURCES_DIR,
                         help='directory holding the VOLTTRON enums.py and constants.py')
     parser.add_argument('--out', type=Path, default=HERE, help='package directory to write into')
@@ -729,7 +740,8 @@ def main(argv: list[str] | None = None) -> None:
         schema = args.schema
         if schema is None:
             if not discovered:
-                raise SystemExit(f'No sep.xsd found under {STANDARDS_DIR}; pass --schema or --source-dir.')
+                raise SystemExit(f'No sep.xsd found: set {SCHEMAS_ENV} to the directory of IEEE 2030.5 supplemental material '
+                                 f'(one folder per edition, named by year), or pass --schema or --source-dir.')
             edition = max(discovered)
             schema = discovered[edition]
         else:

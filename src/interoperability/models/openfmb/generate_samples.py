@@ -2,7 +2,7 @@
 
 Run from the ``interoperability_service`` directory::
 
-    PYTHONPATH=src python -m interoperability.models.openfmb.generate_samples [--out ../solar_json_output]
+    PYTHONPATH=src python -m interoperability.models.openfmb.generate_samples --out DIR
 """
 from __future__ import annotations
 
@@ -14,7 +14,6 @@ from typing import Any
 from . import profile_builders as pb
 
 HERE = Path(__file__).resolve().parent
-DEFAULT_OUT = HERE.parents[4] / 'solar_json_output'
 SAMPLE_TIME = 1_700_000_000
 
 
@@ -48,7 +47,7 @@ def example_profiles() -> dict[str, Any]:
     return {name: profile.model_dump(mode='json', by_alias=True, exclude_none=True) for name, profile in profiles.items()}
 
 
-def write_example_payloads(output_dir: str | Path = DEFAULT_OUT) -> dict[str, Path]:
+def write_example_payloads(output_dir: str | Path) -> dict[str, Path]:
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     written = {}
@@ -61,7 +60,7 @@ def write_example_payloads(output_dir: str | Path = DEFAULT_OUT) -> dict[str, Pa
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('--out', type=Path, default=DEFAULT_OUT)
+    parser.add_argument('--out', type=Path, required=True, help='directory to write the sample messages into')
     args = parser.parse_args(argv)
     for name, path in write_example_payloads(args.out).items():
         print(f'{name:<24} {path}')

@@ -10,25 +10,30 @@ warnings tell whether the values it read lie within the bounds we set around the
 import copy
 import json
 import math
+import os
 import re
 import subprocess
 import time
 from pathlib import Path
 
-TOOL_REPO = Path('/home/dmr/Projects/der_control_modules/ieee-std-1815-2-test-tool')
+#: A checkout of https://github.com/pnnl/ieee-std-1815-2-test-tool, named by the IEEE1815_2_TEST_TOOL environment variable.
+TOOL_REPO = Path(os.environ['IEEE1815_2_TEST_TOOL']).expanduser() if os.environ.get('IEEE1815_2_TEST_TOOL') else None
 IMAGE = 'ieee-std-1815-2-test-tool-backend-dev:latest'
 CACHE_VOLUME = 'ieee-std-1815-2-test-tool_cargo-cache'
-PROFILE = TOOL_REPO / 'data' / 'profiles' / 'full.json'
 ANSI = re.compile(r'\x1b\[[0-9;]*m')
 
 
 def available() -> bool:
+    if TOOL_REPO is None or not TOOL_REPO.is_dir():
+        return False
     ok = subprocess.run(['docker', 'image', 'inspect', IMAGE], capture_output=True).returncode == 0
     return ok and subprocess.run(['docker', 'volume', 'inspect', CACHE_VOLUME], capture_output=True).returncode == 0
 
 
 def load_profile() -> dict:
-    return json.loads(PROFILE.read_text())
+    if TOOL_REPO is None:
+        raise RuntimeError('Set IEEE1815_2_TEST_TOOL to a checkout of the IEEE 1815.2 test tool.')
+    return json.loads((TOOL_REPO / 'data' / 'profiles' / 'full.json').read_text())
 
 
 def _points(profile: dict, table: str):
