@@ -32,8 +32,17 @@ def test_lookup_builds_resource_with_transform_chain():
     agent = _agent({'data_format': 'sunspec', 'target_format': 'x', 'publication_topic': 'devices/pv',
                     'transform': [{'W': 'transform[701, W]()'}]})
     resource = ResourceData.lookup(agent, 'site/pv')
-    agent.vip.rpc.call.assert_called_once_with('platform.presentation', 'resolve', ['site', 'pv'])
+    agent.vip.rpc.call.assert_called_once_with('platform.presentation', 'resolve', ['site', 'pv'], strict=False)
     assert resource.transform.execute({'701': {'W': 5}}) == {'W': 5}
+
+
+def test_lookup_strict_asks_the_service_for_the_exact_uai():
+    # Inbound bus messages use this: a topic names its resource exactly, with no longest-prefix fallback.
+    agent = _agent({'data_format': 'sunspec', 'publication_topic': 'devices/pv', 'transform': []})
+    assert ResourceData.lookup(agent, 'a.b.c', delimiter='.', strict=True) is not None
+    agent.vip.rpc.call.assert_called_once_with('platform.presentation', 'resolve', ['a', 'b', 'c'], strict=True)
+    agent = _agent({})
+    assert ResourceData.lookup(agent, ('a', 'b', 'unknown'), strict=True) is None
 
 
 def test_lookup_without_transform_passes_messages_through():
@@ -100,3 +109,63 @@ def test_subscribe_covers_the_device_polls_and_pushes():
     data.subscribe(lambda *a: None)
     assert [c.kwargs['prefix'] for c in agent.vip.pubsub.subscribe.call_args_list] == ['devices/site1/pv/all', 'devices/site1/pv/multi']
     assert ResourceData(agent, 't', {'data_format': 'f', 'publication_topic': 'devices/pv'}).publication_topics() == ['devices/pv']
+
+
+# ---- ResourceWriter -------------------------------------------------------------------------------------------------
+from interoperability.resource import ResourceWriter, publication_topics  # noqa: E402
+
+
+def _writer(**kwargs):
+    agent = mock.MagicMock()
+    clock = {'now': 1000.0}
+    writer = ResourceWriter(agent, 'devices/site1/mirror', 'devices/site1/mirror/all', clock=lambda: clock['now'], **kwargs)
+    return agent, writer, clock
+
+
+def test_writer_writes_what_the_device_is_not_known_to_hold():
+    agent, writer, clock = _writer()
+    assert writer.select({'A': 1, 'B': 2}) == {'A': 1, 'B': 2}                 # nothing known: write everything
+    writer.record({'A': 1, 'B': 2})
+    assert writer.select({'A': 1, 'B': 2}) == {}                               # provisionally held: nothing to do
+    assert writer.select({'A': 1, 'B': 3, 'sequence': [{'C': 1}]}) == {'B': 3, 'sequence': [{'C': 1}]}
+    assert writer.select({'A': 1}, force=True) == {'A': 1}
+    agent.vip.rpc.call.assert_not_called()                                      # stale_after unset: the driver is never asked
+
+
+def test_writer_follows_the_device_and_reports_drift():
+    agent, writer, clock = _writer()
+    assert writer.subscribe() == ['devices/site1/mirror/all', 'devices/site1/mirror/multi'] == publication_topics('devices/site1/mirror/all')
+    handler = agent.vip.pubsub.subscribe.call_args.kwargs['callback']
+    writer.record({'A': 1})
+    handler('pubsub', 'platform.driver', 'bus', 'devices/site1/mirror/multi', {}, [{'A': 7}, {}])   # someone else wrote A
+    assert writer.drifted() == {'A': (1, 7)}
+    assert writer.select({'A': 1}) == {'A': 1}                                 # the intended value is a change again
+    writer.record({'A': 1})
+    assert writer.drifted() == {}
+    writer.unsubscribe()
+    assert agent.vip.pubsub.unsubscribe.call_count == 2 and writer.subscribe() == ['devices/site1/mirror/all', 'devices/site1/mirror/multi']
+
+
+def test_writer_refreshes_unknown_and_stale_points_from_the_driver():
+    agent, writer, clock = _writer(stale_after=10, rpc_timeout=3)
+    agent.vip.rpc.call.return_value.get.return_value = {
+        'devices/site1/mirror/A': {'value': 1, 'updated': '2026-10-26T12:00:00+00:00'},
+        'devices/site1/mirror/B': {'value': None, 'updated': None}}
+    assert writer.select({'A': 1, 'B': 2}) == {'B': 2}                         # A known from the driver, B never seen
+    agent.vip.rpc.call.assert_called_once_with('platform.driver', 'last', ['devices/site1/mirror/A', 'devices/site1/mirror/B'])
+    agent.vip.rpc.call.return_value.get.assert_called_with(timeout=3)
+    writer.record({'B': 2})
+    clock['now'] += 5
+    assert writer.select({'B': 2}) == {} and agent.vip.rpc.call.call_count == 1   # fresh enough: no second ask
+    clock['now'] += 10
+    agent.vip.rpc.call.return_value.get.return_value = {'devices/site1/mirror/B': {'value': 9, 'updated': None}}
+    assert writer.select({'B': 2}) == {'B': 2} and agent.vip.rpc.call.call_count == 2   # stale, refreshed, differs
+
+
+def test_writer_survives_a_failed_refresh():
+    agent, writer, clock = _writer(stale_after=0)
+    agent.vip.rpc.call.return_value.get.side_effect = RuntimeError('driver down')
+    assert writer.select({'A': 1}) == {'A': 1}
+    writer.record({'A': 1})
+    clock['now'] += 1
+    assert writer.select({'A': 1}) == {}                                       # knowledge kept when the driver cannot answer
