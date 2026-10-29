@@ -1,10 +1,10 @@
-"""OpenFMB on the VOLTTRON message bus: the convention the Device Adapter and the Message Bus Adapter share.
+"""OpenFMB on the VOLTTRON message bus: the convention the Resource Bridge and the Message Bus Adapter share.
 
 An OpenFMB profile travels on VOLTTRON's own bus on the topic it would have on the OpenFMB bus
 (``openfmb/<module>/<Profile>/<mRID>``, which is also the alias UAI the presentation service knows it by), as the
 protobuf-JSON dict the service's ``openfmb.*`` formats use, with headers naming the protobuf message and the agent
 that put it there. Any OpenFMB-aware agent can publish a control profile or consume a reading profile this way; the
-Message Bus Adapter (``mode: relay``) re-serialises them to and from the foreign bus, the Device Adapter translates
+Message Bus Adapter (``mode: relay``) re-serialises them to and from the foreign bus, the Resource Bridge translates
 them to and from devices.
 """
 from typing import Any

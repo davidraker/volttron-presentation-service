@@ -1,7 +1,7 @@
 """Outside-in end-to-end matrix on a real VOLTTRON platform with independent external parties.
 
 The platform (volttron-core, ZMQ bus, auth on) runs from this venv in a fresh VOLTTRON_HOME with the platform driver,
-the presentation service, the Device Adapter and the Message Bus Adapter installed as agents and configured through the
+the presentation service, the Resource Bridge and the Message Bus Adapter installed as agents and configured through the
 config store (``configs.py``). Around it, nothing of ours:
 
 * a SunSpec inverter and a Modbus master on uModbus (``external/sunspec_device.py``);
@@ -12,12 +12,13 @@ config store (``configs.py``). Around it, nothing of ours:
 
 Every path is stimulated at one external party and observed at another; the platform is a black box. The OpenFMB paths
 run through the Message Bus Adapter in ``translate`` mode (``--openfmb rpc``, inbound commands through the Device
-Adapter's write RPC) or in ``relay`` mode with the Device Adapter's bus ends (``--openfmb bus``).
+Adapter's write RPC) or in ``relay`` mode with the Resource Bridge's bus ends (``--openfmb bus``).
 
     python tests/e2e_platform/run.py --openfmb bus [--work DIR] [--keep] [--only telemetry:SunSpec>DNP3,...]
 
 Exit status is non-zero if any path fails. Takes several minutes (the first platform start builds its poetry project).
 """
+from concurrent.futures import ThreadPoolExecutor
 import argparse
 import ast
 import copy
@@ -165,7 +166,8 @@ class Matrix:
         self.log.info('external parties up: %s', ports)
 
     def start_platform(self):
-        built = configs.build(self.work / 'configs', self.endpoints, self.args.openfmb, rtc=self.args.rtc)
+        built = configs.build(self.work / 'configs', self.endpoints, self.args.openfmb, rtc=self.args.rtc,
+                              persistent=True if self.args.persistent else (False if self.args.per_message else None))
         self.configs = built
         self.platform = Platform(self.work / 'volttron_home', 'der-e2e')
         t0 = time.time()
@@ -179,8 +181,8 @@ class Matrix:
             raise RuntimeError('the platform never served its 2030.5 server port:\n' + self.platform.log_tail(60))
         if not wait_for(lambda: port_open('127.0.0.1', self.ports['sunspec_served']) and port_open('127.0.0.1', self.ports['dnp3_served']), 60, 2):
             raise RuntimeError('the platform never served its Modbus unit or outstation:\n' + self.platform.log_tail(60))
-        self.reports = open(self.work / 'device_adapter_reports.log', 'w')
-        self.subscriber = subprocess.Popen([str(self.platform.bin / 'vctl'), 'subscribe', 'device_adapter/'], env=self.platform.env,
+        self.reports = open(self.work / 'resource_bridge_reports.log', 'w')
+        self.subscriber = subprocess.Popen([str(self.platform.bin / 'vctl'), 'subscribe', 'resource_bridge/'], env=self.platform.env,
                                            stdout=self.reports, stderr=subprocess.STDOUT)
         self.go_client.start()
         ready = self.go_client.wait_for_log(r'DER capability and settings reported|Phase 4|MirrorUsagePoint', 180)
@@ -188,6 +190,8 @@ class Matrix:
         if not ready:
             raise RuntimeError('the Go DER client never completed its DER setup against the served server:\n' + self.go_client.logs()[-3000:])
         # The bus adapter serves the SunSpec device's reading profile from every poll: the first one shows the chain is live.
+        # That bridge is a matrix bridge, so it is activated here for the readiness check; the first round reconfigures.
+        self.activate_bridges([configs.bridge_name('telemetry', 'SunSpec', 'OpenFMB')])
         family = OPENFMB_FAMILY['SunSpec']
         topic = topic_of(openfmb_alias('SunSpec', 'client', 'reading'))
         first = self.openfmb.wait_for(topic, PROTO[family][0], timeout=120)
@@ -195,7 +199,7 @@ class Matrix:
         if not first:
             raise RuntimeError('no reading profile reached the broker within 120 s:\n' + self.platform.log_tail(80))
         if self.args.rtc:
-            # The agent's modes reach the served outstation (DWMX.LimW read-back as AI 148) through the Device Adapter;
+            # The agent's modes reach the served outstation (DWMX.LimW read-back as AI 148) through the Resource Bridge;
             # an independent 1815.2 master reads it there, as for every other observation of the platform's black box.
             # Devices re-assert their standing limits on start-up (the SunSpec unit's register default is 10000), so the
             # first read-back is whatever the last source said; its presence is what proves the chain, and rtc_reset
@@ -338,7 +342,7 @@ class Matrix:
             return self.expect(got, expected)
         if dst == 'DNP3':
             # The reference outstation logs analog operates; it logs nothing for binary ones, so BO_17 (the enable) is
-            # verified through the driver's report of the outstation's DNP3 response (see device_adapter_reports.log).
+            # verified through the driver's report of the outstation's DNP3 response (see resource_bridge_reports.log).
             raw = limit * 10
             def read():
                 return [int(v) for v in re.findall(r'Outstation received Direct Operate AO87 = (-?\d+)', self.outstation.logs()[since:])]
@@ -369,31 +373,73 @@ class Matrix:
                         f' of 10 kW: the hundredths-of-percent convention of opModMaxLimW)')
         raise ValueError(dst)
 
+    def rounds(self, kind):
+        """The paths of one kind grouped so that no target has two sources at once: a Latin square over the devices
+        pairs every target with a different source in each round, so a round's paths run side by side and the rounds
+        run in sequence. A target fed by two sources at once would hold whichever wrote last, and a check would be a
+        coin toss (seen with the 2030.5 rating both SunSpec's nameplate and DNP3 carried)."""
+        n = len(PROTOCOLS)
+        for shift in range(1, n):
+            pairs = [(PROTOCOLS[(i + shift) % n], PROTOCOLS[i]) for i in range(n)]
+            pairs = [(src, dst) for src, dst in pairs if self.wanted(kind, src, dst)]
+            if pairs:
+                yield pairs
+
+    def activate_bridges(self, names, timeout=30):
+        """Store the Resource Bridge's configuration with these matrix bridges (the permanent ones, the RTC's, stay)
+        and wait until the adapter has reported each of them started."""
+        log_path = self.work / 'volttron.log'
+        offset = log_path.stat().st_size if log_path.exists() else 0
+        bridges = [b for b in self.configs.bridges if not configs.is_matrix_bridge(b) or b['name'] in names]
+        path = configs.write_adapter_config(self.work / 'configs', bridges)
+        self.platform.store_config(configs.RESOURCE_BRIDGE, 'config', path)
+
+        def started():
+            with open(log_path, errors='replace') as f:
+                f.seek(offset)
+                text = f.read()
+            return all(f'Bridge {name}:' in text for name in names)
+        if wait_for(started, timeout, 0.5):
+            self.log.info('bridges active: %s', ', '.join(names))
+        else:
+            self.log.warning('not every bridge of %s reported started within %ss', names, timeout)
+        time.sleep(self.BRIDGE_SETTLE)     # let the bus register the new subscriptions before any stimulus
+
+    BRIDGE_SETTLE = 3.0
+
+    def run_paths(self, kind, pairs):
+        """Run these paths, side by side unless --sequential, recording each result."""
+        def one(pair):
+            src, dst = pair
+            try:
+                ok, detail = (self.telemetry if kind == 'telemetry' else self.control)(src, dst)
+            except Exception as e:
+                ok, detail = False, f'{type(e).__name__}: {e}'
+                self.log.exception('%s %s -> %s', kind, src, dst)
+            self.record(kind, src, dst, ok, detail)
+        if self.args.sequential or len(pairs) == 1:
+            for pair in pairs:
+                one(pair)
+        else:
+            with ThreadPoolExecutor(max_workers=len(pairs), thread_name_prefix=kind) as pool:
+                list(pool.map(one, pairs))
+
     def run(self):
-        S, D, E = 'SunSpec', 'DNP3', '2030.5'
-        family_of = OPENFMB_FAMILY
-        # ---- telemetry ----
-        for src in PROTOCOLS:
-            for dst in PROTOCOLS:
-                if src == dst or not self.wanted('telemetry', src, dst):
-                    continue
-                try:
-                    ok, detail = self.telemetry(src, dst)
-                except Exception as e:
-                    ok, detail = False, f'{type(e).__name__}: {e}'
-                    self.log.exception('telemetry %s -> %s', src, dst)
-                self.record('telemetry', src, dst, ok, detail)
-        # ---- control ----
-        for src in PROTOCOLS:
-            for dst in PROTOCOLS:
-                if src == dst or not self.wanted('control', src, dst):
-                    continue
-                try:
-                    ok, detail = self.control(src, dst)
-                except Exception as e:
-                    ok, detail = False, f'{type(e).__name__}: {e}'
-                    self.log.exception('control %s -> %s', src, dst)
-                self.record('control', src, dst, ok, detail)
+        if self.args.sequential:
+            # Every matrix bridge at once and one path at a time: the pre-2026-10-23 behaviour, kept for comparison.
+            self.activate_bridges(sorted(configs.MATRIX_BRIDGE_NAMES))
+            for kind in ('telemetry', 'control'):
+                for src in PROTOCOLS:
+                    for dst in PROTOCOLS:
+                        if src != dst and self.wanted(kind, src, dst):
+                            self.run_paths(kind, [(src, dst)])
+        else:
+            for kind in ('telemetry', 'control'):
+                for pairs in self.rounds(kind):
+                    self.activate_bridges([configs.bridge_name(kind, src, dst) for src, dst in pairs])
+                    if kind == 'telemetry' and any(src == '2030.5' and dst in ('DNP3', 'SunSpec') for src, dst in pairs):
+                        self.refresh_go_client()
+                    self.run_paths(kind, pairs)
         # ---- the RTC agent: controls into its modes, its status out ----
         if self.args.rtc:
             for src in PROTOCOLS:
@@ -416,6 +462,40 @@ class Matrix:
                     self.log.exception('telemetry RTC -> %s', dst)
                 self.record('telemetry', 'RTC', dst, ok, detail)
 
+    def refresh_go_client(self):
+        """Make the 2030.5 client report its capability and settings again. It does so once, when it registers, so a
+        bridge from the served 2030.5 device activated after that would never see them; the polled sources republish
+        every interval and need nothing of the kind."""
+        self.go_client.stop()                   # removes the container, so its log starts afresh
+        self.go_client.start()
+        if self.go_client.wait_for_log(r'DER capability and settings reported', 120) is None:
+            self.log.warning('the 2030.5 client did not report its settings again within 120 s')
+        else:
+            self.log.info('2030.5 client restarted and reported')
+
+    def wait_go_client_idle(self, timeout=180):
+        """Wait until the 2030.5 client has no control event running: the simulator executes one event at a time and
+        drops a new one that arrives while another runs ("multi-event primacy arbitration" is a TODO in its log)."""
+        def idle():
+            transitions = re.findall(r'statemachine: \S+ → (EVENT_\w+|DEFAULT)', self.go_client.logs())
+            return not transitions or transitions[-1] in ('DEFAULT', 'EVENT_COMPLETED', 'EVENT_CANCELLED')
+        if not wait_for(idle, timeout, 2):
+            self.log.warning('the 2030.5 client still has a control event running after %ss', timeout)
+
+    def clear_openfmb(self, kind, src, dst):
+        """Forget the party's received messages on this path's topic only; a path whose target is not OpenFMB has no
+        topic and clears nothing (clear(None) would wipe every concurrent path's messages)."""
+        topic = self.openfmb_topic(kind, src, dst)
+        if topic is not None:
+            self.openfmb.clear(topic)
+
+    def openfmb_topic(self, kind, src, dst):
+        """The broker topic a path with an OpenFMB target is observed on (None for other targets)."""
+        if dst != 'OpenFMB':
+            return None
+        role = roles(kind, src, 'OpenFMB')[0]
+        return topic_of(openfmb_alias(src, role, 'reading' if kind == 'telemetry' else 'control'))
+
     def telemetry(self, src, dst):
         """Telemetry is standing state at the external source; the check is that the external target sees it."""
         if src == 'OpenFMB':
@@ -437,7 +517,7 @@ class Matrix:
             family = OPENFMB_FAMILY[src]
             role = roles('telemetry', src, 'OpenFMB')[0]
             key = 'solarReading' if family == 'solar' else 'essReading'
-            self.openfmb.clear()
+            self.clear_openfmb('telemetry', src, dst)
             if src == '2030.5':
                 # The Go client's readings follow its PV simulator; the profile at the broker must carry one of them.
                 reports = [r['P'] for r in self.go_client.reports()[-20:]]
@@ -471,9 +551,11 @@ class Matrix:
         Sources that can toggle the enable (SunSpec, OpenFMB) first disable with another value, so the enable is a
         change the bridges carry; DNP3's reference control station only latches on, and 2030.5 has no enable."""
         limit = LIMIT[src] + TARGET_OFFSET[dst]
+        if dst == '2030.5':
+            self.wait_go_client_idle()
         since_out = len(self.outstation.logs())
         since_go = len(self.go_client.logs())
-        self.openfmb.clear()
+        self.clear_openfmb('control', src, dst)
         master = None
         try:
             if src == 'SunSpec':
@@ -481,7 +563,7 @@ class Matrix:
                 self.sunspec_master.write_point('704_WMaxLimPct', limit + 1)
                 time.sleep(3)
                 since_out, since_go = len(self.outstation.logs()), len(self.go_client.logs())
-                self.openfmb.clear()
+                self.clear_openfmb('control', src, dst)
                 self.sunspec_master.write_point('704_WMaxLimPct', limit)
                 self.sunspec_master.write_point('704_WMaxLimPctEna', 1)
             elif src == 'DNP3':
@@ -556,6 +638,12 @@ def main(argv=None):
     parser.add_argument('--keep-work', action='store_true', help='do not wipe the work directory first')
     parser.add_argument('--only', help='comma-separated paths, e.g. telemetry:SunSpec>DNP3,control:OpenFMB>2030.5')
     parser.add_argument('--poll-interval', type=float, default=2.0)
+    parser.add_argument('--persistent', action='store_true',
+                        help='force persistent IPC connections to every proxy (the interfaces default to this)')
+    parser.add_argument('--sequential', action='store_true',
+                        help='all matrix bridges at once and one path at a time (the pre-2026-10-23 behaviour)')
+    parser.add_argument('--per-message', action='store_true',
+                        help='force one IPC connection per message to every proxy (the pre-2026-10-22 behaviour)')
     args = parser.parse_args(argv)
     args.only = set(args.only.split(',')) if args.only else None
     Path(args.work).mkdir(parents=True, exist_ok=True)

@@ -77,6 +77,11 @@ but as seen through 61850." An alias whose UAI is the remote topic itself, such 
 `["openfmb", "solarmodule", "SolarReadingProfile", "<mRID>"]` with
 `"data_format": "openfmb.solar.reading"`, `"encoding": "protobuf"` and the device mRID in
 `parameters`, is how a device is published as one OpenFMB profile on one topic.
+A chain must end at a canonical resource: aliases that lead back to one already passed are
+refused when the mappings are loaded (`ResourceReferenceCycleError`, naming the UAIs in the
+cycle, and the cyclic aliases are dropped); `resolve` raises the same error if a cycle is
+introduced later. An alias whose chain ends at nothing yet is kept and logged as a warning,
+since its canonical may be configured afterwards.
 
 ### Formats and transforms
 
@@ -597,6 +602,27 @@ but no transform can convert the resource into the format the alias asks for; th
 logged as a warning. A resource that is already in the requested format is delivered
 unchanged. Other RPC failures, such as the service being unreachable, are raised.
 
+### Writing a resource: `ResourceWriter`
+
+`interoperability.resource.ResourceWriter` is the counterpart for an agent that writes a canonical
+resource (a device): it tracks what the device is known to hold and says which points of a message
+need writing. Knowledge comes from the device's own publications (`subscribe`, or `observe`),
+from the writer's own successful writes (`record`, provisional until the device reports) and, when
+`stale_after` is set, from the driver's `last` RPC for points unknown or older than that
+(`refresh`). `select(values)` returns the points whose value the device is not known to hold;
+`drifted()` lists points another writer has moved away from the intended value. The Resource Bridge
+uses one per target device.
+
+```python
+from interoperability.resource import ResourceWriter
+
+writer = ResourceWriter(self, 'devices/site1/mirror', 'devices/site1/mirror/all', stale_after=30)
+writer.subscribe()
+to_write = writer.select({'M_W': 8642, 'M_Hz': 60})
+errors = self.vip.rpc.call('platform.driver', 'set_multiple_points', 'devices/site1/mirror', list(to_write.items())).get()
+writer.record({k: v for k, v in to_write.items() if f'devices/site1/mirror/{k}' not in errors})
+```
+
 ## Repository layout
 
 ```
@@ -607,7 +633,7 @@ interoperability_service/
   src/interoperability/
     agent.py                      PresentationService agent, RPC and pubsub endpoints
     mapping_engine.py             UAI tree, resource nodes, resolution and alias following
-    resource.py                   Resource pydantic models and the ResourceData client helper
+    resource.py                   Resource pydantic models, the ResourceData client helper and ResourceWriter
     transform_parser.py           Expression grammar and convtools pipeline builder
     transform_registry.py         networkx graph of transforms between formats
     discovery/                    configuration tooling, not needed at runtime
@@ -747,7 +773,7 @@ The real-platform matrix (`tests/e2e_platform/`, opt-in with `E2E_PLATFORM=1`) i
 named by environment variables rather than from any assumed directory layout: `VOLTTRON_MODULAR_DRIVERS` (the
 modular platform driver tree, with `platform-driver-agent/` and `interfaces/pymodbus/` beneath it;
 `PYMODBUS_DRIVER_REPO` overrides the latter), `DER_CONTROL_MODULES` (the directory holding the
-`interoperability_service`, `device-adapter`, `message-bus-adapter` and `rtc_agent` checkouts) and
+`interoperability_service`, `resource-bridge`, `message-bus-adapter` and `rtc_agent` checkouts) and
 `IEEE1815_2_TEST_TOOL` (a checkout of the IEEE 1815.2 test tool, for its reference outstation and profile).
 `tests/test_generated_configs_validate_with_modular_driver.py` uses `VOLTTRON_MODULAR_DRIVERS` too and skips
 without it.
@@ -756,7 +782,7 @@ The real-platform matrix (`tests/e2e_platform/`, opt-in with `E2E_PLATFORM=1`) i
 named by environment variables rather than from any assumed directory layout: `VOLTTRON_MODULAR_DRIVERS` (the
 modular platform driver tree, with `platform-driver-agent/` and `interfaces/pymodbus/` beneath it;
 `PYMODBUS_DRIVER_REPO` overrides the latter), `DER_CONTROL_MODULES` (the directory holding the
-`interoperability_service`, `device-adapter`, `message-bus-adapter` and `rtc_agent` checkouts) and
+`interoperability_service`, `resource-bridge`, `message-bus-adapter` and `rtc_agent` checkouts) and
 `IEEE1815_2_TEST_TOOL` (a checkout of the IEEE 1815.2 test tool, for its reference outstation and profile).
 `tests/test_generated_configs_validate_with_modular_driver.py` uses `VOLTTRON_MODULAR_DRIVERS` too and skips
 without it.

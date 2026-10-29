@@ -7,7 +7,7 @@ sources poetry cannot reconcile, which is harmless: agents import from this venv
 The checkouts the harness installs come from two environment variables, with no assumption about where they live:
 ``VOLTTRON_MODULAR_DRIVERS`` (the modular platform driver tree: ``platform-driver-agent/`` and ``interfaces/pymodbus/``
 beneath it; ``PYMODBUS_DRIVER_REPO`` overrides the latter) and ``DER_CONTROL_MODULES`` (the directory holding the
-``interoperability_service``, ``device-adapter``, ``message-bus-adapter`` and ``rtc_agent`` checkouts)."""
+``interoperability_service``, ``resource-bridge``, ``message-bus-adapter`` and ``rtc_agent`` checkouts)."""
 import os
 import sys
 from pathlib import Path
@@ -31,7 +31,7 @@ _original_project = platform_cli.poetry_project_for_current_environment
 
 AGENTS = [(_checkout('VOLTTRON_MODULAR_DRIVERS', 'platform-driver-agent'), 'platform.driver', 'driver'),
           (_checkout('DER_CONTROL_MODULES', 'interoperability_service'), 'platform.presentation', 'interop'),
-          (_checkout('DER_CONTROL_MODULES', 'device-adapter'), 'platform.device_adapter', 'device_adapter'),
+          (_checkout('DER_CONTROL_MODULES', 'resource-bridge'), 'platform.resource_bridge', 'resource_bridge'),
           (_checkout('DER_CONTROL_MODULES', 'message-bus-adapter'), 'platform.bus_adapter', 'bus_adapter')]
 RTC_AGENT = (_checkout('DER_CONTROL_MODULES', 'rtc_agent'), 'der.rtc', 'rtc')     # the real-time control agent (--rtc)
 

@@ -15,7 +15,7 @@ import pytest
 if os.environ.get('E2E_PLATFORM') != '1':
     pytest.skip('set E2E_PLATFORM=1 to run the real-platform matrix', allow_module_level=True)
 for module in ('volttron.driver.interfaces.modbus.modbus', 'volttron.driver.interfaces.dnp3.dnp3', 'volttron.driver.interfaces.ieee2030_5.ieee2030_5',
-               'protocol_proxy.protocol.mqtt', 'device_adapter.agent', 'bus_adapter.agent', 'umodbus', 'paho.mqtt.client', 'google.protobuf'):
+               'protocol_proxy.protocol.mqtt', 'resource_bridge.agent', 'bus_adapter.agent', 'umodbus', 'paho.mqtt.client', 'google.protobuf'):
     pytest.importorskip(module)
 if not shutil.which('docker') or not all((Path(sys.executable).parent / exe).exists() for exe in ('volttron', 'vctl')):
     pytest.skip('docker and the VOLTTRON platform tools are required', allow_module_level=True)

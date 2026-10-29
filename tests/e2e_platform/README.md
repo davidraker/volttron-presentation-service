@@ -7,7 +7,7 @@ another. The platform is a black box.
 
 | Role | Implementation | Where |
 |---|---|---|
-| Platform | volttron-core (ZMQ, auth on), platform driver, presentation service, Device Adapter, Message Bus Adapter | `volttron_platform.py`, configured by `configs.py` through the config store |
+| Platform | volttron-core (ZMQ, auth on), platform driver, presentation service, Resource Bridge, Message Bus Adapter | `volttron_platform.py`, configured by `configs.py` through the config store |
 | SunSpec inverter and SunSpec master | uModbus (not the pymodbus the proxy uses) | `external/sunspec_device.py` |
 | DNP3 outstation and DNP3 master | IEEE 1815.2 test tool reference binaries (Rust, Step Function `dnp3` crate), from its cargo-cache volume, in its backend image on the host network | `external/dnp3_tool.py` |
 | 2030.5 utility server | GridAPPS-D Go `sep2server` (`sep2server:e2e`, traffic capture on) | `external/sep2.py` |
@@ -15,15 +15,26 @@ another. The platform is a black box.
 | OpenFMB broker and participant | `eclipse-mosquitto:2`, paho-mqtt with the protobuf bindings | `external/openfmb_party.py` |
 
 ```shell
-python tests/e2e_platform/run.py --openfmb bus      # OpenFMB on the VOLTTRON bus: bus adapter relays, Device Adapter translates
-python tests/e2e_platform/run.py --openfmb rpc      # bus adapter translates and writes through the Device Adapter's RPC
+python tests/e2e_platform/run.py --openfmb bus      # OpenFMB on the VOLTTRON bus: bus adapter relays, Resource Bridge translates
+python tests/e2e_platform/run.py --openfmb rpc      # bus adapter translates and writes through the Resource Bridge's RPC
 E2E_PLATFORM=1 pytest tests/test_e2e_platform.py    # both, about 13 minutes each
+python tests/e2e_platform/run.py --per-message      # one IPC connection per message (interfaces default to persistent)
 ```
 
 `--keep` leaves the platform and the containers running; `--only telemetry:SunSpec>DNP3,...` runs a
 subset; `--work DIR` (default `/tmp/e2e-platform`) holds the VOLTTRON_HOME, the configuration files,
 the certificates, the Go server's traffic capture, the external parties' logs and
-`device_adapter_reports.log` (the Device Adapter's result topics, recorded with `vctl subscribe`).
+`resource_bridge_reports.log` (the Resource Bridge's result topics, recorded with `vctl subscribe`).
+
+## How the paths are scheduled
+
+A target fed by two sources at once holds whichever wrote last, so a check on it would be a coin toss (the 2030.5
+rating `rtgMaxV`, carried by SunSpec's nameplate and by DNP3, flapped 275 times in one run). The paths of each kind
+therefore run in rounds: a Latin square over the four devices pairs every target with a different source per round,
+the Resource Bridge is reconfigured with just that round's bridges (`activate_bridges`, waiting for the adapter to
+report each started), and the round's paths run side by side in threads. Three rounds cover the twelve paths of a
+kind. Paths sharing the OpenFMB party clear only their own topic. `--sequential` restores the earlier behaviour,
+every matrix bridge at once and one path at a time. The RTC's bridges stay configured throughout.
 
 ## What each check means
 
@@ -33,7 +44,7 @@ client's reports are its simulator's (DERSettings.setMaxW 10000, DERCapability, 
 checks on its paths look for those. Controls carry a limit that differs per source and per target,
 because the bridges write changes only: a repeated value would not be a new write. The reference
 outstation logs the analog operates it receives but not the binary ones, so BO_17 (the enable) is
-verified through the Device Adapter's report of the outstation's DNP3 response, not independently.
+verified through the Resource Bridge's report of the outstation's DNP3 response, not independently.
 
 ## Environment it needs
 
@@ -56,6 +67,13 @@ verified through the Device Adapter's report of the outstation's DNP3 response, 
 - DNP3: the generated registries use floating-point analog outputs (g41v3/v4); the 1815.2 profile is
   integer with multipliers and the reference outstation accepts g41v1/v2 only. The e2e overrides the
   AO variation to 1; the generator default is still open.
+- Message bus (volttron-lib-zmq): the router filed every subscribe under a literal `pubsub` bus key and
+  distributed from that key only, while synchronize, unsubscribe and list used the client's bus (`''`). Unsubscribe
+  therefore never removed anything, and the synchronize a client sends on the first message it has no handler for
+  dropped the peer from all of its working subscriptions. In rounds this showed as the first control round receiving
+  nothing: the stopped telemetry bridges' topics kept arriving, the adapter synchronized, and every new subscription
+  died until the next reconfiguration. Fixed in lib-zmq (bus from the message) and, for the companion client bug of
+  unsubscribing a prefix other callbacks still hold, in volttron-core's PubSub subsystem.
 - Convention, not fixed: the service's `2030.5` format carries `opModMaxLimW` in percent while the
   schema (and the Go client) use hundredths of a percent: a limit of 50 is applied as 0.5 %.
 - Limitation: the Go server exposes neither usage points nor readings; its traffic capture is the only

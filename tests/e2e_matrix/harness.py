@@ -25,12 +25,12 @@ server's control, the published protobuf decodes. Who does the transforming and 
 
 * ``E2E_WRITER=direct`` (default): the harness itself resolves the chain with ``lookup_scored`` (hinting the fields the
   message carries), executes it and calls ``set_multiple_points`` on the target interface.
-* ``E2E_WRITER=device_adapter``: a DeviceAdapterAgent (VOLTTRON stubbed; its RPCs reach the in-process service and the
+* ``E2E_WRITER=resource_bridge``: a ResourceBridgeAgent (VOLTTRON stubbed; its RPCs reach the in-process service and the
   interfaces) is configured with one bridge per device-to-device path and the source's publication is delivered to it.
 * ``E2E_OPENFMB=harness`` (default): the OpenFMB paths use the harness's own chain execution and the MQTT proxy's codec.
   ``rpc``: a MessageBusAdapter in ``translate`` mode carries them, writing inbound controls through the Device
   Adapter's ``write`` RPC. ``bus``: OpenFMB on the VOLTTRON bus: the bus adapter in ``relay`` mode re-serialises, the
-  Device Adapter's bus-end bridges translate. Both imply ``E2E_WRITER=device_adapter``. The agents share an in-process
+  Resource Bridge's bus-end bridges translate. Both imply ``E2E_WRITER=resource_bridge``. The agents share an in-process
   pubsub (``LocalBus``) standing in for VOLTTRON's.
 
 Exit status is non-zero if any path fails. Run by test_e2e_matrix.py; ``E2E_LOG`` names the log file.
@@ -79,10 +79,10 @@ DNP3_CASE = TESTS / 'integration' / 'fake_dnp3' / 'transform_scaling'
 WORK = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(tempfile.mkdtemp(prefix='e2e-matrix-'))
 ONLY = set(sys.argv[2].split(',')) if len(sys.argv) > 2 else None
 OPENFMB_MODE = os.environ.get('E2E_OPENFMB', 'harness')                    # harness | rpc | bus
-WRITER = 'device_adapter' if OPENFMB_MODE != 'harness' else os.environ.get('E2E_WRITER', 'direct')
+WRITER = 'resource_bridge' if OPENFMB_MODE != 'harness' else os.environ.get('E2E_WRITER', 'direct')
 assert OPENFMB_MODE in ('harness', 'rpc', 'bus'), OPENFMB_MODE
 RTC_ENABLED = os.environ.get('E2E_RTC') == '1'          # fifth party: the real-time control agent (MESA modes in the CtrlEvalEngine)
-assert not RTC_ENABLED or OPENFMB_MODE == 'bus', 'E2E_RTC=1 needs E2E_OPENFMB=bus (Device Adapter bus ends carry the hub format)'
+assert not RTC_ENABLED or OPENFMB_MODE == 'bus', 'E2E_RTC=1 needs E2E_OPENFMB=bus (Resource Bridge bus ends carry the hub format)'
 
 PROTOCOLS = ('SunSpec', 'DNP3', '2030.5', 'OpenFMB')
 DEVICES = ('SunSpec', 'DNP3', '2030.5')
@@ -102,7 +102,7 @@ LIMIT_PCT = 50
 AO_87_RAW = round(LIMIT_PCT / dnp3_scaling('AO_87')[0])      # the 1815.2 profile gives AO_87 a 0.1 multiplier: tenths of a percent
 PIN = 111115
 # The RTC agent: a bus-only resource in the `rtc_controller` format (plain copies of the 61850 hub's logical nodes).
-# Controls reach it on RTC_CONTROL_TOPIC through a Device Adapter bus end; it publishes its status on RTC_STATUS_TOPIC.
+# Controls reach it on RTC_CONTROL_TOPIC through a Resource Bridge bus end; it publishes its status on RTC_STATUS_TOPIC.
 RTC_UAI = ['matrix', 'RTC']
 RTC_FORMAT = 'rtc_controller'
 RTC_CONTROL_TOPIC, RTC_STATUS_TOPIC, RTC_MODES_TOPIC = 'rtc/matrix/control', 'rtc/matrix/status', 'rtc/matrix/modes'
@@ -390,7 +390,7 @@ class LocalBus:
                 callback('pubsub', 'harness', 'bus', topic, headers or {}, message)
         return mock.Mock()
 
-    def reports(self, prefix='device_adapter/'):
+    def reports(self, prefix='resource_bridge/'):
         return [(t, m) for t, h, m in self.published if t.startswith(prefix)]
 
 
@@ -478,22 +478,22 @@ class DirectWriter:
 
 
 class AdapterWriter(DirectWriter):
-    """A DeviceAdapterAgent does the writing: VOLTTRON is stubbed so that its RPCs reach the in-process service and
+    """A ResourceBridgeAgent does the writing: VOLTTRON is stubbed so that its RPCs reach the in-process service and
     the interfaces and its pubsub is the LocalBus; one bridge per device-to-device path, plus (``bus`` OpenFMB mode)
     a bridge between each device and its OpenFMB reading and control topics."""
-    name = 'device_adapter'
+    name = 'resource_bridge'
 
     def __init__(self, service, parties, bus):
         super().__init__(service, parties, bus)
-        from device_adapter import agent as adapter_module
-        from device_adapter.agent import DeviceAdapterAgent
+        from resource_bridge import agent as adapter_module
+        from resource_bridge.agent import ResourceBridgeAgent
         with mock.patch.object(adapter_module.Agent, '__init__', return_value=None):
-            self.agent = DeviceAdapterAgent.__new__(DeviceAdapterAgent)
+            self.agent = ResourceBridgeAgent.__new__(ResourceBridgeAgent)
             self.agent.vip, self.agent.core = mock.MagicMock(), mock.MagicMock()
             self.agent.core.connected = False
-            self.agent.core.identity = 'platform.device_adapter'
+            self.agent.core.identity = 'platform.resource_bridge'
             self.agent.core.spawn.side_effect = lambda fn, *args: fn(*args)
-            DeviceAdapterAgent.__init__(self.agent, config_path=None)
+            ResourceBridgeAgent.__init__(self.agent, config_path=None)
         self.agent.vip.rpc.call.side_effect = self.rpc
         self.agent.vip.pubsub.subscribe.side_effect = bus.subscribe
         self.agent.vip.pubsub.unsubscribe.side_effect = bus.unsubscribe
@@ -536,7 +536,7 @@ class AdapterWriter(DirectWriter):
                 {'name': bridge_name('telemetry', 'RTC', 'OpenFMB'), 'source': status_end,
                  'target': {'uai': openfmb_alias('RTC', 'rtc', 'reading'), 'bus': True}, 'write_unchanged': True}]
         self.agent.configure_main(None, 'NEW', {'bridges': bridges})
-        assert len(self.agent.bridges) == len(bridges), f'device adapter bridges: {self.agent.list_bridges()}'
+        assert len(self.agent.bridges) == len(bridges), f'resource bridge bridges: {self.agent.list_bridges()}'
 
     def rpc(self, peer, method, *args, **kwargs):
         reply = mock.Mock()
@@ -556,7 +556,7 @@ class AdapterWriter(DirectWriter):
         result = self.agent.relay(bridge, bridge.source.topics[0], [message, {}])
         if result is None:
             return '?', 'the adapter wrote nothing (no change, an echo, or an empty chain output)'
-        topic, report = [(t, m) for t, h, m in self.bus.published[before:] if t.startswith('device_adapter/')][-1]
+        topic, report = [(t, m) for t, h, m in self.bus.published[before:] if t.startswith('resource_bridge/')][-1]
         return report['path'], (f'retention {report["retention"]:.2f}, {len(result.written)}/{len(result.written) + len(result.errors)} written'
                                 + (f', errors {list(result.errors.items())[:2]}' if result.errors else '') + f' [{topic}]')
 
@@ -625,7 +625,7 @@ class BusAdapterHarness:
             reply = mock.Mock()
             if peer == 'platform.presentation':
                 reply.get.return_value = getattr(service, method)(*args, **kwargs)
-            elif peer == 'platform.device_adapter':
+            elif peer == 'platform.resource_bridge':
                 reply.get.return_value = getattr(writer.agent, method)(*args, **kwargs)
             else:
                 raise AssertionError(f'unexpected RPC {peer}.{method}')
@@ -692,7 +692,7 @@ def main():
         parties['SunSpec'] = setup_sunspec()
         parties['DNP3'] = setup_dnp3()
         parties['2030.5'] = setup_sep2(sep2_rows)
-        writer = AdapterWriter(service, parties, bus) if WRITER == 'device_adapter' else DirectWriter(service, parties, bus)
+        writer = AdapterWriter(service, parties, bus) if WRITER == 'resource_bridge' else DirectWriter(service, parties, bus)
         if OPENFMB_MODE != 'harness':
             bus_adapter = BusAdapterHarness('relay' if OPENFMB_MODE == 'bus' else 'translate', service, writer, openfmb, bus)
         print(f'parties up in {time.time() - t0:.1f}s: modbus {len(parties["SunSpec"].client.point_map)} points, '
@@ -819,7 +819,7 @@ def main():
                 suffix = 'all' if role == 'client' else 'multi'
                 bus.publish('pubsub', topic=f'{device_topic(src, role)}/{suffix}', headers={}, message=[message, {}])
                 got = openfmb.broker_got(alias_topic, proto)
-                via = [m for t, h, m in bus.published[before_reports:] if t == f'device_adapter/{bridge_name(kind, src, "OpenFMB")}']
+                via = [m for t, h, m in bus.published[before_reports:] if t == f'resource_bridge/{bridge_name(kind, src, "OpenFMB")}']
                 path = via[-1]['path'] if via else ['(bus adapter translate)']
                 how = f'{OPENFMB_MODE}: broker got {"a" if got is not None else "no"} {proto} on {alias_topic}'
             if kind == 'telemetry':
@@ -846,13 +846,13 @@ def main():
                 openfmb.client.publish.reset_mock()
                 before_reports = len(bus.published)
                 bus_adapter.inbound(raw)
-                reports = [m for t, h, m in bus.published[before_reports:] if t == f'device_adapter/{bridge_name(kind, "OpenFMB", dst)}']
+                reports = [m for t, h, m in bus.published[before_reports:] if t == f'resource_bridge/{bridge_name(kind, "OpenFMB", dst)}']
                 results_to_remote = [c.args[0] for c in openfmb.client.publish.call_args_list if c.args[0].endswith('/result')]
                 if reports:
                     path, wrote = reports[-1]['path'], f'{OPENFMB_MODE}: {len(reports[-1]["written"])} written via bridge' + \
                         (f', errors {list(reports[-1]["errors"].items())[:2]}' if reports[-1]['errors'] else '')
                 else:
-                    path, wrote = ['(bus adapter -> device adapter write RPC)'], f'{OPENFMB_MODE}: result to remote on {results_to_remote}'
+                    path, wrote = ['(bus adapter -> resource bridge write RPC)'], f'{OPENFMB_MODE}: result to remote on {results_to_remote}'
             ok, why = compare(*after(kind, dst))
             return ok, path, f'{wrote}; {why}'
 
@@ -870,7 +870,7 @@ def main():
             return E.served_agent.flat(E.served_prefix), {'MirrorMeterReading_W': W}
 
         def run_rtc_telemetry(dst):
-            """The RTC agent publishes its status; the Device Adapter carries its power to the device or the broker."""
+            """The RTC agent publishes its status; the Resource Bridge carries its power to the device or the broker."""
             before_reports = len(bus.published)
             if dst == 'OpenFMB':
                 openfmb.client.publish.reset_mock()
@@ -884,7 +884,7 @@ def main():
                 rtc.tick()
                 ok, why = compare(*rtc_after_telemetry(dst))
                 detail = 'status published'
-            via = [m for t, h, m in bus.published[before_reports:] if t == f'device_adapter/{bridge_name("telemetry", "RTC", dst)}']
+            via = [m for t, h, m in bus.published[before_reports:] if t == f'resource_bridge/{bridge_name("telemetry", "RTC", dst)}']
             path = via[-1]['path'] if via else '?'
             if via:
                 detail += f', retention {via[-1]["retention"]:.2f}, {len(via[-1].get("written", []))} written'
@@ -904,7 +904,7 @@ def main():
                 message, src_fmt = control_source(src)
                 _, wrote = writer.write(message, src_fmt, 'RTC', None, kind='control', src=src)
             rtc.tick()
-            via = [m for t, h, m in bus.published[before_reports:] if t == f'device_adapter/{bridge_name("control", src, "RTC")}']
+            via = [m for t, h, m in bus.published[before_reports:] if t == f'resource_bridge/{bridge_name("control", src, "RTC")}']
             path = via[-1]['path'] if via else '?'
             ok, why = compare(rtc.limit_view(), {'LimW': LIMIT_PCT, 'ModEna': True, 'bound_hi_kw': RTC_CAPACITY_KW * LIMIT_PCT / 100,
                                                  'output_kw': W / 1000})

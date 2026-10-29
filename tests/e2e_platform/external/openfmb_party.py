@@ -43,9 +43,14 @@ class OpenFmbParty:
         info = self.client.publish(topic, encode(proto, payload), qos=1)
         info.wait_for_publish(timeout=10)
 
-    def clear(self):
+    def clear(self, topic: str | None = None):
+        """Forget received messages: all of them, or only those on ``topic`` (paths running side by side each
+        clear their own topic, so one does not drop what another is waiting for)."""
         with self._lock:
-            self.received.clear()
+            if topic is None:
+                self.received.clear()
+            else:
+                self.received[:] = [item for item in self.received if item[0] != topic]
 
     def wait_for(self, topic: str, proto: str, predicate=None, timeout: float = 30.0):
         """The newest message on ``topic`` (decoded as ``proto``) satisfying ``predicate``, or None after ``timeout``."""

@@ -2,7 +2,7 @@
 
 Six devices for the platform driver (SunSpec, DNP3 and IEEE 2030.5, each in the client role towards an external
 device and in the served role towards an external master), the presentation service's formats, transforms and
-mappings (a canonical resource per device and an OpenFMB reading and control alias each), the Device Adapter's
+mappings (a canonical resource per device and an OpenFMB reading and control alias each), the Resource Bridge's
 bridges (device to device, plus device to OpenFMB topic in ``bus`` mode) and the Message Bus Adapter."""
 import csv
 import json
@@ -35,10 +35,19 @@ SUNSPEC_METER_POINTS = ['701_W', '701_W_SF', '701_Hz', '701_Hz_SF']           # 
 # control's read-back (DWMX.LimW) is the same data object as the setpoint, so a telemetry bridge that carried it would
 # write one source's limit into every target and the targets would flap between the sources' values.
 SUNSPEC_TELEMETRY_GROUPS = ('1_', '701_', '702_', '713_')
+# Nameplate ratings the DNP3 telemetry also carries (AI_2 DGEN.VMinRtg, AI_3 DGEN.VMaxRtg): on a target both
+# bridges feed, the two sources would write the same 2030.5 field (DERCapability.rtgMaxV) in turn, each seeing the
+# other's value and restoring its own, so the observation is a coin toss. The DNP3 outstation keeps these to itself.
+SUNSPEC_RATINGS_LEFT_TO_DNP3 = ('702_VMinRtg', '702_VMaxRtg')
+# Control bridges carry only the limit's points. Without a filter a control bridge relays its source's whole state on
+# activation (76 fields from the 2030.5 client mapped onto nine batches of DNP3 operates), which is both wrong and
+# slow enough to have stalled the Resource Bridge for minutes. Bus (OpenFMB) sources carry whole profiles and need none.
+CONTROL_POINTS = {'SunSpec': ['704_WMaxLimPct', '704_WMaxLimPctEna', '704_WMaxLimPct_SF'], 'DNP3': ['AO_87', 'BO_17'],
+                  '2030.5': ['DERControl_opModMaxLimW']}
 SEP2_TELEMETRY_GROUPS = ('DeviceInformation_', 'DERCapability_', 'DERSettings_', 'DERStatus_', 'MirrorMeterReading_')
-DEVICE_ADAPTER, BUS_ADAPTER, SERVICE, DRIVER = 'platform.device_adapter', 'platform.bus_adapter', 'platform.presentation', 'platform.driver'
+RESOURCE_BRIDGE, BUS_ADAPTER, SERVICE, DRIVER = 'platform.resource_bridge', 'platform.bus_adapter', 'platform.presentation', 'platform.driver'
 # The real-time control agent (``--rtc``): a bus-only resource in the `rtc_controller` format (plain copies of the 61850
-# hub's logical nodes). Controls reach it on RTC_CONTROL_TOPIC through a Device Adapter bus end; it publishes its status
+# hub's logical nodes). Controls reach it on RTC_CONTROL_TOPIC through a Resource Bridge bus end; it publishes its status
 # on RTC_STATUS_TOPIC every tick. Its fake 10 kW storage follows a 4.321 kW setpoint at 50 % state of charge.
 RTC_IDENTITY = 'der.rtc'
 RTC_UAI = ['matrix', 'RTC']
@@ -128,7 +137,35 @@ class PlatformConfigs:
     inbound_topics: list[str]
 
 
+# Connection policy toward every proxy (the interfaces' persistent_connection option, True by default since
+# 2026-10-22); None leaves the interfaces' default, False forces a connection per message. Set by build(persistent=...).
+PERSISTENT_CONNECTIONS: bool | None = None
+
+
+MATRIX_PARTIES = (*DEVICES, 'OpenFMB')
+MATRIX_BRIDGE_NAMES = frozenset(bridge_name(kind, src, dst) for kind in ('telemetry', 'control')
+                                for src in MATRIX_PARTIES for dst in MATRIX_PARTIES if src != dst)
+
+
+def is_matrix_bridge(bridge: dict) -> bool:
+    """A device-to-device bridge of the matrix (as opposed to the RTC's, which stay configured throughout)."""
+    return bridge.get('name') in MATRIX_BRIDGE_NAMES
+
+
+def adapter_config(bridges: list[dict]) -> dict:
+    return {'presentation_service': SERVICE, 'driver': DRIVER, 'bridges': bridges, 'echo_window': 5.0}
+
+
+def write_adapter_config(work: Path, bridges: list[dict]) -> Path:
+    """Rewrite the Resource Bridge's configuration file with these bridges; the caller stores it on the platform."""
+    path = work / RESOURCE_BRIDGE / 'config'
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(adapter_config(bridges), indent=2) + '\n')
+    return path
+
+
 def device_config(driver_type: str, registry_name: str, remote: dict, interval: float) -> dict:
+    remote = remote if PERSISTENT_CONNECTIONS is None else {**remote, 'persistent_connection': PERSISTENT_CONNECTIONS}
     return {'driver_type': driver_type, 'remote_config': {'driver_type': driver_type, **remote},
             'registry_config': f'config://registry_configs/{registry_name}', 'interval': interval,
             'publish_depth_first_all': True, 'publish_depth_first_multi': True, 'timezone': 'UTC'}
@@ -146,7 +183,9 @@ def served_rows(rows: list[dict], remote_writable_from_writable: bool) -> list[d
     return out
 
 
-def build(work: Path, ep: Endpoints, openfmb_mode: str, rtc: bool = False) -> PlatformConfigs:
+def build(work: Path, ep: Endpoints, openfmb_mode: str, rtc: bool = False, persistent: bool | None = None) -> PlatformConfigs:
+    global PERSISTENT_CONNECTIONS
+    PERSISTENT_CONNECTIONS = persistent
     """Write every configuration file under ``work`` and describe what to store where."""
     work.mkdir(parents=True, exist_ok=True)
     entries: list[StoreEntry] = []
@@ -195,7 +234,7 @@ def build(work: Path, ep: Endpoints, openfmb_mode: str, rtc: bool = False) -> Pl
     store(DRIVER, device_topic('2030.5', 'served'), device_config('ieee2030_5', 'sep2_served.csv', {
         'driver_role': 'server', 'bind_host': '127.0.0.1', 'port': ep.sep2_served_port, 'cert_path': str(c['server_cert']),
         'key_path': str(c['server_key']), 'ca_path': str(c['ca']), 'client_lfdi': ep.served_client_lfdi, 'client_pin': ep.served_client_pin,
-        'poll_rate': 2, 'immediate_control_duration': 300, 'state_dir': str(work / 'sep2_state')}, ep.poll_interval))
+        'poll_rate': 2, 'immediate_control_duration': 120, 'state_dir': str(work / 'sep2_state')}, ep.poll_interval))
 
     # ---- presentation service: the cases, the served formats, the devices and their OpenFMB aliases -----------------------
     sunspec_case = json.loads((SUNSPEC_CASE / 'presentation_config.json').read_text())
@@ -224,7 +263,7 @@ def build(work: Path, ep: Endpoints, openfmb_mode: str, rtc: bool = False) -> Pl
                                           'encoding': 'protobuf', 'parameters': {'mrid': MRID[('RTC', 'rtc')], 'name': 'RTC agent'}}})
     store(SERVICE, 'config', {'formats': formats, 'transforms': transforms, 'mappings': mappings})
 
-    # ---- device adapter ---------------------------------------------------------------------------------------------
+    # ---- resource bridge ---------------------------------------------------------------------------------------------
     bridges = []
     for kind in ('telemetry', 'control'):
         for src in DEVICES:
@@ -232,6 +271,8 @@ def build(work: Path, ep: Endpoints, openfmb_mode: str, rtc: bool = False) -> Pl
                 if src != dst:
                     src_role, dst_role = roles(kind, src, dst)
                     bridge = {'name': bridge_name(kind, src, dst), 'source': uai(src, src_role), 'target': uai(dst, dst_role)}
+                    if kind == 'control' and src in CONTROL_POINTS:
+                        bridge['points'] = CONTROL_POINTS[src]
                     if kind == 'telemetry' and src == 'DNP3':
                         # The reference outstation serves the whole DER profile with zeros; only the points it is given
                         # values for are bridged, as a deployment would choose which of a device's points to mirror.
@@ -241,7 +282,9 @@ def build(work: Path, ep: Endpoints, openfmb_mode: str, rtc: bool = False) -> Pl
                         # served outstation's nameplate points to themselves (scale factors travel with the values).
                         bridge['points'] = SUNSPEC_METER_POINTS
                     elif kind == 'telemetry' and src == 'SunSpec':
-                        bridge['points'] = [n for n in formats[CLIENT_FORMAT['SunSpec']]['fields'] if n.startswith(SUNSPEC_TELEMETRY_GROUPS)]
+                        bridge['points'] = [n for n in formats[CLIENT_FORMAT['SunSpec']]['fields']
+                                            if n.startswith(SUNSPEC_TELEMETRY_GROUPS)
+                                            and not n.startswith(SUNSPEC_RATINGS_LEFT_TO_DNP3)]
                     elif kind == 'telemetry' and src == '2030.5':
                         bridge['points'] = [n for n in formats[SERVED_FORMAT['2030.5']]['fields'] if n.startswith(SEP2_TELEMETRY_GROUPS)]
                     bridges.append(bridge)
@@ -258,7 +301,7 @@ def build(work: Path, ep: Endpoints, openfmb_mode: str, rtc: bool = False) -> Pl
                 {'name': bridge_name('telemetry', 'OpenFMB', protocol), 'source': {'uai': openfmb_alias(protocol, tel_dst, 'reading'), 'bus': True},
                  'target': uai(protocol, tel_dst)},
                 {'name': bridge_name('control', protocol, 'OpenFMB'), 'source': uai(protocol, ctl_src),
-                 'target': {'uai': openfmb_alias(protocol, ctl_src, 'control'), 'bus': True}},
+                 'target': {'uai': openfmb_alias(protocol, ctl_src, 'control'), 'bus': True}, 'points': CONTROL_POINTS[protocol]},
                 {'name': bridge_name('control', 'OpenFMB', protocol), 'source': {'uai': openfmb_alias(protocol, ctl_dst, 'control'), 'bus': True},
                  'target': uai(protocol, ctl_dst)}]
     if rtc:
@@ -270,8 +313,7 @@ def build(work: Path, ep: Endpoints, openfmb_mode: str, rtc: bool = False) -> Pl
         status_end = {'uai': RTC_UAI, 'bus': True, 'topic': RTC_STATUS_TOPIC}
         modes_end = {'uai': RTC_UAI, 'bus': True, 'topic': RTC_MODES_TOPIC}
         # Only the limit's points travel to the agent: a device's other points would land in modes it does not run.
-        control_points = {'SunSpec': ['704_WMaxLimPct', '704_WMaxLimPctEna', '704_WMaxLimPct_SF'], 'DNP3': ['AO_87', 'BO_17'],
-                          '2030.5': ['DERControl_opModMaxLimW']}
+        control_points = CONTROL_POINTS
         for protocol in DEVICES:
             bridges += [
                 {'name': bridge_name('control', protocol, 'RTC'), 'source': uai(protocol, roles('control', protocol, 'RTC')[0]),
@@ -294,11 +336,13 @@ def build(work: Path, ep: Endpoints, openfmb_mode: str, rtc: bool = False) -> Pl
             'controller': {}, 'hub_topic': RTC_CONTROL_TOPIC, 'status_topic': RTC_STATUS_TOPIC, 'modes_topic': RTC_MODES_TOPIC,
             'modes': [{'name': 'schedule', 'class_name': 'ChargeDischargeStorage', 'priority': 2, 'WSpt': RTC_W / 1000},
                       {'name': 'limit', 'class_name': 'ActivePowerLimit', 'priority': 1, 'enabled': False, 'LimWMax': 100.0}]})
-    store(DEVICE_ADAPTER, 'config', {'presentation_service': SERVICE, 'driver': DRIVER, 'bridges': bridges, 'echo_window': 5.0})
+    # The matrix bridges (device to device) are activated by run.py a round at a time (see rounds there); the stored
+    # configuration starts with the others (the RTC's) only, so no target has two sources at once.
+    store(RESOURCE_BRIDGE, 'config', adapter_config([b for b in bridges if not is_matrix_bridge(b)]))
 
     # ---- message bus adapter ----------------------------------------------------------------------------------------
     store(BUS_ADAPTER, 'config', {'bus_type': 'mqtt', 'mode': 'relay' if openfmb_mode == 'bus' else 'translate',
-                                  'device_adapter': DEVICE_ADAPTER, 'proxy_registration_timeout': 60,
+                                  'resource_bridge': RESOURCE_BRIDGE, 'proxy_registration_timeout': 60,
                                   'adapters': [{'name': 'site', 'host': ep.mqtt[0], 'port': ep.mqtt[1],
                                                 'local_subscriptions': outbound, 'remote_subscriptions': inbound}]})
     return PlatformConfigs(entries, bridges, outbound, inbound)
