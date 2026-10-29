@@ -76,6 +76,13 @@ def test_missing_source_field_is_omitted_from_output(parser):
     assert parser.build_transform_from_schema(schema).execute({'x': 3}) == {'a': 6}
 
 
+def test_none_source_value_is_omitted_instead_of_raising(parser):
+    """A device may publish a point with no value; a scaling transform must not raise on it (that dropped every other
+    field of the message with it) but leave the field out."""
+    schema = {'a': 'transform[x](multiple(2))', 'b': 'transform[y]()', 'c': 'transform[z](multiple(0.1))'}
+    assert parser.build_transform_from_schema(schema).execute({'x': None, 'y': 5, 'z': 20}) == {'b': 5, 'c': 2.0}
+
+
 def test_missing_source_handles_deep_paths_list_indices_and_scalar_parents(parser):
     schema = {'deep': 'transform[p, q, r]()',
               'idx': 'transform[AI, 5]()',

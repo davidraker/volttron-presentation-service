@@ -484,10 +484,12 @@ class TransformParser:
 
     @staticmethod
     def _apply_functions(source, convs):
-        """Pipe a source conversion through the function conversions, skipping them when the source is MISSING."""
+        """Pipe a source conversion through the function conversions, skipping them when the source is MISSING. A
+        source value of None (a point the device reported without a value) is treated as MISSING too, so the field is
+        omitted from the output instead of an arithmetic function raising on it and taking the whole message down."""
         if not convs:
             return source
-        pipeline = source
+        pipeline = source.pipe(c.if_(c.this.is_(None), MISSING, c.this))
         for conv in convs:
             if isinstance(conv, _Expr):
                 raise TypeError(f'Nested transform() calls are not supported ({conv!r}).')
