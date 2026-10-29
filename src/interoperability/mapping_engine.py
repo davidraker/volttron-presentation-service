@@ -10,6 +10,15 @@ from .resource import AliasedResource, CanonicalResource, Resource
 _log = logging.getLogger(__name__)
 
 
+class ResourceReferenceCycleError(ValueError):
+    """An alias chain that never reaches a canonical resource because it returns to a UAI it already passed."""
+
+    def __init__(self, cycles: list[list[tuple]]):
+        self.cycles = cycles
+        described = '; '.join(' -> '.join('/'.join(uai) for uai in cycle) for cycle in cycles)
+        super().__init__(f'Alias references form a cycle: {described}')
+
+
 def serialize_uai(uai, root_name):
     if isinstance(uai, str):
         uai = (uai,)
@@ -17,7 +26,8 @@ def serialize_uai(uai, root_name):
         uai = tuple(uai)
     elif not isinstance(uai, tuple):
         raise ValueError(f'UAI passed to serialize_uai must be a tuple, list, or a string. Received type({type(uai)}: {uai}')
-    if root_name is not None and uai[0] != root_name:
+    # An empty UAI is the root itself: the parent of a single-segment resource.
+    if root_name is not None and (not uai or uai[0] != root_name):
         uai = (root_name,) + uai
     ret_val = ','.join(json.dumps(u) for u in uai)
     return ret_val
@@ -139,7 +149,7 @@ class UAITree(Tree):
             self.create_node(identifier=(self.root_name,)).data['segment_type'] = 'UAI_ROOT'
 
     def build_branches_from_uai_list(self, uai_list: list[tuple[str]]):
-        unrooted_uai_list = [uai[1:] if uai[0] == 'uai' else uai for uai in uai_list]
+        unrooted_uai_list = [uai[1:] if uai and uai[0] == 'uai' else uai for uai in uai_list]
         if not self.get_node(serialize_uai(self.root_name, None)):
             self.create_node(self.root_name, self.root_name).data['segment_type'] = 'UAI_ROOT'
         for uai in unrooted_uai_list:
@@ -179,14 +189,52 @@ class UAITree(Tree):
                 _log.warning(f'Ingest mappings received UAI that was not a tuple or list: {uai} of type {type(uai)}')
             self.add_resource(uai, Resource.create(mapping))
         _log.debug(f'@@@@@@@@@@ CREATED TREE WITH: {self.all_nodes()}')
+        self._refuse_reference_cycles()
 
-    def resolve(self, uai: tuple, as_format: str | None = None, strict: bool = False
+    def check_references(self) -> dict[str, list]:
+        """Walk every alias to the resource it finally names. Returns ``cycles``, each a list of the alias UAIs
+        that lead back to the first, and ``dangling``, the aliases whose chain ends at no canonical resource."""
+        cycles: list[list[tuple]] = []
+        seen_cycles: set[frozenset] = set()
+        dangling: list[tuple] = []
+        for node in self.all_nodes():
+            if not (isinstance(node, UAINode) and node.is_alias):
+                continue
+            try:
+                target, _, _ = self.resolve(node.uai, strict=True)
+            except ResourceReferenceCycleError as e:
+                for cycle in e.cycles:
+                    members = frozenset(cycle)
+                    if members not in seen_cycles:
+                        seen_cycles.add(members)
+                        cycles.append(cycle)
+                continue
+            if not (isinstance(target, UAINode) and target.is_canonical):
+                dangling.append(node.uai)
+        return {'cycles': cycles, 'dangling': dangling}
+
+    def _refuse_reference_cycles(self):
+        """After a batch of mappings: drop every alias that is part of a reference cycle and raise naming them,
+        so a cyclic configuration fails loudly at load instead of recursing without end at the first resolve.
+        Aliases whose chain ends nowhere yet are kept and only warned about: their canonical may arrive later."""
+        problems = self.check_references()
+        for uai in problems['dangling']:
+            _log.warning(f'Alias {"/".join(uai)} does not lead to a canonical resource.')
+        if problems['cycles']:
+            for cycle in problems['cycles']:
+                for uai in cycle:
+                    if self.get_node_by_uai(uai) is not None:
+                        self.remove_node(serialize_uai(uai, self.root_name))
+            raise ResourceReferenceCycleError(problems['cycles'])
+
+    def resolve(self, uai: tuple, as_format: str | None = None, strict: bool = False, _visited: tuple = ()
                  ) -> tuple[UAINode | None, str | None, list[AliasedResourceNode]]:
         """The node a UAI leads to, following aliases to the canonical resource.
 
         Returns the node, the format to present it in (``as_format`` if given, else the outermost alias's
         format) and the alias nodes passed through, outermost first, so callers can read their
-        ``parameters`` and ``encoding``.
+        ``parameters`` and ``encoding``. Raises ``ResourceReferenceCycleError`` when the aliases lead back to
+        one already passed (``_visited`` carries the alias UAIs of the hops so far).
         """
         if strict:
             node: UAINode | None = self.get_node_by_uai(uai)
@@ -196,9 +244,11 @@ class UAITree(Tree):
         aliases: list[AliasedResourceNode] = []
         if isinstance(node, UAINode) and node.is_alias:
             aliased_node = cast(AliasedResourceNode, node)
+            if aliased_node.uai in _visited:
+                raise ResourceReferenceCycleError([list(_visited) + [aliased_node.uai]])
             # If a specific format was specified, it is returned. Otherwise, it is the outermost alias format, if any.
             as_format = as_format if as_format else aliased_node.data_format
-            node, _, inner = self.resolve(aliased_node.references, as_format)
+            node, _, inner = self.resolve(aliased_node.references, as_format, _visited=_visited + (aliased_node.uai,))
             aliases = [aliased_node] + inner
         return node, as_format, aliases
 
