@@ -42,12 +42,15 @@ def test_registry_rows_validate_against_the_driver_schema(mirror):
     rows = ieee2030_5.registry_rows(mirror)
     by_name = {r['volttron_point_name']: r for r in rows}
     assert by_name['DERSettings_setMaxW'] == {'volttron_point_name': 'DERSettings_setMaxW', 'path': 'DERSettings.setMaxW', 'writable': 'TRUE',
-                                             'multiplier': 0, 'scaling': 1, 'units': 'W', 'starting_value': 0, 'notes': 'via sunspec > 2030.5'}
+                                             'data_source': 'short_poll', 'multiplier': 0, 'scaling': 1, 'units': 'W', 'starting_value': 0, 'notes': 'via sunspec > 2030.5'}
     assert by_name['MirrorMeterReading_W']['units'] == 'W' and by_name['MirrorMeterReading_W']['multiplier'] == ''
     assert by_name['DERCapability_type']['starting_value'] == 83 and 'required by the schema' in by_name['DERCapability_type']['notes']
     assert by_name['DERControl_opModMaxLimW']['units'] == '% x100' and by_name['DERControl_opModMaxLimW']['writable'] == 'FALSE'
     assert by_name['DERSettings_setGradW']['units'] == '% x100/s'
     assert list(rows[0]) == ieee2030_5.COLUMNS
+    # a mirror writes its capability and information to the server, so nothing here is read once; a readable
+    # DERCapability or DeviceInformation point would be
+    assert all(r['data_source'] == 'short_poll' for r in rows)
 
 
 def test_generated_mirror_case_is_current(registry, mirror):

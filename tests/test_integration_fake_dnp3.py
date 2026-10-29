@@ -115,8 +115,10 @@ def test_registries_reflect_the_scaling_mode(device):
     transform_rows = {r['volttron_point_name']: r for r in dnp3_registry_rows(device, 'transform')}
     driver_rows = {r['volttron_point_name']: r for r in dnp3_registry_rows(device, 'driver')}
     assert transform_rows['AI_2'] == {'point_name': 'DGEN.VMinRtg', 'volttron_point_name': 'AI_2', 'object_group': 30, 'variation': 6,
-                                      'index': 2, 'scaling': 1, 'units': 'Volts', 'writable': 'FALSE', 'transform': '',
-                                      'notes': 'Nameplate Minimum Voltage Rating'}
+                                      'index': 2, 'scaling': 1, 'units': 'Volts', 'writable': 'FALSE', 'data_source': 'poll_once',
+                                      'transform': '', 'notes': 'Nameplate Minimum Voltage Rating'}
+    assert transform_rows['AI_537']['data_source'] == 'short_poll'                                                             # a reading
+    assert transform_rows['AO_217']['data_source'] == 'short_poll'                                                             # writable: never nameplate
     assert driver_rows['AI_2']['scaling'] == 0.1 and driver_rows['AI_2']['transform'] == 'scale(0.1)'
     assert driver_rows['AO_217']['object_group'] == 40 and driver_rows['AO_217']['transform'] == ''      # multiplier 1: nothing to apply
     assert {r['volttron_point_name']: r['object_group'] for r in dnp3_registry_rows(device, 'transform') if r['volttron_point_name'] in ('BI_0', 'BO_3', 'CTR_5000')} == {'BI_0': 1, 'BO_3': 10, 'CTR_5000': 20}

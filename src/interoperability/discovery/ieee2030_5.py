@@ -31,7 +31,8 @@ UPWARD_RESOURCES = ('DERCapability', 'DERSettings', 'DERStatus', 'DERAvailabilit
 DOWNWARD_RESOURCES = ('DERControl', 'DefaultDERControl', 'DERCurve', 'DERControlList', 'DERProgram')
 #: Attributes carried as one list-valued point: the path is cut at the list.
 LIST_ATTRIBUTES = {'CurveData', 'DERControlList'}
-COLUMNS = ['volttron_point_name', 'path', 'writable', 'multiplier', 'scaling', 'units', 'starting_value', 'notes']
+COLUMNS = ['volttron_point_name', 'path', 'writable', 'data_source', 'multiplier', 'scaling', 'units', 'starting_value', 'notes']
+NAMEPLATE_RESOURCES = ('DERCapability', 'DeviceInformation')     # read once at setup, never polled
 #: Schema-required attributes of the upward resources that the device may not supply; given starting values so the
 #: first PUT is complete (the proxy would otherwise send zeros with a warning).
 REQUIRED_STARTING_VALUES = {('DERCapability', 'type'): 83, ('DERCapability', 'rtgMaxW'): 0, ('DERCapability', 'modesSupported'): '0',
@@ -150,12 +151,13 @@ def registry_rows(mirror: DiscoveredMirror) -> list[dict]:
     for p in mirror.points:
         starting = REQUIRED_STARTING_VALUES.get(p.path, '') if p.writable else ''
         rows.append({'volttron_point_name': p.name, 'path': p.dotted, 'writable': 'TRUE' if p.writable else 'FALSE',
+                     'data_source': 'poll_once' if not p.writable and p.path[0] in NAMEPLATE_RESOURCES else 'short_poll',
                      'multiplier': 0 if p.writable and p.path[0] != 'MirrorMeterReading' else '', 'scaling': 1,
                      'units': _units(p), 'starting_value': starting,
                      'notes': f'via {p.via}' + ('' if p.fidelity == 1 else f', fidelity {p.fidelity:.2f}')})
     for path, value in REQUIRED_STARTING_VALUES.items():
         if not any(p.path == path for p in mirror.points):
-            rows.append({'volttron_point_name': '_'.join(path), 'path': '.'.join(path), 'writable': 'TRUE', 'multiplier': 0,
+            rows.append({'volttron_point_name': '_'.join(path), 'path': '.'.join(path), 'writable': 'TRUE', 'data_source': 'short_poll', 'multiplier': 0,
                          'scaling': 1, 'units': _units(MirrorPoint(path, True, '')), 'starting_value': value,
                          'notes': 'required by the schema; not supplied by the device'})
     return rows

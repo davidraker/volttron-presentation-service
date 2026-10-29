@@ -112,6 +112,15 @@ def discover_profile(path: str | Path) -> DiscoveredDnp3Device:
 
 
 # ------------------------------------------------------------------------------------------- registries
+def is_nameplate(point: DiscoveredDnp3Point) -> bool:
+    """Nameplate data of the 1815.2 profile: ratings (DGEN/DSTO 'Nameplate ...'), the 'Supports ... Mode' capability
+    flags, and the profile header (MESA). Read once at setup, never polled."""
+    if point.writable:
+        return False
+    desc = point.description or ''
+    return desc.startswith('Nameplate') or desc.startswith('Supports ') or point.uid.split('.')[0] == 'MESA'
+
+
 def dnp3_registry_rows(device: DiscoveredDnp3Device, scaling: str, variations: dict[str, int] | None = None) -> list[dict]:
     variations = {**DEFAULT_VARIATIONS, **(variations or {})}
     rows = []
@@ -122,7 +131,8 @@ def dnp3_registry_rows(device: DiscoveredDnp3Device, scaling: str, variations: d
         rows.append({'point_name': p.uid, 'volttron_point_name': p.name, 'object_group': DNP3_GROUPS[p.table],
                      'variation': variations[p.table], 'index': p.index,
                      'scaling': p.multiplier if scaling == 'driver' else 1, 'units': p.units,
-                     'writable': 'TRUE' if p.writable else 'FALSE', 'transform': transform, 'notes': p.description})
+                     'writable': 'TRUE' if p.writable else 'FALSE', 'data_source': 'poll_once' if is_nameplate(p) else 'short_poll',
+                     'transform': transform, 'notes': p.description})
     return rows
 
 
