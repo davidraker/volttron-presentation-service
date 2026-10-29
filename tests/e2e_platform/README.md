@@ -16,7 +16,6 @@ another. The platform is a black box.
 
 ```shell
 python tests/e2e_platform/run.py --openfmb bus      # OpenFMB on the VOLTTRON bus: bus adapter relays, Resource Bridge translates
-python tests/e2e_platform/run.py --openfmb rpc      # bus adapter translates and writes through the Resource Bridge's RPC
 E2E_PLATFORM=1 pytest tests/test_e2e_platform.py    # both, about 13 minutes each
 python tests/e2e_platform/run.py --per-message      # one IPC connection per message (interfaces default to persistent)
 ```

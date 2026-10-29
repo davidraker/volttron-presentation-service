@@ -179,9 +179,11 @@ def modbus_registry_rows(device: DiscoveredDevice, scaling: str) -> list[dict]:
         transform = ''
         if scaling == 'driver' and p.scale_factor is not None and not p.is_scale_factor:
             transform = f'scale({10.0 ** p.scale_factor!r})' if isinstance(p.scale_factor, int) else f'scale_reg_pow_10({p.scale_factor})'
+        # Scale factors and the nameplate models (1 common, 701 identification) are read once at setup; the rest is polled.
+        data_source = 'poll_once' if p.is_scale_factor or p.model_id in (1, 701) else 'short_poll'
         rows.append({'volttron_point_name': p.name, 'address': p.address, 'data_type': data_type, 'table': 'holding',
-                     'writable': 'TRUE' if p.writable else 'FALSE', 'units': p.units, 'transform': transform,
-                     'register_name': p.name, 'default_value': '' if p.value is None else p.value,
+                     'writable': 'TRUE' if p.writable else 'FALSE', 'data_source': data_source, 'units': p.units,
+                     'transform': transform, 'register_name': p.name, 'default_value': '' if p.value is None else p.value,
                      'description': p.description})
     return rows
 
@@ -206,7 +208,7 @@ def fake_registry_rows(device: DiscoveredDevice, scaling: str) -> list[dict]:
 
 def write_csv(path: Path, rows: list[dict]) -> None:
     with path.open('w', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(f, fieldnames=list(rows[0]), lineterminator='\n')
         writer.writeheader()
         writer.writerows(rows)
 
@@ -233,13 +235,17 @@ def presentation_config(device: DiscoveredDevice, device_format: str, device_top
              'mappings': resource_mappings(device_format, device_topic, uai, alias_formats)}, built.notes)
 
 
-def write_case(device: DiscoveredDevice, out: Path, *, device_format: str, device_topic: str, uai: list[str],
+def write_case(device: DiscoveredDevice, out: Path, *, device_format: str, device_topic: str, uai: list[str] | None = None,
                scaling: str, host: str | None = None, port: int = 502, unit: int = 1,
-               alias_formats: dict[str, str] | None = None) -> dict[str, Path]:
-    """Write registries, device configs, the presentation config and a vctl script for one scaling mode."""
+               alias_formats: dict[str, str] | None = None, registry_name: str | None = None) -> dict[str, Path]:
+    """Write registries, device configs, the presentation config and a vctl script for one scaling mode.
+
+    ``uai`` defaults to the topic's segments with ``devices`` in front: the resource a device publishes has the
+    publication topic as its UAI. ``registry_name`` names the registry files (default the device format)."""
     out.mkdir(parents=True, exist_ok=True)
     alias_formats = alias_formats or {'pv_sunspec': 'sunspec', 'pv_2030_5': '2030.5', 'pv_dnp3': '1815.2.inputs'}
-    stem = device_format
+    uai = uai or [s for s in device_topic.split('/') if s]
+    stem = registry_name or device_format
     written = {}
     fake_name, modbus_name = f'registry_configs/{stem}.fake.csv', f'registry_configs/{stem}.modbus.csv'
     written['fake_registry'] = out / f'{stem}.fake.csv'
@@ -283,7 +289,8 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument('--scaling', choices=SCALING_MODES, default='transform')
     parser.add_argument('--format-name', default='sunspec_device')
     parser.add_argument('--device-topic', default='devices/site1/feeder1/inverter')
-    parser.add_argument('--uai', default='site1/inverter', help='UAI of the canonical resource, "/"-separated')
+    parser.add_argument('--uai', default=None, help='UAI of the canonical resource, "/"-separated; default: the device topic\'s segments')
+    parser.add_argument('--registry-name', default=None, help='stem of the registry files (default: the format name)')
     args = parser.parse_args(argv)
     if args.file:
         device = discover_file(args.file)
@@ -292,7 +299,8 @@ def main(argv: list[str] | None = None) -> None:
     else:
         device = discover_rtu(args.serial, args.unit)
     written = write_case(device, args.out, device_format=args.format_name, device_topic=args.device_topic,
-                         uai=args.uai.split('/'), scaling=args.scaling, host=args.host, port=args.port, unit=args.unit)
+                         uai=args.uai.split('/') if args.uai else None, scaling=args.scaling, host=args.host, port=args.port, unit=args.unit,
+                         registry_name=args.registry_name)
     print(f"{device.identity.get('Mn', '?')} {device.identity.get('Md', '?')}: {len(device.points)} points, "
           f"{len(device.scale_factors)} scale factors, scaling by {args.scaling}")
     for name, path in written.items():

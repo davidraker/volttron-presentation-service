@@ -341,8 +341,7 @@ def build(work: Path, ep: Endpoints, openfmb_mode: str, rtc: bool = False, persi
     store(RESOURCE_BRIDGE, 'config', adapter_config([b for b in bridges if not is_matrix_bridge(b)]))
 
     # ---- message bus adapter ----------------------------------------------------------------------------------------
-    store(BUS_ADAPTER, 'config', {'bus_type': 'mqtt', 'mode': 'relay' if openfmb_mode == 'bus' else 'translate',
-                                  'resource_bridge': RESOURCE_BRIDGE, 'proxy_registration_timeout': 60,
+    store(BUS_ADAPTER, 'config', {'bus_type': 'mqtt', 'proxy_registration_timeout': 60,
                                   'adapters': [{'name': 'site', 'host': ep.mqtt[0], 'port': ep.mqtt[1],
                                                 'local_subscriptions': outbound, 'remote_subscriptions': inbound}]})
     return PlatformConfigs(entries, bridges, outbound, inbound)

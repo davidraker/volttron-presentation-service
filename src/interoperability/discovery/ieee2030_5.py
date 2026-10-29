@@ -163,7 +163,7 @@ def registry_rows(mirror: DiscoveredMirror) -> list[dict]:
 
 def write_csv(path: Path, rows: list[dict]) -> None:
     with Path(path).open('w', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=COLUMNS)
+        writer = csv.DictWriter(f, fieldnames=COLUMNS, lineterminator='\n')
         writer.writeheader()
         writer.writerows(rows)
 

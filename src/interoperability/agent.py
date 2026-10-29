@@ -16,11 +16,18 @@ except PackageNotFoundError:
     # noinspection PyUnresolvedReferences
     from volttron.platform.vip.agent import Agent, PubSub, RPC
 
-from .transform_registry import TransformRegistry
+from .transform_parser import TransformParser
+from .transform_registry import TransformNotFoundError, TransformRegistry
 from .mapping_engine import  ResourceNode, UAITree
 
 _log = logging.getLogger(__name__)
 __version__ = '1.0'
+
+
+def _field_map_rows(field_map) -> list[dict]:
+    """A field map as the UI shows it: dotted paths, fidelity, the functions applied."""
+    return [{'target': '.'.join(map(str, m.target)), 'source': '.'.join(map(str, m.source)), 'fidelity': m.fidelity,
+             'functions': [str(f) for f in (m.functions or ())]} for m in field_map.mappings]
 
 
 class PresentationService(Agent):
@@ -122,6 +129,144 @@ class PresentationService(Agent):
         Returns whether the registry changed."""
         return self.transform_registry.register(input_format, output_format, pattern, update=update,
                                                 lossiness=lossiness)
+
+    # ---- what the configuration UI needs: the graph described, a pattern compiled, a message previewed ----
+
+    @RPC.export
+    def list_formats(self) -> dict:
+        """Every format the registry knows, with what the UI shows of it: whether it is a hub, whether a declaration
+        exists (and its ``proto``/``scaling`` when so), the size of its field universe, and the edges leaving and
+        entering it. Formats that only appear as an end of a transform are listed too."""
+        registry = self.transform_registry
+        declared = {**{name: {} for name in registry.declared_fields}, **registry.format_specs}
+        formats: dict[str, dict] = {}
+        for name in sorted(set(registry.registry.nodes) | set(declared)):
+            spec = declared.get(name) or {}
+            formats[name] = {'hub': name in registry.hubs, 'declared': name in declared,
+                             'proto': spec.get('proto'), 'scaling': spec.get('scaling'),
+                             'universe': len(registry.field_universe(name)),
+                             'edges_out': sorted(registry.registry.successors(name)) if name in registry.registry else [],
+                             'edges_in': sorted(registry.registry.predecessors(name)) if name in registry.registry else []}
+        return formats
+
+    @RPC.export
+    def list_transforms(self) -> list[dict]:
+        """Every registered edge with its measured properties and whether it is bundled, replaces a bundled edge, or is
+        local to this deployment's configuration."""
+        bundled = {(t.get('input_format'), t.get('output_format')): t.get('pattern') for t in self._bundled['transforms']}
+        edges = []
+        for source, target, data in self.transform_registry.registry.edges(data=True):
+            pair = (source, target)
+            if pair not in bundled:
+                origin = 'local'
+            elif bundled[pair] == data.get('transform'):
+                origin = 'bundled'
+            else:
+                origin = 'replaces bundled'
+            edges.append({'input': source, 'output': target, 'origin': origin, 'retention': data.get('retention'),
+                          'lossiness_override': data.get('lossiness'), 'fields': len(data['field_map'].mappings),
+                          'unmapped_targets': len(data['field_map'].nulls)})
+        return sorted(edges, key=lambda e: (e['input'], e['output']))
+
+    @RPC.export
+    def describe_transform(self, input_format: str, output_format: str) -> dict:
+        """One edge in full: its pattern, every field mapping (target, source, fidelity, functions), the targets
+        nothing fills, the measured retention and the source universe it is measured against."""
+        data = self.transform_registry.registry.get_edge_data(input_format, output_format)
+        if data is None:
+            raise TransformNotFoundError(input_format, output_format, 'no transform is registered for the pair')
+        info = self.transform_registry.edge_info(input_format, output_format)
+        return {'input': input_format, 'output': output_format, 'pattern': data.get('transform'),
+                **info, 'mappings': _field_map_rows(data['field_map']),
+                'unmapped_targets': ['.'.join(map(str, n)) for n in data['field_map'].nulls],
+                'source_universe': sorted('.'.join(map(str, f)) for f in self.transform_registry.field_universe(input_format))}
+
+    @RPC.export
+    def edge_report(self, input_format: str, output_format: str) -> dict:
+        """What a direct transform contributes beside the alternative chains between the same formats."""
+        report = self.transform_registry.edge_report(input_format, output_format)
+        return {k: (sorted('.'.join(map(str, f)) for f in v) if isinstance(v, set) else v) for k, v in report.items()}
+
+    @RPC.export
+    def chain_report(self, input_format: str, output_format: str, fields: list | None = None) -> dict:
+        """The chain the service would pick between two formats, hop by hop: what each hop keeps and loses, and for
+        every target field of the result where it comes from, or at which hop an unfilled target is lost."""
+        registry = self.transform_registry
+        chain, retention, path = registry.lookup_scored(input_format, output_format, fields)
+        hops, carried = [], None
+        for source, target in zip(path, path[1:]):
+            step = registry.registry[source][target]['field_map']
+            universe = registry.field_universe(source)
+            before = set(carried) if carried is not None else (set(universe) or set(step.sources()))
+            kept = {f for f in before if step.fidelity_of(f) > 0}
+            lost = sorted('.'.join(map(str, f)) for f in before - kept)
+            hops.append({'input': source, 'output': target, 'in': len(before), 'kept': len(kept), 'lost': len(lost),
+                         'lost_fields': lost[:40], 'retention': registry.registry[source][target].get('retention')})
+            carried = {m.target for m in step.mappings if m.source in before or not before}
+        composed = registry._chain_map(path) if len(path) > 1 else None
+        targets = _field_map_rows(composed) if composed is not None else []
+        unmapped = []
+        if composed is not None:
+            for null in composed.nulls:
+                lost_at = next((f'{s} → {t}' for s, t in reversed(list(zip(path, path[1:])))
+                                if null in registry.registry[s][t]['field_map'].nulls), None)
+                unmapped.append({'target': '.'.join(map(str, null)), 'lost_at': lost_at})
+        return {'path': path, 'retention': retention, 'hops': hops, 'targets': targets, 'unmapped_targets': unmapped}
+
+    @RPC.export
+    def compile_pattern(self, pattern: dict | list, input_format: str | None = None) -> dict:
+        """Validate a transform pattern as the registry would compile it: ``ok`` with its field mappings and the
+        targets nothing fills, or ``ok: false`` with the error. ``input_format`` adds the fields of that universe
+        the pattern reads that the format does not have."""
+        parser = TransformParser()
+        # The parser reports an unknown function with a warning and skips it, which at runtime drops the field
+        # silently; a client validating a pattern wants that as a refusal, so the warnings are captured.
+        warnings: list[str] = []
+
+        class _Capture(logging.Handler):
+            def emit(self, record):
+                warnings.append(record.getMessage())
+        capture = _Capture(level=logging.WARNING)
+        parser_log = logging.getLogger('interoperability.transform_parser')
+        parser_log.addHandler(capture)
+        try:
+            field_map = parser.field_map(pattern)
+            parser.build_transform_from_schema(pattern)
+        except Exception as e:
+            return {'ok': False, 'error': f'{type(e).__name__}: {e}', 'warnings': warnings}
+        finally:
+            parser_log.removeHandler(capture)
+        unknown_functions = sorted({w.split('Unknown transform:')[1].strip().rstrip('.') for w in warnings if 'Unknown transform:' in w})
+        result = {'ok': not unknown_functions, 'mappings': _field_map_rows(field_map),
+                  'unmapped_targets': ['.'.join(map(str, n)) for n in field_map.nulls],
+                  'unknown_functions': unknown_functions, 'warnings': sorted(set(warnings))}
+        if unknown_functions:
+            result['error'] = f"unknown function{'s' if len(unknown_functions) > 1 else ''}: {', '.join(unknown_functions)}"
+        if input_format and self.transform_registry.field_universe(input_format):
+            universe = self.transform_registry.field_universe(input_format)
+            result['unknown_sources'] = sorted('.'.join(map(str, s)) for s in field_map.sources()
+                                               if s not in universe and not any(seg == '#' for seg in s))
+        return result
+
+    @RPC.export
+    def preview(self, input_format: str, output_format: str, message, fields: list | None = None) -> dict:
+        """Run the chain the service would pick over one message, without writing or publishing anything."""
+        chain, retention, path = self.transform_registry.lookup_scored(input_format, output_format, fields)
+        transform = TransformParser().build_transform_from_schema(chain)
+        return {'path': path, 'retention': retention, 'output': transform.execute(message)}
+
+    @RPC.export
+    def check_references(self) -> dict:
+        """Alias reference cycles and dangling aliases, as the mapping engine finds them."""
+        return self.mapping_engine.check_references()
+
+    @RPC.export
+    def discover(self, protocol: str, options: dict | None = None) -> dict:
+        """Run a discovery generator and return the entries a device needs, for a client to review and store:
+        the driver's device entry and registry rows, and the service configuration fragment (format, transforms,
+        canonical resource and aliases). Nothing is stored here. See :mod:`interoperability.discovery.service`."""
+        from .discovery.service import discover as run_discovery
+        return run_discovery(protocol, options or {}, self.transform_registry)
 
     @PubSub.subscribe('pubsub', 'mapper/update')
     def ingest_mappings(self, _, __, ___, ____, _____, message):

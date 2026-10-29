@@ -1,11 +1,12 @@
 """End-to-end telemetry: IEEE 1815.2 outstation -> DNP3 driver interface (real proxy subprocess) -> the driver's
-[values, meta] message -> interoperability service (fake_dnp3_der -> 1815.2.inputs -> 61850 -> openfmb.ess ->
-openfmb.ess.reading, protobuf) -> message bus adapter -> MQTT proxy publish.
+[values, meta] message -> Resource Bridge (its chain resolved by the interoperability service: fake_dnp3_der ->
+1815.2.inputs -> 61850 -> openfmb.ess -> openfmb.ess.reading) published on the local OpenFMB topic -> message bus
+adapter relaying it, protobuf-encoded, -> MQTT proxy publish.
 
-Everything is the shipped code except the broker and the VOLTTRON bus: the adapter's VIP subscription callback is
-invoked directly with the message the driver would publish, and the MQTT proxy's paho client is a mock whose
-publish() call is inspected. Run by test_e2e_dnp3_to_openfmb.py in its own process (gevent monkey patching first).
-Exit status is non-zero if any check fails."""
+Everything is the shipped code except the broker and the VOLTTRON bus: the bridge is handed the message the driver
+would publish, the adapter's VIP subscription callback is invoked with what the bridge published, and the MQTT
+proxy's paho client is a mock whose publish() call is inspected. Run by test_e2e_dnp3_to_openfmb.py in its own
+process (gevent monkey patching first). Exit status is non-zero if any check fails."""
 from gevent import monkey; monkey.patch_all()
 import csv, json, logging, os, socket, subprocess, sys, time
 from importlib import resources
@@ -28,6 +29,9 @@ from interoperability.codecs.openfmb import message_class
 from bus_adapter import agent as adapter_module
 from bus_adapter.agent import MessageBusAdapter
 from bus_adapter.config import MessageBusAdapterConfig
+from interoperability import openfmb_bus
+from resource_bridge import agent as bridge_module
+from resource_bridge.agent import ResourceBridgeAgent
 from protocol_proxy.ipc import SocketParams
 from protocol_proxy.manager.gevent import GeventProtocolProxyManager
 from protocol_proxy.protocol.mqtt import mqtt_proxy as mqtt_module
@@ -102,13 +106,35 @@ try:
           and len(resolved.get('transform', [])) == 4 and resolved.get('parameters') == alias['resource']['parameters']
           and resolved.get('codec') == {'encoding': 'protobuf', 'proto': 'essmodule.ESSReadingProfile'}, str({k: resolved.get(k) for k in ('target_format', 'encoding', 'codec')}))
 
-    # ---- 4. The message bus adapter, configured to serve the OpenFMB topic, subscribes and relays ------------------------
+    # ---- 4. The Resource Bridge translates the device publication onto the OpenFMB topic of the local bus ------------
+    bus_published = []
+    with mock.patch.object(bridge_module.Agent, '__init__', return_value=None):
+        bridge_agent = ResourceBridgeAgent.__new__(ResourceBridgeAgent); bridge_agent.vip = mock.MagicMock(); bridge_agent.core = mock.MagicMock()
+        bridge_agent.core.connected = False; bridge_agent.core.identity = 'platform.resource_bridge'
+        bridge_agent.core.spawn.side_effect = lambda fn, *args: fn(*args)
+        ResourceBridgeAgent.__init__(bridge_agent, config_path=None)
+    def service_rpc(peer, method, *args, **kwargs):
+        reply = mock.MagicMock(); reply.get.return_value = getattr(service, method)(*args, **kwargs); return reply
+    bridge_agent.vip.rpc.call.side_effect = service_rpc
+    bridge_agent.vip.pubsub.publish.side_effect = lambda peer, topic, headers=None, message=None, **kw: bus_published.append((topic, headers or {}, message))
+    device_resource = next(m for m in case['mappings'] if m['resource']['data_format'] == 'fake_dnp3_der')
+    bridge_agent.configure_main(None, 'NEW', {'bridges': [{'name': 'dnp3_to_openfmb', 'source': {'uai': device_resource['uai']},
+                                                           'target': {'uai': alias['uai'], 'bus': True}}]})
+    bridge = bridge_agent.bridges['dnp3_to_openfmb']
+    local_topic = openfmb_bus.topic_of(tuple(alias['uai']))
+    check('4. bridge listens on the device publication topic', bridge.source.topics[0] == f'{DEVICE_TOPIC}/all', str(bridge.source.topics))
+    bridge_agent.relay(bridge, bridge.source.topics[0], driver_message)
+    bus_message = next(((h, m) for t, h, m in bus_published if t == local_topic), None)
+    check('4. bridge published the ESSReadingProfile on the local OpenFMB topic', bus_message is not None, local_topic)
+    report = next((m for t, h, m in bus_published if t == 'resource_bridge/dnp3_to_openfmb'), {})
+    check('4. bridge report names the path', bool(report.get('path')), str(report.get('path')))
+
+    # ---- 4b. The message bus adapter, serving the OpenFMB topic to the remote, relays what the bridge published -------
     with mock.patch.object(adapter_module.Agent, '__init__', return_value=None):
         adapter = MessageBusAdapter.__new__(MessageBusAdapter); adapter.vip = mock.MagicMock(); adapter.core = mock.MagicMock()
+        adapter.core.identity = 'platform.bus_adapter'
         MessageBusAdapter.__init__(adapter)
-    def rpc_call(peer, method, uai):
-        reply = mock.MagicMock(); reply.get.return_value = service.resolve(tuple(uai)); return reply
-    adapter.vip.rpc.call.side_effect = rpc_call
+    adapter.vip.rpc.call.side_effect = service_rpc
     adapter.config = MessageBusAdapterConfig(bus_type='mqtt', adapters=[{'name': 'site_broker', 'host': 'broker', 'local_subscriptions': [remote_topic]}])
     manager = mock.MagicMock(spec=GeventProtocolProxyManager); manager.send.return_value = True
     manager.proxy_class = mock.MagicMock(topic_delimiter=mock.Mock(return_value='/'))
@@ -117,10 +143,10 @@ try:
     with mock.patch.object(adapter, '_get_peer', return_value=peer):
         adapter._start_remote(('mqtt', 'site_broker'))
     subscription = adapter.vip.pubsub.subscribe.call_args.kwargs
-    check('4. adapter subscribed to the device publication topic', subscription.get('prefix') == f'{DEVICE_TOPIC}/all', str(subscription.get('prefix')))
-    subscription['callback']('pubsub', 'platform.driver', 'bus', f'{DEVICE_TOPIC}/all', {}, driver_message)
+    check('4b. adapter subscribed to the local OpenFMB topic (relay only)', subscription.get('prefix') == local_topic, str(subscription.get('prefix')))
+    subscription['callback']('pubsub', 'platform.resource_bridge', 'bus', local_topic, bus_message[0], bus_message[1])
     envelope = json.loads(manager.send.call_args.kwargs['message'].payload)
-    check('4. PUBLISH_REMOTE carries hex protobuf to the OpenFMB topic', envelope.get('topic') == remote_topic and envelope.get('encoding') == 'hex', str({k: envelope.get(k) for k in ('topic', 'encoding')}))
+    check('4b. PUBLISH_REMOTE carries hex protobuf to the OpenFMB topic', envelope.get('topic') == remote_topic and envelope.get('encoding') == 'hex', str({k: envelope.get(k) for k in ('topic', 'encoding')}))
 
     # ---- 5. The MQTT proxy publishes the raw bytes; they decode as an ESSReadingProfile ------------------------------
     manager_id, manager_token = uuid4(), uuid4()

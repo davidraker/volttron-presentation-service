@@ -11,8 +11,8 @@ config store (``configs.py``). Around it, nothing of ours:
 * mosquitto as the OpenFMB broker and a paho/protobuf participant (``external/openfmb_party.py``).
 
 Every path is stimulated at one external party and observed at another; the platform is a black box. The OpenFMB paths
-run through the Message Bus Adapter in ``translate`` mode (``--openfmb rpc``, inbound commands through the Device
-Adapter's write RPC) or in ``relay`` mode with the Resource Bridge's bus ends (``--openfmb bus``).
+run through the Message Bus Adapter (OpenFMB on the VOLTTRON bus) and the Resource Bridge's bus ends (``--openfmb bus``,
+the only mode since translate mode was removed on 2026-10-29).
 
     python tests/e2e_platform/run.py --openfmb bus [--work DIR] [--keep] [--only telemetry:SunSpec>DNP3,...]
 
@@ -631,7 +631,7 @@ class Matrix:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('--openfmb', choices=('rpc', 'bus'), default='bus')
+    parser.add_argument('--openfmb', choices=('bus',), default='bus', help='OpenFMB on the VOLTTRON bus (the only mode; translate mode was removed 2026-10-29)')
     parser.add_argument('--rtc', action='store_true', help='also install the real-time control agent and run its eight paths')
     parser.add_argument('--work', default=os.environ.get('E2E_PLATFORM_WORK', '/tmp/e2e-platform'))
     parser.add_argument('--keep', action='store_true', help='leave the platform and the containers running afterwards')

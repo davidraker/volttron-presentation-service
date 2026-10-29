@@ -28,10 +28,10 @@ server's control, the published protobuf decodes. Who does the transforming and 
 * ``E2E_WRITER=resource_bridge``: a ResourceBridgeAgent (VOLTTRON stubbed; its RPCs reach the in-process service and the
   interfaces) is configured with one bridge per device-to-device path and the source's publication is delivered to it.
 * ``E2E_OPENFMB=harness`` (default): the OpenFMB paths use the harness's own chain execution and the MQTT proxy's codec.
-  ``rpc``: a MessageBusAdapter in ``translate`` mode carries them, writing inbound controls through the Device
-  Adapter's ``write`` RPC. ``bus``: OpenFMB on the VOLTTRON bus: the bus adapter in ``relay`` mode re-serialises, the
-  Resource Bridge's bus-end bridges translate. Both imply ``E2E_WRITER=resource_bridge``. The agents share an in-process
-  pubsub (``LocalBus``) standing in for VOLTTRON's.
+  ``bus``: OpenFMB on the VOLTTRON bus: a MessageBusAdapter re-serialises between the broker and the local bus and
+  the Resource Bridge's bus-end bridges translate; implies ``E2E_WRITER=resource_bridge``. The agents share an
+  in-process pubsub (``LocalBus``) standing in for VOLTTRON's. (The former ``rpc`` mode, the bus adapter translating
+  and writing devices itself, went with translate mode on 2026-10-29.)
 
 Exit status is non-zero if any path fails. Run by test_e2e_matrix.py; ``E2E_LOG`` names the log file.
 Arguments: [work dir] [paths], paths as ``telemetry:SunSpec>DNP3,control:OpenFMB>2030.5`` to run a subset."""
@@ -78,9 +78,9 @@ SUNSPEC_CASE = TESTS / 'integration' / 'fake_sunspec' / 'transform_scaling'
 DNP3_CASE = TESTS / 'integration' / 'fake_dnp3' / 'transform_scaling'
 WORK = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(tempfile.mkdtemp(prefix='e2e-matrix-'))
 ONLY = set(sys.argv[2].split(',')) if len(sys.argv) > 2 else None
-OPENFMB_MODE = os.environ.get('E2E_OPENFMB', 'harness')                    # harness | rpc | bus
+OPENFMB_MODE = os.environ.get('E2E_OPENFMB', 'harness')                    # harness | bus
 WRITER = 'resource_bridge' if OPENFMB_MODE != 'harness' else os.environ.get('E2E_WRITER', 'direct')
-assert OPENFMB_MODE in ('harness', 'rpc', 'bus'), OPENFMB_MODE
+assert OPENFMB_MODE in ('harness', 'bus'), OPENFMB_MODE
 RTC_ENABLED = os.environ.get('E2E_RTC') == '1'          # fifth party: the real-time control agent (MESA modes in the CtrlEvalEngine)
 assert not RTC_ENABLED or OPENFMB_MODE == 'bus', 'E2E_RTC=1 needs E2E_OPENFMB=bus (Resource Bridge bus ends carry the hub format)'
 
@@ -606,7 +606,7 @@ class RtcParty:
 class BusAdapterHarness:
     """A MessageBusAdapter, VOLTTRON stubbed: its pubsub is the LocalBus, its RPCs reach the service and the Device
     Adapter, and its (mock) proxy manager hands PUBLISH_REMOTE envelopes to the MQTT proxy so the broker sees them."""
-    def __init__(self, mode, service, writer, openfmb, bus):
+    def __init__(self, service, writer, openfmb, bus):
         from bus_adapter import agent as bus_module
         from bus_adapter.agent import MessageBusAdapter
         from bus_adapter.config import MessageBusAdapterConfig
@@ -617,7 +617,7 @@ class BusAdapterHarness:
             self.agent.core.connected = False
             self.agent.core.identity = 'platform.bus_adapter'
             MessageBusAdapter.__init__(self.agent)
-        self.agent.config = MessageBusAdapterConfig(bus_type='mqtt', mode=mode, adapters=[{'name': 'site', 'host': 'broker'}])
+        self.agent.config = MessageBusAdapterConfig(bus_type='mqtt', adapters=[{'name': 'site', 'host': 'broker'}])
         self.agent.vip.pubsub.subscribe.side_effect = bus.subscribe
         self.agent.vip.pubsub.publish.side_effect = bus.publish
 
@@ -694,7 +694,7 @@ def main():
         parties['2030.5'] = setup_sep2(sep2_rows)
         writer = AdapterWriter(service, parties, bus) if WRITER == 'resource_bridge' else DirectWriter(service, parties, bus)
         if OPENFMB_MODE != 'harness':
-            bus_adapter = BusAdapterHarness('relay' if OPENFMB_MODE == 'bus' else 'translate', service, writer, openfmb, bus)
+            bus_adapter = BusAdapterHarness(service, writer, openfmb, bus)
         print(f'parties up in {time.time() - t0:.1f}s: modbus {len(parties["SunSpec"].client.point_map)} points, '
               f'dnp3 {len(parties["DNP3"].client.point_map)}, 2030.5 {len(parties["2030.5"].client.point_map)}; '
               f'writer: {writer.name}; openfmb: {OPENFMB_MODE}', flush=True)
@@ -820,7 +820,7 @@ def main():
                 bus.publish('pubsub', topic=f'{device_topic(src, role)}/{suffix}', headers={}, message=[message, {}])
                 got = openfmb.broker_got(alias_topic, proto)
                 via = [m for t, h, m in bus.published[before_reports:] if t == f'resource_bridge/{bridge_name(kind, src, "OpenFMB")}']
-                path = via[-1]['path'] if via else ['(bus adapter translate)']
+                path = via[-1]['path'] if via else ['(no bridge report)']
                 how = f'{OPENFMB_MODE}: broker got {"a" if got is not None else "no"} {proto} on {alias_topic}'
             if kind == 'telemetry':
                 ok, why = compare(reading_view(got or {}, family), {'W': W, 'Hz': HZ})
