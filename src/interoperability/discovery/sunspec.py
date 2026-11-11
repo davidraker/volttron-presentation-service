@@ -28,11 +28,9 @@ from typing import Any
 from .device_formats import SCALING_MODES, device_format_declaration, resource_mappings, sunspec_device_transforms
 
 #: SunSpec models whose points are nameplate data, read once at setup and never polled: the common block (1:
-#: manufacturer, model, serial, version). Model 701 is the AC measurement block (W, Hz, voltages) and is telemetry;
-#: model 702 (DER capacity, the ratings) stays polled because a rating carried to another protocol (a 2030.5
-#: DERCapability) travels with the device's publications, and a device publishing ``/multi`` only sends what it
-#: polled.
-NAMEPLATE_MODELS = frozenset({1})
+#: manufacturer, model, serial, version) and DER capacity (702: the ratings). Model 701 is the AC measurement block
+#: (W, Hz, voltages) and is telemetry. Like the scale factors, poll-once points publish on ``/multi`` when read.
+NAMEPLATE_MODELS = frozenset({1, 702})
 
 # SunSpec point type -> data type name of the modbus platform driver interface (pymodbus names).
 REGISTER_TYPES = {
