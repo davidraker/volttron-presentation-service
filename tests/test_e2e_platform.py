@@ -26,7 +26,7 @@ for image in ('sep2server:e2e', 'inverterclient:e2e', 'eclipse-mosquitto:2', 'ie
 RUN = Path(__file__).with_name('e2e_platform') / 'run.py'
 
 
-@pytest.mark.parametrize('openfmb_mode, rtc, expected', [('bus', False, 24), ('rpc', False, 24), ('bus', True, 32)])
+@pytest.mark.parametrize('openfmb_mode, rtc, expected', [('bus', False, 24), ('bus', True, 32)])    # the harness is relay-only: OpenFMB rides the bus adapter
 def test_real_platform_matrix(tmp_path, openfmb_mode, rtc, expected):
     if rtc:
         pytest.importorskip('rt_control')
