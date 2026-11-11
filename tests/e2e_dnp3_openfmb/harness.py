@@ -25,11 +25,11 @@ from volttron.driver.interfaces.dnp3.dnp3 import Dnp3
 from volttron.driver.interfaces.dnp3.config import Dnp3PointConfig
 
 import interoperability.agent as service_module
-from interoperability.codecs.openfmb import message_class
+from icm.resources.codecs.openfmb import message_class
 from bus_adapter import agent as adapter_module
 from bus_adapter.agent import MessageBusAdapter
 from bus_adapter.config import MessageBusAdapterConfig
-from interoperability import openfmb_bus
+from icm.resources.openfmb import bus as openfmb_bus
 from resource_bridge import agent as bridge_module
 from resource_bridge.agent import ResourceBridgeAgent
 from protocol_proxy.ipc import SocketParams

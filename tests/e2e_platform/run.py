@@ -44,8 +44,8 @@ import dnp3_tool                                                                
 import sep2                                                                        # noqa: E402
 from openfmb_party import OpenFmbParty                                             # noqa: E402
 from sunspec_device import ModbusMaster, SunSpecDevice                             # noqa: E402
-from interoperability.openfmb_bus import topic_of                                  # noqa: E402
-from interoperability.codecs.openfmb import decode as decode_profile                # noqa: E402
+from icm.resources.openfmb.bus import topic_of                                  # noqa: E402
+from icm.resources.codecs.openfmb import decode as decode_profile                # noqa: E402
 
 PROTOCOLS = ('SunSpec', 'DNP3', '2030.5', 'OpenFMB')
 W, HZ = 4321, 60

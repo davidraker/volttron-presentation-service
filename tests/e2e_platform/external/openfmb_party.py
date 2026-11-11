@@ -6,7 +6,7 @@ import time
 
 import paho.mqtt.client as mqtt
 
-from interoperability.codecs.openfmb import decode, encode
+from icm.resources.codecs.openfmb import decode, encode
 
 
 class OpenFmbParty:

@@ -27,6 +27,13 @@ from typing import Any
 
 from .device_formats import SCALING_MODES, device_format_declaration, resource_mappings, sunspec_device_transforms
 
+#: SunSpec models whose points are nameplate data, read once at setup and never polled: the common block (1:
+#: manufacturer, model, serial, version). Model 701 is the AC measurement block (W, Hz, voltages) and is telemetry;
+#: model 702 (DER capacity, the ratings) stays polled because a rating carried to another protocol (a 2030.5
+#: DERCapability) travels with the device's publications, and a device publishing ``/multi`` only sends what it
+#: polled.
+NAMEPLATE_MODELS = frozenset({1})
+
 # SunSpec point type -> data type name of the modbus platform driver interface (pymodbus names).
 REGISTER_TYPES = {
     'int16': 'INT16', 'uint16': 'UINT16', 'count': 'UINT16', 'enum16': 'UINT16', 'bitfield16': 'UINT16',
@@ -180,7 +187,7 @@ def modbus_registry_rows(device: DiscoveredDevice, scaling: str) -> list[dict]:
         if scaling == 'driver' and p.scale_factor is not None and not p.is_scale_factor:
             transform = f'scale({10.0 ** p.scale_factor!r})' if isinstance(p.scale_factor, int) else f'scale_reg_pow_10({p.scale_factor})'
         # Scale factors and the nameplate models (1 common, 701 identification) are read once at setup; the rest is polled.
-        data_source = 'poll_once' if p.is_scale_factor or p.model_id in (1, 701) else 'short_poll'
+        data_source = 'poll_once' if p.is_scale_factor or p.model_id in NAMEPLATE_MODELS else 'short_poll'
         rows.append({'volttron_point_name': p.name, 'address': p.address, 'data_type': data_type, 'table': 'holding',
                      'writable': 'TRUE' if p.writable else 'FALSE', 'data_source': data_source, 'units': p.units,
                      'transform': transform, 'register_name': p.name, 'default_value': '' if p.value is None else p.value,

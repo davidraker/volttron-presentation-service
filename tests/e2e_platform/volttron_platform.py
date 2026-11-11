@@ -37,10 +37,17 @@ RTC_AGENT = (_checkout('DER_CONTROL_MODULES', 'rtc_agent'), 'der.rtc', 'rtc')   
 
 
 def poetry_project() -> str:
-    """platform_cli's pyproject for this environment without the packages poetry cannot lock together."""
+    """platform_cli's pyproject for this environment without the packages poetry cannot lock together, and with each
+    distribution once: a checkout's ``src/*.egg-info`` beside an editable install shows up as a second copy."""
     text = _original_project()
-    lines = [line for line in text.splitlines()
-             if not any(line.startswith(f'"{name}"') for name in EXCLUDED)]
+    lines, seen = [], set()
+    for line in text.splitlines():
+        key = line.split(' = ', 1)[0] if line.startswith('"') else None
+        if key and (key.strip('"') in EXCLUDED or key in seen):
+            continue
+        if key:
+            seen.add(key)
+        lines.append(line)
     return '\n'.join(lines) + '\n'
 
 

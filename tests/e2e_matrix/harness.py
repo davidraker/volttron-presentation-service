@@ -63,11 +63,11 @@ from protocol_proxy.protocol.mqtt import mqtt_proxy as mqtt_module
 from protocol_proxy.protocol.mqtt.mqtt_proxy import MQTTProxy
 
 import interoperability.agent as service_module
-from interoperability import openfmb_bus
-from interoperability.codecs.openfmb import decode, encode
+from icm.resources.openfmb import bus as openfmb_bus
+from icm.resources.codecs.openfmb import decode, encode
 from interoperability.discovery import ieee2030_5 as mirror_gen
 from interoperability.discovery.device_formats import dnp3_device_transforms, dnp3_scaling, resource_mappings
-from interoperability.transform_parser import TransformParser
+from icm.transforms.parser import TransformParser
 
 sys.path.insert(0, str(Path(os.environ.get('IEEE2030_5_DRIVER_REPO', Path(sep2_package.__file__).resolve().parents[5])) / 'tests' / 'e2e_loopback'))
 from certs import generate_certs                                                      # noqa: E402

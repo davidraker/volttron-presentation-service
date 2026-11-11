@@ -5,7 +5,7 @@ from treelib import Tree, Node
 from treelib.exceptions import DuplicatedNodeIdError
 from typing import cast
 
-from .resource import AliasedResource, CanonicalResource, Resource
+from icm.resources.resource import AliasedResource, CanonicalResource, Resource
 
 _log = logging.getLogger(__name__)
 

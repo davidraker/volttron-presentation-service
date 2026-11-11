@@ -12,12 +12,12 @@ from pathlib import Path
 import pytest
 
 from case_helpers import fake_driver_all_message
-from interoperability.transform_parser import TransformParser
+from icm.transforms.parser import TransformParser
 from interoperability.transform_registry import TransformRegistry
 
 pytest.importorskip('google.protobuf')
 from google.protobuf.descriptor import FieldDescriptor as FD  # noqa: E402
-from interoperability.codecs import openfmb as codec  # noqa: E402
+from icm.resources.codecs import openfmb as codec  # noqa: E402
 
 CASES = Path(__file__).parent / 'integration'
 NUMERIC = {FD.TYPE_DOUBLE, FD.TYPE_FLOAT, FD.TYPE_INT32, FD.TYPE_INT64, FD.TYPE_UINT32, FD.TYPE_UINT64, FD.TYPE_SINT32,

@@ -2,6 +2,49 @@
 requires = ["poetry-core>=2.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[project]
+name = "interoperability-service"
+version = "0.2"
+description = "The interoperability service: resources, formats and the transforms between them, with discovery."
+authors = [{name = "David Raker", email = "david.raker@pnnl.gov"}]
+license = "Apache-2.0"
+readme = "README.md"
+requires-python = ">=3.10,<4.0"
+classifiers = [
+    "Programming Language :: Python :: 3 :: Only",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Developers",
+]
+dependencies = [
+    "volttron-core>=2.0.0rc30",
+    "networkx>=3.0",   # TODO: Up this to >=3.6 once VOLTTRON does not need to support python 3.10 anymore.
+    "pydantic>=2.11",
+    "icm-lib-transforms>=0.1.0",
+    "icm-lib-resources>=0.1.0",
+    "icm-lib-models-sunspec>=0.1.0",
+    "icm-lib-models-ieee1815-2>=0.1.0",
+    "icm-lib-models-ieee2030-5>=0.1.0",
+    "icm-lib-models-openfmb>=0.1.0",
+    "treelib>=1.8",
+]
+
+[project.optional-dependencies]
+# discovery: the SunSpec discovery tooling (interoperability.discovery.sunspec) needs pysunspec2.
+# openfmb: protobuf encoding of OpenFMB profiles (icm.resources.codecs, through icm-lib-resources) needs the protobuf runtime.
+discovery = ["pysunspec2>=1.3"]
+openfmb = ["protobuf>=6.31.1"]
+
+[project.scripts]
+interoperability-service = "interoperability.agent:main"
+
+[project.urls]
+Repository = "https://github.com/interoperability-control-modules/interoperability-service"
+Homepage = "https://github.com/interoperability-control-modules/interoperability-service"
+
+[tool.poetry]
+packages = [{ include = "interoperability", from = "src" }]
+
 [tool.isort]
 profile = "black"
 ignore_whitespace = true
@@ -15,63 +58,6 @@ warn_return_any = true
 warn_unused_configs = true
 show_error_codes = true
 exclude = ['docs/']
-
-[tool.poetry]
-name = "interoperability-service"
-version = "0.2"
-description = ""
-authors = ["David Raker <david.raker@pnnl.gov>"]
-license = "Apache License 2.0"
-readme = "README.md"
-#repository = "https://github.com/eclipse-volttron"
-#homepage = "https://github.com/eclipse-volttron/volttron-interoperability"
-keywords = []
-packages = [{ include = "interoperability", from = "src" }]
-classifiers = [
-    "Programming Language :: Python :: 3 :: Only",
-    "Intended Audience :: Science/Research",
-    "Intended Audience :: Information Technology",
-    "Intended Audience :: Developers",
-    "Intended Audience :: Other Audience",
-    "License :: OSI Approved :: Apache Software License"
-]
-
-[tool.poetry.dependencies]
-python = ">=3.10,<4.0"
-volttron-core = ">=2.0.0rc30"
-convtools = ">=1.14.7"
-networkx = ">=3.0" # TODO: Up this to >=3.6 once VOLTTRON does not need to support python 3.10 anymore.
-pydantic = ">=2.11"
-pyparsing = ">=3.2.5"
-treelib = ">=1.8"
-# Only the SunSpec discovery tooling (interoperability.discovery.sunspec) needs pysunspec2.
-pysunspec2 = { version = ">=1.3", optional = true }
-# Only protobuf encoding of OpenFMB profiles (interoperability.codecs) needs the protobuf runtime.
-protobuf = { version = ">=6.31.1", optional = true }
-
-[tool.poetry.extras]
-discovery = ["pysunspec2"]
-openfmb = ["protobuf"]
-
-
-#[tool.poetry.group.dev.dependencies]
-#volttron-testing = "^0.4.0rc0"
-#pytest = "^6.2.5"
-#pytest-cov = "^3.0.0"
-#mock = "^4.0.3"
-#pre-commit = "^2.17.0"
-#yapf = "^0.32.0"
-#toml = "^0.10.2"
-#mypy = "^0.942"
-#coverage = "^6.3.2"
-#isort = "^5.10.1"
-
-#[tool.poetry.group.docs.dependencies]
-#Sphinx = "^4.5.0"
-#sphinx-rtd-theme = "^1.0.0"
-
-[tool.poetry.scripts]
-interoperability-service = "interoperability.agent:main"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

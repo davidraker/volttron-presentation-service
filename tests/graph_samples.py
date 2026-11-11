@@ -12,10 +12,10 @@ import enum
 import typing
 
 from interoperability.field_universe import _group_type
-from interoperability.models.ieee2030_5 import sep
-from interoperability.models.openfmb import PROFILES, OpenFMBMessage
-from interoperability.models.sunspec import MODEL_REGISTRY, SunSpecGroup
-from interoperability.transform_parser import WILDCARD
+from icm.models.ieee2030_5 import sep
+from icm.models.openfmb import PROFILES, OpenFMBMessage
+from icm.models.sunspec import MODEL_REGISTRY, SunSpecGroup
+from icm.transforms.parser import WILDCARD
 
 MODEL_TYPED = ('sunspec', '2030.5', '1815.2.inputs', '1815.2.outputs',
                'openfmb.ess', 'openfmb.solar', 'openfmb.ess.reading', 'openfmb.ess.status', 'openfmb.ess.capability',

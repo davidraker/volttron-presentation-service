@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from interoperability.discovery import ieee2030_5
-from interoperability.transform_parser import TransformParser
+from icm.transforms.parser import TransformParser
 
 CASE = Path(__file__).parent / 'integration' / 'fake_sunspec'
 MODE_DIR = CASE / 'transform_scaling'

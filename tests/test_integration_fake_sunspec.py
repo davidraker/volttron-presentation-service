@@ -19,7 +19,7 @@ import pytest
 from interoperability.discovery.device_formats import (infer_scaling, is_scale_factor_point, sunspec_device_transforms,
                                              sunspec_point_path, sunspec_scale_factor)
 from interoperability.mapping_engine import UAITree
-from interoperability.transform_parser import TransformParser
+from icm.transforms.parser import TransformParser
 from interoperability.transform_registry import TransformNotFoundError, TransformRegistry
 
 pytest.importorskip('sunspec2')
@@ -219,7 +219,7 @@ def test_driver_payload_shapes_yield_the_same_sunspec_message(service, mode):
 def test_device_used_as_openfmb_solar_reading_profile(service, mode, config):
     """The OpenFMB alias: one profile with a fresh header, the device identity from the alias parameters, and
     protobuf on the wire as the alias declares."""
-    from interoperability.models.openfmb import PROFILES
+    from icm.models.openfmb import PROFILES
     alias = next(m for m in config['mappings'] if m['resource']['data_format'] == 'openfmb.solar.reading')
     assert alias['uai'][:3] == ['openfmb', 'solarmodule', 'SolarReadingProfile'] and alias['resource']['encoding'] == 'protobuf'
     resource, fmt, path, retention, pipeline = resolve(service, alias['uai'])
@@ -236,7 +236,7 @@ def test_device_used_as_openfmb_solar_reading_profile(service, mode, config):
     assert mmxu['Hz']['mag'] == 60.01 and mmxu['W']['net']['cVal']['mag'] == pipeline.execute(values)['solarReading']['readingMMXU']['W']['net']['cVal']['mag']
     PROFILES['SolarReadingProfile'].model_validate(result)
     pytest.importorskip('google.protobuf')
-    from interoperability.codecs import openfmb as codec
+    from icm.resources.codecs import openfmb as codec
     data = codec.encode('solarmodule.SolarReadingProfile', result)
     decoded = codec.decode('solarmodule.SolarReadingProfile', data)
     assert decoded['solarReading']['readingMMXU']['Hz']['mag'] == 60.01
@@ -259,7 +259,7 @@ def test_device_control_state_encodes_as_openfmb_solar_control_profile(service, 
     assert point['voltVarOperation']['vVarParameter']['modEna'] is True
     assert point['voltWOperation']['voltWParameter']['modEna'] is False
     pytest.importorskip('google.protobuf')
-    from interoperability.codecs import openfmb as codec
+    from icm.resources.codecs import openfmb as codec
     decoded = codec.decode('solarmodule.SolarControlProfile', codec.encode('solarmodule.SolarControlProfile', result))
     control = decoded['solarControl']['solarControlFSCC']['SolarControlScheduleFSCH']['ValDCSG']['crvPts'][0]['control']
     assert control['voltVarOperation']['vVarParameter']['modEna'] is True

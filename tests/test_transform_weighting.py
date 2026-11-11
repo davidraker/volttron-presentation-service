@@ -7,7 +7,7 @@ from importlib import resources
 import pytest
 
 from interoperability import field_universe
-from interoperability.transform_parser import FieldMap, TransformParser, path_matches
+from icm.transforms.parser import FieldMap, TransformParser, path_matches
 from interoperability.transform_registry import DEFAULT_HUBS, TransformNotFoundError, TransformRegistry
 
 
@@ -197,7 +197,7 @@ def test_update_registry_reads_lossiness_override(caplog):
 def test_group_copy_before_deep_mappings_keeps_the_fields():
     """A profile wrapper copies a whole group; the next stage reads beneath it. The composed map must still
     know the leaf fields, or every chain that starts at a wrapper scores zero retention."""
-    from interoperability.transform_parser import TransformParser
+    from icm.transforms.parser import TransformParser
     parser = TransformParser()
     wrapper = parser.field_map([{'essControl': 'transform[essControl]()'}])
     deep = parser.field_map([{'DWMX': {'LimW': 'transform[essControl, limitW, wMaxSptVal]()'}}])
@@ -209,7 +209,7 @@ def test_group_copy_before_deep_mappings_keeps_the_fields():
 def test_edge_retention_credits_the_fields_beneath_a_group_copy():
     """A profile wrapper's single whole-group copy carries every field beneath the group, so measured against a
     leaf-level universe the edge retains those fields rather than scoring zero."""
-    from interoperability.transform_parser import TransformParser
+    from icm.transforms.parser import TransformParser
     fm = TransformParser().field_map([{'essReading': 'transform[essReading]()'}])
     universe = {('essReading', 'readingMMXU', 'W', 'mag'), ('essReading', 'readingMMXU', 'A', 'mag'),
                 ('readingMessageInfo', 'messageInfo', 'mRID'), ('essStatus', 'state')}
@@ -219,7 +219,7 @@ def test_edge_retention_credits_the_fields_beneath_a_group_copy():
     # A group path in the universe is still not a field a copy beneath it would carry.
     deep = TransformParser().field_map([{'W': 'transform[essReading, readingMMXU, W, mag]()'}])
     assert deep.retention({('essReading',)}) == 0.0
-    from interoperability.transform_parser import expand_groups
+    from icm.transforms.parser import expand_groups
     assert expand_groups(fm.sources(), universe) == {('essReading', 'readingMMXU', 'W', 'mag'),
                                                      ('essReading', 'readingMMXU', 'A', 'mag')}
     assert expand_groups(fm.sources(), {('other',)}) == {('essReading',)}

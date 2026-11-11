@@ -16,7 +16,7 @@ except PackageNotFoundError:
     # noinspection PyUnresolvedReferences
     from volttron.platform.vip.agent import Agent, PubSub, RPC
 
-from .transform_parser import TransformParser
+from icm.transforms.parser import TransformParser, UnknownFunction
 from .transform_registry import TransformNotFoundError, TransformRegistry
 from .mapping_engine import  ResourceNode, UAITree
 
@@ -219,29 +219,27 @@ class PresentationService(Agent):
         targets nothing fills, or ``ok: false`` with the error. ``input_format`` adds the fields of that universe
         the pattern reads that the format does not have."""
         parser = TransformParser()
-        # The parser reports an unknown function with a warning and skips it, which at runtime drops the field
-        # silently; a client validating a pattern wants that as a refusal, so the warnings are captured.
+        # An unknown function is a refusal with the name; other parser warnings are captured and returned as well.
         warnings: list[str] = []
 
         class _Capture(logging.Handler):
             def emit(self, record):
                 warnings.append(record.getMessage())
         capture = _Capture(level=logging.WARNING)
-        parser_log = logging.getLogger('interoperability.transform_parser')
+        parser_log = logging.getLogger('icm.transforms.parser')
         parser_log.addHandler(capture)
         try:
             field_map = parser.field_map(pattern)
             parser.build_transform_from_schema(pattern)
+        except UnknownFunction as e:
+            return {'ok': False, 'error': f'unknown function: {e.name}', 'unknown_functions': [e.name], 'warnings': warnings}
         except Exception as e:
             return {'ok': False, 'error': f'{type(e).__name__}: {e}', 'warnings': warnings}
         finally:
             parser_log.removeHandler(capture)
-        unknown_functions = sorted({w.split('Unknown transform:')[1].strip().rstrip('.') for w in warnings if 'Unknown transform:' in w})
-        result = {'ok': not unknown_functions, 'mappings': _field_map_rows(field_map),
+        result = {'ok': True, 'mappings': _field_map_rows(field_map),
                   'unmapped_targets': ['.'.join(map(str, n)) for n in field_map.nulls],
-                  'unknown_functions': unknown_functions, 'warnings': sorted(set(warnings))}
-        if unknown_functions:
-            result['error'] = f"unknown function{'s' if len(unknown_functions) > 1 else ''}: {', '.join(unknown_functions)}"
+                  'unknown_functions': [], 'warnings': sorted(set(warnings))}
         if input_format and self.transform_registry.field_universe(input_format):
             universe = self.transform_registry.field_universe(input_format)
             result['unknown_sources'] = sorted('.'.join(map(str, s)) for s in field_map.sources()

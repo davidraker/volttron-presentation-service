@@ -8,7 +8,7 @@ formats they do not know; the registry consults them in order.
 """
 import typing
 
-from .transform_parser import WILDCARD
+from icm.transforms.parser import WILDCARD
 
 
 def _group_type(annotation, base):
@@ -47,7 +47,7 @@ def _group_fields(cls, prefix: tuple, base=None, seen: frozenset = frozenset()):
 
 def sunspec_fields() -> set[tuple]:
     """Every point of every generated SunSpec model, keyed by model number; repeating groups as wildcards."""
-    from .models.sunspec import MODEL_REGISTRY, SunSpecGroup
+    from icm.models.sunspec import MODEL_REGISTRY, SunSpecGroup
     return {(str(model_id),) + field for model_id, cls in MODEL_REGISTRY.items() for field in _group_fields(cls, (), SunSpecGroup)}
 
 
@@ -59,9 +59,9 @@ def openfmb_fields(prefix: str = '', suffix: str = 'Profile', edition: str | Non
     with one (``'2.1'``) it comes from that edition's protobuf descriptors, so an alias on an older release is scored
     and validated against what that release defines."""
     if edition is not None:
-        from .models.openfmb import descriptors
+        from icm.resources.openfmb import descriptors
         return descriptors.profile_fields(edition, prefix, suffix)
-    from .models.openfmb import PROFILES, OpenFMBMessage
+    from icm.models.openfmb import PROFILES, OpenFMBMessage
     universe = set()
     for name, cls in PROFILES.items():
         if name.startswith(prefix) and name.endswith(suffix):
@@ -71,7 +71,7 @@ def openfmb_fields(prefix: str = '', suffix: str = 'Profile', edition: str | Non
 
 def ieee1815_2_fields(tables: tuple[str, ...]) -> set[tuple]:
     """Every defined point index of the given IEEE 1815.2 tables (``AI``, ``AO``, ``BI``, ``BO``, ``CTR``)."""
-    from .models.ieee1815_2 import POINTS, PointType
+    from icm.models.ieee1815_2 import POINTS, PointType
     return {(table, str(index)) for table in tables for index in POINTS[PointType(table)]}
 
 
@@ -89,7 +89,7 @@ def ieee2030_5_fields(edition: str | None = None) -> set[tuple]:
     ``edition`` (``'2013'``, ``'2018'``, ``'2023'``) only the attributes that edition defines, so a remote speaking
     an older edition is a profile of the same models. Revision markers (``*_r2_3``) and ``xs:any`` extension
     points are not fields of the convention."""
-    from .models.ieee2030_5 import EDITIONS, LATEST_EDITION, sep
+    from icm.models.ieee2030_5 import EDITIONS, LATEST_EDITION, sep
     skip = {'href', 'mRID', 'description', 'version', 'creationTime', 'replyTo', 'responseRequired', 'subscribable'}
 
     def attributes(cls):
@@ -136,7 +136,7 @@ def ieee2030_5_fields(edition: str | None = None) -> set[tuple]:
 def _sep2_in_edition(path: tuple, edition: str) -> bool:
     """Whether a convention path exists in ``edition``: the resource type must be defined and the attribute (the
     first segment after the resource, or after the curve type / list wildcard) must be one of its elements."""
-    from .models.ieee2030_5 import EDITIONS
+    from icm.models.ieee2030_5 import EDITIONS
     ed = EDITIONS[edition]
     segments = list(path)
     if segments[0] == 'DERControlList':
@@ -162,7 +162,7 @@ def _sep2_in_edition(path: tuple, edition: str) -> bool:
 
 def _openfmb_editions() -> tuple[str, ...]:
     """The OpenFMB editions with stored descriptors (the manifest is plain JSON; no protobuf needed to list them)."""
-    from .models.openfmb import descriptors
+    from icm.resources.openfmb import descriptors
     try:
         return descriptors.editions()
     except (FileNotFoundError, KeyError):

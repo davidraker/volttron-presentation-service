@@ -5,7 +5,7 @@ from typing import Callable, Iterable
 import networkx as nx
 
 from .field_universe import models_provider, parse_declared_fields
-from .transform_parser import FieldMap, TransformParser, expand_groups
+from icm.transforms.parser import FieldMap, TransformParser, expand_groups
 
 _log = logging.getLogger(__name__)
 

@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 import interoperability.agent as agent_module
-from interoperability.transform_parser import TransformParser
+from icm.transforms.parser import TransformParser
 
 CASE = Path(__file__).parent / 'integration' / 'fake_sunspec' / 'transform_scaling' / 'presentation_config.json'
 

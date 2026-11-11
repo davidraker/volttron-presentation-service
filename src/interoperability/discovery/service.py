@@ -29,7 +29,7 @@ from . import ieee2030_5 as sep2_discovery
 from . import sunspec as sunspec_discovery
 from .device_formats import resource_mappings
 
-NAMEPLATE_MODELS = {1, 701}      # common block and DER identification: read once, not polled
+from .sunspec import NAMEPLATE_MODELS
 
 
 def _common(options: dict) -> dict:

@@ -6,8 +6,8 @@ from pathlib import Path
 
 from interoperability.discovery import ieee2030_5 as mirror_gen
 from interoperability.discovery.device_formats import dnp3_device_transforms
-from interoperability.transform_parser import TransformParser
-from interoperability.transforms import immediate, MISSING
+from icm.transforms.parser import TransformParser
+from icm.transforms.functions import immediate, MISSING
 
 TRANSFORMS = resources.files('interoperability').joinpath('transforms')
 SUNSPEC_CASE = Path(__file__).parent / 'integration' / 'fake_sunspec' / 'transform_scaling'

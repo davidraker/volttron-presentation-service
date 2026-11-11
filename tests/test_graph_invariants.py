@@ -19,7 +19,7 @@ from pathlib import Path
 import pytest
 
 from interoperability.agent import PresentationService
-from interoperability.transform_parser import TransformParser
+from icm.transforms.parser import TransformParser
 from interoperability.transform_registry import MAX_HOPS, TransformRegistry
 
 from graph_samples import MODEL_TYPED, Sampler, leaves, merge

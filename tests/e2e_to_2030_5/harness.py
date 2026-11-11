@@ -29,7 +29,7 @@ from protocol_proxy.protocol.ieee2030_5.models import sep
 from protocol_proxy.protocol.ieee2030_5.transport import Sep2Http
 
 from interoperability.discovery import ieee2030_5 as mirror_gen
-from interoperability.transform_parser import TransformParser
+from icm.transforms.parser import TransformParser
 
 E2E_DIR = Path(os.environ.get('IEEE2030_5_DRIVER_REPO', Path(sep2_package.__file__).resolve().parents[5])) / 'tests' / 'e2e_sep2server'
 sys.path.insert(0, str(E2E_DIR))

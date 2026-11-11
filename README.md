@@ -579,14 +579,15 @@ Pubsub subscriptions:
 
 ## Consuming a resource from another agent
 
-`interoperability.resource.ResourceData` is a client-side helper. It resolves a UAI through
+`icm.resources.resource.ResourceData` (from the `icm-lib-resources` package, installed with its `volttron`
+extra) is a client-side helper. It resolves a UAI through
 the service, compiles the returned transform with the resource's `parameters` bound, subscribes
 to the canonical publication topic, and delivers transformed payloads to your callback under
 your own local topic, encoded as the resource's `codec` says (`bytes` for a protobuf alias;
 `encode` and `decode` are also available directly for the message bus adapter's inbound path).
 
 ```python
-from interoperability.resource import ResourceData
+from icm.resources import ResourceData
 
 def on_data(peer, sender, bus, topic, headers, message):
     ...  # message is already in the requested format
@@ -604,7 +605,7 @@ unchanged. Other RPC failures, such as the service being unreachable, are raised
 
 ### Writing a resource: `ResourceWriter`
 
-`interoperability.resource.ResourceWriter` is the counterpart for an agent that writes a canonical
+`icm.resources.resource.ResourceWriter` is the counterpart for an agent that writes a canonical
 resource (a device): it tracks what the device is known to hold and says which points of a message
 need writing. Knowledge comes from the device's own publications (`subscribe`, or `observe`),
 from the writer's own successful writes (`record`, provisional until the device reports) and, when
@@ -614,7 +615,7 @@ from the writer's own successful writes (`record`, provisional until the device 
 uses one per target device.
 
 ```python
-from interoperability.resource import ResourceWriter
+from icm.resources import ResourceWriter
 
 writer = ResourceWriter(self, 'devices/site1/mirror', 'devices/site1/mirror/all', stale_after=30)
 writer.subscribe()
@@ -683,11 +684,13 @@ needs `protobuf>=6.31` on the path; the generated package needs only pydantic. `
 `generate_samples.py` writes example messages to `solar_json_output/`. The `openfmb` field
 universe used by the transform registry is derived from these classes.
 
-The protobuf side knows every OpenFMB edition at once. `generate_descriptors.py` reads the serialised
+The protobuf side knows every OpenFMB edition at once. `icm/resources/openfmb/generate_descriptors.py` (in the
+`icm-lib-resources` package, beside the loader) reads the serialised
 file descriptors out of the `psm-protobuf-python` bindings at each release tag (`v1.0.0` to `v2.2.0`)
-and stores one `FileDescriptorSet` per edition under `models/openfmb/descriptors/`; at runtime
-`models/openfmb/descriptors.py` loads each into a private descriptor pool, because protobuf's shared
-default pool refuses a second edition of the same `.proto` file. `interoperability.codecs.openfmb`
+and stores one `FileDescriptorSet` per edition in the `icm-lib-resources` package
+(`icm/resources/openfmb/descriptors/`); at runtime `icm.resources.openfmb.descriptors` loads each into a
+private descriptor pool, because protobuf's shared default pool refuses a second edition of the same
+`.proto` file. `icm.resources.codecs.openfmb`
 turns a transform's output dict into protobuf bytes and back (`encode`, `decode`), keyed by the
 message name the format declares as `proto` and by the edition the alias declares (`edition`, in
 the alias's resource; unset means the newest). Nothing on the wire names the edition, so the alias

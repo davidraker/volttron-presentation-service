@@ -29,7 +29,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 
 from ..field_universe import _group_type
-from ..models.sunspec import MODEL_REGISTRY, SunSpecGroup
+from icm.models.sunspec import MODEL_REGISTRY, SunSpecGroup
 
 _INDEXED = re.compile(r'^([A-Za-z_][A-Za-z0-9_]*?)(\d+)$')
 #: First entry of every device-to-protocol pattern: unwrap the driver's ``[values, meta]`` publish (or pass a bare
@@ -305,7 +305,7 @@ _DNP3_NAME = re.compile(r'^(AI|AO|BI|BO|CTR)_(\d+)$')
 
 def dnp3_point_path(point_name: str) -> tuple[str, str]:
     """``AI_297`` -> ``('AI', '297')``, validated against the IEEE 1815.2 point registry."""
-    from ..models.ieee1815_2 import POINTS, PointType
+    from icm.models.ieee1815_2 import POINTS, PointType
     match = _DNP3_NAME.match(point_name)
     if not match:
         raise ValueError(f'{point_name!r}: DNP3 point names are <table>_<index>, e.g. AI_297')
@@ -316,7 +316,7 @@ def dnp3_point_path(point_name: str) -> tuple[str, str]:
 
 
 def dnp3_point_definition(point_name: str):
-    from ..models.ieee1815_2 import POINTS, PointType
+    from icm.models.ieee1815_2 import POINTS, PointType
     table, index = dnp3_point_path(point_name)
     return POINTS[PointType(table)][int(index)]
 

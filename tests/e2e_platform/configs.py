@@ -12,7 +12,7 @@ from pathlib import Path
 
 from interoperability.discovery import ieee2030_5 as mirror_gen
 from interoperability.discovery.device_formats import dnp3_device_transforms, resource_mappings
-from interoperability.openfmb_bus import topic_of
+from icm.resources.openfmb.bus import topic_of
 
 TESTS = Path(__file__).resolve().parents[1]
 SUNSPEC_CASE = TESTS / 'integration' / 'fake_sunspec' / 'transform_scaling'
