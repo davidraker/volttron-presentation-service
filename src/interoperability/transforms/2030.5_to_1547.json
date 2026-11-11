@@ -56,7 +56,7 @@
         "Voltage Average Line-Neutral": "transform[MirrorMeterReading, V](mean(PhaseA, PhaseB, PhaseC))",
         "Frequency": "transform[MirrorMeterReading, Hz]()",
         "Operation State": "transform[DERStatus, operationalModeStatus]()",
-        "Connection Status": "transform[DERStatus, connectStatus]()",
+        "Connection Status": "transform[DERStatus, connectStatus](bit(0))",
         "Alarm Status": "transform[DERStatus, alarmStatus]()",
         "Operation SoC": "transform[DERStatus, stateOfChargeStatus]()"
       },

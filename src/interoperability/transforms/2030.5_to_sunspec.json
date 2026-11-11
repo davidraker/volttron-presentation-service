@@ -22,7 +22,7 @@
         "LNV": "transform[MirrorMeterReading, V](mean(PhaseA, PhaseB, PhaseC))",
         "Hz": "transform[MirrorMeterReading, Hz]()",
         "St": "transform[DERStatus, operationalModeStatus]()",
-        "ConnSt": "transform[DERStatus, connectStatus]()",
+        "ConnSt": "transform[DERStatus, connectStatus](bit(0), select(1, 0))",
         "Alrm": "transform[DERStatus, alarmStatus]()"
       },
       "702": {

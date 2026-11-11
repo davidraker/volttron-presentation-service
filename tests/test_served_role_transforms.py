@@ -24,16 +24,16 @@ def _run(stage, message):
 
 def test_sunspec_watt_limit_and_enter_service_land_on_the_hub_flat():
     out = _run(_stage('sunspec_to_61850.json'), {'704': {'WMaxLimPct': 50, 'WMaxLimPctEna': 1}, '703': {'ES': 1}})
-    assert out['DWMX'] == {'ModEna': 1, 'LimW': 50}
-    assert out['DCTE'] == {'RtnSrvAuth': 1}
+    assert out['DWMX'] == {'Mod': 1, 'WMaxSpt': 50}
+    assert out['DCTE'] == {'RtnSvcAuth': 1}
 
 
 def test_1815_2_outputs_use_the_hub_names_for_limits_and_enables():
     out = _run(_stage('1815.2_to_61850.json', 1), {'AO': {'87': 50, '88': 10, '203': -20}, 'BO': {'17': 1, '27': 1}})
-    assert out['DWMX'] == {'LimW': 50, 'ModEna': 1}
-    assert out['DWMN'] == {'LimW': 10}
-    assert out['DVAR'] == {'VArTgt': -20, 'ModEna': 1}
-    back = _run(_stage('61850_to_1815.2.json', 1), {'DWMX': {'LimW': 50, 'ModEna': 1}, 'DVAR': {'VArTgt': -20, 'ModEna': 1}})
+    assert out['DWMX'] == {'WMaxSpt': 50, 'Mod': 1}
+    assert out['DWMN'] == {'WMinSpt': 10}
+    assert out['DVAR'] == {'VArTgtSpt': -20, 'Mod': 1}
+    back = _run(_stage('61850_to_1815.2.json', 1), {'DWMX': {'WMaxSpt': 50, 'Mod': 1}, 'DVAR': {'VArTgtSpt': -20, 'Mod': 1}})
     assert back['AO'] == {'87': 50, '203': -20} and back['BO'] == {'17': 1, '27': 1}
 
 
@@ -59,12 +59,12 @@ def test_openfmb_immediate_control_reaches_the_hub_top_level():
                          'voltVarOperation': {'vVarParameter': {'modEna': True}, 'crvPts': [{'voltVal': 0.95, 'varVal': 0.44}]}}}
     message = {'essControl': {'essControlFSCC': {'essControlScheduleFSCH': {'ValDCSG': {'crvPts': [entry]}}}}}
     out = _run(_stage('openfmb_to_61850.json', 0), message)
-    assert out['DWMX'] == {'ModEna': True, 'LimW': 50}
-    assert out['DVVR']['ModEna'] is True and out['DVVR']['VVArCrv']['crvPts'] == [{'xVal': 0.95, 'yVal': 0.44}]
-    assert out['FSCH']['SchdEntr'][0]['DWMX'] == {'ModEna': True, 'LimW': 50}         # the schedule view is kept
+    assert out['DWMX'] == {'Mod': True, 'WMaxSpt': 50}
+    assert out['DVVR']['Mod'] is True and out['DVVR']['VVArCrv']['crvPts'] == [{'xVal': 0.95, 'yVal': 0.44}]
+    assert out['FSCH']['x-SchdEntr'][0]['DWMX'] == {'Mod': True, 'WMaxSpt': 50}         # the schedule view is kept
     future = {'startTime': {'seconds': int(time.time()) + 3600}, **entry}
     out = _run(_stage('openfmb_to_61850.json', 0), {'essControl': {'essControlFSCC': {'essControlScheduleFSCH': {'ValDCSG': {'crvPts': [future]}}}}})
-    assert 'DWMX' not in out and out['FSCH']['SchdEntr'][0]['DWMX'] == {'ModEna': True, 'LimW': 50}
+    assert 'DWMX' not in out and out['FSCH']['x-SchdEntr'][0]['DWMX'] == {'Mod': True, 'WMaxSpt': 50}
 
 
 def test_served_outstation_gets_an_inputs_edge():

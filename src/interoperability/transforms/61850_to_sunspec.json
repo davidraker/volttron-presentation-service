@@ -5,30 +5,30 @@
     "pattern": {
       "702": {
         "WMaxRtg": "transform[DGEN, WMaxRtg]()",
-        "WOvrExtRtg": "transform[DGEN, WGnOvPFRtg]()",
+        "WOvrExtRtg": "transform[DGEN, WOvPFRtg]()",
         "WOvrExtRtgPF": "transform[DGEN, OvPFRtg]()",
-        "WUndExtRtg": "transform[DGEN, WGnUnPFRtg]()",
+        "WUndExtRtg": "transform[DGEN, WUnPFRtg]()",
         "WUndExtRtgPF": "transform[DGEN, UnPFRtg]()",
         "VAMaxRtg": "transform[DGEN, VAMaxRtg]()",
-        "NorOpCatRtg": "transform[DGEN, Ieee1547Cat1]()",
-        "AbnOpCatRtg": "transform[DGEN, Ieee1547Cat2]()",
-        "VarMaxInjRtg": "transform[DGEN, VarMaxSupRtg]()",
-        "VarMaxIAbsRtg": "transform[DGEN, VarMaxAbgRtg]()",
-        "WChaRteMaxRtg": "transform[DSTO, WChaUnPFRtg]()",
+        "NorOpCatRtg": "transform[DGEN, 'x-Ieee1547CatNorm']()",
+        "AbnOpCatRtg": "transform[DGEN, 'x-Ieee1547CatAbn']()",
+        "VarMaxInjRtg": "transform[DGEN, AvarMaxRtg]()",
+        "VarMaxIAbsRtg": "transform[DGEN, IvarMaxRtg]()",
+        "WChaRteMaxRtg": "transform[DSTO, ChaWMaxRtg]()",
         "VNomRtg": "transform[DECP, VRef]()",
         "VMaxRtg": "transform[DGEN, VMaxRtg]()",
         "VMinRtg": "transform[DGEN, VMinRtg]()",
         "ReactSusceptRtg": "transform[DGEN, SuscRtg]()",
         "Wmax": "transform[DGEN, WMax]()",
-        "WMaxOvrExt": "transform[DGEN, WGnOvPFRtg]()",
+        "WMaxOvrExt": "transform[DGEN, WOvPFRtg]()",
         "WOvrExtPF": "transform[DGEN, OvPFRtg]()",
-        "WMaxUndExt": "transform[DGEN, WGnUnPFRtg]()",
+        "WMaxUndExt": "transform[DGEN, WUnPFRtg]()",
         "WUndExtPF": "transform[DGEN, UnPFRtg]()",
         "VAMax": "transform[DGEN, VAMax]()",
-        "IntIslandCat": "transform[DGEN, RegCap]()",
-        "VarMaxAbsRtg": "transform[DGEN, VarMaxAbgRtg]()",
-        "WChaRteMax": "transform[DSTO, WChaMax]()",
-        "VAChaRteMax": "transform[DSTO, VAChaMax]()",
+        "IntIslandCat": "transform[DGEN, 'x-RegCap']()",
+        "VarMaxAbsRtg": "transform[DGEN, IvarMaxRtg]()",
+        "WChaRteMax": "transform[DSTO, ChaWMax]()",
+        "VAChaRteMax": "transform[DSTO, ChaVAMax]()",
         "Vnom": "transform[DECP, VRef]()"
       },
       "1": {
@@ -38,48 +38,48 @@
         "Vr": "transform[LPHD, PhyNam, swRev]()"
       },
       "701": {
-        "W": "transform[DECP, MMXU, TotW]()",
-        "Var": "transform[DECP, MMXU, TotVAr]()",
-        "LLV": "transform[DECP, MMXU, PPV](mean(phsAB.mag, phsBC.mag, phsCA.mag))",
-        "LNV": "transform[DECP, MMXU, PNV](mean(phsA.mag, phsB.mag, phsC.mag))",
-        "VL1L2": "transform[DECP, MMXU, PPV, phsAB, mag]()",
-        "VL1": "transform[DECP, MMXU, PhV, phsA, mag]()",
-        "VL2L3": "transform[DECP, MMXU, PPV, phsBC, mag]()",
-        "VL2": "transform[DECP, MMXU, PhV, phsB, mag]()",
-        "VL3L1": "transform[DECP, MMXU, PPV, phsCA, mag]()",
-        "VL3": "transform[DECP, MMXU, PhV, phsC, mag]()",
-        "Hz": "transform[DECP, MMXU, Hz]()",
-        "St": "transform[DGEN, DERState]()",
-        "ConnSt": "transform[DSTO, DERState, 1]()",
+        "W": "transform[MMXU, TotW]()",
+        "Var": "transform[MMXU, TotVAr]()",
+        "LLV": "transform[MMXU, PPV](mean(phsAB.mag, phsBC.mag, phsCA.mag))",
+        "LNV": "transform[MMXU, PNV](mean(phsA.mag, phsB.mag, phsC.mag))",
+        "VL1L2": "transform[MMXU, PPV, phsAB, mag]()",
+        "VL1": "transform[MMXU, PhV, phsA, mag]()",
+        "VL2L3": "transform[MMXU, PPV, phsBC, mag]()",
+        "VL2": "transform[MMXU, PhV, phsB, mag]()",
+        "VL3L1": "transform[MMXU, PPV, phsCA, mag]()",
+        "VL3": "transform[MMXU, PhV, phsC, mag]()",
+        "Hz": "transform[MMXU, Hz]()",
+        "St": "transform[DGEN, DEROpSt]()",
+        "ConnSt": "transform[CSWI, Pos](equals(2), select(1, 0))",
         "Alrm": "transform[CALH, GrAlm]()"
       },
       "713": {
-        "SoC": "transform[DSTO, SocUsePct]()"
+        "SoC": "transform[DSTO, UseSocPct]()"
       },
       "704": {
-        "PFWInjEna": "transform[DFPF, ModEna](cast_value(int))",
+        "PFWInjEna": "transform[DFPF, Mod](cast_value(int))",
         "PFWInj": {
-          "PF": "transform[DFPF, PFGnTgt]()",
-          "Ext": "transform[DFPF, PFExtSet](select(0, 1))"
+          "PF": "transform[DFPF, PFGnTgtSpt]()",
+          "Ext": "transform[DFPF, PFGnExtQud](select(0, 1))"
         },
         "PFWAbs": {
-          "PF": "transform[DFPF, PFLodTgt]()",
-          "Ext": "transform[DFPF, PFLodExtSet](select(0, 1))"
+          "PF": "transform[DFPF, PFLodTgtSpt]()",
+          "Ext": "transform[DFPF, PFLodExtQud](select(0, 1))"
         },
-        "VarSetEna": "transform[DVAR, ModEna](cast_value(int))",
-        "VarSetPct": "transform[DVAR, VArTgt]()",
-        "WMaxLimPctEna": "transform[DWMX, ModEna](cast_value(int))",
-        "WMaxLimPct": "transform[DWMX, LimW]()"
+        "VarSetEna": "transform[DVAR, Mod](cast_value(int))",
+        "VarSetPct": "transform[DVAR, VArTgtSpt]()",
+        "WMaxLimPctEna": "transform[DWMX, Mod](cast_value(int))",
+        "WMaxLimPct": "transform[DWMX, WMaxSpt]()"
       },
       "705": {
-        "Ena": "transform[DVVR, ModEna](cast_value(int))",
+        "Ena": "transform[DVVR, Mod](cast_value(int))",
         "Crv[#]": {
           "#": "transform[DVVR](as_list())",
           "ActPt": "transform[#, VVArCrv, crvPts](count())",
-          "VRef": "transform[#, VRef]()",
+          "VRef": "transform[#, VRefSpt]()",
           "VRefAutoEna": "transform[#, VRefAdjEna]()",
           "VRefAutoTms": "transform[#, VRefTmms]()",
-          "RspTms": "transform[#, OpnLoopMax]()",
+          "RspTms": "transform[#, OplTmsMax]()",
           "Pt[#]": {
             "V": "transform[#, VVArCrv, crvPts[#], xVal]()",
             "Var": "transform[#, VVArCrv, crvPts[#], yVal]()"
@@ -87,7 +87,7 @@
         }
       },
       "712": {
-        "Ena": "transform[DWVR, ModEna](cast_value(int))",
+        "Ena": "transform[DWVR, Mod](cast_value(int))",
         "Crv[#]": {
           "#": "transform[DWVR](as_list())",
           "ActPt": "transform[#, WVArCrv, crvPts](count())",
@@ -98,11 +98,11 @@
         }
       },
       "706": {
-        "Ena": "transform[DVWC, ModEna](cast_value(int))",
+        "Ena": "transform[DVWC, Mod](cast_value(int))",
         "Crv[#]": {
           "#": "transform[DVWC](as_list())",
           "ActPt": "transform[#, VWCrv, crvPts](count())",
-          "RspTms": "transform[#, OpnLoopMax]()",
+          "RspTms": "transform[#, OplTmsMax]()",
           "Pt[#]": {
             "V": "transform[#, VWCrv, crvPts[#], xVal]()",
             "W": "transform[#, VWCrv, crvPts[#], yVal]()"
@@ -111,62 +111,62 @@
       },
       "708": {
         "Crv[#]": {
-          "#": "transform[DHVT](as_list())",
+          "#": "transform(as_list())",
           "MustTrip": {
-            "ActPt": "transform[#, TrZnSt, PTOV, TmVCrv, crvPts](count())",
+            "ActPt": "transform[#, PTOV1, TmVChr, crvPts](count())",
             "Pt[#]": {
-              "V": "transform[#, TrZnSt, PTOV, TmVCrv, crvPts[#], xVal]()",
-              "Tms": "transform[#, TrZnSt, PTOV, TmVCrv, crvPts[#], yVal]()"
+              "V": "transform[#, PTOV1, TmVChr, crvPts[#], xVal]()",
+              "Tms": "transform[#, PTOV1, TmVChr, crvPts[#], yVal]()"
             }
           },
           "MomCess": {
-            "ActPt": "transform[#, CeaZnSt, PTOV, TmVCrv, crvPts](count())",
+            "ActPt": "transform[#, PTOV2, TmVChr, crvPts](count())",
             "Pt[#]": {
-              "V": "transform[#, CeaZnSt, PTOV, TmVCrv, crvPts[#], xVal]()",
-              "Tms": "transform[#, CeaZnSt, PTOV, TmVCrv, crvPts[#], yVal]()"
+              "V": "transform[#, PTOV2, TmVChr, crvPts[#], xVal]()",
+              "Tms": "transform[#, PTOV2, TmVChr, crvPts[#], yVal]()"
             }
           }
         }
       },
       "707": {
         "Crv[#]": {
-          "#": "transform[DLVT](as_list())",
+          "#": "transform(as_list())",
           "MustTrip": {
-            "ActPt": "transform[#, TrZnSt, PTUV, TmVCrv, crvPts](count())",
+            "ActPt": "transform[#, PTUV1, TmVChr, crvPts](count())",
             "Pt[#]": {
-              "V": "transform[#, TrZnSt, PTUV, TmVCrv, crvPts[#], xVal]()",
-              "Tms": "transform[#, TrZnSt, PTUV, TmVCrv, crvPts[#], yVal]()"
+              "V": "transform[#, PTUV1, TmVChr, crvPts[#], xVal]()",
+              "Tms": "transform[#, PTUV1, TmVChr, crvPts[#], yVal]()"
             }
           },
           "MomCess": {
-            "ActPt": "transform[#, CeaZnSt, PTUV, TmVCrv, crvPts](count())",
+            "ActPt": "transform[#, PTUV2, TmVChr, crvPts](count())",
             "Pt[#]": {
-              "V": "transform[#, CeaZnSt, PTUV, TmVCrv, crvPts[#], xVal]()",
-              "Tms": "transform[#, CeaZnSt, PTUV, TmVCrv, crvPts[#], yVal]()"
+              "V": "transform[#, PTUV2, TmVChr, crvPts[#], xVal]()",
+              "Tms": "transform[#, PTUV2, TmVChr, crvPts[#], yVal]()"
             }
           }
         }
       },
       "710": {
         "Crv[#]": {
-          "#": "transform[DHFT](as_list())",
+          "#": "transform(as_list())",
           "MustTrip": {
-            "ActPt": "transform[#, TrZnSt, PTOF, TmHzCrv, crvPts](count())",
+            "ActPt": "transform[#, PTOF1, 'x-TmHzChr', crvPts](count())",
             "Pt[#]": {
-              "Hz": "transform[#, TrZnSt, PTOF, TmHzCrv, crvPts[#], xVal]()",
-              "Tms": "transform[#, TrZnSt, PTOF, TmHzCrv, crvPts[#], yVal]()"
+              "Hz": "transform[#, PTOF1, 'x-TmHzChr', crvPts[#], xVal]()",
+              "Tms": "transform[#, PTOF1, 'x-TmHzChr', crvPts[#], yVal]()"
             }
           }
         }
       },
       "709": {
         "Crv[#]": {
-          "#": "transform[DLFT](as_list())",
+          "#": "transform(as_list())",
           "MustTrip": {
-            "ActPt": "transform[#, TrZnSt, PTUF, TmHzCrv, crvPts](count())",
+            "ActPt": "transform[#, PTUF1, 'x-TmHzChr', crvPts](count())",
             "Pt[#]": {
-              "Hz": "transform[#, TrZnSt, PTUF, TmHzCrv, crvPts[#], xVal]()",
-              "Tms": "transform[#, TrZnSt, PTUF, TmHzCrv, crvPts[#], yVal]()"
+              "Hz": "transform[#, PTUF1, 'x-TmHzChr', crvPts[#], xVal]()",
+              "Tms": "transform[#, PTUF1, 'x-TmHzChr', crvPts[#], yVal]()"
             }
           }
         }
@@ -178,18 +178,18 @@
           "DbUf": "transform[DLFW, HzStr]()",
           "KOf": "transform[DHFW, WGra]()",
           "Kuf": "transform[DLFW, WGra]()",
-          "RspTms": "transform[DHFW, OpnLoopMax]()"
+          "RspTms": "transform[DHFW, OplTmsMax]()"
         }
       },
       "703": {
-        "ES": "transform[DCTE, RtnSrvAuth](cast_value(int))",
+        "ES": "transform[DCTE, RtnSvcAuth](cast_value(int))",
         "ESVHi": "transform[DCTE, VHiLim]()",
         "ESVLo": "transform[DCTE, VLoLim]()",
         "ESHzHi": "transform[DCTE, HzHiLim]()",
         "ESHzLo": "transform[DCTE, HzLoLim]()",
-        "ESDlyTms": "transform[DCTE, RtnSrvDlyTim]()",
-        "ESRndTms": "transform[DCTE, RtnSrvRndTim]()",
-        "ESRmpTms": "transform[DCTE, RtnSrvRmpTim]()"
+        "ESDlyTms": "transform[DCTE, RtnDlTmms]()",
+        "ESRndTms": "transform[DCTE, 'x-RtnRndTmms']()",
+        "ESRmpTms": "transform[DCTE, RtnRmpTmms]()"
       }
     }
   }

@@ -19,7 +19,7 @@ def test_bundled_transform_runs_on_partial_message(parser):
     definitions = {(d['input_format'], d['output_format']): d
                    for f in _bundled_transform_files() for d in json.loads(f.read_text())}
     pipeline = parser.build_transform_from_schema(definitions[('61850', 'sunspec')]['pattern'])
-    result = pipeline.execute({'DECP': {'MMXU': {'TotW': 12.5, 'Hz': 60.0}}})
+    result = pipeline.execute({'MMXU': {'TotW': 12.5, 'Hz': 60.0}})
     assert result == {'701': {'W': 12.5, 'Hz': 60.0}}
 
 
@@ -160,17 +160,14 @@ def test_bundled_curves_through_the_1815_2_edit_window(parser):
     assert out['sequence'] == [{'AO': {'244': 1, '245': 2, '246': 2, '249': 95, '250': 44, '251': 105, '252': -44, '217': 1}}]
     assert _bundled_pipeline(parser, '1815.2.outputs', 'sunspec').execute(_apply_batch(out, 'AO', 0)) == {
         '705': {'Crv': [{'VRef': 100, 'ActPt': 2, 'Pt': [{'V': 95, 'Var': 44}, {'V': 105, 'Var': -44}]}]}}
-    # 61850: mode curves feed the sequence; the generic FMARn window maps the window as is, unguarded.
-    i61850 = {'DVVR': {'VVArCrv': {'crvPts': [{'xVal': 95, 'yVal': 44}]}},
-              'DGSMn': {'InCrv': 7, 'ModTyp': 3}, 'FMARn': {'PairArr': {'NumPts': 1, 'CrvPts': [{'xVal': 1, 'yVal': 2}]}}}
+    # 61850: mode curves feed the sequence. The DNP3 curve store (selector, type, pair array) is the profile's own
+    # mechanics and no longer a hub group (the Edition 2 rename of 2026-11-11); only the mode curves cross the hub.
+    i61850 = {'DVVR': {'VVArCrv': {'crvPts': [{'xVal': 95, 'yVal': 44}]}}}
     out = _bundled_pipeline(parser, '61850', '1815.2.inputs').execute(i61850)
-    assert {k: out['AI'][k] for k in ('297', '328', '329', '330', '333', '334')} == {
-        '297': 1, '328': 7, '329': 3, '330': 1, '333': 1, '334': 2}
     assert out['sequence'] == [{'AI': {'328': 1, '329': 2, '330': 1, '333': 95, '334': 44, '297': 1}}]
     back = _bundled_pipeline(parser, '1815.2.inputs', '61850').execute(_apply_batch(out, 'AI', 0))
     assert back['DVVR']['VVArCrv'] == {'numPts': 1, 'crvPts': [{'xVal': 95, 'yVal': 44}]}
-    assert back['FMARn']['PairArr'] == {'NumPts': 1, 'CrvPts': [{'xVal': 95, 'yVal': 44}]}
-    assert back['DGSMn'] == {'InCrv': 1, 'ModTyp': 2}
+    assert 'FMARn' not in back and 'DGSMn' not in back
 
 
 def test_bundled_schedules_carry_every_entry_between_2030_5_and_61850(parser):
@@ -182,17 +179,17 @@ def test_bundled_schedules_carry_every_entry_between_2030_5_and_61850(parser):
                 {'interval': {'start': 1700003600, 'duration': 3600},
                  'DERControl': {'opModMaxLimW': 100}}]}
     i61850 = _bundled_pipeline(parser, '2030.5', '61850').execute(sep2)
-    entries = i61850['FSCH']['SchdEntr']
+    entries = i61850['FSCH']['x-SchdEntr']
     assert len(entries) == 2
     assert entries[0]['StrTm'] == 1700000000 and entries[0]['SchdIntv'] == 3600
-    assert entries[0]['DWMX'] == {'LimW': 80, 'ModEna': True}                  # an active control implies its mode enable
+    assert entries[0]['DWMX'] == {'WMaxSpt': 80, 'Mod': True}                  # an active control implies its mode enable
     assert entries[0]['DHFW'] == {'HzStr': 0.036, 'WGra': 5}
     assert entries[0]['DVVR'] == {'VVArCrv': {'numPts': 2, 'crvPts': [{'xVal': 95, 'yVal': 44}, {'xVal': 105, 'yVal': -44}]},
-                                  'OpnLoopMax': 5}
-    assert entries[1] == {'StrTm': 1700003600, 'SchdIntv': 3600, 'DWMX': {'LimW': 100, 'ModEna': True}}
+                                  'OplTmsMax': 5}
+    assert entries[1] == {'StrTm': 1700003600, 'SchdIntv': 3600, 'DWMX': {'WMaxSpt': 100, 'Mod': True}}
     # The immediate settings still map at the top level, and schedule content does not leak into it.
-    # 2030.5's excitation is true for under-excited; the hub's PFExtSet is true for over-excited (equals(0)).
-    assert i61850['DFPF'] == {'ModEna': True, 'PFGnTgt': 0.95, 'PFExtSet': False}
+    # 2030.5's excitation is true for under-excited; the hub's PFGnExtQud is true for over-excited (equals(0)).
+    assert i61850['DFPF'] == {'Mod': True, 'PFGnTgtSpt': 0.95, 'PFGnExtQud': False}
     assert 'DWMX' not in i61850 and 'DVVR' not in i61850
     back = _bundled_pipeline(parser, '61850', '2030.5').execute(i61850)
     assert back['DERControlList'] == [
@@ -200,7 +197,7 @@ def test_bundled_schedules_carry_every_entry_between_2030_5_and_61850(parser):
          'DERControl': {'opModMaxLimW': 80, 'opModFreqDroop': {'dBOF': 0.036, 'kOF': 5}},
          'DERCurve': {'opModVoltVar': {'CurveData': [{'xvalue': 95, 'yvalue': 44}, {'xvalue': 105, 'yvalue': -44}], 'openLoopTms': 5}}},
         {'interval': {'start': 1700003600, 'duration': 3600}, 'DERControl': {'opModMaxLimW': 100}}]
-    assert 'DERControlList' not in _bundled_pipeline(parser, '61850', '2030.5').execute({'DFPF': {'PFExtSet': 1}})
+    assert 'DERControlList' not in _bundled_pipeline(parser, '61850', '2030.5').execute({'DFPF': {'PFGnExtQud': 1}})
     # Formats without a schedule container simply do not carry it.
     assert 'FSCH' not in _bundled_pipeline(parser, '61850', 'sunspec').execute(i61850)
 
@@ -211,18 +208,18 @@ def test_bundled_openfmb_profiles_round_trip_through_61850_and_stay_valid(parser
     examples = example_profiles()
     to_61850 = _bundled_pipeline(parser, 'openfmb.ess', '61850')
     reading = to_61850.execute(examples['ESSReadingProfile'])
-    assert reading['DECP']['MMXU']['TotW'] == -25000.0 and reading['DECP']['MMXU']['PhV']['phsB']['mag'] == 239.8
+    assert reading['MMXU']['TotW'] == -25000.0 and reading['MMXU']['PhV']['phsB']['mag'] == 239.8
     status = to_61850.execute(examples['ESSStatusProfile'])
-    assert status['DSTO']['SocUsePct'] == 63.5 and status['DSTO']['GriMod'] == 'GridConnectModeKind_VSI_PQ'
+    assert status['DSTO']['UseSocPct'] == 63.5 and status['DINV']['GriMod'] == 'GridConnectModeKind_VSI_PQ'
     capability = to_61850.execute(examples['ESSCapabilityProfile'])
     assert capability['DGEN']['WMaxRtg'] == 100000.0 and capability['DSTO']['WhRtg'] == 200000.0
     assert capability['LPHD']['PhyNam'] == {'vendor': 'ACME', 'model': 'BESS-200'}
     control = to_61850.execute(examples['ESSControlProfile'])
-    entries = control['FSCH']['SchdEntr']
+    entries = control['FSCH']['x-SchdEntr']
     assert [e['StrTm'] for e in entries] == [1700000000, 1700003600]
     assert entries[0]['DVVR']['VVArCrv']['numPts'] == 4 and entries[0]['DVVR']['VVArCrv']['crvPts'][0] == {'xVal': 0.92, 'yVal': 0.44}
-    assert entries[0]['DHFW'] == {'HzStr': 0.036, 'WGra': 0.05, 'ModEna': True}
-    assert entries[1]['DFPF'] == {'ModEna': True, 'PFGnTgt': 0.95, 'PFExtSet': True}
+    assert entries[0]['DHFW'] == {'HzStr': 0.036, 'WGra': 0.05, 'Mod': True}
+    assert entries[1]['DFPF'] == {'Mod': True, 'PFGnTgtSpt': 0.95, 'PFGnExtQud': True}
     # The entry in effect now (the latest start time already reached) is also lifted to the hub's top level.
     assert all(control[ln] == value for ln, value in entries[1].items() if ln != 'StrTm')
     assert 'DVVR' not in control                                   # the superseded first entry stays in FSCH only
@@ -245,13 +242,13 @@ def test_bundled_openfmb_profiles_round_trip_through_61850_and_stay_valid(parser
         'essControlFSCC']['essControlScheduleFSCH']['ValDCSG']['crvPts'][0]['control']['voltVarOperation']['crvPts']
     assert result['essReading']['readingMMXU']['W']['net']['cVal']['mag'] == -25000.0
     # 61850 top-level controls become an immediate point (no start time) ahead of the scheduled ones.
-    immediate = back.execute({'DFPF': {'PFGnTgt': 0.9}, 'FSCH': {'SchdEntr': [{'StrTm': 5, 'DWMX': {'LimW': 0.5}}]}})
+    immediate = back.execute({'DFPF': {'PFGnTgtSpt': 0.9}, 'FSCH': {'x-SchdEntr': [{'StrTm': 5, 'DWMX': {'WMaxSpt': 0.5}}]}})
     points = immediate['essControl']['essControlFSCC']['essControlScheduleFSCH']['ValDCSG']['crvPts']
     assert points == [{'control': {'pFOperation': {'pFParameter': {'pFGnTgtMxVal': 0.9}}}},
                       {'startTime': {'seconds': 5}, 'control': {'limitWOperation': {'wMaxSptVal': 0.5}}}]
     # Solar uses its own keys, including the capitalised schedule field.
     solar = _bundled_pipeline(parser, 'openfmb.solar', '61850').execute(examples['SolarControlProfile'])
-    assert len(solar['FSCH']['SchdEntr']) == 2
+    assert len(solar['FSCH']['x-SchdEntr']) == 2
     solar_back = _bundled_pipeline(parser, '61850', 'openfmb.solar').execute(solar)
     PROFILES['SolarControlProfile'].model_validate({'solarControl': solar_back['solarControl']})
     assert 'SolarControlScheduleFSCH' in solar_back['solarControl']['solarControlFSCC']
@@ -335,11 +332,11 @@ def test_bundled_curves_round_trip_sunspec_2030_5_and_61850(parser):
     assert _bundled_pipeline(parser, '2030.5', 'sunspec').execute(sep2) == expected_sunspec
     i61850 = _bundled_pipeline(parser, '2030.5', '61850').execute(sep2)
     assert i61850['DVVR']['VVArCrv'] == {'numPts': 2, 'crvPts': [{'xVal': 95, 'yVal': 44}, {'xVal': 105, 'yVal': -44}]}
-    assert i61850['DHVT']['CeaZnSt']['PTOV']['TmVCrv'] == {'numPts': 1, 'crvPts': [{'xVal': 118, 'yVal': 1}]}
+    assert i61850['PTOV2']['TmVChr'] == {'numPts': 1, 'crvPts': [{'xVal': 118, 'yVal': 1}]}
     assert _bundled_pipeline(parser, '61850', '2030.5').execute(i61850)['DERCurve'] == {
         k: {a: v for a, v in mode.items() if a != 'vRef'} for k, mode in sep2['DERCurve'].items()}
     from_sunspec = _bundled_pipeline(parser, 'sunspec', '61850').execute(sunspec)
     assert from_sunspec['DVVR']['VVArCrv'] == i61850['DVVR']['VVArCrv']
-    assert from_sunspec['DHFT'] == i61850['DHFT']
+    assert from_sunspec['PTOF1'] == i61850['PTOF1']
     back = _bundled_pipeline(parser, '61850', 'sunspec').execute(from_sunspec)
     assert {k: back[k]['Crv'] for k in expected_sunspec} == {k: v['Crv'] for k, v in expected_sunspec.items()}

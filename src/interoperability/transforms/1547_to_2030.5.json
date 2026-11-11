@@ -65,7 +65,7 @@
       },
       "DERStatus": {
         "operationalModeStatus": "transform[Monitoring, 'Operation State']()",
-        "connectStatus": "transform[Monitoring, 'Connection Status']()",
+        "connectStatus": "transform[Monitoring, 'Connection Status'](select(1, 0))",
         "alarmStatus": "transform[Monitoring, 'Alarm Status']()",
         "stateOfChargeStatus": "transform[Monitoring, 'Operation SoC']()"
       },

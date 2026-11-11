@@ -29,15 +29,7 @@ PACKAGE = Path(__file__).resolve().parents[1] / 'src' / 'interoperability'
 # Direct edges whose values disagree with their best alternative chain today (2026-10-24). Keys are the edge,
 # values name the hub convention at issue. Each is a strict xfail: fixing the conflict makes the test pass and
 # the entry must then be removed.
-KNOWN_CONFLICTS = {
-    ('1815.2.inputs', '61850'): 'PF excitation polarity of BI29/BI30: the 1815.2_to_61850 edge copies the flag as the hub '
-                                'sense (true = over-excited) while 1815.2_to_2030.5 copies it as 2030.5\'s (true = under-excited); '
-                                'IEEE 1815.2-2025 does not state the point\'s polarity in the text, decision open',
-    ('61850', '1815.2.inputs'): 'the 1815.2 edge reads numbered or renamed hub keys (DHFW1, DLFW1, DCTE1, DGEN.IvarMaxRtg, '
-                                'DVWC.OplTmsMax) that no other edge writes, so hub values from other sources never reach it; '
-                                'it also writes BI flags as booleans where sunspec_to_1815.2 writes integers',
-    ('61850', '1815.2.outputs'): 'same numbered or renamed hub keys as the inputs edge (DCTE1, DVWC.OplTmsMax[1], ...)',
-}
+KNOWN_CONFLICTS: dict[tuple[str, str], str] = {}     # none since the Edition 2 rename of 2026-11-11 (tools/hub_edition2_rename.py)
 
 
 @pytest.fixture(scope='module')
@@ -72,9 +64,10 @@ def test_hub_edges_are_classified_and_subset_edges_are_known(registry):
                if a in registry.hubs and b in registry.hubs}
     assert {r['classification'] for r in reports.values()} <= {'no alternative', 'adds coverage', 'subset of alternative'}
     subset = sorted(k for k, r in reports.items() if r['classification'] == 'subset of alternative')
-    # The 1547 cross-reference drafts reach 1815.2 through SunSpec with more fields than they carry directly, and
-    # the 1815.2 inputs reach 1547 through SunSpec with at least the same fields.
-    assert subset == [('1547', '1815.2.inputs'), ('1547', '1815.2.outputs'), ('1815.2.inputs', '1547')]
+    # The 1547 cross-reference drafts reach 1815.2 through SunSpec with more fields than they carry directly. Since the
+    # Edition 2 rename (2026-11-11) the direct 1815.2 -> 1547 edge adds coverage: it reads profile points (the 1547
+    # category and switch-position style points) that the hub route carries under other objects.
+    assert subset == [('1547', '1815.2.inputs'), ('1547', '1815.2.outputs')]
     assert all(not reports[k]['needed_for_reachability'] for k in subset)
     assert [(r['input_format'], r['output_format']) for r in registry.prune_candidates()] == subset
     # The OpenFMB hubs are pure spokes of 61850.

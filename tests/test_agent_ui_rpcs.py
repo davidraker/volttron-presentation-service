@@ -71,8 +71,8 @@ def test_chain_report_walks_the_hops(service):
 
 
 def test_compile_pattern_reports_mappings_or_the_error(service):
-    good = service.compile_pattern({'DVVR': {'ModEna': 'transform[705, Ena](cast_value(bool))'}}, 'sunspec')
-    assert good['ok'] and good['mappings'][0]['target'] == 'DVVR.ModEna' and good['mappings'][0]['source'] == '705.Ena'
+    good = service.compile_pattern({'DVVR': {'Mod': 'transform[705, Ena](cast_value(bool))'}}, 'sunspec')
+    assert good['ok'] and good['mappings'][0]['target'] == 'DVVR.Mod' and good['mappings'][0]['source'] == '705.Ena'
     assert good['unknown_sources'] == []
     unknown = service.compile_pattern({'X': 'transform[999, Nope]()'}, 'sunspec')
     assert unknown['ok'] and unknown['unknown_sources'] == ['999.Nope']

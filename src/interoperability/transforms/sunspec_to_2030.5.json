@@ -65,7 +65,7 @@
       },
       "DERStatus": {
         "operationalModeStatus": "transform[701, St]()",
-        "connectStatus": "transform[701, ConnSt]()",
+        "connectStatus": "transform[701, ConnSt](equals(1), select(1, 0))",
         "alarmStatus": "transform[701, Alrm]()",
         "stateOfChargeStatus": "transform[713, SoC]()"
       },

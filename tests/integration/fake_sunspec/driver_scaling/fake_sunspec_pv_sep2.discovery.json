@@ -259,7 +259,7 @@
       "path": "DERStatus.connectStatus",
       "writable": true,
       "via": "sunspec > 2030.5",
-      "fidelity": 1.0
+      "fidelity": 0.9
     },
     {
       "name": "DERStatus_operationalModeStatus",

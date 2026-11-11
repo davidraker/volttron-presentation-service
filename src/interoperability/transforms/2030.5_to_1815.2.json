@@ -72,7 +72,7 @@
       "BI": {
         "1": "transform[DERStatus, alarmStatus]()",
         "16": "transform[DERControl, opModEnergize]()",
-        "23": "transform[DERStatus, connectStatus]()",
+        "23": "transform[DERStatus, connectStatus](bit(0))",
         "29": "transform[DERControl, opModFixedPFInjectW, excitation]()",
         "30": "transform[DERControl, opModFixedPFAbsorbW, excitation]()",
         "68": null,

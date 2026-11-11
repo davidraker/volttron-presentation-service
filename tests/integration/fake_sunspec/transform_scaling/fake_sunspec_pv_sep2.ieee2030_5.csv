@@ -35,7 +35,7 @@ DERSettings_setMaxW,DERSettings.setMaxW,TRUE,short_poll,0,1,W,0,via sunspec > 20
 DERSettings_setMinV,DERSettings.setMinV,TRUE,short_poll,0,1,V,,via sunspec > 2030.5
 DERSettings_setVNom,DERSettings.setVNom,TRUE,short_poll,0,1,,,via sunspec > 2030.5
 DERStatus_alarmStatus,DERStatus.alarmStatus,TRUE,short_poll,0,1,,,via sunspec > 2030.5
-DERStatus_connectStatus,DERStatus.connectStatus,TRUE,short_poll,0,1,,,via sunspec > 2030.5
+DERStatus_connectStatus,DERStatus.connectStatus,TRUE,short_poll,0,1,,,"via sunspec > 2030.5, fidelity 0.90"
 DERStatus_operationalModeStatus,DERStatus.operationalModeStatus,TRUE,short_poll,0,1,,,via sunspec > 2030.5
 DERStatus_stateOfChargeStatus,DERStatus.stateOfChargeStatus,TRUE,short_poll,0,1,,,via sunspec > 2030.5
 DeviceInformation_mfID,DeviceInformation.mfID,TRUE,short_poll,0,1,,,via sunspec > 2030.5

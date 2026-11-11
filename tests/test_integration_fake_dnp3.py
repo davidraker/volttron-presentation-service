@@ -205,9 +205,9 @@ def test_writes_reach_the_device_as_ordered_flat_batches(service, mode):
     assert batch['AO_244'] == 1 and batch['AO_245'] == 2 and batch['AO_246'] == 2 and batch['AO_249'] == 95
     assert batch['AO_250'] == (440.0 if mode == 'transform' else 44)               # var point multiplier 0.1
     # The 61850 route to the device also carries its schedule entries as further batches.
-    sched = {'FSCH': {'SchdEntr': [{'StrTm': 5, 'DWMX': {'LimW': 50}}]}, 'DFPF': {'PFGnTgt': 0.9}}
+    sched = {'FSCH': {'x-SchdEntr': [{'StrTm': 5, 'DWMX': {'WMaxSpt': 50}}]}, 'DFPF': {'PFGnTgtSpt': 0.9}}
     via_61850 = TransformParser().build_transform_from_schema(registry.lookup('61850', 'fake_dnp3_der')).execute(sched)
-    assert 'AO_87' not in via_61850                                                     # LimW inside the schedule, not immediate
+    assert 'AO_87' not in via_61850                                                     # WMaxSpt inside the schedule, not immediate
     assert via_61850['AO_210'] == (900.0 if mode == 'transform' else 0.9) or via_61850.get('AO_210') is not None
 
 

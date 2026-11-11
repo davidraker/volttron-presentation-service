@@ -3,78 +3,82 @@
     "input_format": "openfmb.ess",
     "output_format": "61850",
     "pattern": {
-      "DECP": {
-        "MMXU": {
-          "TotW": "transform[essReading, readingMMXU, W, net, cVal, mag]()",
-          "TotVAr": "transform[essReading, readingMMXU, VAr, net, cVal, mag]()",
-          "TotVA": "transform[essReading, readingMMXU, VA, net, cVal, mag]()",
-          "TotPF": "transform[essReading, readingMMXU, PF, net, cVal, mag]()",
-          "Hz": "transform[essReading, readingMMXU, Hz, mag]()",
-          "PhV": {
-            "phsA": {
-              "mag": "transform[essReading, readingMMXU, PhV, phsA, cVal, mag]()"
-            },
-            "phsB": {
-              "mag": "transform[essReading, readingMMXU, PhV, phsB, cVal, mag]()"
-            },
-            "phsC": {
-              "mag": "transform[essReading, readingMMXU, PhV, phsC, cVal, mag]()"
-            }
+      "MMXU": {
+        "TotW": "transform[essReading, readingMMXU, W, net, cVal, mag]()",
+        "TotVAr": "transform[essReading, readingMMXU, VAr, net, cVal, mag]()",
+        "TotVA": "transform[essReading, readingMMXU, VA, net, cVal, mag]()",
+        "TotPF": "transform[essReading, readingMMXU, PF, net, cVal, mag]()",
+        "Hz": "transform[essReading, readingMMXU, Hz, mag]()",
+        "PhV": {
+          "phsA": {
+            "mag": "transform[essReading, readingMMXU, PhV, phsA, cVal, mag]()"
           },
-          "PPV": {
-            "phsAB": {
-              "mag": "transform[essReading, readingMMXU, PPV, phsAB, cVal, mag]()"
-            },
-            "phsBC": {
-              "mag": "transform[essReading, readingMMXU, PPV, phsBC, cVal, mag]()"
-            },
-            "phsCA": {
-              "mag": "transform[essReading, readingMMXU, PPV, phsCA, cVal, mag]()"
-            }
+          "phsB": {
+            "mag": "transform[essReading, readingMMXU, PhV, phsB, cVal, mag]()"
           },
-          "A": {
-            "phsA": {
-              "mag": "transform[essReading, readingMMXU, A, phsA, cVal, mag]()"
-            },
-            "phsB": {
-              "mag": "transform[essReading, readingMMXU, A, phsB, cVal, mag]()"
-            },
-            "phsC": {
-              "mag": "transform[essReading, readingMMXU, A, phsC, cVal, mag]()"
-            }
+          "phsC": {
+            "mag": "transform[essReading, readingMMXU, PhV, phsC, cVal, mag]()"
           }
         },
+        "PPV": {
+          "phsAB": {
+            "mag": "transform[essReading, readingMMXU, PPV, phsAB, cVal, mag]()"
+          },
+          "phsBC": {
+            "mag": "transform[essReading, readingMMXU, PPV, phsBC, cVal, mag]()"
+          },
+          "phsCA": {
+            "mag": "transform[essReading, readingMMXU, PPV, phsCA, cVal, mag]()"
+          }
+        },
+        "A": {
+          "phsA": {
+            "mag": "transform[essReading, readingMMXU, A, phsA, cVal, mag]()"
+          },
+          "phsB": {
+            "mag": "transform[essReading, readingMMXU, A, phsB, cVal, mag]()"
+          },
+          "phsC": {
+            "mag": "transform[essReading, readingMMXU, A, phsC, cVal, mag]()"
+          }
+        }
+      },
+      "DECP": {
         "VRef": "transform[essCapability, essCapabilityRatings, sourceCapabilityRatings, VNomRtg, setMag]()"
       },
       "DSTO": {
-        "SocUsePct": "transform[essStatus, essStatusZBAT, Soc, mag]()",
-        "SoH": "transform[essStatus, essStatusZBAT, SoH, mag]()",
-        "WhAvail": "transform[essStatus, essStatusZBAT, WHAvail, mag]()",
-        "GriMod": "transform[essStatus, essStatusZBAT, GriMod, setVal]()",
-        "BatSt": "transform[essStatus, essStatusZBAT, BatSt, stVal]()",
-        "Stdby": "transform[essStatus, essStatusZBAT, Stdby, stVal]()",
+        "UseSocPct": "transform[essStatus, essStatusZBAT, Soc, mag]()",
+        "x-SoH": "transform[essStatus, essStatusZBAT, SoH, mag]()",
+        "SocWh": "transform[essStatus, essStatusZBAT, WHAvail, mag]()",
         "WhRtg": "transform[essCapability, essCapabilityRatings, WHRtg, setMag]()",
-        "WChaUnPFRtg": "transform[essCapability, essCapabilityRatings, WChaRteMaxRtg, setMag]()",
-        "VAMaxChaRtg": "transform[essCapability, essCapabilityRatings, VAChaRteMaxRtg, setMag]()",
-        "WDisChaRteMaxRtg": "transform[essCapability, essCapabilityRatings, WDisChaRteMaxRtg, setMag]()",
-        "VADisChaRteMaxRtg": "transform[essCapability, essCapabilityRatings, VADisChaRteMaxRtg, setMag]()"
+        "ChaWMaxRtg": "transform[essCapability, essCapabilityRatings, WChaRteMaxRtg, setMag]()",
+        "ChaVAMaxRtg": "transform[essCapability, essCapabilityRatings, VAChaRteMaxRtg, setMag]()",
+        "DschWMaxRtg": "transform[essCapability, essCapabilityRatings, WDisChaRteMaxRtg, setMag]()",
+        "DschVAMaxRtg": "transform[essCapability, essCapabilityRatings, VADisChaRteMaxRtg, setMag]()"
+      },
+      "DINV": {
+        "GriMod": "transform[essStatus, essStatusZBAT, GriMod, setVal]()",
+        "Stdby": "transform[essStatus, essStatusZBAT, Stdby, stVal]()"
+      },
+      "DBAT": {
+        "BatSt": "transform[essStatus, essStatusZBAT, BatSt, stVal]()"
       },
       "CALH": {
         "GrAlm": "transform[essStatus, essStatusZGEN, eSSEventAndStatusZGEN, Alrm, value]()"
       },
       "DGEN": {
         "GnSynSt": "transform[essStatus, essStatusZGEN, eSSEventAndStatusZGEN, GnSynSt, stVal]()",
-        "EmgStop": "transform[essStatus, essStatusZGEN, eSSEventAndStatusZGEN, EmgStop, stVal]()",
+        "x-EmgStop": "transform[essStatus, essStatusZGEN, eSSEventAndStatusZGEN, EmgStop, stVal]()",
         "WMaxRtg": "transform[essCapability, essCapabilityRatings, sourceCapabilityRatings, WMaxRtg, setMag]()",
-        "WGnOvPFRtg": "transform[essCapability, essCapabilityRatings, sourceCapabilityRatings, WOvrExtRtg, setMag]()",
+        "WOvPFRtg": "transform[essCapability, essCapabilityRatings, sourceCapabilityRatings, WOvrExtRtg, setMag]()",
         "OvPFRtg": "transform[essCapability, essCapabilityRatings, sourceCapabilityRatings, WOvrExtRtgPF, setMag]()",
-        "WGnUnPFRtg": "transform[essCapability, essCapabilityRatings, sourceCapabilityRatings, WUndExtRtg, setMag]()",
+        "WUnPFRtg": "transform[essCapability, essCapabilityRatings, sourceCapabilityRatings, WUndExtRtg, setMag]()",
         "UnPFRtg": "transform[essCapability, essCapabilityRatings, sourceCapabilityRatings, WUndExtRtgPF, setMag]()",
         "VAMaxRtg": "transform[essCapability, essCapabilityRatings, sourceCapabilityRatings, VAMaxRtg, setMag]()",
-        "Ieee1547Cat1": "transform[essCapability, essCapabilityRatings, sourceCapabilityRatings, NorOpCatRtg]()",
-        "Ieee1547Cat2": "transform[essCapability, essCapabilityRatings, sourceCapabilityRatings, AbnOpCatRtg]()",
-        "VarMaxSupRtg": "transform[essCapability, essCapabilityRatings, sourceCapabilityRatings, VarMaxInjRtg, setMag]()",
-        "VarMaxAbgRtg": "transform[essCapability, essCapabilityRatings, sourceCapabilityRatings, VarMaxAbsRtg, setMag]()",
+        "x-Ieee1547CatNorm": "transform[essCapability, essCapabilityRatings, sourceCapabilityRatings, NorOpCatRtg]()",
+        "x-Ieee1547CatAbn": "transform[essCapability, essCapabilityRatings, sourceCapabilityRatings, AbnOpCatRtg]()",
+        "AvarMaxRtg": "transform[essCapability, essCapabilityRatings, sourceCapabilityRatings, VarMaxInjRtg, setMag]()",
+        "IvarMaxRtg": "transform[essCapability, essCapabilityRatings, sourceCapabilityRatings, VarMaxAbsRtg, setMag]()",
         "VMaxRtg": "transform[essCapability, essCapabilityRatings, sourceCapabilityRatings, VMaxRtg, setMag]()",
         "VMinRtg": "transform[essCapability, essCapabilityRatings, sourceCapabilityRatings, VMinRtg, setMag]()",
         "AMaxRtg": "transform[essCapability, essCapabilityRatings, sourceCapabilityRatings, AMaxRtg, setMag]()",
@@ -82,8 +86,8 @@
         "HzNomRtg": "transform[essCapability, essCapabilityRatings, sourceCapabilityRatings, FreqNomRtg, setMag]()",
         "WMax": "transform[essCapability, essCapabilityConfiguration, sourceCapabilityConfiguration, WMax, setMag]()",
         "VAMax": "transform[essCapability, essCapabilityConfiguration, sourceCapabilityConfiguration, VAMax, setMag]()",
-        "Vmax": "transform[essCapability, essCapabilityConfiguration, sourceCapabilityConfiguration, VMax, setMag]()",
-        "Vmin": "transform[essCapability, essCapabilityConfiguration, sourceCapabilityConfiguration, VMin, setMag]()"
+        "VMax": "transform[essCapability, essCapabilityConfiguration, sourceCapabilityConfiguration, VMax, setMag]()",
+        "VMin": "transform[essCapability, essCapabilityConfiguration, sourceCapabilityConfiguration, VMin, setMag]()"
       },
       "LPHD": {
         "PhyNam": {
@@ -94,15 +98,15 @@
         }
       },
       "FSCH": {
-        "SchdEntr[#]": {
+        "x-SchdEntr[#]": {
           "#": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts]()",
           "StrTm": "transform[#, startTime, seconds]()",
           "DVVR": {
-            "ModEna": "transform[#, control, voltVarOperation, vVarParameter, modEna]()",
-            "VRef": "transform[#, control, voltVarOperation, vVarParameter, VRef]()",
+            "Mod": "transform[#, control, voltVarOperation, vVarParameter, modEna]()",
+            "VRefSpt": "transform[#, control, voltVarOperation, vVarParameter, VRef]()",
             "VRefAdjEna": "transform[#, control, voltVarOperation, vVarParameter, VRefAdjEna]()",
             "VRefTmms": "transform[#, control, voltVarOperation, vVarParameter, VRefTmms, setVal]()",
-            "OpnLoopMax": "transform[#, control, voltVarOperation, vVarParameter, OplTmmsMax](from_clearing_time())",
+            "OplTmsMax": "transform[#, control, voltVarOperation, vVarParameter, OplTmmsMax](from_clearing_time())",
             "VVArCrv": {
               "numPts": "transform[#, control, voltVarOperation, crvPts](count())",
               "crvPts[#]": {
@@ -113,8 +117,8 @@
             }
           },
           "DVWC": {
-            "ModEna": "transform[#, control, voltWOperation, voltWParameter, modEna]()",
-            "OpnLoopMax": "transform[#, control, voltWOperation, voltWParameter, OplTmmsMax](from_clearing_time())",
+            "Mod": "transform[#, control, voltWOperation, voltWParameter, modEna]()",
+            "OplTmsMax": "transform[#, control, voltWOperation, voltWParameter, OplTmmsMax](from_clearing_time())",
             "VWCrv": {
               "numPts": "transform[#, control, voltWOperation, crvPts](count())",
               "crvPts[#]": {
@@ -125,7 +129,7 @@
             }
           },
           "DWVR": {
-            "ModEna": "transform[#, control, wVarOperation, wVarParameter, modEna]()",
+            "Mod": "transform[#, control, wVarOperation, wVarParameter, modEna]()",
             "WVArCrv": {
               "numPts": "transform[#, control, wVarOperation, crvPts](count())",
               "crvPts[#]": {
@@ -138,110 +142,94 @@
           "DHFW": {
             "HzStr": "transform[#, control, hzWOperation, overHzWPt, deadbandHzVal]()",
             "WGra": "transform[#, control, hzWOperation, overHzWPt, slopeVal]()",
-            "ModEna": "transform[#, control, hzWOperation, overHzWParameter, modEna]()",
-            "OpnLoopMax": "transform[#, control, hzWOperation, overHzWParameter, OplTmmsMax](from_clearing_time())"
+            "Mod": "transform[#, control, hzWOperation, overHzWParameter, modEna]()",
+            "OplTmsMax": "transform[#, control, hzWOperation, overHzWParameter, OplTmmsMax](from_clearing_time())"
           },
           "DLFW": {
             "HzStr": "transform[#, control, hzWOperation, underHzWPt, deadbandHzVal]()",
             "WGra": "transform[#, control, hzWOperation, underHzWPt, slopeVal]()",
-            "ModEna": "transform[#, control, hzWOperation, underHzWParameter, modEna]()",
-            "OpnLoopMax": "transform[#, control, hzWOperation, underHzWParameter, OplTmmsMax](from_clearing_time())"
+            "Mod": "transform[#, control, hzWOperation, underHzWParameter, modEna]()",
+            "OplTmsMax": "transform[#, control, hzWOperation, underHzWParameter, OplTmmsMax](from_clearing_time())"
           },
           "DFPF": {
-            "ModEna": "transform[#, control, pFOperation, pFParameter, modEna]()",
-            "PFGnTgt": "transform[#, control, pFOperation, pFParameter, pFGnTgtMxVal]()",
-            "PFExtSet": "transform[#, control, pFOperation, pFParameter, pFExtSet]()"
+            "Mod": "transform[#, control, pFOperation, pFParameter, modEna]()",
+            "PFGnTgtSpt": "transform[#, control, pFOperation, pFParameter, pFGnTgtMxVal]()",
+            "PFGnExtQud": "transform[#, control, pFOperation, pFParameter, pFExtSet]()"
           },
           "DVAR": {
-            "ModEna": "transform[#, control, vArOperation, modEna]()",
-            "VArTgt": "transform[#, control, vArOperation, varParameter, varTgtSpt]()"
+            "Mod": "transform[#, control, vArOperation, modEna]()",
+            "VArTgtSpt": "transform[#, control, vArOperation, varParameter, varTgtSpt]()"
           },
           "DWGC": {
-            "ModEna": "transform[#, control, wOperation, modEna]()",
+            "Mod": "transform[#, control, wOperation, modEna]()",
             "WSpt": "transform[#, control, wOperation, wParameter, wSpt]()"
           },
           "DWMX": {
-            "ModEna": "transform[#, control, limitWOperation, maxLimParameter, modEna]()",
-            "LimW": "transform[#, control, limitWOperation, wMaxSptVal]()"
+            "Mod": "transform[#, control, limitWOperation, maxLimParameter, modEna]()",
+            "WMaxSpt": "transform[#, control, limitWOperation, wMaxSptVal]()"
           },
           "DWMN": {
-            "ModEna": "transform[#, control, limitWOperation, minLimParameter, modEna]()",
-            "LimW": "transform[#, control, limitWOperation, wMinSptVal]()"
+            "Mod": "transform[#, control, limitWOperation, minLimParameter, modEna]()",
+            "WMinSpt": "transform[#, control, limitWOperation, wMinSptVal]()"
           },
           "DCTE": {
-            "RtnSrvAuth": "transform[#, control, enterServiceOperation, rtnSrvAuto]()",
+            "RtnSvcAuth": "transform[#, control, enterServiceOperation, rtnSrvAuto]()",
             "VHiLim": "transform[#, control, enterServiceOperation, vHiLim]()",
             "VLoLim": "transform[#, control, enterServiceOperation, vLoLim]()",
             "HzHiLim": "transform[#, control, enterServiceOperation, hzHiLim]()",
             "HzLoLim": "transform[#, control, enterServiceOperation, hzLoLim]()",
-            "RtnSrvDlyTim": "transform[#, control, enterServiceOperation, enterServiceParameter, rtnDlTmms, setVal]()",
-            "RtnSrvRndTim": "transform[#, control, enterServiceOperation, enterServiceParameter, rndDlTmms, setVal]()",
-            "RtnSrvRmpTim": "transform[#, control, enterServiceOperation, enterServiceParameter, rtnRmpTmms, setVal]()"
+            "RtnDlTmms": "transform[#, control, enterServiceOperation, enterServiceParameter, rtnDlTmms, setVal]()",
+            "x-RtnRndTmms": "transform[#, control, enterServiceOperation, enterServiceParameter, rndDlTmms, setVal]()",
+            "RtnRmpTmms": "transform[#, control, enterServiceOperation, enterServiceParameter, rtnRmpTmms, setVal]()"
           },
-          "DHVT": {
-            "TrZnSt": {
-              "PTOV": {
-                "TmVCrv": {
-                  "numPts": "transform[#, control, tmVoltTripOperation, overCrvPts](count())",
-                  "crvPts[#]": {
-                    "#": "transform[#, control, tmVoltTripOperation, overCrvPts]()",
-                    "xVal": "transform[#, voltVal]()",
-                    "yVal": "transform[#, tmVal](from_clearing_time())"
-                  }
-                }
+          "PTOV1": {
+            "TmVChr": {
+              "numPts": "transform[#, control, tmVoltTripOperation, overCrvPts](count())",
+              "crvPts[#]": {
+                "#": "transform[#, control, tmVoltTripOperation, overCrvPts]()",
+                "xVal": "transform[#, voltVal]()",
+                "yVal": "transform[#, tmVal](from_clearing_time())"
               }
             }
           },
-          "DLVT": {
-            "TrZnSt": {
-              "PTUV": {
-                "TmVCrv": {
-                  "numPts": "transform[#, control, tmVoltTripOperation, underCrvPts](count())",
-                  "crvPts[#]": {
-                    "#": "transform[#, control, tmVoltTripOperation, underCrvPts]()",
-                    "xVal": "transform[#, voltVal]()",
-                    "yVal": "transform[#, tmVal](from_clearing_time())"
-                  }
-                }
+          "PTUV1": {
+            "TmVChr": {
+              "numPts": "transform[#, control, tmVoltTripOperation, underCrvPts](count())",
+              "crvPts[#]": {
+                "#": "transform[#, control, tmVoltTripOperation, underCrvPts]()",
+                "xVal": "transform[#, voltVal]()",
+                "yVal": "transform[#, tmVal](from_clearing_time())"
               }
             }
           },
-          "DHFT": {
-            "TrZnSt": {
-              "PTOF": {
-                "TmHzCrv": {
-                  "numPts": "transform[#, control, tmHzTripOperation, overCrvPts](count())",
-                  "crvPts[#]": {
-                    "#": "transform[#, control, tmHzTripOperation, overCrvPts]()",
-                    "xVal": "transform[#, hzVal]()",
-                    "yVal": "transform[#, tmVal](from_clearing_time())"
-                  }
-                }
+          "PTOF1": {
+            "x-TmHzChr": {
+              "numPts": "transform[#, control, tmHzTripOperation, overCrvPts](count())",
+              "crvPts[#]": {
+                "#": "transform[#, control, tmHzTripOperation, overCrvPts]()",
+                "xVal": "transform[#, hzVal]()",
+                "yVal": "transform[#, tmVal](from_clearing_time())"
               }
             }
           },
-          "DLFT": {
-            "TrZnSt": {
-              "PTUF": {
-                "TmHzCrv": {
-                  "numPts": "transform[#, control, tmHzTripOperation, underCrvPts](count())",
-                  "crvPts[#]": {
-                    "#": "transform[#, control, tmHzTripOperation, underCrvPts]()",
-                    "xVal": "transform[#, hzVal]()",
-                    "yVal": "transform[#, tmVal](from_clearing_time())"
-                  }
-                }
+          "PTUF1": {
+            "x-TmHzChr": {
+              "numPts": "transform[#, control, tmHzTripOperation, underCrvPts](count())",
+              "crvPts[#]": {
+                "#": "transform[#, control, tmHzTripOperation, underCrvPts]()",
+                "xVal": "transform[#, hzVal]()",
+                "yVal": "transform[#, tmVal](from_clearing_time())"
               }
             }
           }
         }
       },
       "DVVR": {
-        "ModEna": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltVarOperation', 'vVarParameter', 'modEna'))",
-        "VRef": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltVarOperation', 'vVarParameter', 'VRef'))",
+        "Mod": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltVarOperation', 'vVarParameter', 'modEna'))",
+        "VRefSpt": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltVarOperation', 'vVarParameter', 'VRef'))",
         "VRefAdjEna": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltVarOperation', 'vVarParameter', 'VRefAdjEna'))",
         "VRefTmms": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltVarOperation', 'vVarParameter', 'VRefTmms', 'setVal'))",
-        "OpnLoopMax": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltVarOperation', 'vVarParameter', 'OplTmmsMax'), from_clearing_time())",
+        "OplTmsMax": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltVarOperation', 'vVarParameter', 'OplTmmsMax'), from_clearing_time())",
         "VVArCrv": {
           "numPts": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltVarOperation', 'crvPts'), count())",
           "crvPts[#]": {
@@ -252,8 +240,8 @@
         }
       },
       "DVWC": {
-        "ModEna": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltWOperation', 'voltWParameter', 'modEna'))",
-        "OpnLoopMax": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltWOperation', 'voltWParameter', 'OplTmmsMax'), from_clearing_time())",
+        "Mod": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltWOperation', 'voltWParameter', 'modEna'))",
+        "OplTmsMax": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltWOperation', 'voltWParameter', 'OplTmmsMax'), from_clearing_time())",
         "VWCrv": {
           "numPts": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltWOperation', 'crvPts'), count())",
           "crvPts[#]": {
@@ -264,7 +252,7 @@
         }
       },
       "DWVR": {
-        "ModEna": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'wVarOperation', 'wVarParameter', 'modEna'))",
+        "Mod": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'wVarOperation', 'wVarParameter', 'modEna'))",
         "WVArCrv": {
           "numPts": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'wVarOperation', 'crvPts'), count())",
           "crvPts[#]": {
@@ -277,99 +265,83 @@
       "DHFW": {
         "HzStr": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'overHzWPt', 'deadbandHzVal'))",
         "WGra": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'overHzWPt', 'slopeVal'))",
-        "ModEna": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'overHzWParameter', 'modEna'))",
-        "OpnLoopMax": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'overHzWParameter', 'OplTmmsMax'), from_clearing_time())"
+        "Mod": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'overHzWParameter', 'modEna'))",
+        "OplTmsMax": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'overHzWParameter', 'OplTmmsMax'), from_clearing_time())"
       },
       "DLFW": {
         "HzStr": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'underHzWPt', 'deadbandHzVal'))",
         "WGra": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'underHzWPt', 'slopeVal'))",
-        "ModEna": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'underHzWParameter', 'modEna'))",
-        "OpnLoopMax": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'underHzWParameter', 'OplTmmsMax'), from_clearing_time())"
+        "Mod": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'underHzWParameter', 'modEna'))",
+        "OplTmsMax": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'underHzWParameter', 'OplTmmsMax'), from_clearing_time())"
       },
       "DFPF": {
-        "ModEna": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'pFOperation', 'pFParameter', 'modEna'))",
-        "PFGnTgt": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'pFOperation', 'pFParameter', 'pFGnTgtMxVal'))",
-        "PFExtSet": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'pFOperation', 'pFParameter', 'pFExtSet'))"
+        "Mod": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'pFOperation', 'pFParameter', 'modEna'))",
+        "PFGnTgtSpt": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'pFOperation', 'pFParameter', 'pFGnTgtMxVal'))",
+        "PFGnExtQud": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'pFOperation', 'pFParameter', 'pFExtSet'))"
       },
       "DVAR": {
-        "ModEna": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'vArOperation', 'modEna'))",
-        "VArTgt": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'vArOperation', 'varParameter', 'varTgtSpt'))"
+        "Mod": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'vArOperation', 'modEna'))",
+        "VArTgtSpt": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'vArOperation', 'varParameter', 'varTgtSpt'))"
       },
       "DWGC": {
-        "ModEna": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'wOperation', 'modEna'))",
+        "Mod": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'wOperation', 'modEna'))",
         "WSpt": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'wOperation', 'wParameter', 'wSpt'))"
       },
       "DWMX": {
-        "ModEna": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'limitWOperation', 'maxLimParameter', 'modEna'))",
-        "LimW": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'limitWOperation', 'wMaxSptVal'))"
+        "Mod": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'limitWOperation', 'maxLimParameter', 'modEna'))",
+        "WMaxSpt": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'limitWOperation', 'wMaxSptVal'))"
       },
       "DWMN": {
-        "ModEna": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'limitWOperation', 'minLimParameter', 'modEna'))",
-        "LimW": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'limitWOperation', 'wMinSptVal'))"
+        "Mod": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'limitWOperation', 'minLimParameter', 'modEna'))",
+        "WMinSpt": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'limitWOperation', 'wMinSptVal'))"
       },
       "DCTE": {
-        "RtnSrvAuth": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'rtnSrvAuto'))",
+        "RtnSvcAuth": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'rtnSrvAuto'))",
         "VHiLim": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'vHiLim'))",
         "VLoLim": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'vLoLim'))",
         "HzHiLim": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'hzHiLim'))",
         "HzLoLim": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'hzLoLim'))",
-        "RtnSrvDlyTim": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'enterServiceParameter', 'rtnDlTmms', 'setVal'))",
-        "RtnSrvRndTim": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'enterServiceParameter', 'rndDlTmms', 'setVal'))",
-        "RtnSrvRmpTim": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'enterServiceParameter', 'rtnRmpTmms', 'setVal'))"
+        "RtnDlTmms": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'enterServiceParameter', 'rtnDlTmms', 'setVal'))",
+        "x-RtnRndTmms": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'enterServiceParameter', 'rndDlTmms', 'setVal'))",
+        "RtnRmpTmms": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'enterServiceParameter', 'rtnRmpTmms', 'setVal'))"
       },
-      "DHVT": {
-        "TrZnSt": {
-          "PTOV": {
-            "TmVCrv": {
-              "numPts": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmVoltTripOperation', 'overCrvPts'), count())",
-              "crvPts[#]": {
-                "#": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmVoltTripOperation', 'overCrvPts'))",
-                "xVal": "transform[#, voltVal]()",
-                "yVal": "transform[#, tmVal](from_clearing_time())"
-              }
-            }
+      "PTOV1": {
+        "TmVChr": {
+          "numPts": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmVoltTripOperation', 'overCrvPts'), count())",
+          "crvPts[#]": {
+            "#": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmVoltTripOperation', 'overCrvPts'))",
+            "xVal": "transform[#, voltVal]()",
+            "yVal": "transform[#, tmVal](from_clearing_time())"
           }
         }
       },
-      "DLVT": {
-        "TrZnSt": {
-          "PTUV": {
-            "TmVCrv": {
-              "numPts": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmVoltTripOperation', 'underCrvPts'), count())",
-              "crvPts[#]": {
-                "#": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmVoltTripOperation', 'underCrvPts'))",
-                "xVal": "transform[#, voltVal]()",
-                "yVal": "transform[#, tmVal](from_clearing_time())"
-              }
-            }
+      "PTUV1": {
+        "TmVChr": {
+          "numPts": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmVoltTripOperation', 'underCrvPts'), count())",
+          "crvPts[#]": {
+            "#": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmVoltTripOperation', 'underCrvPts'))",
+            "xVal": "transform[#, voltVal]()",
+            "yVal": "transform[#, tmVal](from_clearing_time())"
           }
         }
       },
-      "DHFT": {
-        "TrZnSt": {
-          "PTOF": {
-            "TmHzCrv": {
-              "numPts": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmHzTripOperation', 'overCrvPts'), count())",
-              "crvPts[#]": {
-                "#": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmHzTripOperation', 'overCrvPts'))",
-                "xVal": "transform[#, hzVal]()",
-                "yVal": "transform[#, tmVal](from_clearing_time())"
-              }
-            }
+      "PTOF1": {
+        "x-TmHzChr": {
+          "numPts": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmHzTripOperation', 'overCrvPts'), count())",
+          "crvPts[#]": {
+            "#": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmHzTripOperation', 'overCrvPts'))",
+            "xVal": "transform[#, hzVal]()",
+            "yVal": "transform[#, tmVal](from_clearing_time())"
           }
         }
       },
-      "DLFT": {
-        "TrZnSt": {
-          "PTUF": {
-            "TmHzCrv": {
-              "numPts": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmHzTripOperation', 'underCrvPts'), count())",
-              "crvPts[#]": {
-                "#": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmHzTripOperation', 'underCrvPts'))",
-                "xVal": "transform[#, hzVal]()",
-                "yVal": "transform[#, tmVal](from_clearing_time())"
-              }
-            }
+      "PTUF1": {
+        "x-TmHzChr": {
+          "numPts": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmHzTripOperation', 'underCrvPts'), count())",
+          "crvPts[#]": {
+            "#": "transform[essControl, essControlFSCC, essControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmHzTripOperation', 'underCrvPts'))",
+            "xVal": "transform[#, hzVal]()",
+            "yVal": "transform[#, tmVal](from_clearing_time())"
           }
         }
       }
@@ -379,65 +351,64 @@
     "input_format": "openfmb.solar",
     "output_format": "61850",
     "pattern": {
-      "DECP": {
-        "MMXU": {
-          "TotW": "transform[solarReading, readingMMXU, W, net, cVal, mag]()",
-          "TotVAr": "transform[solarReading, readingMMXU, VAr, net, cVal, mag]()",
-          "TotVA": "transform[solarReading, readingMMXU, VA, net, cVal, mag]()",
-          "TotPF": "transform[solarReading, readingMMXU, PF, net, cVal, mag]()",
-          "Hz": "transform[solarReading, readingMMXU, Hz, mag]()",
-          "PhV": {
-            "phsA": {
-              "mag": "transform[solarReading, readingMMXU, PhV, phsA, cVal, mag]()"
-            },
-            "phsB": {
-              "mag": "transform[solarReading, readingMMXU, PhV, phsB, cVal, mag]()"
-            },
-            "phsC": {
-              "mag": "transform[solarReading, readingMMXU, PhV, phsC, cVal, mag]()"
-            }
+      "MMXU": {
+        "TotW": "transform[solarReading, readingMMXU, W, net, cVal, mag]()",
+        "TotVAr": "transform[solarReading, readingMMXU, VAr, net, cVal, mag]()",
+        "TotVA": "transform[solarReading, readingMMXU, VA, net, cVal, mag]()",
+        "TotPF": "transform[solarReading, readingMMXU, PF, net, cVal, mag]()",
+        "Hz": "transform[solarReading, readingMMXU, Hz, mag]()",
+        "PhV": {
+          "phsA": {
+            "mag": "transform[solarReading, readingMMXU, PhV, phsA, cVal, mag]()"
           },
-          "PPV": {
-            "phsAB": {
-              "mag": "transform[solarReading, readingMMXU, PPV, phsAB, cVal, mag]()"
-            },
-            "phsBC": {
-              "mag": "transform[solarReading, readingMMXU, PPV, phsBC, cVal, mag]()"
-            },
-            "phsCA": {
-              "mag": "transform[solarReading, readingMMXU, PPV, phsCA, cVal, mag]()"
-            }
+          "phsB": {
+            "mag": "transform[solarReading, readingMMXU, PhV, phsB, cVal, mag]()"
           },
-          "A": {
-            "phsA": {
-              "mag": "transform[solarReading, readingMMXU, A, phsA, cVal, mag]()"
-            },
-            "phsB": {
-              "mag": "transform[solarReading, readingMMXU, A, phsB, cVal, mag]()"
-            },
-            "phsC": {
-              "mag": "transform[solarReading, readingMMXU, A, phsC, cVal, mag]()"
-            }
+          "phsC": {
+            "mag": "transform[solarReading, readingMMXU, PhV, phsC, cVal, mag]()"
           }
         },
+        "PPV": {
+          "phsAB": {
+            "mag": "transform[solarReading, readingMMXU, PPV, phsAB, cVal, mag]()"
+          },
+          "phsBC": {
+            "mag": "transform[solarReading, readingMMXU, PPV, phsBC, cVal, mag]()"
+          },
+          "phsCA": {
+            "mag": "transform[solarReading, readingMMXU, PPV, phsCA, cVal, mag]()"
+          }
+        },
+        "A": {
+          "phsA": {
+            "mag": "transform[solarReading, readingMMXU, A, phsA, cVal, mag]()"
+          },
+          "phsB": {
+            "mag": "transform[solarReading, readingMMXU, A, phsB, cVal, mag]()"
+          },
+          "phsC": {
+            "mag": "transform[solarReading, readingMMXU, A, phsC, cVal, mag]()"
+          }
+        }
+      },
+      "DECP": {
         "VRef": "transform[solarCapability, solarCapabilityRatings, sourceCapabilityRatings, VNomRtg, setMag]()"
       },
       "DGEN": {
-        "DERState": "transform[solarStatus, solarStatusZGEN, solarEventAndStatusZGEN, OperatingState, value]()",
+        "DEROpSt": "transform[solarStatus, solarStatusZGEN, solarEventAndStatusZGEN, OperatingState, value]()",
         "GnOpSt": "transform[solarStatus, solarStatusZGEN, solarEventAndStatusZGEN, GridConnectionState, value]()",
         "GnSynSt": "transform[solarStatus, solarStatusZGEN, solarEventAndStatusZGEN, GnSynSt, stVal]()",
-        "EmgStop": "transform[solarStatus, solarStatusZGEN, solarEventAndStatusZGEN, EmgStop, stVal]()",
-        "GriMod": "transform[solarStatus, solarStatusZGEN, GriMod, setVal]()",
+        "x-EmgStop": "transform[solarStatus, solarStatusZGEN, solarEventAndStatusZGEN, EmgStop, stVal]()",
         "WMaxRtg": "transform[solarCapability, solarCapabilityRatings, sourceCapabilityRatings, WMaxRtg, setMag]()",
-        "WGnOvPFRtg": "transform[solarCapability, solarCapabilityRatings, sourceCapabilityRatings, WOvrExtRtg, setMag]()",
+        "WOvPFRtg": "transform[solarCapability, solarCapabilityRatings, sourceCapabilityRatings, WOvrExtRtg, setMag]()",
         "OvPFRtg": "transform[solarCapability, solarCapabilityRatings, sourceCapabilityRatings, WOvrExtRtgPF, setMag]()",
-        "WGnUnPFRtg": "transform[solarCapability, solarCapabilityRatings, sourceCapabilityRatings, WUndExtRtg, setMag]()",
+        "WUnPFRtg": "transform[solarCapability, solarCapabilityRatings, sourceCapabilityRatings, WUndExtRtg, setMag]()",
         "UnPFRtg": "transform[solarCapability, solarCapabilityRatings, sourceCapabilityRatings, WUndExtRtgPF, setMag]()",
         "VAMaxRtg": "transform[solarCapability, solarCapabilityRatings, sourceCapabilityRatings, VAMaxRtg, setMag]()",
-        "Ieee1547Cat1": "transform[solarCapability, solarCapabilityRatings, sourceCapabilityRatings, NorOpCatRtg]()",
-        "Ieee1547Cat2": "transform[solarCapability, solarCapabilityRatings, sourceCapabilityRatings, AbnOpCatRtg]()",
-        "VarMaxSupRtg": "transform[solarCapability, solarCapabilityRatings, sourceCapabilityRatings, VarMaxInjRtg, setMag]()",
-        "VarMaxAbgRtg": "transform[solarCapability, solarCapabilityRatings, sourceCapabilityRatings, VarMaxAbsRtg, setMag]()",
+        "x-Ieee1547CatNorm": "transform[solarCapability, solarCapabilityRatings, sourceCapabilityRatings, NorOpCatRtg]()",
+        "x-Ieee1547CatAbn": "transform[solarCapability, solarCapabilityRatings, sourceCapabilityRatings, AbnOpCatRtg]()",
+        "AvarMaxRtg": "transform[solarCapability, solarCapabilityRatings, sourceCapabilityRatings, VarMaxInjRtg, setMag]()",
+        "IvarMaxRtg": "transform[solarCapability, solarCapabilityRatings, sourceCapabilityRatings, VarMaxAbsRtg, setMag]()",
         "VMaxRtg": "transform[solarCapability, solarCapabilityRatings, sourceCapabilityRatings, VMaxRtg, setMag]()",
         "VMinRtg": "transform[solarCapability, solarCapabilityRatings, sourceCapabilityRatings, VMinRtg, setMag]()",
         "AMaxRtg": "transform[solarCapability, solarCapabilityRatings, sourceCapabilityRatings, AMaxRtg, setMag]()",
@@ -445,8 +416,11 @@
         "HzNomRtg": "transform[solarCapability, solarCapabilityRatings, sourceCapabilityRatings, FreqNomRtg, setMag]()",
         "WMax": "transform[solarCapability, solarCapabilityConfiguration, sourceCapabilityConfiguration, WMax, setMag]()",
         "VAMax": "transform[solarCapability, solarCapabilityConfiguration, sourceCapabilityConfiguration, VAMax, setMag]()",
-        "Vmax": "transform[solarCapability, solarCapabilityConfiguration, sourceCapabilityConfiguration, VMax, setMag]()",
-        "Vmin": "transform[solarCapability, solarCapabilityConfiguration, sourceCapabilityConfiguration, VMin, setMag]()"
+        "VMax": "transform[solarCapability, solarCapabilityConfiguration, sourceCapabilityConfiguration, VMax, setMag]()",
+        "VMin": "transform[solarCapability, solarCapabilityConfiguration, sourceCapabilityConfiguration, VMin, setMag]()"
+      },
+      "DINV": {
+        "GriMod": "transform[solarStatus, solarStatusZGEN, GriMod, setVal]()"
       },
       "CALH": {
         "GrAlm": "transform[solarStatus, solarStatusZGEN, solarEventAndStatusZGEN, Alrm, value]()"
@@ -460,15 +434,15 @@
         }
       },
       "FSCH": {
-        "SchdEntr[#]": {
+        "x-SchdEntr[#]": {
           "#": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts]()",
           "StrTm": "transform[#, startTime, seconds]()",
           "DVVR": {
-            "ModEna": "transform[#, control, voltVarOperation, vVarParameter, modEna]()",
-            "VRef": "transform[#, control, voltVarOperation, vVarParameter, VRef]()",
+            "Mod": "transform[#, control, voltVarOperation, vVarParameter, modEna]()",
+            "VRefSpt": "transform[#, control, voltVarOperation, vVarParameter, VRef]()",
             "VRefAdjEna": "transform[#, control, voltVarOperation, vVarParameter, VRefAdjEna]()",
             "VRefTmms": "transform[#, control, voltVarOperation, vVarParameter, VRefTmms, setVal]()",
-            "OpnLoopMax": "transform[#, control, voltVarOperation, vVarParameter, OplTmmsMax](from_clearing_time())",
+            "OplTmsMax": "transform[#, control, voltVarOperation, vVarParameter, OplTmmsMax](from_clearing_time())",
             "VVArCrv": {
               "numPts": "transform[#, control, voltVarOperation, crvPts](count())",
               "crvPts[#]": {
@@ -479,8 +453,8 @@
             }
           },
           "DVWC": {
-            "ModEna": "transform[#, control, voltWOperation, voltWParameter, modEna]()",
-            "OpnLoopMax": "transform[#, control, voltWOperation, voltWParameter, OplTmmsMax](from_clearing_time())",
+            "Mod": "transform[#, control, voltWOperation, voltWParameter, modEna]()",
+            "OplTmsMax": "transform[#, control, voltWOperation, voltWParameter, OplTmmsMax](from_clearing_time())",
             "VWCrv": {
               "numPts": "transform[#, control, voltWOperation, crvPts](count())",
               "crvPts[#]": {
@@ -491,7 +465,7 @@
             }
           },
           "DWVR": {
-            "ModEna": "transform[#, control, wVarOperation, wVarParameter, modEna]()",
+            "Mod": "transform[#, control, wVarOperation, wVarParameter, modEna]()",
             "WVArCrv": {
               "numPts": "transform[#, control, wVarOperation, crvPts](count())",
               "crvPts[#]": {
@@ -504,110 +478,94 @@
           "DHFW": {
             "HzStr": "transform[#, control, hzWOperation, overHzWPt, deadbandHzVal]()",
             "WGra": "transform[#, control, hzWOperation, overHzWPt, slopeVal]()",
-            "ModEna": "transform[#, control, hzWOperation, overHzWParameter, modEna]()",
-            "OpnLoopMax": "transform[#, control, hzWOperation, overHzWParameter, OplTmmsMax](from_clearing_time())"
+            "Mod": "transform[#, control, hzWOperation, overHzWParameter, modEna]()",
+            "OplTmsMax": "transform[#, control, hzWOperation, overHzWParameter, OplTmmsMax](from_clearing_time())"
           },
           "DLFW": {
             "HzStr": "transform[#, control, hzWOperation, underHzWPt, deadbandHzVal]()",
             "WGra": "transform[#, control, hzWOperation, underHzWPt, slopeVal]()",
-            "ModEna": "transform[#, control, hzWOperation, underHzWParameter, modEna]()",
-            "OpnLoopMax": "transform[#, control, hzWOperation, underHzWParameter, OplTmmsMax](from_clearing_time())"
+            "Mod": "transform[#, control, hzWOperation, underHzWParameter, modEna]()",
+            "OplTmsMax": "transform[#, control, hzWOperation, underHzWParameter, OplTmmsMax](from_clearing_time())"
           },
           "DFPF": {
-            "ModEna": "transform[#, control, pFOperation, pFParameter, modEna]()",
-            "PFGnTgt": "transform[#, control, pFOperation, pFParameter, pFGnTgtMxVal]()",
-            "PFExtSet": "transform[#, control, pFOperation, pFParameter, pFExtSet]()"
+            "Mod": "transform[#, control, pFOperation, pFParameter, modEna]()",
+            "PFGnTgtSpt": "transform[#, control, pFOperation, pFParameter, pFGnTgtMxVal]()",
+            "PFGnExtQud": "transform[#, control, pFOperation, pFParameter, pFExtSet]()"
           },
           "DVAR": {
-            "ModEna": "transform[#, control, vArOperation, modEna]()",
-            "VArTgt": "transform[#, control, vArOperation, varParameter, varTgtSpt]()"
+            "Mod": "transform[#, control, vArOperation, modEna]()",
+            "VArTgtSpt": "transform[#, control, vArOperation, varParameter, varTgtSpt]()"
           },
           "DWGC": {
-            "ModEna": "transform[#, control, wOperation, modEna]()",
+            "Mod": "transform[#, control, wOperation, modEna]()",
             "WSpt": "transform[#, control, wOperation, wParameter, wSpt]()"
           },
           "DWMX": {
-            "ModEna": "transform[#, control, limitWOperation, maxLimParameter, modEna]()",
-            "LimW": "transform[#, control, limitWOperation, wMaxSptVal]()"
+            "Mod": "transform[#, control, limitWOperation, maxLimParameter, modEna]()",
+            "WMaxSpt": "transform[#, control, limitWOperation, wMaxSptVal]()"
           },
           "DWMN": {
-            "ModEna": "transform[#, control, limitWOperation, minLimParameter, modEna]()",
-            "LimW": "transform[#, control, limitWOperation, wMinSptVal]()"
+            "Mod": "transform[#, control, limitWOperation, minLimParameter, modEna]()",
+            "WMinSpt": "transform[#, control, limitWOperation, wMinSptVal]()"
           },
           "DCTE": {
-            "RtnSrvAuth": "transform[#, control, enterServiceOperation, rtnSrvAuto]()",
+            "RtnSvcAuth": "transform[#, control, enterServiceOperation, rtnSrvAuto]()",
             "VHiLim": "transform[#, control, enterServiceOperation, vHiLim]()",
             "VLoLim": "transform[#, control, enterServiceOperation, vLoLim]()",
             "HzHiLim": "transform[#, control, enterServiceOperation, hzHiLim]()",
             "HzLoLim": "transform[#, control, enterServiceOperation, hzLoLim]()",
-            "RtnSrvDlyTim": "transform[#, control, enterServiceOperation, enterServiceParameter, rtnDlTmms, setVal]()",
-            "RtnSrvRndTim": "transform[#, control, enterServiceOperation, enterServiceParameter, rndDlTmms, setVal]()",
-            "RtnSrvRmpTim": "transform[#, control, enterServiceOperation, enterServiceParameter, rtnRmpTmms, setVal]()"
+            "RtnDlTmms": "transform[#, control, enterServiceOperation, enterServiceParameter, rtnDlTmms, setVal]()",
+            "x-RtnRndTmms": "transform[#, control, enterServiceOperation, enterServiceParameter, rndDlTmms, setVal]()",
+            "RtnRmpTmms": "transform[#, control, enterServiceOperation, enterServiceParameter, rtnRmpTmms, setVal]()"
           },
-          "DHVT": {
-            "TrZnSt": {
-              "PTOV": {
-                "TmVCrv": {
-                  "numPts": "transform[#, control, tmVoltTripOperation, overCrvPts](count())",
-                  "crvPts[#]": {
-                    "#": "transform[#, control, tmVoltTripOperation, overCrvPts]()",
-                    "xVal": "transform[#, voltVal]()",
-                    "yVal": "transform[#, tmVal](from_clearing_time())"
-                  }
-                }
+          "PTOV1": {
+            "TmVChr": {
+              "numPts": "transform[#, control, tmVoltTripOperation, overCrvPts](count())",
+              "crvPts[#]": {
+                "#": "transform[#, control, tmVoltTripOperation, overCrvPts]()",
+                "xVal": "transform[#, voltVal]()",
+                "yVal": "transform[#, tmVal](from_clearing_time())"
               }
             }
           },
-          "DLVT": {
-            "TrZnSt": {
-              "PTUV": {
-                "TmVCrv": {
-                  "numPts": "transform[#, control, tmVoltTripOperation, underCrvPts](count())",
-                  "crvPts[#]": {
-                    "#": "transform[#, control, tmVoltTripOperation, underCrvPts]()",
-                    "xVal": "transform[#, voltVal]()",
-                    "yVal": "transform[#, tmVal](from_clearing_time())"
-                  }
-                }
+          "PTUV1": {
+            "TmVChr": {
+              "numPts": "transform[#, control, tmVoltTripOperation, underCrvPts](count())",
+              "crvPts[#]": {
+                "#": "transform[#, control, tmVoltTripOperation, underCrvPts]()",
+                "xVal": "transform[#, voltVal]()",
+                "yVal": "transform[#, tmVal](from_clearing_time())"
               }
             }
           },
-          "DHFT": {
-            "TrZnSt": {
-              "PTOF": {
-                "TmHzCrv": {
-                  "numPts": "transform[#, control, tmHzTripOperation, overCrvPts](count())",
-                  "crvPts[#]": {
-                    "#": "transform[#, control, tmHzTripOperation, overCrvPts]()",
-                    "xVal": "transform[#, hzVal]()",
-                    "yVal": "transform[#, tmVal](from_clearing_time())"
-                  }
-                }
+          "PTOF1": {
+            "x-TmHzChr": {
+              "numPts": "transform[#, control, tmHzTripOperation, overCrvPts](count())",
+              "crvPts[#]": {
+                "#": "transform[#, control, tmHzTripOperation, overCrvPts]()",
+                "xVal": "transform[#, hzVal]()",
+                "yVal": "transform[#, tmVal](from_clearing_time())"
               }
             }
           },
-          "DLFT": {
-            "TrZnSt": {
-              "PTUF": {
-                "TmHzCrv": {
-                  "numPts": "transform[#, control, tmHzTripOperation, underCrvPts](count())",
-                  "crvPts[#]": {
-                    "#": "transform[#, control, tmHzTripOperation, underCrvPts]()",
-                    "xVal": "transform[#, hzVal]()",
-                    "yVal": "transform[#, tmVal](from_clearing_time())"
-                  }
-                }
+          "PTUF1": {
+            "x-TmHzChr": {
+              "numPts": "transform[#, control, tmHzTripOperation, underCrvPts](count())",
+              "crvPts[#]": {
+                "#": "transform[#, control, tmHzTripOperation, underCrvPts]()",
+                "xVal": "transform[#, hzVal]()",
+                "yVal": "transform[#, tmVal](from_clearing_time())"
               }
             }
           }
         }
       },
       "DVVR": {
-        "ModEna": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltVarOperation', 'vVarParameter', 'modEna'))",
-        "VRef": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltVarOperation', 'vVarParameter', 'VRef'))",
+        "Mod": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltVarOperation', 'vVarParameter', 'modEna'))",
+        "VRefSpt": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltVarOperation', 'vVarParameter', 'VRef'))",
         "VRefAdjEna": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltVarOperation', 'vVarParameter', 'VRefAdjEna'))",
         "VRefTmms": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltVarOperation', 'vVarParameter', 'VRefTmms', 'setVal'))",
-        "OpnLoopMax": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltVarOperation', 'vVarParameter', 'OplTmmsMax'), from_clearing_time())",
+        "OplTmsMax": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltVarOperation', 'vVarParameter', 'OplTmmsMax'), from_clearing_time())",
         "VVArCrv": {
           "numPts": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltVarOperation', 'crvPts'), count())",
           "crvPts[#]": {
@@ -618,8 +576,8 @@
         }
       },
       "DVWC": {
-        "ModEna": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltWOperation', 'voltWParameter', 'modEna'))",
-        "OpnLoopMax": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltWOperation', 'voltWParameter', 'OplTmmsMax'), from_clearing_time())",
+        "Mod": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltWOperation', 'voltWParameter', 'modEna'))",
+        "OplTmsMax": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltWOperation', 'voltWParameter', 'OplTmmsMax'), from_clearing_time())",
         "VWCrv": {
           "numPts": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'voltWOperation', 'crvPts'), count())",
           "crvPts[#]": {
@@ -630,7 +588,7 @@
         }
       },
       "DWVR": {
-        "ModEna": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'wVarOperation', 'wVarParameter', 'modEna'))",
+        "Mod": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'wVarOperation', 'wVarParameter', 'modEna'))",
         "WVArCrv": {
           "numPts": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'wVarOperation', 'crvPts'), count())",
           "crvPts[#]": {
@@ -643,99 +601,83 @@
       "DHFW": {
         "HzStr": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'overHzWPt', 'deadbandHzVal'))",
         "WGra": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'overHzWPt', 'slopeVal'))",
-        "ModEna": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'overHzWParameter', 'modEna'))",
-        "OpnLoopMax": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'overHzWParameter', 'OplTmmsMax'), from_clearing_time())"
+        "Mod": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'overHzWParameter', 'modEna'))",
+        "OplTmsMax": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'overHzWParameter', 'OplTmmsMax'), from_clearing_time())"
       },
       "DLFW": {
         "HzStr": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'underHzWPt', 'deadbandHzVal'))",
         "WGra": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'underHzWPt', 'slopeVal'))",
-        "ModEna": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'underHzWParameter', 'modEna'))",
-        "OpnLoopMax": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'underHzWParameter', 'OplTmmsMax'), from_clearing_time())"
+        "Mod": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'underHzWParameter', 'modEna'))",
+        "OplTmsMax": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'hzWOperation', 'underHzWParameter', 'OplTmmsMax'), from_clearing_time())"
       },
       "DFPF": {
-        "ModEna": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'pFOperation', 'pFParameter', 'modEna'))",
-        "PFGnTgt": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'pFOperation', 'pFParameter', 'pFGnTgtMxVal'))",
-        "PFExtSet": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'pFOperation', 'pFParameter', 'pFExtSet'))"
+        "Mod": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'pFOperation', 'pFParameter', 'modEna'))",
+        "PFGnTgtSpt": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'pFOperation', 'pFParameter', 'pFGnTgtMxVal'))",
+        "PFGnExtQud": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'pFOperation', 'pFParameter', 'pFExtSet'))"
       },
       "DVAR": {
-        "ModEna": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'vArOperation', 'modEna'))",
-        "VArTgt": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'vArOperation', 'varParameter', 'varTgtSpt'))"
+        "Mod": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'vArOperation', 'modEna'))",
+        "VArTgtSpt": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'vArOperation', 'varParameter', 'varTgtSpt'))"
       },
       "DWGC": {
-        "ModEna": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'wOperation', 'modEna'))",
+        "Mod": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'wOperation', 'modEna'))",
         "WSpt": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'wOperation', 'wParameter', 'wSpt'))"
       },
       "DWMX": {
-        "ModEna": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'limitWOperation', 'maxLimParameter', 'modEna'))",
-        "LimW": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'limitWOperation', 'wMaxSptVal'))"
+        "Mod": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'limitWOperation', 'maxLimParameter', 'modEna'))",
+        "WMaxSpt": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'limitWOperation', 'wMaxSptVal'))"
       },
       "DWMN": {
-        "ModEna": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'limitWOperation', 'minLimParameter', 'modEna'))",
-        "LimW": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'limitWOperation', 'wMinSptVal'))"
+        "Mod": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'limitWOperation', 'minLimParameter', 'modEna'))",
+        "WMinSpt": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'limitWOperation', 'wMinSptVal'))"
       },
       "DCTE": {
-        "RtnSrvAuth": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'rtnSrvAuto'))",
+        "RtnSvcAuth": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'rtnSrvAuto'))",
         "VHiLim": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'vHiLim'))",
         "VLoLim": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'vLoLim'))",
         "HzHiLim": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'hzHiLim'))",
         "HzLoLim": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'hzLoLim'))",
-        "RtnSrvDlyTim": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'enterServiceParameter', 'rtnDlTmms', 'setVal'))",
-        "RtnSrvRndTim": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'enterServiceParameter', 'rndDlTmms', 'setVal'))",
-        "RtnSrvRmpTim": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'enterServiceParameter', 'rtnRmpTmms', 'setVal'))"
+        "RtnDlTmms": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'enterServiceParameter', 'rtnDlTmms', 'setVal'))",
+        "x-RtnRndTmms": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'enterServiceParameter', 'rndDlTmms', 'setVal'))",
+        "RtnRmpTmms": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'enterServiceOperation', 'enterServiceParameter', 'rtnRmpTmms', 'setVal'))"
       },
-      "DHVT": {
-        "TrZnSt": {
-          "PTOV": {
-            "TmVCrv": {
-              "numPts": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmVoltTripOperation', 'overCrvPts'), count())",
-              "crvPts[#]": {
-                "#": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmVoltTripOperation', 'overCrvPts'))",
-                "xVal": "transform[#, voltVal]()",
-                "yVal": "transform[#, tmVal](from_clearing_time())"
-              }
-            }
+      "PTOV1": {
+        "TmVChr": {
+          "numPts": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmVoltTripOperation', 'overCrvPts'), count())",
+          "crvPts[#]": {
+            "#": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmVoltTripOperation', 'overCrvPts'))",
+            "xVal": "transform[#, voltVal]()",
+            "yVal": "transform[#, tmVal](from_clearing_time())"
           }
         }
       },
-      "DLVT": {
-        "TrZnSt": {
-          "PTUV": {
-            "TmVCrv": {
-              "numPts": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmVoltTripOperation', 'underCrvPts'), count())",
-              "crvPts[#]": {
-                "#": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmVoltTripOperation', 'underCrvPts'))",
-                "xVal": "transform[#, voltVal]()",
-                "yVal": "transform[#, tmVal](from_clearing_time())"
-              }
-            }
+      "PTUV1": {
+        "TmVChr": {
+          "numPts": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmVoltTripOperation', 'underCrvPts'), count())",
+          "crvPts[#]": {
+            "#": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmVoltTripOperation', 'underCrvPts'))",
+            "xVal": "transform[#, voltVal]()",
+            "yVal": "transform[#, tmVal](from_clearing_time())"
           }
         }
       },
-      "DHFT": {
-        "TrZnSt": {
-          "PTOF": {
-            "TmHzCrv": {
-              "numPts": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmHzTripOperation', 'overCrvPts'), count())",
-              "crvPts[#]": {
-                "#": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmHzTripOperation', 'overCrvPts'))",
-                "xVal": "transform[#, hzVal]()",
-                "yVal": "transform[#, tmVal](from_clearing_time())"
-              }
-            }
+      "PTOF1": {
+        "x-TmHzChr": {
+          "numPts": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmHzTripOperation', 'overCrvPts'), count())",
+          "crvPts[#]": {
+            "#": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmHzTripOperation', 'overCrvPts'))",
+            "xVal": "transform[#, hzVal]()",
+            "yVal": "transform[#, tmVal](from_clearing_time())"
           }
         }
       },
-      "DLFT": {
-        "TrZnSt": {
-          "PTUF": {
-            "TmHzCrv": {
-              "numPts": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmHzTripOperation', 'underCrvPts'), count())",
-              "crvPts[#]": {
-                "#": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmHzTripOperation', 'underCrvPts'))",
-                "xVal": "transform[#, hzVal]()",
-                "yVal": "transform[#, tmVal](from_clearing_time())"
-              }
-            }
+      "PTUF1": {
+        "x-TmHzChr": {
+          "numPts": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmHzTripOperation', 'underCrvPts'), count())",
+          "crvPts[#]": {
+            "#": "transform[solarControl, solarControlFSCC, SolarControlScheduleFSCH, ValDCSG, crvPts](immediate('control', 'tmHzTripOperation', 'underCrvPts'))",
+            "xVal": "transform[#, hzVal]()",
+            "yVal": "transform[#, tmVal](from_clearing_time())"
           }
         }
       }

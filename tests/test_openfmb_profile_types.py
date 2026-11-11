@@ -90,7 +90,7 @@ def test_profile_leaves_match_their_protobuf_types(case, device_format, registry
 
 def test_sunspec_excitation_and_enter_service_flags_round_trip():
     """SunSpec codes the PF excitation as 0 over-excited / 1 under-excited and enter-service as 0/1; 61850 and OpenFMB
-    carry both as booleans (PFExtSet TRUE = over-excited)."""
+    carry both as booleans (PFGnExtQud TRUE = over-excited)."""
     # The direct sunspec <-> 61850 definitions (the registry's route between the two formats may run through 1547).
     bundled = resources.files('interoperability').joinpath('transforms')
     defs = [d for f in bundled.iterdir() if f.is_file() and f.name.endswith('.json') for d in json.loads(f.read_text())]
@@ -98,12 +98,12 @@ def test_sunspec_excitation_and_enter_service_flags_round_trip():
     to_hub = TransformParser().build_transform_from_schema(direct('sunspec', '61850'))
     back = TransformParser().build_transform_from_schema(direct('61850', 'sunspec'))
     hub = to_hub.execute({'704': {'PFWInj': {'Ext': 0}}, '703': {'ES': 1}})
-    assert hub['DFPF']['PFExtSet'] is True and hub['DCTE']['RtnSrvAuth'] is True
+    assert hub['DFPF']['PFGnExtQud'] is True and hub['DCTE']['RtnSvcAuth'] is True
     hub = to_hub.execute({'704': {'PFWInj': {'Ext': 1}}, '703': {'ES': 0}})
-    assert hub['DFPF']['PFExtSet'] is False and hub['DCTE']['RtnSrvAuth'] is False
-    regs = back.execute({'DFPF': {'PFExtSet': True}, 'DCTE': {'RtnSrvAuth': True}})
+    assert hub['DFPF']['PFGnExtQud'] is False and hub['DCTE']['RtnSvcAuth'] is False
+    regs = back.execute({'DFPF': {'PFGnExtQud': True}, 'DCTE': {'RtnSvcAuth': True}})
     assert regs['704']['PFWInj']['Ext'] == 0 and regs['703']['ES'] == 1 and not isinstance(regs['703']['ES'], bool)
-    regs = back.execute({'DFPF': {'PFExtSet': False}, 'DCTE': {'RtnSrvAuth': False}})
+    regs = back.execute({'DFPF': {'PFGnExtQud': False}, 'DCTE': {'RtnSvcAuth': False}})
     assert regs['704']['PFWInj']['Ext'] == 1 and regs['703']['ES'] == 0
 
 
@@ -113,11 +113,11 @@ def test_durations_split_into_seconds_and_nanoseconds_and_back():
     defs = [d for f in bundled.iterdir() if f.is_file() and f.name.endswith('.json') for d in json.loads(f.read_text())]
     direct = lambda a, b: [d['pattern'] for d in defs if d.get('input_format') == a and d.get('output_format') == b]
     out = TransformParser(context={'mrid': 'm', 'name': 'n'}).build_transform_from_schema(direct('61850', 'openfmb.solar')) \
-        .execute({'DHFT': {'TrZnSt': {'PTOF': {'TmHzCrv': {'crvPts': [{'xVal': 61.2, 'yVal': 0.16}]}}}},
-                  'DVVR': {'OpnLoopMax': 2.5}})
+        .execute({'PTOF1': {'x-TmHzChr': {'crvPts': [{'xVal': 61.2, 'yVal': 0.16}]}},
+                  'DVVR': {'OplTmsMax': 2.5}})
     control = out['solarControl']['solarControlFSCC']['SolarControlScheduleFSCH']['ValDCSG']['crvPts'][0]['control']
     assert control['tmHzTripOperation']['overCrvPts'][0]['tmVal'] == {'seconds': 0, 'nanoseconds': 160000000}
     assert control['voltVarOperation']['vVarParameter']['OplTmmsMax'] == {'seconds': 2, 'nanoseconds': 500000000}
     back = TransformParser().build_transform_from_schema(direct('openfmb.solar', '61850')).execute(out)
-    assert back['DHFT']['TrZnSt']['PTOF']['TmHzCrv']['crvPts'][0]['yVal'] == pytest.approx(0.16)
-    assert back['DVVR']['OpnLoopMax'] == pytest.approx(2.5)
+    assert back['PTOF1']['x-TmHzChr']['crvPts'][0]['yVal'] == pytest.approx(0.16)
+    assert back['DVVR']['OplTmsMax'] == pytest.approx(2.5)

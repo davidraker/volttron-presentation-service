@@ -3,7 +3,7 @@
     "input_format": "1815.2.inputs",
     "output_format": "61850",
     "pattern": {
-      "MESA": {
+      "x-MESA": {
         "VersNum": "transform[AI, 0]()",
         "ImplLvl": "transform[AI, 1]()",
         "NumSchd": "transform[AI, 24]()",
@@ -12,7 +12,233 @@
         "NumBat": "transform[AI, 27]()",
         "FrzIntv": "transform[AI, 69]()",
         "FrzIntvUnt": "transform[AI, 70]()",
-        "CrvRef": "transform[BI, 107]()"
+        "CrvRef": "transform[BI, 107]()",
+        "NumDER": "transform[AI, 28]()",
+        "ReqSetGrp": "transform[AI, 66]()",
+        "EditSetGrp": "transform[AI, 67]()",
+        "SelSchdId": "transform[AI, 571]()",
+        "SelSchd": {
+          "SchdPrio": "transform[AI, 572]()",
+          "StrTm[Date]": "transform[AI, 574]()",
+          "StrTm[Time]": "transform[AI, 575]()",
+          "NxtStrTm": "transform[AI, 576]()",
+          "SchdReuse": "transform[AI, 577]()",
+          "SchdSt[1]": "transform[AI, 578]()",
+          "SchdSt[2]": "transform[AI, 579]()",
+          "NumEntr": "transform[AI, 580]()",
+          "SchdIntv[1]": "transform[AI, 581]()",
+          "x-SchdEntr[1]": "transform[AI, 582]()",
+          "SchdIntv[2]": "transform[AI, 583]()",
+          "x-SchdEntr[2]": "transform[AI, 584]()",
+          "SchdIntv[3]": "transform[AI, 585]()",
+          "x-SchdEntr[3]": "transform[AI, 586]()",
+          "SchdIntv[4]": "transform[AI, 587]()",
+          "x-SchdEntr[4]": "transform[AI, 588]()",
+          "SchdIntv[5]": "transform[AI, 589]()",
+          "x-SchdEntr[5]": "transform[AI, 590]()",
+          "SchdIntv[6]": "transform[AI, 591]()",
+          "x-SchdEntr[6]": "transform[AI, 592]()",
+          "SchdIntv[7]": "transform[AI, 593]()",
+          "x-SchdEntr[7]": "transform[AI, 594]()",
+          "SchdIntv[8]": "transform[AI, 595]()",
+          "x-SchdEntr[8]": "transform[AI, 596]()",
+          "SchdIntv[9]": "transform[AI, 597]()",
+          "x-SchdEntr[9]": "transform[AI, 598]()",
+          "SchdIntv[10]": "transform[AI, 599]()",
+          "x-SchdEntr[10]": "transform[AI, 600]()",
+          "SchdIntv[11]": "transform[AI, 601]()",
+          "x-SchdEntr[11]": "transform[AI, 602]()",
+          "SchdIntv[12]": "transform[AI, 603]()",
+          "x-SchdEntr[12]": "transform[AI, 604]()",
+          "SchdIntv[13]": "transform[AI, 605]()",
+          "x-SchdEntr[13]": "transform[AI, 606]()",
+          "SchdIntv[14]": "transform[AI, 607]()",
+          "x-SchdEntr[14]": "transform[AI, 608]()",
+          "SchdIntv[15]": "transform[AI, 609]()",
+          "x-SchdEntr[15]": "transform[AI, 610]()",
+          "SchdIntv[16]": "transform[AI, 611]()",
+          "x-SchdEntr[16]": "transform[AI, 612]()",
+          "SchdIntv[17]": "transform[AI, 613]()",
+          "x-SchdEntr[17]": "transform[AI, 614]()",
+          "SchdIntv[18]": "transform[AI, 615]()",
+          "x-SchdEntr[18]": "transform[AI, 616]()",
+          "SchdIntv[19]": "transform[AI, 617]()",
+          "x-SchdEntr[19]": "transform[AI, 618]()",
+          "SchdIntv[20]": "transform[AI, 619]()",
+          "x-SchdEntr[20]": "transform[AI, 620]()",
+          "SchdIntv[21]": "transform[AI, 621]()",
+          "x-SchdEntr[21]": "transform[AI, 622]()",
+          "SchdIntv[22]": "transform[AI, 623]()",
+          "x-SchdEntr[22]": "transform[AI, 624]()",
+          "SchdIntv[23]": "transform[AI, 625]()",
+          "x-SchdEntr[23]": "transform[AI, 626]()",
+          "SchdIntv[24]": "transform[AI, 627]()",
+          "x-SchdEntr[24]": "transform[AI, 628]()",
+          "SchdIntv[25]": "transform[AI, 629]()",
+          "x-SchdEntr[25]": "transform[AI, 630]()",
+          "SchdIntv[26]": "transform[AI, 631]()",
+          "x-SchdEntr[26]": "transform[AI, 632]()",
+          "SchdIntv[27]": "transform[AI, 633]()",
+          "x-SchdEntr[27]": "transform[AI, 634]()",
+          "SchdIntv[28]": "transform[AI, 635]()",
+          "x-SchdEntr[28]": "transform[AI, 636]()",
+          "SchdIntv[29]": "transform[AI, 637]()",
+          "x-SchdEntr[29]": "transform[AI, 638]()",
+          "SchdIntv[30]": "transform[AI, 639]()",
+          "x-SchdEntr[30]": "transform[AI, 640]()",
+          "SchdIntv[31]": "transform[AI, 641]()",
+          "x-SchdEntr[31]": "transform[AI, 642]()",
+          "SchdIntv[32]": "transform[AI, 643]()",
+          "x-SchdEntr[32]": "transform[AI, 644]()",
+          "SchdIntv[33]": "transform[AI, 645]()",
+          "x-SchdEntr[33]": "transform[AI, 646]()",
+          "SchdIntv[34]": "transform[AI, 647]()",
+          "x-SchdEntr[34]": "transform[AI, 648]()",
+          "SchdIntv[35]": "transform[AI, 649]()",
+          "x-SchdEntr[35]": "transform[AI, 650]()",
+          "SchdIntv[36]": "transform[AI, 651]()",
+          "x-SchdEntr[36]": "transform[AI, 652]()",
+          "SchdIntv[37]": "transform[AI, 653]()",
+          "x-SchdEntr[37]": "transform[AI, 654]()",
+          "SchdIntv[38]": "transform[AI, 655]()",
+          "x-SchdEntr[38]": "transform[AI, 656]()",
+          "SchdIntv[39]": "transform[AI, 657]()",
+          "x-SchdEntr[39]": "transform[AI, 658]()",
+          "SchdIntv[40]": "transform[AI, 659]()",
+          "x-SchdEntr[40]": "transform[AI, 660]()",
+          "SchdIntv[41]": "transform[AI, 661]()",
+          "x-SchdEntr[41]": "transform[AI, 662]()",
+          "SchdIntv[42]": "transform[AI, 663]()",
+          "x-SchdEntr[42]": "transform[AI, 664]()",
+          "SchdIntv[43]": "transform[AI, 665]()",
+          "x-SchdEntr[43]": "transform[AI, 666]()",
+          "SchdIntv[44]": "transform[AI, 667]()",
+          "x-SchdEntr[44]": "transform[AI, 668]()",
+          "SchdIntv[45]": "transform[AI, 669]()",
+          "x-SchdEntr[45]": "transform[AI, 670]()",
+          "SchdIntv[46]": "transform[AI, 671]()",
+          "x-SchdEntr[46]": "transform[AI, 672]()",
+          "SchdIntv[47]": "transform[AI, 673]()",
+          "x-SchdEntr[47]": "transform[AI, 674]()",
+          "SchdIntv[48]": "transform[AI, 675]()",
+          "x-SchdEntr[48]": "transform[AI, 676]()",
+          "SchdIntv[49]": "transform[AI, 677]()",
+          "x-SchdEntr[49]": "transform[AI, 678]()",
+          "SchdIntv[50]": "transform[AI, 679]()",
+          "x-SchdEntr[50]": "transform[AI, 680]()",
+          "SchdIntv[51]": "transform[AI, 681]()",
+          "x-SchdEntr[51]": "transform[AI, 682]()",
+          "SchdIntv[52]": "transform[AI, 683]()",
+          "x-SchdEntr[52]": "transform[AI, 684]()",
+          "SchdIntv[53]": "transform[AI, 685]()",
+          "x-SchdEntr[53]": "transform[AI, 686]()",
+          "SchdIntv[54]": "transform[AI, 687]()",
+          "x-SchdEntr[54]": "transform[AI, 688]()",
+          "SchdIntv[55]": "transform[AI, 689]()",
+          "x-SchdEntr[55]": "transform[AI, 690]()",
+          "SchdIntv[56]": "transform[AI, 691]()",
+          "x-SchdEntr[56]": "transform[AI, 692]()",
+          "SchdIntv[57]": "transform[AI, 693]()",
+          "x-SchdEntr[57]": "transform[AI, 694]()",
+          "SchdIntv[58]": "transform[AI, 695]()",
+          "x-SchdEntr[58]": "transform[AI, 696]()",
+          "SchdIntv[59]": "transform[AI, 697]()",
+          "x-SchdEntr[59]": "transform[AI, 698]()",
+          "SchdIntv[60]": "transform[AI, 699]()",
+          "x-SchdEntr[60]": "transform[AI, 700]()",
+          "SchdIntv[61]": "transform[AI, 701]()",
+          "x-SchdEntr[61]": "transform[AI, 702]()",
+          "SchdIntv[62]": "transform[AI, 703]()",
+          "x-SchdEntr[62]": "transform[AI, 704]()",
+          "SchdIntv[63]": "transform[AI, 705]()",
+          "x-SchdEntr[63]": "transform[AI, 706]()",
+          "SchdIntv[64]": "transform[AI, 707]()",
+          "x-SchdEntr[64]": "transform[AI, 708]()",
+          "SchdIntv[65]": "transform[AI, 709]()",
+          "x-SchdEntr[65]": "transform[AI, 710]()",
+          "SchdIntv[66]": "transform[AI, 711]()",
+          "x-SchdEntr[66]": "transform[AI, 712]()",
+          "SchdIntv[67]": "transform[AI, 713]()",
+          "x-SchdEntr[67]": "transform[AI, 714]()",
+          "SchdIntv[68]": "transform[AI, 715]()",
+          "x-SchdEntr[68]": "transform[AI, 716]()",
+          "SchdIntv[69]": "transform[AI, 717]()",
+          "x-SchdEntr[69]": "transform[AI, 718]()",
+          "SchdIntv[70]": "transform[AI, 719]()",
+          "x-SchdEntr[70]": "transform[AI, 720]()",
+          "SchdIntv[71]": "transform[AI, 721]()",
+          "x-SchdEntr[71]": "transform[AI, 722]()",
+          "SchdIntv[72]": "transform[AI, 723]()",
+          "x-SchdEntr[72]": "transform[AI, 724]()",
+          "SchdIntv[73]": "transform[AI, 725]()",
+          "x-SchdEntr[73]": "transform[AI, 726]()",
+          "SchdIntv[74]": "transform[AI, 727]()",
+          "x-SchdEntr[74]": "transform[AI, 728]()",
+          "SchdIntv[75]": "transform[AI, 729]()",
+          "x-SchdEntr[75]": "transform[AI, 730]()",
+          "SchdIntv[76]": "transform[AI, 731]()",
+          "x-SchdEntr[76]": "transform[AI, 732]()",
+          "SchdIntv[77]": "transform[AI, 733]()",
+          "x-SchdEntr[77]": "transform[AI, 734]()",
+          "SchdIntv[78]": "transform[AI, 735]()",
+          "x-SchdEntr[78]": "transform[AI, 736]()",
+          "SchdIntv[79]": "transform[AI, 737]()",
+          "x-SchdEntr[79]": "transform[AI, 738]()",
+          "SchdIntv[80]": "transform[AI, 739]()",
+          "x-SchdEntr[80]": "transform[AI, 740]()",
+          "SchdIntv[81]": "transform[AI, 741]()",
+          "x-SchdEntr[81]": "transform[AI, 742]()",
+          "SchdIntv[82]": "transform[AI, 743]()",
+          "x-SchdEntr[82]": "transform[AI, 744]()",
+          "SchdIntv[83]": "transform[AI, 745]()",
+          "x-SchdEntr[83]": "transform[AI, 746]()",
+          "SchdIntv[84]": "transform[AI, 747]()",
+          "x-SchdEntr[84]": "transform[AI, 748]()",
+          "SchdIntv[85]": "transform[AI, 749]()",
+          "x-SchdEntr[85]": "transform[AI, 750]()",
+          "SchdIntv[86]": "transform[AI, 751]()",
+          "x-SchdEntr[86]": "transform[AI, 752]()",
+          "SchdIntv[87]": "transform[AI, 753]()",
+          "x-SchdEntr[87]": "transform[AI, 754]()",
+          "SchdIntv[88]": "transform[AI, 755]()",
+          "x-SchdEntr[88]": "transform[AI, 756]()",
+          "SchdIntv[89]": "transform[AI, 757]()",
+          "x-SchdEntr[89]": "transform[AI, 758]()",
+          "SchdIntv[90]": "transform[AI, 759]()",
+          "x-SchdEntr[90]": "transform[AI, 760]()",
+          "SchdIntv[91]": "transform[AI, 761]()",
+          "x-SchdEntr[91]": "transform[AI, 762]()",
+          "SchdIntv[92]": "transform[AI, 763]()",
+          "x-SchdEntr[92]": "transform[AI, 764]()",
+          "SchdIntv[93]": "transform[AI, 765]()",
+          "x-SchdEntr[93]": "transform[AI, 766]()",
+          "SchdIntv[94]": "transform[AI, 767]()",
+          "x-SchdEntr[94]": "transform[AI, 768]()",
+          "SchdIntv[95]": "transform[AI, 769]()",
+          "x-SchdEntr[95]": "transform[AI, 770]()",
+          "SchdIntv[96]": "transform[AI, 771]()",
+          "x-SchdEntr[96]": "transform[AI, 772]()",
+          "SchdIntv[97]": "transform[AI, 773]()",
+          "x-SchdEntr[97]": "transform[AI, 774]()",
+          "SchdIntv[98]": "transform[AI, 775]()",
+          "x-SchdEntr[98]": "transform[AI, 776]()",
+          "SchdIntv[99]": "transform[AI, 777]()",
+          "x-SchdEntr[99]": "transform[AI, 778]()",
+          "SchdIntv[100]": "transform[AI, 779]()",
+          "x-SchdEntr[100]": "transform[AI, 780]()",
+          "SchdSt": {
+            "3": "transform[BI, 108]()",
+            "2": "transform[BI, 109]()"
+          },
+          "SchdReuse[1]": "transform[BI, 110]()",
+          "SchdReuse[2]": "transform[BI, 111]()",
+          "SchdReuse[3]": "transform[BI, 112]()",
+          "SchdReuse[4]": "transform[BI, 113]()",
+          "SchdReuse[5]": "transform[BI, 114]()",
+          "SchdReuse[6]": "transform[BI, 115]()",
+          "SchdReuse[7]": "transform[BI, 116]()"
+        },
+        "SelSchdTyp": "transform[AI, 573]()"
       },
       "DGEN": {
         "VMinRtg": "transform[AI, 2]()",
@@ -22,26 +248,28 @@
         "OvPFRtg": "transform[AI, 8]()",
         "WUnPFRtg": "transform[AI, 9]()",
         "UnPFRtg": "transform[AI, 11]()",
-        "IvarMaxRtg": "transform[AI, 12]()",
-        "AvarMaxRtg": "transform[AI, 13]()",
+        "IvarMaxRtg": "transform[AI, 13]()",
+        "AvarMaxRtg": "transform[AI, 12]()",
         "VAMaxRtg": "transform[AI, 14]()",
         "AMaxRtg": "transform[AI, 19]()",
         "SuscRtg": "transform[AI, 21]()",
-        "RegClas[1]": "transform[AI, 22]()",
-        "RegClas[2]": "transform[AI, 23]()",
+        "x-Ieee1547CatNorm": "transform[AI, 22]()",
+        "x-Ieee1547CatAbn": "transform[AI, 23]()",
         "WMax": "transform[AI, 32]()",
-        "IvarMax": "transform[AI, 34]()",
-        "AvarMax": "transform[AI, 35]()",
+        "IvarMax": "transform[AI, 35]()",
+        "AvarMax": "transform[AI, 34]()",
         "VAMax": "transform[AI, 36]()",
         "OplPct": "transform[AI, 40]()",
-        "VArSetRef": "transform[AI, 42]()",
-        "IvarAvl": "transform[AI, 45]()",
-        "AvarAvl": "transform[AI, 46]()",
+        "VArSptRef": "transform[AI, 42]()",
+        "IvarAvl": "transform[AI, 46]()",
+        "AvarAvl": "transform[AI, 45]()",
         "DEROpSt": "transform[AI, 49]()",
-        "PrmConn": "transform[BI, 16]()",
-        "PrmDscon": "transform[BI, 17]()",
+        "AuthConn": "transform[BI, 16]()",
+        "AuthDscon": "transform[BI, 17]()",
         "IsldCtlFol": "transform[BI, 25]()",
-        "OpnLoopTau": "transform[BI, 28]()"
+        "x-OplTauMod": "transform[BI, 28]()",
+        "WRpuMaxRtg": "transform[AI, 62]()",
+        "WRpdMaxRtg": "transform[AI, 63]()"
       },
       "DSTO": {
         "ChaWMaxRtg": "transform[AI, 5]()",
@@ -52,231 +280,239 @@
         "EffWh": "transform[AI, 17]()",
         "UseWh": "transform[AI, 18]()",
         "ChaAMaxRtg": "transform[AI, 20]()",
-        "InclDER": "transform[AI, 28]()",
         "ChaWMax": "transform[AI, 33]()",
         "ChaVAMax": "transform[AI, 37]()",
-        "SocPct": "transform[AI, 47]()",
+        "x-SocPct": "transform[AI, 47]()",
         "UseSocPct": "transform[AI, 48]()",
         "SocHiWrn": "transform[BI, 4]()",
         "SocHiAlm": "transform[BI, 5]()",
         "SocLoAlm": "transform[BI, 6]()",
         "SohLoAlm": "transform[BI, 7]()",
-        "DEROpSt": {
+        "x-DEROpStBits": {
           "disconnected and blocked": "transform[BI, 11]()",
           "connected and consuming": "transform[BI, 20]()"
         },
-        "AGra": "transform[BI, 27]()"
+        "x-CapUnit": "transform[BI, 27]()",
+        "AvlDschW": "transform[AI, 43]()",
+        "AvlChaW": "transform[AI, 44]()",
+        "x-ChaWRpuMaxRtg": "transform[AI, 64]()",
+        "x-ChaWRpdMaxRtg": "transform[AI, 65]()"
       },
       "DECP": {
         "VRef": "transform[AI, 29]()",
-        "VRefOfs": "transform[AI, 30]()",
-        "EcpNomHz": "transform[AI, 31]()",
+        "HzNom": "transform[AI, 31]()",
         "VMin": "transform[AI, 38]()",
         "VMax": "transform[AI, 39]()",
         "EcpIsldSt": "transform[AI, 68]()",
-        "EcpConnType": "transform[AI, 533]()",
+        "x-EcpConnTyp": "transform[AI, 533]()",
         "PhsConnTyp": "transform[AI, 534]()",
-        "ECPIsldAuto": "transform[BI, 26]()",
-        "MMXU": {
-          "ClcTotVA": "transform[AI, 535]()",
-          "Hz": "transform[AI, 536]()",
-          "TotW": "transform[AI, 537]()",
-          "W": {
-            "phsA": {
-              "mag": "transform[AI, 538]()"
-            },
-            "phsB": {
-              "mag": "transform[AI, 539]()"
-            },
-            "phsC": {
-              "mag": "transform[AI, 540]()"
+        "EcpIsldAuto": "transform[BI, 26]()"
+      },
+      "DVVR": {
+        "VRefOfs": "transform[AI, 30]()",
+        "ModPrio": "transform[AI, 290]()",
+        "WinTms": "transform[AI, 291]()",
+        "RmpTms": "transform[AI, 292]()",
+        "RvrtTms": "transform[AI, 293]()",
+        "InEcpRef": "transform[AI, 294]()",
+        "VRefEsp": "transform[AI, 296]()",
+        "VVArCrv": {
+          "numPts": "transform[AI, 330](when_equal('AI.328', 'AI.297'))",
+          "crvPts[#]": {
+            "#": "transform[AI](when_equal('AI.328', 'AI.297'), pairs(333, 100, xVal, yVal), take('AI.330'))",
+            "xVal": "transform[#, xVal]()",
+            "yVal": "transform[#, yVal]()"
+          }
+        },
+        "OplTmsMax": "transform[AI, 298]()",
+        "x-RmpDnTms": "transform[AI, 299]()",
+        "VRefTmms": "transform[AI, 300]()",
+        "ReqVAr": "transform[AI, 301]()",
+        "Mod": "transform[BI, 81]()",
+        "VRefAdjEna": "transform[BI, 93]()"
+      },
+      "MMXU": {
+        "ClcTotVA": "transform[AI, 535]()",
+        "Hz": "transform[AI, 536]()",
+        "TotW": "transform[AI, 537]()",
+        "W": {
+          "phsA": {
+            "mag": "transform[AI, 538]()"
+          },
+          "phsB": {
+            "mag": "transform[AI, 539]()"
+          },
+          "phsC": {
+            "mag": "transform[AI, 540]()"
+          }
+        },
+        "TotVAr": "transform[AI, 541]()",
+        "VAr": {
+          "phsA": {
+            "mag": "transform[AI, 542]()"
+          },
+          "phsB": {
+            "mag": "transform[AI, 543]()"
+          },
+          "phsC": {
+            "mag": "transform[AI, 544]()"
+          }
+        },
+        "TotPF": "transform[AI, 545]()",
+        "TotVA": "transform[AI, 546]()",
+        "PhV": {
+          "phsA": {
+            "mag": "transform[AI, 547]()",
+            "ang": "transform[AI, 548]()",
+            "rangeC": {
+              "hLim": "transform[AI, 563]()",
+              "lLim": "transform[AI, 564]()",
+              "max": "transform[BI, 100]()",
+              "min": "transform[BI, 101]()"
             }
           },
-          "TotVAr": "transform[AI, 541]()",
-          "VAr": {
-            "phsA": {
-              "mag": "transform[AI, 542]()"
-            },
-            "phsB": {
-              "mag": "transform[AI, 543]()"
-            },
-            "phsC": {
-              "mag": "transform[AI, 544]()"
+          "phsB": {
+            "mag": "transform[AI, 549]()",
+            "ang": "transform[AI, 550]()",
+            "rangeC": {
+              "hLim": "transform[AI, 565]()",
+              "lLim": "transform[AI, 566]()",
+              "max": "transform[BI, 102]()",
+              "min": "transform[BI, 103]()"
             }
           },
-          "TotPF": "transform[AI, 545]()",
-          "TotVA": "transform[AI, 546]()",
-          "PhV": {
-            "phsA": {
-              "mag": "transform[AI, 547]()",
-              "ang": "transform[AI, 548]()",
-              "rangeC": {
-                "hLim": "transform[AI, 563]()",
-                "lLim": "transform[AI, 564]()"
-              },
-              "range": {
-                "max": "transform[BI, 100]()",
-                "min": "transform[BI, 101]()"
-              }
-            },
-            "phsB": {
-              "mag": "transform[AI, 549]()",
-              "ang": "transform[AI, 550]()",
-              "rangeC": {
-                "hLim": "transform[AI, 565]()",
-                "lLim": "transform[AI, 566]()"
-              },
-              "range": {
-                "max": "transform[BI, 102]()",
-                "min": "transform[BI, 103]()"
-              }
-            },
-            "phsC": {
-              "mag": "transform[AI, 551]()",
-              "ang": "transform[AI, 552]()",
-              "rangeC": {
-                "hLim": "transform[AI, 567]()",
-                "lLim": "transform[AI, 568]()"
-              },
-              "range": {
-                "max": "transform[BI, 104]()",
-                "min": "transform[BI, 105]()"
-              }
-            }
-          },
-          "AvPPVPhs": "transform[AI, 553]()",
-          "A": {
-            "phsA": {
-              "mag": "transform[AI, 554]()"
-            },
-            "phsB": {
-              "mag": "transform[AI, 555]()"
-            },
-            "phsC": {
-              "mag": "transform[AI, 556]()"
+          "phsC": {
+            "mag": "transform[AI, 551]()",
+            "ang": "transform[AI, 552]()",
+            "rangeC": {
+              "hLim": "transform[AI, 567]()",
+              "lLim": "transform[AI, 568]()",
+              "max": "transform[BI, 104]()",
+              "min": "transform[BI, 105]()"
             }
           }
-        }
+        },
+        "AvPPVPhs": "transform[AI, 553]()",
+        "A": {
+          "phsA": {
+            "mag": "transform[AI, 554]()"
+          },
+          "phsB": {
+            "mag": "transform[AI, 555]()"
+          },
+          "phsC": {
+            "mag": "transform[AI, 556]()"
+          }
+        },
+        "PFSign": "transform[AI, 41]()"
       },
-      "MMXU1": {
-        "PFSign": "transform[AI, 41]()",
-        "TotW": "transform[AI, 43]()",
-        "TotChaW": "transform[AI, 44]()"
-      },
-      "DCTE1": {
+      "DCTE": {
         "VHiLim": "transform[AI, 50]()",
         "VLoLim": "transform[AI, 51]()",
         "HzHiLim": "transform[AI, 52]()",
         "HzLoLim": "transform[AI, 53]()",
         "RtnDlTmms": "transform[AI, 54]()",
-        "WinTms": "transform[AI, 55]()",
-        "RtnRmpTmms": "transform[AI, 56]()"
-      },
-      "DCTE2": {
-        "WinTms": "transform[AI, 57]()",
-        "RmpTms": "transform[AI, 58]()",
-        "RvrtTms": "transform[AI, 59]()"
-      },
-      "DCTE3": {
+        "x-RtnRndTmms": "transform[AI, 55]()",
+        "RtnRmpTmms": "transform[AI, 56]()",
+        "x-CeaWinTms": "transform[AI, 57]()",
+        "x-CeaRmpTms": "transform[AI, 58]()",
+        "x-CeaRvrtTms": "transform[AI, 59]()",
         "WinTms": "transform[AI, 60]()",
-        "RvrtTms": "transform[AI, 61]()"
-      },
-      "DCTE": {
-        "RpuRteMax": "transform[AI, 62]()",
-        "RpdRteMax": "transform[AI, 63]()",
-        "RpuChaRteMax": "transform[AI, 64]()",
-        "RpdChaRteMax": "transform[AI, 65]()",
-        "CeaEgzReqSt": {
+        "RvrtTms": "transform[AI, 61]()",
+        "x-CeaEgzReqStBits": {
           "6": "transform[BI, 12]()",
           "3": "transform[BI, 13]()"
         }
       },
-      "DECP1": {
-        "EcpIsldSt": "transform[AI, 66]()"
-      },
-      "DECPn": {
-        "EcpIsldSt": "transform[AI, 67]()"
-      },
       "DHVT": {
-        "EcpRef": "transform[AI, 71]()",
-        "ModEna": "transform[BI, 64]()",
-        "TrZnSt": {
-          "PTOV": {
-            "TmVCrv": {
-              "numPts": "transform[AI, 330](when_equal('AI.328', 'AI.73'))",
-              "crvPts[#]": {
-                "#": "transform[AI](when_equal('AI.328', 'AI.73'), pairs(333, 100, xVal, yVal), take('AI.330'))",
-                "xVal": "transform[#, xVal]()",
-                "yVal": "transform[#, yVal]()"
-              }
-            }
+        "InEcpRef": "transform[AI, 71]()",
+        "Mod": "transform[BI, 64]()"
+      },
+      "PTOV1": {
+        "TmVChr": {
+          "numPts": "transform[AI, 330](when_equal('AI.328', 'AI.73'))",
+          "crvPts[#]": {
+            "#": "transform[AI](when_equal('AI.328', 'AI.73'), pairs(333, 100, xVal, yVal), take('AI.330'))",
+            "xVal": "transform[#, xVal]()",
+            "yVal": "transform[#, yVal]()"
           }
         },
-        "CeaZnSt": {
-          "PTOV": {
-            "TmVCrv": {
-              "numPts": "transform[AI, 330](when_equal('AI.328', 'AI.75'))",
-              "crvPts[#]": {
-                "#": "transform[AI](when_equal('AI.328', 'AI.75'), pairs(333, 100, xVal, yVal), take('AI.330'))",
-                "xVal": "transform[#, xVal]()",
-                "yVal": "transform[#, yVal]()"
-              }
-            }
+        "x-CrvRef": "transform[AI, 73]()"
+      },
+      "PTOV2": {
+        "TmVChr": {
+          "numPts": "transform[AI, 330](when_equal('AI.328', 'AI.75'))",
+          "crvPts[#]": {
+            "#": "transform[AI](when_equal('AI.328', 'AI.75'), pairs(333, 100, xVal, yVal), take('AI.330'))",
+            "xVal": "transform[#, xVal]()",
+            "yVal": "transform[#, yVal]()"
           }
-        }
+        },
+        "x-CrvRef": "transform[AI, 75]()"
       },
       "MMXN": {
         "Vol": "transform[AI, 72]()"
       },
-      "PTOV1": {
-        "BlkRef": "transform[AI, 73]()"
-      },
       "PTUV1": {
-        "BlkRef": "transform[AI, 74]()"
-      },
-      "PTOV2": {
-        "BlkRef": "transform[AI, 75]()"
-      },
-      "PTUV2": {
-        "BlkRef": "transform[AI, 76]()"
-      },
-      "DHFT": {
-        "EcpRef": "transform[AI, 77]()",
-        "ModEna": "transform[BI, 65]()",
-        "TrZnSt": {
-          "PTOF": {
-            "TmHzCrv": {
-              "numPts": "transform[AI, 330](when_equal('AI.328', 'AI.79'))",
-              "crvPts[#]": {
-                "#": "transform[AI](when_equal('AI.328', 'AI.79'), pairs(333, 100, xVal, yVal), take('AI.330'))",
-                "xVal": "transform[#, xVal]()",
-                "yVal": "transform[#, yVal]()"
-              }
-            }
+        "x-CrvRef": "transform[AI, 74]()",
+        "TmVChr": {
+          "numPts": "transform[AI, 330](when_equal('AI.328', 'AI.74'))",
+          "crvPts[#]": {
+            "#": "transform[AI](when_equal('AI.328', 'AI.74'), pairs(333, 100, xVal, yVal), take('AI.330'))",
+            "xVal": "transform[#, xVal]()",
+            "yVal": "transform[#, yVal]()"
           }
         }
       },
-      "MMXU2": {
-        "Hz": "transform[AI, 78]()"
+      "PTUV2": {
+        "x-CrvRef": "transform[AI, 76]()",
+        "TmVChr": {
+          "numPts": "transform[AI, 330](when_equal('AI.328', 'AI.76'))",
+          "crvPts[#]": {
+            "#": "transform[AI](when_equal('AI.328', 'AI.76'), pairs(333, 100, xVal, yVal), take('AI.330'))",
+            "xVal": "transform[#, xVal]()",
+            "yVal": "transform[#, yVal]()"
+          }
+        }
+      },
+      "DHFT": {
+        "InEcpRef": "transform[AI, 77]()",
+        "Mod": "transform[BI, 65]()"
       },
       "PTOF1": {
-        "BlkRef": "transform[AI, 79]()"
+        "x-TmHzChr": {
+          "numPts": "transform[AI, 330](when_equal('AI.328', 'AI.79'))",
+          "crvPts[#]": {
+            "#": "transform[AI](when_equal('AI.328', 'AI.79'), pairs(333, 100, xVal, yVal), take('AI.330'))",
+            "xVal": "transform[#, xVal]()",
+            "yVal": "transform[#, yVal]()"
+          }
+        },
+        "x-CrvRef": "transform[AI, 79]()"
       },
       "PTUF1": {
-        "BlkRef": "transform[AI, 80]()"
+        "x-CrvRef": "transform[AI, 80]()",
+        "x-TmHzChr": {
+          "numPts": "transform[AI, 330](when_equal('AI.328', 'AI.80'))",
+          "crvPts[#]": {
+            "#": "transform[AI](when_equal('AI.328', 'AI.80'), pairs(333, 100, xVal, yVal), take('AI.330'))",
+            "xVal": "transform[#, xVal]()",
+            "yVal": "transform[#, yVal]()"
+          }
+        }
       },
       "PTOF2": {
-        "BlkRef": "transform[AI, 81]()"
+        "x-CrvRef": "transform[AI, 81]()"
       },
       "PTUF2": {
-        "BlkRef": "transform[AI, 82]()"
+        "x-CrvRef": "transform[AI, 82]()"
       },
       "DRGS": {
         "ModPrio": "transform[AI, 83]()",
         "WinTms": "transform[AI, 84]()",
         "RmpTms": "transform[AI, 85]()",
         "RvrtTms": "transform[AI, 86]()",
-        "EcpRef": "transform[AI, 87]()",
+        "InEcpRef": "transform[AI, 87]()",
         "VAv": "transform[AI, 89]()",
         "DelV": "transform[AI, 90]()",
         "ArGraMod": "transform[BI, 85]()",
@@ -290,12 +526,9 @@
         "BlkZnTmms": "transform[AI, 99]()",
         "HoldTmms": "transform[AI, 100]()",
         "ReqA": "transform[AI, 101]()",
-        "ModEna": "transform[BI, 66]()"
+        "Mod": "transform[BI, 66]()"
       },
-      "MMXN2": {
-        "Vol": "transform[AI, 88]()"
-      },
-      "DVWD": {
+      "x-DVWD": {
         "ModPrio": "transform[AI, 102]()",
         "WinTms": "transform[AI, 103]()",
         "RmpTms": "transform[AI, 104]()",
@@ -304,51 +537,43 @@
         "VWFilTms": "transform[AI, 111]()",
         "DbVWLo": "transform[AI, 112]()",
         "DbVWHi": "transform[AI, 113]()",
-        "ReqWSet": "transform[AI, 114]()",
-        "ModEna": "transform[BI, 67]()"
-      },
-      "DVWD 2": {
-        "EcpRef": "transform[AI, 106]()",
+        "ReqW": "transform[AI, 114]()",
+        "Mod": "transform[BI, 67]()",
+        "InEcpRef": "transform[AI, 106]()",
         "VAv": "transform[AI, 108]()",
         "DelV": "transform[AI, 109]()"
       },
-      "MMXN3": {
-        "Vol": "transform[AI, 107]()"
-      },
-      "DHFW1": {
+      "DHFW": {
         "ModPrio": "transform[AI, 115]()",
         "WinTms": "transform[AI, 116]()",
         "RmpTms": "transform[AI, 117]()",
         "RvrtTms": "transform[AI, 118]()",
-        "EcpRef": "transform[AI, 119]()",
+        "InEcpRef": "transform[AI, 119]()",
         "HzStr": "transform[AI, 121]()",
         "HzStop": "transform[AI, 122]()",
         "WGra": "transform[AI, 123]()",
-        "WChaGra": "transform[AI, 124]()",
-        "ActStrDlTmms": "transform[AI, 129]()",
-        "ActStopDlTmms": "transform[AI, 130]()",
-        "OplTmsMax[2]": "transform[AI, 132]()",
-        "RpuRte": "transform[AI, 133]()",
-        "RpdRteMax": "transform[AI, 134]()",
-        "RpuChaRte": "transform[AI, 135]()",
-        "RpdChaRteMax": "transform[AI, 136]()",
+        "ChaWGra": "transform[AI, 124]()",
+        "StrDlTmms": "transform[AI, 129]()",
+        "StopDlTmms": "transform[AI, 130]()",
+        "x-RmpDnTms": "transform[AI, 132]()",
+        "RpuMax": "transform[AI, 133]()",
+        "RpdMax": "transform[AI, 134]()",
+        "ChaRpuMax": "transform[AI, 135]()",
+        "ChaRpdMax": "transform[AI, 136]()",
         "RtnRmpRte": "transform[AI, 137]()",
-        "ReqWLim": "transform[AI, 139]()",
+        "ReqW": "transform[AI, 139]()",
         "SocUseMinPct": "transform[AI, 140]()",
         "SocUseMaxPct": "transform[AI, 141]()",
-        "ModEna": "transform[BI, 68]()",
+        "Mod": "transform[BI, 68]()",
         "HysEna": "transform[BI, 88]()",
-        "SnptEna": "transform[BI, 89]()"
+        "SnptBarEna": "transform[BI, 89]()"
       },
-      "MMXU3": {
-        "Hz": "transform[AI, 120]()"
-      },
-      "DLFW1": {
+      "DLFW": {
         "HzStr": "transform[AI, 125]()",
         "HzStop": "transform[AI, 126]()",
         "WGra": "transform[AI, 127]()",
-        "WChaGra": "transform[AI, 128]()",
-        "OplTmsMax[1]": "transform[AI, 131]()",
+        "ChaWGra": "transform[AI, 128]()",
+        "OplTmsMax": "transform[AI, 131]()",
         "RtnRmpRte": "transform[AI, 138]()"
       },
       "DWMX": {
@@ -356,32 +581,29 @@
         "WinTms": "transform[AI, 143]()",
         "RmpTms": "transform[AI, 144]()",
         "RvrtTms": "transform[AI, 145]()",
-        "EcpRef": "transform[AI, 146]()",
-        "LimW": "transform[AI, 148]()",
-        "ModEna": "transform[BI, 69]()"
-      },
-      "MMXU4": {
-        "TotW": "transform[AI, 147]()"
+        "InEcpRef": "transform[AI, 146]()",
+        "WMaxSpt": "transform[AI, 148]()",
+        "Mod": "transform[BI, 69]()"
       },
       "DWMN": {
-        "LimW": "transform[AI, 149]()"
+        "WMinSpt": "transform[AI, 149]()"
       },
       "DWGC": {
         "ModPrio": "transform[AI, 150]()",
         "WinTms": "transform[AI, 151]()",
         "RmpTms": "transform[AI, 152]()",
         "RvrtTms": "transform[AI, 153]()",
-        "GnWPctSpt": "transform[AI, 154]()",
-        "OplTmsMax[1]": "transform[AI, 155]()",
-        "OplTmsMax[2]": "transform[AI, 156]()",
-        "RpuRte": "transform[AI, 157]()",
-        "RpdRteMax": "transform[AI, 158]()",
-        "RpuChaRte": "transform[AI, 159]()",
-        "RpdChaRteMax": "transform[AI, 160]()",
+        "WSptPct": "transform[AI, 154]()",
+        "OplTmsMax": "transform[AI, 155]()",
+        "x-RmpDnTms": "transform[AI, 156]()",
+        "RpuMax": "transform[AI, 157]()",
+        "RpdMax": "transform[AI, 158]()",
+        "ChaRpuMax": "transform[AI, 159]()",
+        "ChaRpdMax": "transform[AI, 160]()",
         "SocUseMinPct": "transform[AI, 161]()",
         "SocUseMaxPct": "transform[AI, 162]()",
-        "ModEna": "transform[BI, 70]()",
-        "UseRmpRte": "transform[BI, 90]()"
+        "Mod": "transform[BI, 70]()",
+        "RmpRteUse": "transform[BI, 90]()"
       },
       "DTCD": {
         "ModPrio": "transform[AI, 163]()",
@@ -389,63 +611,54 @@
         "RmpTms": "transform[AI, 165]()",
         "RvrtTms": "transform[AI, 166]()",
         "SocUseTgtPct": "transform[AI, 167]()",
-        "DateTgt[Date]": "transform[AI, 168]()",
-        "DateTgt[Time]": "transform[AI, 169]()",
+        "x-DateTgtDate": "transform[AI, 168]()",
+        "x-DateTgtTime": "transform[AI, 169]()",
         "WhReq": "transform[AI, 170]()",
-        "ChaDurTms": "transform[AI, 171]()",
+        "x-ChaDurMin": "transform[AI, 171]()",
         "SocDate": "transform[AI, 172]()",
-        "SocDateTms": "transform[AI, 173]()",
+        "DateTgt": "transform[AI, 173]()",
         "ChaDurMax": "transform[AI, 174]()",
         "DschDurMax": "transform[AI, 175]()",
-        "ModEna": "transform[BI, 71]()"
+        "Mod": "transform[BI, 71]()"
       },
-      "DWFL1": {
+      "DWFL": {
         "ModPrio": "transform[AI, 176]()",
         "WinTms": "transform[AI, 177]()",
         "RmpTms": "transform[AI, 178]()",
         "RvrtTms": "transform[AI, 179]()",
-        "EcpRef": "transform[AI, 180]()",
+        "InEcpRef": "transform[AI, 180]()",
         "FolWThr": "transform[AI, 182]()",
         "FolWPct": "transform[AI, 183]()",
-        "RpuRte": "transform[AI, 184]()",
-        "RpdRte": "transform[AI, 185]()",
+        "RpuMax": "transform[AI, 184]()",
+        "RpdMax": "transform[AI, 185]()",
         "ReqW": "transform[AI, 186]()",
-        "ModEna": "transform[BI, 72]()"
-      },
-      "MMXU5": {
-        "TotW": "transform[AI, 181]()"
+        "Mod": "transform[BI, 72]()"
       },
       "DWFL2": {
         "ModPrio": "transform[AI, 187]()",
         "WinTms": "transform[AI, 188]()",
         "RmpTms": "transform[AI, 189]()",
         "RvrtTms": "transform[AI, 190]()",
-        "EcpRef": "transform[AI, 191]()",
+        "InEcpRef": "transform[AI, 191]()",
         "FolWThr": "transform[AI, 193]()",
         "FolWPct": "transform[AI, 194]()",
-        "RpuRte": "transform[AI, 195]()",
-        "RpdRte": "transform[AI, 196]()",
+        "RpuMax": "transform[AI, 195]()",
+        "RpdMax": "transform[AI, 196]()",
         "ReqW": "transform[AI, 197]()",
-        "ModEna": "transform[BI, 73]()"
-      },
-      "MMXU6": {
-        "TotW": "transform[AI, 192]()"
+        "Mod": "transform[BI, 73]()"
       },
       "DWFL3": {
         "ModPrio": "transform[AI, 198]()",
         "WinTms": "transform[AI, 199]()",
         "RmpTms": "transform[AI, 200]()",
         "RvrtTms": "transform[AI, 201]()",
-        "EcpRef": "transform[AI, 202]()",
+        "InEcpRef": "transform[AI, 202]()",
         "FolWThr": "transform[AI, 204]()",
         "FolWPct": "transform[AI, 205]()",
-        "RpuRte": "transform[AI, 206]()",
-        "RpdRte": "transform[AI, 207]()",
+        "RpuMax": "transform[AI, 206]()",
+        "RpdMax": "transform[AI, 207]()",
         "ReqW": "transform[AI, 208]()",
-        "ModEna": "transform[BI, 74]()"
-      },
-      "MMXU7": {
-        "TotW": "transform[AI, 203]()"
+        "Mod": "transform[BI, 74]()"
       },
       "DAGC": {
         "ModPrio": "transform[AI, 209]()",
@@ -453,12 +666,12 @@
         "RmpTms": "transform[AI, 211]()",
         "RvrtTms": "transform[AI, 212]()",
         "WSpt": "transform[AI, 213]()",
-        "RmpUpTms": "transform[AI, 214]()",
-        "RmpDnTms": "transform[AI, 215]()",
-        "RpuRte": "transform[AI, 216]()",
-        "RpdRte": "transform[AI, 217]()",
-        "RpuChaRte": "transform[AI, 218]()",
-        "RpdChaRte": "transform[AI, 219]()",
+        "OplTmsMax": "transform[AI, 214]()",
+        "x-RmpDnTms": "transform[AI, 215]()",
+        "RpuMax": "transform[AI, 216]()",
+        "RpdMax": "transform[AI, 217]()",
+        "ChaRpuMax": "transform[AI, 218]()",
+        "ChaRpdMax": "transform[AI, 219]()",
         "SocUseMinPct": "transform[AI, 220]()",
         "SocUseMaxPct": "transform[AI, 221]()",
         "WMaxAvl": "transform[AI, 222]()",
@@ -466,35 +679,32 @@
         "SocExpc": "transform[AI, 224]()",
         "SocWhExpc": "transform[AI, 225]()",
         "SocExpcTms": "transform[AI, 226]()",
-        "ModEna": "transform[BI, 75]()",
-        "UseRmpRte": "transform[BI, 91]()"
+        "Mod": "transform[BI, 75]()",
+        "RmpRteUse": "transform[BI, 91]()"
       },
-      "DWSM": {
+      "x-DWSM": {
         "ModPrio": "transform[AI, 227]()",
         "WinTms": "transform[AI, 228]()",
         "RmpTms": "transform[AI, 229]()",
         "RvrtTms": "transform[AI, 230]()",
-        "EcpRef": "transform[AI, 231]()",
+        "InEcpRef": "transform[AI, 231]()",
         "WSmthGra": "transform[AI, 233]()",
         "WSmthLoLim": "transform[AI, 234]()",
         "WSmthHiLim": "transform[AI, 235]()",
         "FilTms": "transform[AI, 236]()",
-        "RpuRte": "transform[AI, 237]()",
-        "RpdRte": "transform[AI, 238]()",
-        "RpuChaRte": "transform[AI, 239]()",
-        "RpdChaRte": "transform[AI, 240]()",
-        "ReqWSet": "transform[AI, 241]()",
-        "ModEna": "transform[BI, 76]()"
-      },
-      "MMXU8": {
-        "TotW": "transform[AI, 232]()"
+        "RpuMax": "transform[AI, 237]()",
+        "RpdMax": "transform[AI, 238]()",
+        "ChaRpuMax": "transform[AI, 239]()",
+        "ChaRpdMax": "transform[AI, 240]()",
+        "ReqW": "transform[AI, 241]()",
+        "Mod": "transform[BI, 76]()"
       },
       "DVWC": {
         "ModPrio": "transform[AI, 242]()",
         "WinTms": "transform[AI, 243]()",
         "RmpTms": "transform[AI, 244]()",
         "RvrtTms": "transform[AI, 245]()",
-        "EcpRef": "transform[AI, 246]()",
+        "InEcpRef": "transform[AI, 246]()",
         "VWCrv": {
           "numPts": "transform[AI, 330](when_equal('AI.328', 'AI.248'))",
           "crvPts[#]": {
@@ -503,99 +713,70 @@
             "yVal": "transform[#, yVal]()"
           }
         },
-        "ReqWLim": "transform[AI, 249]()",
+        "ReqW": "transform[AI, 249]()",
         "FilTms": "transform[AI, 250]()",
-        "OplTmsMax[1]": "transform[AI, 251]()",
-        "OplTmsMax[2]": "transform[AI, 252]()",
-        "RpuRte": "transform[AI, 253]()",
-        "RpdRte": "transform[AI, 254]()",
-        "RpuChaRte": "transform[AI, 255]()",
-        "RpdChaRte": "transform[AI, 256]()",
-        "ModEna": "transform[BI, 77]()",
-        "UseRmpRte": "transform[BI, 92]()"
-      },
-      "MMXN4": {
-        "Vol": "transform[AI, 247]()"
+        "OplTmsMax": "transform[AI, 251]()",
+        "x-RmpDnTms": "transform[AI, 252]()",
+        "RpuMax": "transform[AI, 253]()",
+        "RpdMax": "transform[AI, 254]()",
+        "ChaRpuMax": "transform[AI, 255]()",
+        "ChaRpdMax": "transform[AI, 256]()",
+        "Mod": "transform[BI, 77]()",
+        "RmpRteUse": "transform[BI, 92]()"
       },
       "DHFW2": {
         "ModPrio": "transform[AI, 257]()",
         "WinTms": "transform[AI, 258]()",
         "RmpTms": "transform[AI, 259]()",
         "RvrtTms": "transform[AI, 260]()",
-        "EcpRef": "transform[AI, 261]()",
+        "InEcpRef": "transform[AI, 261]()",
         "HzWCrv": "transform[AI, 263]()",
-        "HysCrv": "transform[AI, 264]()",
-        "ActStrDlTmms": "transform[AI, 266]()",
-        "ActStopDlTmms": "transform[AI, 267]()",
-        "OplTmsMax[1]": "transform[AI, 268]()",
-        "OplTmsMax[2]": "transform[AI, 269]()",
-        "RpuRte": "transform[AI, 270]()",
-        "RpdRte": "transform[AI, 271]()",
-        "RpuChaRte": "transform[AI, 272]()",
-        "RpdChaRte": "transform[AI, 273]()",
-        "ReqWLim": "transform[AI, 274]()",
+        "x-HysCrvRef": "transform[AI, 264]()",
+        "StrDlTmms": "transform[AI, 266]()",
+        "StopDlTmms": "transform[AI, 267]()",
+        "OplTmsMax": "transform[AI, 268]()",
+        "x-RmpDnTms": "transform[AI, 269]()",
+        "RpuMax": "transform[AI, 270]()",
+        "RpdMax": "transform[AI, 271]()",
+        "ChaRpuMax": "transform[AI, 272]()",
+        "ChaRpdMax": "transform[AI, 273]()",
+        "ReqW": "transform[AI, 274]()",
         "SocUseMinPct": "transform[AI, 275]()",
         "SocUseMaxPct": "transform[AI, 276]()",
-        "ModEna": "transform[BI, 78]()"
-      },
-      "MMXU9": {
-        "Hz": "transform[AI, 262]()"
+        "Mod": "transform[BI, 78]()",
+        "HysEna": "transform[BI, 86]()",
+        "SnptBarEna": "transform[BI, 87]()"
       },
       "DLFW2": {
-        "HysCrv": "transform[AI, 265]()"
+        "x-HysCrvRef": "transform[AI, 265]()"
       },
       "DVAR": {
         "ModPrio": "transform[AI, 277]()",
         "WinTms": "transform[AI, 278]()",
         "RmpTms": "transform[AI, 279]()",
         "RvrtTms": "transform[AI, 280]()",
-        "VArTgt": "transform[AI, 281]()",
-        "OplTmsMax[1]": "transform[AI, 282]()",
-        "OplTmsMax[2]": "transform[AI, 283]()",
-        "ModEna": "transform[BI, 79]()"
+        "VArTgtSpt": "transform[AI, 281]()",
+        "OplTmsMax": "transform[AI, 282]()",
+        "x-RmpDnTms": "transform[AI, 283]()",
+        "Mod": "transform[BI, 79]()"
       },
       "DFPF": {
         "ModPrio": "transform[AI, 284]()",
         "WinTms": "transform[AI, 285]()",
         "RmpTms": "transform[AI, 286]()",
         "RvrtTms": "transform[AI, 287]()",
-        "PFGnTgt": "transform[AI, 288]()",
-        "PFLodTgt": "transform[AI, 289]()",
-        "PFGnExtSet": "transform[BI, 29]()",
-        "PFLodExtSet": "transform[BI, 30]()",
-        "ModEna": "transform[BI, 80]()"
-      },
-      "DVVR": {
-        "ModPrio": "transform[AI, 290]()",
-        "WinTms": "transform[AI, 291]()",
-        "RmpTms": "transform[AI, 292]()",
-        "RvrtTms": "transform[AI, 293]()",
-        "EcpRef": "transform[AI, 294]()",
-        "VRefSet": "transform[AI, 296]()",
-        "VVArCrv": {
-          "numPts": "transform[AI, 330](when_equal('AI.328', 'AI.297'))",
-          "crvPts[#]": {
-            "#": "transform[AI](when_equal('AI.328', 'AI.297'), pairs(333, 100, xVal, yVal), take('AI.330'))",
-            "xVal": "transform[#, xVal]()",
-            "yVal": "transform[#, yVal]()"
-          }
-        },
-        "OplTmsMax[1]": "transform[AI, 298]()",
-        "OplTmsMax[2]": "transform[AI, 299]()",
-        "VRefTmms": "transform[AI, 300]()",
-        "ReqVAr": "transform[AI, 301]()",
-        "ModEna": "transform[BI, 81]()",
-        "VRefAdjEna": "transform[BI, 93]()"
-      },
-      "MMXN5": {
-        "Vol": "transform[AI, 295]()"
+        "PFGnTgtSpt": "transform[AI, 288]()",
+        "PFLodTgtSpt": "transform[AI, 289]()",
+        "PFGnExtQud": "transform[BI, 29](equals(0))",
+        "PFLodExtQud": "transform[BI, 30](equals(0))",
+        "Mod": "transform[BI, 80]()"
       },
       "DWVR": {
         "ModPrio": "transform[AI, 302]()",
         "WinTms": "transform[AI, 303]()",
         "RmpTms": "transform[AI, 304]()",
         "RvrtTms": "transform[AI, 305]()",
-        "EcpRef": "transform[AI, 306]()",
+        "InEcpRef": "transform[AI, 306]()",
         "WVArCrv": {
           "numPts": "transform[AI, 330](when_equal('AI.328', 'AI.308'))",
           "crvPts[#]": {
@@ -604,20 +785,17 @@
             "yVal": "transform[#, yVal]()"
           }
         },
-        "OplTmsMax[1]": "transform[AI, 309]()",
-        "OplTmsMax[2]": "transform[AI, 310]()",
+        "OplTmsMax": "transform[AI, 309]()",
+        "x-RmpDnTms": "transform[AI, 310]()",
         "ReqVAr": "transform[AI, 311]()",
-        "ModEna": "transform[BI, 82]()"
+        "Mod": "transform[BI, 82]()"
       },
-      "MMXU10": {
-        "TotW": "transform[AI, 307]()"
-      },
-      "DPFC": {
+      "x-DPFC": {
         "ModPrio": "transform[AI, 312]()",
         "WinTms": "transform[AI, 313]()",
         "RmpTms": "transform[AI, 314]()",
         "RvrtTms": "transform[AI, 315]()",
-        "EcpRef": "transform[AI, 316]()",
+        "InEcpRef": "transform[AI, 316]()",
         "PFTrg": "transform[AI, 318]()",
         "PFCorRef": {
           "rangeC": {
@@ -625,267 +803,21 @@
             "max": "transform[AI, 320]()"
           }
         },
-        "ModEna": "transform[BI, 83]()"
+        "Mod": "transform[BI, 83]()"
       },
-      "MMXU11": {
-        "TotPF": "transform[AI, 317]()"
-      },
-      "DPRG": {
+      "x-DPRG": {
         "ModPrio": "transform[AI, 321]()",
         "WinTms": "transform[AI, 322]()",
         "RmpTms": "transform[AI, 323]()",
         "RvrtTms": "transform[AI, 324]()",
         "PrcRef": "transform[AI, 325]()",
-        "OplTmsMax[1]": "transform[AI, 326]()",
-        "OplTmsMax[2]": "transform[AI, 327]()",
-        "ModEna": "transform[BI, 84]()"
-      },
-      "DGSMn": {
-        "InCrv": "transform[AI, 328]()",
-        "ModTyp": "transform[AI, 329]()"
-      },
-      "FMARn": {
-        "PairArr": {
-          "NumPts": "transform[AI, 330]()",
-          "CrvPts[#]": {
-            "#": "transform[AI](pairs(333, 100, xVal, yVal), take('AI.330'))",
-            "xVal": "transform[#, xVal]()",
-            "yVal": "transform[#, yVal]()"
-          }
-        },
-        "IndpUnits": "transform[AI, 331]()",
-        "DepRef": "transform[AI, 332]()"
+        "OplTmsMax": "transform[AI, 326]()",
+        "x-RmpDnTms": "transform[AI, 327]()",
+        "Mod": "transform[BI, 84]()"
       },
       "FSCC": {
         "ActSchdRef": "transform[AI, 569]()",
         "Schd": "transform[AI, 570]()"
-      },
-      "FSCCn": {
-        "Schd": "transform[AI, 571]()"
-      },
-      "FSCHn": {
-        "SchdPrio": "transform[AI, 572]()",
-        "StrTm[Date]": "transform[AI, 574]()",
-        "StrTm[Time]": "transform[AI, 575]()",
-        "NxtStrTm": "transform[AI, 576]()",
-        "SchdReuse": "transform[AI, 577]()",
-        "SchdSt[1]": "transform[AI, 578]()",
-        "SchdSt[2]": "transform[AI, 579]()",
-        "NumEntr": "transform[AI, 580]()",
-        "SchdIntv[1]": "transform[AI, 581]()",
-        "SchdEntr[1]": "transform[AI, 582]()",
-        "SchdIntv[2]": "transform[AI, 583]()",
-        "SchdEntr[2]": "transform[AI, 584]()",
-        "SchdIntv[3]": "transform[AI, 585]()",
-        "SchdEntr[3]": "transform[AI, 586]()",
-        "SchdIntv[4]": "transform[AI, 587]()",
-        "SchdEntr[4]": "transform[AI, 588]()",
-        "SchdIntv[5]": "transform[AI, 589]()",
-        "SchdEntr[5]": "transform[AI, 590]()",
-        "SchdIntv[6]": "transform[AI, 591]()",
-        "SchdEntr[6]": "transform[AI, 592]()",
-        "SchdIntv[7]": "transform[AI, 593]()",
-        "SchdEntr[7]": "transform[AI, 594]()",
-        "SchdIntv[8]": "transform[AI, 595]()",
-        "SchdEntr[8]": "transform[AI, 596]()",
-        "SchdIntv[9]": "transform[AI, 597]()",
-        "SchdEntr[9]": "transform[AI, 598]()",
-        "SchdIntv[10]": "transform[AI, 599]()",
-        "SchdEntr[10]": "transform[AI, 600]()",
-        "SchdIntv[11]": "transform[AI, 601]()",
-        "SchdEntr[11]": "transform[AI, 602]()",
-        "SchdIntv[12]": "transform[AI, 603]()",
-        "SchdEntr[12]": "transform[AI, 604]()",
-        "SchdIntv[13]": "transform[AI, 605]()",
-        "SchdEntr[13]": "transform[AI, 606]()",
-        "SchdIntv[14]": "transform[AI, 607]()",
-        "SchdEntr[14]": "transform[AI, 608]()",
-        "SchdIntv[15]": "transform[AI, 609]()",
-        "SchdEntr[15]": "transform[AI, 610]()",
-        "SchdIntv[16]": "transform[AI, 611]()",
-        "SchdEntr[16]": "transform[AI, 612]()",
-        "SchdIntv[17]": "transform[AI, 613]()",
-        "SchdEntr[17]": "transform[AI, 614]()",
-        "SchdIntv[18]": "transform[AI, 615]()",
-        "SchdEntr[18]": "transform[AI, 616]()",
-        "SchdIntv[19]": "transform[AI, 617]()",
-        "SchdEntr[19]": "transform[AI, 618]()",
-        "SchdIntv[20]": "transform[AI, 619]()",
-        "SchdEntr[20]": "transform[AI, 620]()",
-        "SchdIntv[21]": "transform[AI, 621]()",
-        "SchdEntr[21]": "transform[AI, 622]()",
-        "SchdIntv[22]": "transform[AI, 623]()",
-        "SchdEntr[22]": "transform[AI, 624]()",
-        "SchdIntv[23]": "transform[AI, 625]()",
-        "SchdEntr[23]": "transform[AI, 626]()",
-        "SchdIntv[24]": "transform[AI, 627]()",
-        "SchdEntr[24]": "transform[AI, 628]()",
-        "SchdIntv[25]": "transform[AI, 629]()",
-        "SchdEntr[25]": "transform[AI, 630]()",
-        "SchdIntv[26]": "transform[AI, 631]()",
-        "SchdEntr[26]": "transform[AI, 632]()",
-        "SchdIntv[27]": "transform[AI, 633]()",
-        "SchdEntr[27]": "transform[AI, 634]()",
-        "SchdIntv[28]": "transform[AI, 635]()",
-        "SchdEntr[28]": "transform[AI, 636]()",
-        "SchdIntv[29]": "transform[AI, 637]()",
-        "SchdEntr[29]": "transform[AI, 638]()",
-        "SchdIntv[30]": "transform[AI, 639]()",
-        "SchdEntr[30]": "transform[AI, 640]()",
-        "SchdIntv[31]": "transform[AI, 641]()",
-        "SchdEntr[31]": "transform[AI, 642]()",
-        "SchdIntv[32]": "transform[AI, 643]()",
-        "SchdEntr[32]": "transform[AI, 644]()",
-        "SchdIntv[33]": "transform[AI, 645]()",
-        "SchdEntr[33]": "transform[AI, 646]()",
-        "SchdIntv[34]": "transform[AI, 647]()",
-        "SchdEntr[34]": "transform[AI, 648]()",
-        "SchdIntv[35]": "transform[AI, 649]()",
-        "SchdEntr[35]": "transform[AI, 650]()",
-        "SchdIntv[36]": "transform[AI, 651]()",
-        "SchdEntr[36]": "transform[AI, 652]()",
-        "SchdIntv[37]": "transform[AI, 653]()",
-        "SchdEntr[37]": "transform[AI, 654]()",
-        "SchdIntv[38]": "transform[AI, 655]()",
-        "SchdEntr[38]": "transform[AI, 656]()",
-        "SchdIntv[39]": "transform[AI, 657]()",
-        "SchdEntr[39]": "transform[AI, 658]()",
-        "SchdIntv[40]": "transform[AI, 659]()",
-        "SchdEntr[40]": "transform[AI, 660]()",
-        "SchdIntv[41]": "transform[AI, 661]()",
-        "SchdEntr[41]": "transform[AI, 662]()",
-        "SchdIntv[42]": "transform[AI, 663]()",
-        "SchdEntr[42]": "transform[AI, 664]()",
-        "SchdIntv[43]": "transform[AI, 665]()",
-        "SchdEntr[43]": "transform[AI, 666]()",
-        "SchdIntv[44]": "transform[AI, 667]()",
-        "SchdEntr[44]": "transform[AI, 668]()",
-        "SchdIntv[45]": "transform[AI, 669]()",
-        "SchdEntr[45]": "transform[AI, 670]()",
-        "SchdIntv[46]": "transform[AI, 671]()",
-        "SchdEntr[46]": "transform[AI, 672]()",
-        "SchdIntv[47]": "transform[AI, 673]()",
-        "SchdEntr[47]": "transform[AI, 674]()",
-        "SchdIntv[48]": "transform[AI, 675]()",
-        "SchdEntr[48]": "transform[AI, 676]()",
-        "SchdIntv[49]": "transform[AI, 677]()",
-        "SchdEntr[49]": "transform[AI, 678]()",
-        "SchdIntv[50]": "transform[AI, 679]()",
-        "SchdEntr[50]": "transform[AI, 680]()",
-        "SchdIntv[51]": "transform[AI, 681]()",
-        "SchdEntr[51]": "transform[AI, 682]()",
-        "SchdIntv[52]": "transform[AI, 683]()",
-        "SchdEntr[52]": "transform[AI, 684]()",
-        "SchdIntv[53]": "transform[AI, 685]()",
-        "SchdEntr[53]": "transform[AI, 686]()",
-        "SchdIntv[54]": "transform[AI, 687]()",
-        "SchdEntr[54]": "transform[AI, 688]()",
-        "SchdIntv[55]": "transform[AI, 689]()",
-        "SchdEntr[55]": "transform[AI, 690]()",
-        "SchdIntv[56]": "transform[AI, 691]()",
-        "SchdEntr[56]": "transform[AI, 692]()",
-        "SchdIntv[57]": "transform[AI, 693]()",
-        "SchdEntr[57]": "transform[AI, 694]()",
-        "SchdIntv[58]": "transform[AI, 695]()",
-        "SchdEntr[58]": "transform[AI, 696]()",
-        "SchdIntv[59]": "transform[AI, 697]()",
-        "SchdEntr[59]": "transform[AI, 698]()",
-        "SchdIntv[60]": "transform[AI, 699]()",
-        "SchdEntr[60]": "transform[AI, 700]()",
-        "SchdIntv[61]": "transform[AI, 701]()",
-        "SchdEntr[61]": "transform[AI, 702]()",
-        "SchdIntv[62]": "transform[AI, 703]()",
-        "SchdEntr[62]": "transform[AI, 704]()",
-        "SchdIntv[63]": "transform[AI, 705]()",
-        "SchdEntr[63]": "transform[AI, 706]()",
-        "SchdIntv[64]": "transform[AI, 707]()",
-        "SchdEntr[64]": "transform[AI, 708]()",
-        "SchdIntv[65]": "transform[AI, 709]()",
-        "SchdEntr[65]": "transform[AI, 710]()",
-        "SchdIntv[66]": "transform[AI, 711]()",
-        "SchdEntr[66]": "transform[AI, 712]()",
-        "SchdIntv[67]": "transform[AI, 713]()",
-        "SchdEntr[67]": "transform[AI, 714]()",
-        "SchdIntv[68]": "transform[AI, 715]()",
-        "SchdEntr[68]": "transform[AI, 716]()",
-        "SchdIntv[69]": "transform[AI, 717]()",
-        "SchdEntr[69]": "transform[AI, 718]()",
-        "SchdIntv[70]": "transform[AI, 719]()",
-        "SchdEntr[70]": "transform[AI, 720]()",
-        "SchdIntv[71]": "transform[AI, 721]()",
-        "SchdEntr[71]": "transform[AI, 722]()",
-        "SchdIntv[72]": "transform[AI, 723]()",
-        "SchdEntr[72]": "transform[AI, 724]()",
-        "SchdIntv[73]": "transform[AI, 725]()",
-        "SchdEntr[73]": "transform[AI, 726]()",
-        "SchdIntv[74]": "transform[AI, 727]()",
-        "SchdEntr[74]": "transform[AI, 728]()",
-        "SchdIntv[75]": "transform[AI, 729]()",
-        "SchdEntr[75]": "transform[AI, 730]()",
-        "SchdIntv[76]": "transform[AI, 731]()",
-        "SchdEntr[76]": "transform[AI, 732]()",
-        "SchdIntv[77]": "transform[AI, 733]()",
-        "SchdEntr[77]": "transform[AI, 734]()",
-        "SchdIntv[78]": "transform[AI, 735]()",
-        "SchdEntr[78]": "transform[AI, 736]()",
-        "SchdIntv[79]": "transform[AI, 737]()",
-        "SchdEntr[79]": "transform[AI, 738]()",
-        "SchdIntv[80]": "transform[AI, 739]()",
-        "SchdEntr[80]": "transform[AI, 740]()",
-        "SchdIntv[81]": "transform[AI, 741]()",
-        "SchdEntr[81]": "transform[AI, 742]()",
-        "SchdIntv[82]": "transform[AI, 743]()",
-        "SchdEntr[82]": "transform[AI, 744]()",
-        "SchdIntv[83]": "transform[AI, 745]()",
-        "SchdEntr[83]": "transform[AI, 746]()",
-        "SchdIntv[84]": "transform[AI, 747]()",
-        "SchdEntr[84]": "transform[AI, 748]()",
-        "SchdIntv[85]": "transform[AI, 749]()",
-        "SchdEntr[85]": "transform[AI, 750]()",
-        "SchdIntv[86]": "transform[AI, 751]()",
-        "SchdEntr[86]": "transform[AI, 752]()",
-        "SchdIntv[87]": "transform[AI, 753]()",
-        "SchdEntr[87]": "transform[AI, 754]()",
-        "SchdIntv[88]": "transform[AI, 755]()",
-        "SchdEntr[88]": "transform[AI, 756]()",
-        "SchdIntv[89]": "transform[AI, 757]()",
-        "SchdEntr[89]": "transform[AI, 758]()",
-        "SchdIntv[90]": "transform[AI, 759]()",
-        "SchdEntr[90]": "transform[AI, 760]()",
-        "SchdIntv[91]": "transform[AI, 761]()",
-        "SchdEntr[91]": "transform[AI, 762]()",
-        "SchdIntv[92]": "transform[AI, 763]()",
-        "SchdEntr[92]": "transform[AI, 764]()",
-        "SchdIntv[93]": "transform[AI, 765]()",
-        "SchdEntr[93]": "transform[AI, 766]()",
-        "SchdIntv[94]": "transform[AI, 767]()",
-        "SchdEntr[94]": "transform[AI, 768]()",
-        "SchdIntv[95]": "transform[AI, 769]()",
-        "SchdEntr[95]": "transform[AI, 770]()",
-        "SchdIntv[96]": "transform[AI, 771]()",
-        "SchdEntr[96]": "transform[AI, 772]()",
-        "SchdIntv[97]": "transform[AI, 773]()",
-        "SchdEntr[97]": "transform[AI, 774]()",
-        "SchdIntv[98]": "transform[AI, 775]()",
-        "SchdEntr[98]": "transform[AI, 776]()",
-        "SchdIntv[99]": "transform[AI, 777]()",
-        "SchdEntr[99]": "transform[AI, 778]()",
-        "SchdIntv[100]": "transform[AI, 779]()",
-        "SchdEntr[100]": "transform[AI, 780]()",
-        "SchdSt": {
-          "3": "transform[BI, 108]()",
-          "2": "transform[BI, 109]()"
-        },
-        "SchdReuse[1]": "transform[BI, 110]()",
-        "SchdReuse[2]": "transform[BI, 111]()",
-        "SchdReuse[3]": "transform[BI, 112]()",
-        "SchdReuse[4]": "transform[BI, 113]()",
-        "SchdReuse[5]": "transform[BI, 114]()",
-        "SchdReuse[6]": "transform[BI, 115]()",
-        "SchdReuse[7]": "transform[BI, 116]()"
-      },
-      "MESAn": {
-        "SchdTyp": "transform[AI, 573]()"
       },
       "FSCH1": {
         "SchdSt": "transform[AI, 781]()",
@@ -1395,22 +1327,14 @@
         "GrWrn": "transform[BI, 2]()",
         "GrInd": "transform[BI, 3]()"
       },
-      "DBAT": {
+      "SBAT": {
         "IntnTmpHiAlm": "transform[BI, 8]()",
         "ExtTmpHiAlm": "transform[BI, 9]()"
       },
       "CSWI": {
-        "Pos": {
-          "1": "transform[BI, 23]()",
-          "2": "transform[BI, 24]()"
-        }
+        "Pos": "transform[BI, 23](select(2, 1))",
+        "x-PosMoving": "transform[BI, 24]()"
       },
-      "DHFW": {
-        "HysEna": "transform[BI, 86]()",
-        "SnptEna": "transform[BI, 87]()"
-      },
-      "DFWC": {},
-      "DVVC": {},
       "PTOV": {
         "Blk": "transform[BI, 52]()",
         "Str": {
@@ -1449,46 +1373,6 @@
       },
       "LCCH2": {
         "ChLiv": "transform[BI, 106]()"
-      },
-      "DLVT": {
-        "TrZnSt": {
-          "PTUV": {
-            "TmVCrv": {
-              "numPts": "transform[AI, 330](when_equal('AI.328', 'AI.74'))",
-              "crvPts[#]": {
-                "#": "transform[AI](when_equal('AI.328', 'AI.74'), pairs(333, 100, xVal, yVal), take('AI.330'))",
-                "xVal": "transform[#, xVal]()",
-                "yVal": "transform[#, yVal]()"
-              }
-            }
-          }
-        },
-        "CeaZnSt": {
-          "PTUV": {
-            "TmVCrv": {
-              "numPts": "transform[AI, 330](when_equal('AI.328', 'AI.76'))",
-              "crvPts[#]": {
-                "#": "transform[AI](when_equal('AI.328', 'AI.76'), pairs(333, 100, xVal, yVal), take('AI.330'))",
-                "xVal": "transform[#, xVal]()",
-                "yVal": "transform[#, yVal]()"
-              }
-            }
-          }
-        }
-      },
-      "DLFT": {
-        "TrZnSt": {
-          "PTUF": {
-            "TmHzCrv": {
-              "numPts": "transform[AI, 330](when_equal('AI.328', 'AI.80'))",
-              "crvPts[#]": {
-                "#": "transform[AI](when_equal('AI.328', 'AI.80'), pairs(333, 100, xVal, yVal), take('AI.330'))",
-                "xVal": "transform[#, xVal]()",
-                "yVal": "transform[#, yVal]()"
-              }
-            }
-          }
-        }
       }
     }
   },
@@ -1496,164 +1380,412 @@
     "input_format": "1815.2.outputs",
     "output_format": "61850",
     "pattern": {
-      "DECP": {
+      "DVVR": {
         "VRefOfs": "transform[AO, 1]()",
-        "EcpNomHz": "transform[AO, 2]()",
-        "ECPIsldAuto": "transform[BO, 7]()",
-        "MMXU": {
-          "TotW": {
+        "ModPrio": "transform[AO, 212]()",
+        "WinTms": "transform[AO, 213]()",
+        "RmpTms": "transform[AO, 214]()",
+        "RvrtTms": "transform[AO, 215]()",
+        "InEcpRef": "transform[AO, 216]()",
+        "VVArCrv": {
+          "numPts": "transform[AO, 246](when_equal('AO.244', 'AO.217'))",
+          "crvPts[#]": {
+            "#": "transform[AO](when_equal('AO.244', 'AO.217'), pairs(249, 100, xVal, yVal), take('AO.246'))",
+            "xVal": "transform[#, xVal]()",
+            "yVal": "transform[#, yVal]()"
+          }
+        },
+        "OplTmsMax": "transform[AO, 218]()",
+        "x-RmpDnTms": "transform[AO, 219]()",
+        "VRefTmms": "transform[AO, 220]()",
+        "Mod": "transform[BO, 29]()",
+        "VRefAdjEna": "transform[BO, 41]()"
+      },
+      "DECP": {
+        "HzNom": "transform[AO, 2]()",
+        "EcpIsldAuto": "transform[BO, 7]()"
+      },
+      "MMXU": {
+        "TotW": {
+          "rangeC": {
+            "hLim": "transform[AO, 449]()",
+            "lLim": "transform[AO, 450]()"
+          }
+        },
+        "TotVAr": {
+          "rangeC": {
+            "hLim": "transform[AO, 451]()",
+            "lLim": "transform[AO, 452]()"
+          }
+        },
+        "TotPF": {
+          "rangeC": {
+            "hLim": "transform[AO, 453]()",
+            "lLim": "transform[AO, 454]()"
+          }
+        },
+        "PhV": {
+          "phsA": {
             "rangeC": {
-              "hLim": "transform[AO, 449]()",
-              "lLim": "transform[AO, 450]()"
+              "hLim": "transform[AO, 455]()",
+              "lLim": "transform[AO, 456]()"
             }
           },
-          "TotVAr": {
+          "phsB": {
             "rangeC": {
-              "hLim": "transform[AO, 451]()",
-              "lLim": "transform[AO, 452]()"
+              "hLim": "transform[AO, 457]()",
+              "lLim": "transform[AO, 458]()"
             }
           },
-          "TotPF": {
+          "phsC": {
             "rangeC": {
-              "hLim": "transform[AO, 453]()",
-              "lLim": "transform[AO, 454]()"
-            }
-          },
-          "PhV": {
-            "phsA": {
-              "rangeC": {
-                "hLim": "transform[AO, 455]()",
-                "lLim": "transform[AO, 456]()"
-              }
-            },
-            "phsB": {
-              "rangeC": {
-                "hLim": "transform[AO, 457]()",
-                "lLim": "transform[AO, 458]()"
-              }
-            },
-            "phsC": {
-              "rangeC": {
-                "hLim": "transform[AO, 459]()",
-                "lLim": "transform[AO, 460]()"
-              }
+              "hLim": "transform[AO, 459]()",
+              "lLim": "transform[AO, 460]()"
             }
           }
-        }
+        },
+        "PFSign": "transform[AO, 4]()"
       },
       "DGEN": {
         "OplPct": "transform[AO, 3]()",
-        "VArRef": "transform[AO, 5]()",
-        "PrmConn": "transform[BO, 3]()",
-        "PrmDscon": "transform[BO, 4]()",
+        "VArSptRef": "transform[AO, 5]()",
+        "AuthConn": "transform[BO, 3]()",
+        "AuthDscon": "transform[BO, 4]()",
         "IsldCtlFol": "transform[BO, 6]()",
-        "OpnLoopTau": "transform[BO, 9]()"
+        "x-OplTauMod": "transform[BO, 9]()"
       },
-      "MMXU1": {
-        "PFSign": "transform[AO, 4]()"
-      },
-      "DCTE1": {
+      "DCTE": {
         "VHiLim": "transform[AO, 6]()",
         "VLoLim": "transform[AO, 7]()",
         "HzHiLim": "transform[AO, 8]()",
         "HzLoLim": "transform[AO, 9]()",
-        "RtnDlyTmms": "transform[AO, 10]()",
-        "WinTms": "transform[AO, 11]()",
-        "RtnRmpTmms": "transform[AO, 12]()"
-      },
-      "DCTE2": {
-        "WinTms": "transform[AO, 13]()",
-        "RmpTms": "transform[AO, 14]()",
-        "RvrtTms": "transform[AO, 15]()"
-      },
-      "DCTE3": {
+        "RtnDlTmms": "transform[AO, 10]()",
+        "x-RtnRndTmms": "transform[AO, 11]()",
+        "RtnRmpTmms": "transform[AO, 12]()",
+        "x-CeaWinTms": "transform[AO, 13]()",
+        "x-CeaRmpTms": "transform[AO, 14]()",
+        "x-CeaRvrtTms": "transform[AO, 15]()",
         "WinTms": "transform[AO, 16]()",
-        "RvrtTms": "transform[AO, 17]()"
+        "RvrtTms": "transform[AO, 17]()",
+        "x-CeaEgzReqCtlBits": {
+          "2": "transform[BO, 1]()",
+          "1": "transform[BO, 2]()"
+        }
       },
-      "DECP1": {
-        "EcpIsldSt": "transform[AO, 18]()"
-      },
-      "DECPn": {
-        "EcpIsldSt": "transform[AO, 19]()"
-      },
-      "MESA": {
+      "x-MESA": {
+        "ReqSetGrp": "transform[AO, 18]()",
+        "EditSetGrp": "transform[AO, 19]()",
         "FrzIntv": "transform[AO, 20]()",
-        "FrzIntvUnt": "transform[AO, 21]()"
+        "FrzIntvUnt": "transform[AO, 21]()",
+        "SelSchdId": "transform[AO, 462]()",
+        "SelSchd": {
+          "SchdPrio": "transform[AO, 463]()",
+          "StrTm[Date]": "transform[AO, 465]()",
+          "StrTm[Time]": "transform[AO, 466]()",
+          "NxtStrTm": "transform[AO, 467]()",
+          "SchdReuse": "transform[AO, 468]()",
+          "NumEntr": "transform[AO, 469]()",
+          "SchdIntv[1]": "transform[AO, 470]()",
+          "x-SchdEntr[1]": "transform[AO, 471]()",
+          "SchdIntv[2]": "transform[AO, 472]()",
+          "x-SchdEntr[2]": "transform[AO, 473]()",
+          "SchdIntv[3]": "transform[AO, 474]()",
+          "x-SchdEntr[3]": "transform[AO, 475]()",
+          "SchdIntv[4]": "transform[AO, 476]()",
+          "x-SchdEntr[4]": "transform[AO, 477]()",
+          "SchdIntv[5]": "transform[AO, 478]()",
+          "x-SchdEntr[5]": "transform[AO, 479]()",
+          "SchdIntv[6]": "transform[AO, 480]()",
+          "x-SchdEntr[6]": "transform[AO, 481]()",
+          "SchdIntv[7]": "transform[AO, 482]()",
+          "x-SchdEntr[7]": "transform[AO, 483]()",
+          "SchdIntv[8]": "transform[AO, 484]()",
+          "x-SchdEntr[8]": "transform[AO, 485]()",
+          "SchdIntv[9]": "transform[AO, 486]()",
+          "x-SchdEntr[9]": "transform[AO, 487]()",
+          "SchdIntv[10]": "transform[AO, 488]()",
+          "x-SchdEntr[10]": "transform[AO, 489]()",
+          "SchdIntv[11]": "transform[AO, 490]()",
+          "x-SchdEntr[11]": "transform[AO, 491]()",
+          "SchdIntv[12]": "transform[AO, 492]()",
+          "x-SchdEntr[12]": "transform[AO, 493]()",
+          "SchdIntv[13]": "transform[AO, 494]()",
+          "x-SchdEntr[13]": "transform[AO, 495]()",
+          "SchdIntv[14]": "transform[AO, 496]()",
+          "x-SchdEntr[14]": "transform[AO, 497]()",
+          "SchdIntv[15]": "transform[AO, 498]()",
+          "x-SchdEntr[15]": "transform[AO, 499]()",
+          "SchdIntv[16]": "transform[AO, 500]()",
+          "x-SchdEntr[16]": "transform[AO, 501]()",
+          "SchdIntv[17]": "transform[AO, 502]()",
+          "x-SchdEntr[17]": "transform[AO, 503]()",
+          "SchdIntv[18]": "transform[AO, 504]()",
+          "x-SchdEntr[18]": "transform[AO, 505]()",
+          "SchdIntv[19]": "transform[AO, 506]()",
+          "x-SchdEntr[19]": "transform[AO, 507]()",
+          "SchdIntv[20]": "transform[AO, 508]()",
+          "x-SchdEntr[20]": "transform[AO, 509]()",
+          "SchdIntv[21]": "transform[AO, 510]()",
+          "x-SchdEntr[21]": "transform[AO, 511]()",
+          "SchdIntv[22]": "transform[AO, 512]()",
+          "x-SchdEntr[22]": "transform[AO, 513]()",
+          "SchdIntv[23]": "transform[AO, 514]()",
+          "x-SchdEntr[23]": "transform[AO, 515]()",
+          "SchdIntv[24]": "transform[AO, 516]()",
+          "x-SchdEntr[24]": "transform[AO, 517]()",
+          "SchdIntv[25]": "transform[AO, 518]()",
+          "x-SchdEntr[25]": "transform[AO, 519]()",
+          "SchdIntv[26]": "transform[AO, 520]()",
+          "x-SchdEntr[26]": "transform[AO, 521]()",
+          "SchdIntv[27]": "transform[AO, 522]()",
+          "x-SchdEntr[27]": "transform[AO, 523]()",
+          "SchdIntv[28]": "transform[AO, 524]()",
+          "x-SchdEntr[28]": "transform[AO, 525]()",
+          "SchdIntv[29]": "transform[AO, 526]()",
+          "x-SchdEntr[29]": "transform[AO, 527]()",
+          "SchdIntv[30]": "transform[AO, 528]()",
+          "x-SchdEntr[30]": "transform[AO, 529]()",
+          "SchdIntv[31]": "transform[AO, 530]()",
+          "x-SchdEntr[31]": "transform[AO, 531]()",
+          "SchdIntv[32]": "transform[AO, 532]()",
+          "x-SchdEntr[32]": "transform[AO, 533]()",
+          "SchdIntv[33]": "transform[AO, 534]()",
+          "x-SchdEntr[33]": "transform[AO, 535]()",
+          "SchdIntv[34]": "transform[AO, 536]()",
+          "x-SchdEntr[34]": "transform[AO, 537]()",
+          "SchdIntv[35]": "transform[AO, 538]()",
+          "x-SchdEntr[35]": "transform[AO, 539]()",
+          "SchdIntv[36]": "transform[AO, 540]()",
+          "x-SchdEntr[36]": "transform[AO, 541]()",
+          "SchdIntv[37]": "transform[AO, 542]()",
+          "x-SchdEntr[37]": "transform[AO, 543]()",
+          "SchdIntv[38]": "transform[AO, 544]()",
+          "x-SchdEntr[38]": "transform[AO, 545]()",
+          "SchdIntv[39]": "transform[AO, 546]()",
+          "x-SchdEntr[39]": "transform[AO, 547]()",
+          "SchdIntv[40]": "transform[AO, 548]()",
+          "x-SchdEntr[40]": "transform[AO, 549]()",
+          "SchdIntv[41]": "transform[AO, 550]()",
+          "x-SchdEntr[41]": "transform[AO, 551]()",
+          "SchdIntv[42]": "transform[AO, 552]()",
+          "x-SchdEntr[42]": "transform[AO, 553]()",
+          "SchdIntv[43]": "transform[AO, 554]()",
+          "x-SchdEntr[43]": "transform[AO, 555]()",
+          "SchdIntv[44]": "transform[AO, 556]()",
+          "x-SchdEntr[44]": "transform[AO, 557]()",
+          "SchdIntv[45]": "transform[AO, 558]()",
+          "x-SchdEntr[45]": "transform[AO, 559]()",
+          "SchdIntv[46]": "transform[AO, 560]()",
+          "x-SchdEntr[46]": "transform[AO, 561]()",
+          "SchdIntv[47]": "transform[AO, 562]()",
+          "x-SchdEntr[47]": "transform[AO, 563]()",
+          "SchdIntv[48]": "transform[AO, 564]()",
+          "x-SchdEntr[48]": "transform[AO, 565]()",
+          "SchdIntv[49]": "transform[AO, 566]()",
+          "x-SchdEntr[49]": "transform[AO, 567]()",
+          "SchdIntv[50]": "transform[AO, 568]()",
+          "x-SchdEntr[50]": "transform[AO, 569]()",
+          "SchdIntv[51]": "transform[AO, 570]()",
+          "x-SchdEntr[51]": "transform[AO, 571]()",
+          "SchdIntv[52]": "transform[AO, 572]()",
+          "x-SchdEntr[52]": "transform[AO, 573]()",
+          "SchdIntv[53]": "transform[AO, 574]()",
+          "x-SchdEntr[53]": "transform[AO, 575]()",
+          "SchdIntv[54]": "transform[AO, 576]()",
+          "x-SchdEntr[54]": "transform[AO, 577]()",
+          "SchdIntv[55]": "transform[AO, 578]()",
+          "x-SchdEntr[55]": "transform[AO, 579]()",
+          "SchdIntv[56]": "transform[AO, 580]()",
+          "x-SchdEntr[56]": "transform[AO, 581]()",
+          "SchdIntv[57]": "transform[AO, 582]()",
+          "x-SchdEntr[57]": "transform[AO, 583]()",
+          "SchdIntv[58]": "transform[AO, 584]()",
+          "x-SchdEntr[58]": "transform[AO, 585]()",
+          "SchdIntv[59]": "transform[AO, 586]()",
+          "x-SchdEntr[59]": "transform[AO, 587]()",
+          "SchdIntv[60]": "transform[AO, 588]()",
+          "x-SchdEntr[60]": "transform[AO, 589]()",
+          "SchdIntv[61]": "transform[AO, 590]()",
+          "x-SchdEntr[61]": "transform[AO, 591]()",
+          "SchdIntv[62]": "transform[AO, 592]()",
+          "x-SchdEntr[62]": "transform[AO, 593]()",
+          "SchdIntv[63]": "transform[AO, 594]()",
+          "x-SchdEntr[63]": "transform[AO, 595]()",
+          "SchdIntv[64]": "transform[AO, 596]()",
+          "x-SchdEntr[64]": "transform[AO, 597]()",
+          "SchdIntv[65]": "transform[AO, 598]()",
+          "x-SchdEntr[65]": "transform[AO, 599]()",
+          "SchdIntv[66]": "transform[AO, 600]()",
+          "x-SchdEntr[66]": "transform[AO, 601]()",
+          "SchdIntv[67]": "transform[AO, 602]()",
+          "x-SchdEntr[67]": "transform[AO, 603]()",
+          "SchdIntv[68]": "transform[AO, 604]()",
+          "x-SchdEntr[68]": "transform[AO, 605]()",
+          "SchdIntv[69]": "transform[AO, 606]()",
+          "x-SchdEntr[69]": "transform[AO, 607]()",
+          "SchdIntv[70]": "transform[AO, 608]()",
+          "x-SchdEntr[70]": "transform[AO, 609]()",
+          "SchdIntv[71]": "transform[AO, 610]()",
+          "x-SchdEntr[71]": "transform[AO, 611]()",
+          "SchdIntv[72]": "transform[AO, 612]()",
+          "x-SchdEntr[72]": "transform[AO, 613]()",
+          "SchdIntv[73]": "transform[AO, 614]()",
+          "x-SchdEntr[73]": "transform[AO, 615]()",
+          "SchdIntv[74]": "transform[AO, 616]()",
+          "x-SchdEntr[74]": "transform[AO, 617]()",
+          "SchdIntv[75]": "transform[AO, 618]()",
+          "x-SchdEntr[75]": "transform[AO, 619]()",
+          "SchdIntv[76]": "transform[AO, 620]()",
+          "x-SchdEntr[76]": "transform[AO, 621]()",
+          "SchdIntv[77]": "transform[AO, 622]()",
+          "x-SchdEntr[77]": "transform[AO, 623]()",
+          "SchdIntv[78]": "transform[AO, 624]()",
+          "x-SchdEntr[78]": "transform[AO, 625]()",
+          "SchdIntv[79]": "transform[AO, 626]()",
+          "x-SchdEntr[79]": "transform[AO, 627]()",
+          "SchdIntv[80]": "transform[AO, 628]()",
+          "x-SchdEntr[80]": "transform[AO, 629]()",
+          "SchdIntv[81]": "transform[AO, 630]()",
+          "x-SchdEntr[81]": "transform[AO, 631]()",
+          "SchdIntv[82]": "transform[AO, 632]()",
+          "x-SchdEntr[82]": "transform[AO, 633]()",
+          "SchdIntv[83]": "transform[AO, 634]()",
+          "x-SchdEntr[83]": "transform[AO, 635]()",
+          "SchdIntv[84]": "transform[AO, 636]()",
+          "x-SchdEntr[84]": "transform[AO, 637]()",
+          "SchdIntv[85]": "transform[AO, 638]()",
+          "x-SchdEntr[85]": "transform[AO, 639]()",
+          "SchdIntv[86]": "transform[AO, 640]()",
+          "x-SchdEntr[86]": "transform[AO, 641]()",
+          "SchdIntv[87]": "transform[AO, 642]()",
+          "x-SchdEntr[87]": "transform[AO, 643]()",
+          "SchdIntv[88]": "transform[AO, 644]()",
+          "x-SchdEntr[88]": "transform[AO, 645]()",
+          "SchdIntv[89]": "transform[AO, 646]()",
+          "x-SchdEntr[89]": "transform[AO, 647]()",
+          "SchdIntv[90]": "transform[AO, 648]()",
+          "x-SchdEntr[90]": "transform[AO, 649]()",
+          "SchdIntv[91]": "transform[AO, 650]()",
+          "x-SchdEntr[91]": "transform[AO, 651]()",
+          "SchdIntv[92]": "transform[AO, 652]()",
+          "x-SchdEntr[92]": "transform[AO, 653]()",
+          "SchdIntv[93]": "transform[AO, 654]()",
+          "x-SchdEntr[93]": "transform[AO, 655]()",
+          "SchdIntv[94]": "transform[AO, 656]()",
+          "x-SchdEntr[94]": "transform[AO, 657]()",
+          "SchdIntv[95]": "transform[AO, 658]()",
+          "x-SchdEntr[95]": "transform[AO, 659]()",
+          "SchdIntv[96]": "transform[AO, 660]()",
+          "x-SchdEntr[96]": "transform[AO, 661]()",
+          "SchdIntv[97]": "transform[AO, 662]()",
+          "x-SchdEntr[97]": "transform[AO, 663]()",
+          "SchdIntv[98]": "transform[AO, 664]()",
+          "x-SchdEntr[98]": "transform[AO, 665]()",
+          "SchdIntv[99]": "transform[AO, 666]()",
+          "x-SchdEntr[99]": "transform[AO, 667]()",
+          "SchdIntv[100]": "transform[AO, 668]()",
+          "x-SchdEntr[100]": "transform[AO, 669]()",
+          "SchdSt": {
+            "3": "transform[BO, 2000]()"
+          },
+          "SchdReuse[1]": "transform[BO, 2001]()",
+          "SchdReuse[2]": "transform[BO, 2002]()",
+          "SchdReuse[3]": "transform[BO, 2003]()",
+          "SchdReuse[4]": "transform[BO, 2004]()",
+          "SchdReuse[5]": "transform[BO, 2005]()",
+          "SchdReuse[6]": "transform[BO, 2006]()",
+          "SchdReuse[7]": "transform[BO, 2007]()"
+        },
+        "SchdVal": {
+          "valEq": "transform[AO, 464]()"
+        }
       },
       "DHVT": {
-        "EcpRef": "transform[AO, 22]()",
-        "ModEna": "transform[BO, 12]()",
-        "TrZnSt": {
-          "PTOV": {
-            "TmVCrv": {
-              "numPts": "transform[AO, 246](when_equal('AO.244', 'AO.23'))",
-              "crvPts[#]": {
-                "#": "transform[AO](when_equal('AO.244', 'AO.23'), pairs(249, 100, xVal, yVal), take('AO.246'))",
-                "xVal": "transform[#, xVal]()",
-                "yVal": "transform[#, yVal]()"
-              }
-            }
-          }
-        },
-        "CeaZnSt": {
-          "PTOV": {
-            "TmVCrv": {
-              "numPts": "transform[AO, 246](when_equal('AO.244', 'AO.25'))",
-              "crvPts[#]": {
-                "#": "transform[AO](when_equal('AO.244', 'AO.25'), pairs(249, 100, xVal, yVal), take('AO.246'))",
-                "xVal": "transform[#, xVal]()",
-                "yVal": "transform[#, yVal]()"
-              }
-            }
-          }
-        }
+        "InEcpRef": "transform[AO, 22]()",
+        "Mod": "transform[BO, 12]()"
       },
       "PTOV1": {
-        "BlkRef": "transform[AO, 23]()"
-      },
-      "PTUV1": {
-        "BlkRef": "transform[AO, 24]()"
+        "TmVChr": {
+          "numPts": "transform[AO, 246](when_equal('AO.244', 'AO.23'))",
+          "crvPts[#]": {
+            "#": "transform[AO](when_equal('AO.244', 'AO.23'), pairs(249, 100, xVal, yVal), take('AO.246'))",
+            "xVal": "transform[#, xVal]()",
+            "yVal": "transform[#, yVal]()"
+          }
+        },
+        "x-CrvRef": "transform[AO, 23]()"
       },
       "PTOV2": {
-        "BlkRef": "transform[AO, 25]()"
+        "TmVChr": {
+          "numPts": "transform[AO, 246](when_equal('AO.244', 'AO.25'))",
+          "crvPts[#]": {
+            "#": "transform[AO](when_equal('AO.244', 'AO.25'), pairs(249, 100, xVal, yVal), take('AO.246'))",
+            "xVal": "transform[#, xVal]()",
+            "yVal": "transform[#, yVal]()"
+          }
+        },
+        "x-CrvRef": "transform[AO, 25]()"
       },
-      "PTUV2": {
-        "BlkRef": "transform[AO, 26]()"
-      },
-      "DHFT": {
-        "EcpRef": "transform[AO, 27]()",
-        "ModEna": "transform[BO, 13]()",
-        "TrZnSt": {
-          "PTOF": {
-            "TmHzCrv": {
-              "numPts": "transform[AO, 246](when_equal('AO.244', 'AO.28'))",
-              "crvPts[#]": {
-                "#": "transform[AO](when_equal('AO.244', 'AO.28'), pairs(249, 100, xVal, yVal), take('AO.246'))",
-                "xVal": "transform[#, xVal]()",
-                "yVal": "transform[#, yVal]()"
-              }
-            }
+      "PTUV1": {
+        "x-CrvRef": "transform[AO, 24]()",
+        "TmVChr": {
+          "numPts": "transform[AO, 246](when_equal('AO.244', 'AO.24'))",
+          "crvPts[#]": {
+            "#": "transform[AO](when_equal('AO.244', 'AO.24'), pairs(249, 100, xVal, yVal), take('AO.246'))",
+            "xVal": "transform[#, xVal]()",
+            "yVal": "transform[#, yVal]()"
           }
         }
       },
+      "PTUV2": {
+        "x-CrvRef": "transform[AO, 26]()",
+        "TmVChr": {
+          "numPts": "transform[AO, 246](when_equal('AO.244', 'AO.26'))",
+          "crvPts[#]": {
+            "#": "transform[AO](when_equal('AO.244', 'AO.26'), pairs(249, 100, xVal, yVal), take('AO.246'))",
+            "xVal": "transform[#, xVal]()",
+            "yVal": "transform[#, yVal]()"
+          }
+        }
+      },
+      "DHFT": {
+        "InEcpRef": "transform[AO, 27]()",
+        "Mod": "transform[BO, 13]()"
+      },
       "PTOF1": {
-        "BlkRef": "transform[AO, 28]()"
+        "x-TmHzChr": {
+          "numPts": "transform[AO, 246](when_equal('AO.244', 'AO.28'))",
+          "crvPts[#]": {
+            "#": "transform[AO](when_equal('AO.244', 'AO.28'), pairs(249, 100, xVal, yVal), take('AO.246'))",
+            "xVal": "transform[#, xVal]()",
+            "yVal": "transform[#, yVal]()"
+          }
+        },
+        "x-CrvRef": "transform[AO, 28]()"
       },
       "PTUF1": {
-        "BlkRef": "transform[AO, 29]()"
+        "x-CrvRef": "transform[AO, 29]()",
+        "x-TmHzChr": {
+          "numPts": "transform[AO, 246](when_equal('AO.244', 'AO.29'))",
+          "crvPts[#]": {
+            "#": "transform[AO](when_equal('AO.244', 'AO.29'), pairs(249, 100, xVal, yVal), take('AO.246'))",
+            "xVal": "transform[#, xVal]()",
+            "yVal": "transform[#, yVal]()"
+          }
+        }
       },
       "PTOF2": {
-        "BlkRef": "transform[AO, 30]()"
+        "x-CrvRef": "transform[AO, 30]()"
       },
       "PTUF2": {
-        "BlkRef": "transform[AO, 31]()"
+        "x-CrvRef": "transform[AO, 31]()"
       },
       "DRGS": {
         "ModPrio": "transform[AO, 32]()",
         "WinTms": "transform[AO, 33]()",
         "RmpTms": "transform[AO, 34]()",
         "RvrtTms": "transform[AO, 35]()",
-        "EcpRef": "transform[AO, 36]()",
+        "InEcpRef": "transform[AO, 36]()",
         "ArGraMod": "transform[BO, 33]()",
         "DbVMin": "transform[AO, 38]()",
         "DbVMax": "transform[AO, 39]()",
@@ -1664,10 +1796,10 @@
         "HysBlkZnV": "transform[AO, 44]()",
         "BlkZnTmms": "transform[AO, 45]()",
         "HoldTmms": "transform[AO, 46]()",
-        "HoldTmms[1]": "transform[AO, 47]()",
-        "ModEna": "transform[BO, 14]()"
+        "x-StrHoldTmms": "transform[AO, 47]()",
+        "Mod": "transform[BO, 14]()"
       },
-      "DVWD": {
+      "x-DVWD": {
         "ModPrio": "transform[AO, 48]()",
         "WinTms": "transform[AO, 49]()",
         "RmpTms": "transform[AO, 50]()",
@@ -1676,41 +1808,39 @@
         "VWFilTms": "transform[AO, 54]()",
         "DbVWLo": "transform[AO, 55]()",
         "DbVWHi": "transform[AO, 56]()",
-        "ModEna": "transform[BO, 15]()"
+        "Mod": "transform[BO, 15]()",
+        "InEcpRef": "transform[AO, 52]()"
       },
-      "DVWD 2": {
-        "EcpRef": "transform[AO, 52]()"
-      },
-      "DHFW1": {
+      "DHFW": {
         "ModPrio": "transform[AO, 57]()",
         "WinTms": "transform[AO, 58]()",
         "RmpTms": "transform[AO, 59]()",
         "RvrtTms": "transform[AO, 60]()",
-        "EcpRef": "transform[AO, 61]()",
+        "InEcpRef": "transform[AO, 61]()",
         "HzStr": "transform[AO, 62]()",
         "HzStop": "transform[AO, 63]()",
         "WGra": "transform[AO, 64]()",
-        "WChaGra": "transform[AO, 65]()",
-        "ActStrDlTmms": "transform[AO, 70]()",
-        "ActStopDlTmms": "transform[AO, 71]()",
-        "OplTmsMax[1]": "transform[AO, 72]()",
-        "OplTmsMax[2]": "transform[AO, 73]()",
-        "DschRpuRte": "transform[AO, 74]()",
-        "DschRpdRte": "transform[AO, 75]()",
-        "ChaRpuRte": "transform[AO, 76]()",
-        "ChaRpdRte": "transform[AO, 77]()",
+        "ChaWGra": "transform[AO, 65]()",
+        "StrDlTmms": "transform[AO, 70]()",
+        "StopDlTmms": "transform[AO, 71]()",
+        "OplTmsMax": "transform[AO, 72]()",
+        "x-RmpDnTms": "transform[AO, 73]()",
+        "RpuMax": "transform[AO, 74]()",
+        "RpdMax": "transform[AO, 75]()",
+        "ChaRpuMax": "transform[AO, 76]()",
+        "ChaRpdMax": "transform[AO, 77]()",
         "RtnRmpRte": "transform[AO, 78]()",
-        "SocUseMin": "transform[AO, 80]()",
-        "SocUseMax": "transform[AO, 81]()",
-        "ModEna": "transform[BO, 16]()",
+        "SocUseMinPct": "transform[AO, 80]()",
+        "SocUseMaxPct": "transform[AO, 81]()",
+        "Mod": "transform[BO, 16]()",
         "HysEna": "transform[BO, 36]()",
-        "SnptEna": "transform[BO, 37]()"
+        "SnptBarEna": "transform[BO, 37]()"
       },
-      "DLFW1": {
+      "DLFW": {
         "HzStr": "transform[AO, 66]()",
         "HzStop": "transform[AO, 67]()",
         "WGra": "transform[AO, 68]()",
-        "WChaGra": "transform[AO, 69]()",
+        "ChaWGra": "transform[AO, 69]()",
         "RtnRmpRte": "transform[AO, 79]()"
       },
       "DWMX": {
@@ -1718,29 +1848,29 @@
         "WinTms": "transform[AO, 83]()",
         "RmpTms": "transform[AO, 84]()",
         "RvrtTms": "transform[AO, 85]()",
-        "EcpRef": "transform[AO, 86]()",
-        "LimW": "transform[AO, 87]()",
-        "ModEna": "transform[BO, 17]()"
+        "InEcpRef": "transform[AO, 86]()",
+        "WMaxSpt": "transform[AO, 87]()",
+        "Mod": "transform[BO, 17]()"
       },
       "DWMN": {
-        "LimW": "transform[AO, 88]()"
+        "WMinSpt": "transform[AO, 88]()"
       },
       "DWGC": {
         "ModPrio": "transform[AO, 89]()",
         "WinTms": "transform[AO, 90]()",
         "RmpTms": "transform[AO, 91]()",
         "RvrtTms": "transform[AO, 92]()",
-        "GnWPctSpt": "transform[AO, 93]()",
-        "OplTmsMax[1]": "transform[AO, 94]()",
-        "OplTmsMax[2]": "transform[AO, 95]()",
-        "DschRpuRte": "transform[AO, 96]()",
-        "DschRpdRte": "transform[AO, 97]()",
-        "ChaRpuRte": "transform[AO, 98]()",
-        "ChaRpdRte": "transform[AO, 99]()",
+        "WSptPct": "transform[AO, 93]()",
+        "OplTmsMax": "transform[AO, 94]()",
+        "x-RmpDnTms": "transform[AO, 95]()",
+        "RpuMax": "transform[AO, 96]()",
+        "RpdMax": "transform[AO, 97]()",
+        "ChaRpuMax": "transform[AO, 98]()",
+        "ChaRpdMax": "transform[AO, 99]()",
         "SocUseMinPct": "transform[AO, 100]()",
         "SocUseMaxPct": "transform[AO, 101]()",
-        "ModEna": "transform[BO, 18]()",
-        "UseRmpRte": "transform[BO, 38]()"
+        "Mod": "transform[BO, 18]()",
+        "RmpRteUse": "transform[BO, 38]()"
       },
       "DTCD": {
         "ModPrio": "transform[AO, 102]()",
@@ -1748,51 +1878,51 @@
         "RmpTms": "transform[AO, 104]()",
         "RvrtTms": "transform[AO, 105]()",
         "SocUseTgtPct": "transform[AO, 106]()",
-        "DateTgt[Date]": "transform[AO, 107]()",
-        "DateTgt[Time]": "transform[AO, 108]()",
+        "x-DateTgtDate": "transform[AO, 107]()",
+        "x-DateTgtTime": "transform[AO, 108]()",
         "WhReq": "transform[AO, 109]()",
-        "ChaDurTms": "transform[AO, 110]()",
+        "x-ChaDurMin": "transform[AO, 110]()",
         "SocDate": "transform[AO, 111]()",
-        "SocDateTms": "transform[AO, 112]()",
+        "DateTgt": "transform[AO, 112]()",
         "ChaDurMax": "transform[AO, 113]()",
         "DschDurMax": "transform[AO, 114]()",
-        "ModEna": "transform[BO, 19]()"
+        "Mod": "transform[BO, 19]()"
       },
-      "DWFL1": {
+      "DWFL": {
         "ModPrio": "transform[AO, 115]()",
         "WinTms": "transform[AO, 116]()",
         "RmpTms": "transform[AO, 117]()",
         "RvrtTms": "transform[AO, 118]()",
-        "EcpRef": "transform[AO, 119]()",
+        "InEcpRef": "transform[AO, 119]()",
         "FolWThr": "transform[AO, 120]()",
         "FolWPct": "transform[AO, 121]()",
-        "RpuRte": "transform[AO, 122]()",
-        "RpdRte": "transform[AO, 123]()",
-        "ModEna": "transform[BO, 20]()"
+        "RpuMax": "transform[AO, 122]()",
+        "RpdMax": "transform[AO, 123]()",
+        "Mod": "transform[BO, 20]()"
       },
       "DWFL2": {
         "ModPrio": "transform[AO, 124]()",
         "WinTms": "transform[AO, 125]()",
         "RmpTms": "transform[AO, 126]()",
         "RvrtTms": "transform[AO, 127]()",
-        "EcpRef": "transform[AO, 128]()",
+        "InEcpRef": "transform[AO, 128]()",
         "FolWThr": "transform[AO, 129]()",
         "FolWPct": "transform[AO, 130]()",
-        "RpuRte": "transform[AO, 131]()",
-        "RpdRte": "transform[AO, 132]()",
-        "ModEna": "transform[BO, 21]()"
+        "RpuMax": "transform[AO, 131]()",
+        "RpdMax": "transform[AO, 132]()",
+        "Mod": "transform[BO, 21]()"
       },
       "DWFL3": {
         "ModPrio": "transform[AO, 133]()",
         "WinTms": "transform[AO, 134]()",
         "RmpTms": "transform[AO, 135]()",
         "RvrtTms": "transform[AO, 136]()",
-        "EcpRef": "transform[AO, 137]()",
+        "InEcpRef": "transform[AO, 137]()",
         "FolWThr": "transform[AO, 138]()",
         "FolWPct": "transform[AO, 139]()",
-        "RpuRte": "transform[AO, 140]()",
-        "RpdRte": "transform[AO, 141]()",
-        "ModEna": "transform[BO, 22]()"
+        "RpuMax": "transform[AO, 140]()",
+        "RpdMax": "transform[AO, 141]()",
+        "Mod": "transform[BO, 22]()"
       },
       "DAGC": {
         "ModPrio": "transform[AO, 142]()",
@@ -1800,39 +1930,39 @@
         "RmpTms": "transform[AO, 144]()",
         "RvrtTms": "transform[AO, 145]()",
         "WSpt": "transform[AO, 146]()",
-        "OplTmsMax[1]": "transform[AO, 147]()",
-        "OplTmsMax[2]": "transform[AO, 148]()",
-        "DschRpuRte": "transform[AO, 149]()",
-        "DschRpdRte": "transform[AO, 150]()",
-        "ChaRpuRte": "transform[AO, 151]()",
-        "ChaRpdRte": "transform[AO, 152]()",
+        "OplTmsMax": "transform[AO, 147]()",
+        "x-RmpDnTms": "transform[AO, 148]()",
+        "RpuMax": "transform[AO, 149]()",
+        "RpdMax": "transform[AO, 150]()",
+        "ChaRpuMax": "transform[AO, 151]()",
+        "ChaRpdMax": "transform[AO, 152]()",
         "SocUseMinPct": "transform[AO, 153]()",
         "SocUseMaxPct": "transform[AO, 154]()",
-        "ModEna": "transform[BO, 23]()",
-        "UseRmpRte": "transform[BO, 39]()"
+        "Mod": "transform[BO, 23]()",
+        "RmpRteUse": "transform[BO, 39]()"
       },
-      "DWSM": {
+      "x-DWSM": {
         "ModPrio": "transform[AO, 155]()",
         "WinTms": "transform[AO, 156]()",
         "RmpTms": "transform[AO, 157]()",
         "RvrtTms": "transform[AO, 158]()",
-        "EcpRef": "transform[AO, 159]()",
+        "InEcpRef": "transform[AO, 159]()",
         "WSmthGra": "transform[AO, 160]()",
         "WSmthLoLim": "transform[AO, 161]()",
         "WSmthHiLim": "transform[AO, 162]()",
         "FilTms": "transform[AO, 163]()",
-        "DschRpuRte": "transform[AO, 164]()",
-        "DschRpdRte": "transform[AO, 165]()",
-        "ChaRpuRte": "transform[AO, 166]()",
-        "ChaRpdRte": "transform[AO, 167]()",
-        "ModEna": "transform[BO, 24]()"
+        "RpuMax": "transform[AO, 164]()",
+        "RpdMax": "transform[AO, 165]()",
+        "ChaRpuMax": "transform[AO, 166]()",
+        "ChaRpdMax": "transform[AO, 167]()",
+        "Mod": "transform[BO, 24]()"
       },
       "DVWC": {
         "ModPrio": "transform[AO, 168]()",
         "WinTms": "transform[AO, 169]()",
         "RmpTms": "transform[AO, 170]()",
         "RvrtTms": "transform[AO, 171]()",
-        "EcpRef": "transform[AO, 172]()",
+        "InEcpRef": "transform[AO, 172]()",
         "VWCrv": {
           "numPts": "transform[AO, 246](when_equal('AO.244', 'AO.173'))",
           "crvPts[#]": {
@@ -1842,85 +1972,67 @@
           }
         },
         "FilTms": "transform[AO, 174]()",
-        "OplTmsMax[1]": "transform[AO, 175]()",
-        "OplTmsMax[2]": "transform[AO, 176]()",
-        "DschRpuRte": "transform[AO, 177]()",
-        "DschRpdRte": "transform[AO, 178]()",
-        "ChaRpuRte": "transform[AO, 179]()",
-        "ChaRpdRte": "transform[AO, 180]()",
-        "ModEna": "transform[BO, 25]()",
-        "UseRmpRte": "transform[BO, 40]()"
+        "OplTmsMax": "transform[AO, 175]()",
+        "x-RmpDnTms": "transform[AO, 176]()",
+        "RpuMax": "transform[AO, 177]()",
+        "RpdMax": "transform[AO, 178]()",
+        "ChaRpuMax": "transform[AO, 179]()",
+        "ChaRpdMax": "transform[AO, 180]()",
+        "Mod": "transform[BO, 25]()",
+        "RmpRteUse": "transform[BO, 40]()"
       },
       "DHFW2": {
         "ModPrio": "transform[AO, 181]()",
         "WinTms": "transform[AO, 182]()",
         "RmpTms": "transform[AO, 183]()",
         "RvrtTms": "transform[AO, 184]()",
-        "EcpRef": "transform[AO, 185]()",
+        "InEcpRef": "transform[AO, 185]()",
         "HzWCrv": "transform[AO, 186]()",
-        "HysCrv": "transform[AO, 187]()",
-        "ActStrDlTmms": "transform[AO, 189]()",
-        "ActStopDlTmms": "transform[AO, 190]()",
-        "OplTmsMax[1]": "transform[AO, 191]()",
-        "OplTmsMax[2]": "transform[AO, 192]()",
-        "RpuRte": "transform[AO, 193]()",
-        "RpdRte": "transform[AO, 194]()",
-        "RpuChaRte": "transform[AO, 195]()",
-        "RpdChaRte": "transform[AO, 196]()",
+        "x-HysCrvRef": "transform[AO, 187]()",
+        "StrDlTmms": "transform[AO, 189]()",
+        "StopDlTmms": "transform[AO, 190]()",
+        "OplTmsMax": "transform[AO, 191]()",
+        "x-RmpDnTms": "transform[AO, 192]()",
+        "RpuMax": "transform[AO, 193]()",
+        "RpdMax": "transform[AO, 194]()",
+        "ChaRpuMax": "transform[AO, 195]()",
+        "ChaRpdMax": "transform[AO, 196]()",
         "SocUseMinPct": "transform[AO, 197]()",
         "SocUseMaxPct": "transform[AO, 198]()",
-        "ModEna": "transform[BO, 26]()"
+        "Mod": "transform[BO, 26]()",
+        "HysEna": "transform[BO, 34]()",
+        "SnptBarEna": "transform[BO, 35]()"
       },
       "DLFW2": {
-        "HysCrv": "transform[AO, 188]()"
+        "x-HysCrvRef": "transform[AO, 188]()"
       },
       "DVAR": {
         "ModPrio": "transform[AO, 199]()",
         "WinTms": "transform[AO, 200]()",
         "RmpTms": "transform[AO, 201]()",
         "RvrtTms": "transform[AO, 202]()",
-        "VArTgt": "transform[AO, 203]()",
-        "OplTmsMax[1]": "transform[AO, 204]()",
-        "OplTmsMax[2]": "transform[AO, 205]()",
-        "ModEna": "transform[BO, 27]()"
+        "VArTgtSpt": "transform[AO, 203]()",
+        "OplTmsMax": "transform[AO, 204]()",
+        "x-RmpDnTms": "transform[AO, 205]()",
+        "Mod": "transform[BO, 27]()"
       },
       "DFPF": {
         "ModPrio": "transform[AO, 206]()",
         "WinTms": "transform[AO, 207]()",
         "RmpTms": "transform[AO, 208]()",
         "RvrtTms": "transform[AO, 209]()",
-        "PFGnTgt": "transform[AO, 210]()",
-        "PFLodTgt": "transform[AO, 211]()",
-        "PFGnExtSet": "transform[BO, 10]()",
-        "PFLodExtSet": "transform[BO, 11]()",
-        "ModEna": "transform[BO, 28]()"
-      },
-      "DVVR": {
-        "ModPrio": "transform[AO, 212]()",
-        "WinTms": "transform[AO, 213]()",
-        "RmpTms": "transform[AO, 214]()",
-        "RvrtTms": "transform[AO, 215]()",
-        "EcpRef": "transform[AO, 216]()",
-        "VVArCrv": {
-          "numPts": "transform[AO, 246](when_equal('AO.244', 'AO.217'))",
-          "crvPts[#]": {
-            "#": "transform[AO](when_equal('AO.244', 'AO.217'), pairs(249, 100, xVal, yVal), take('AO.246'))",
-            "xVal": "transform[#, xVal]()",
-            "yVal": "transform[#, yVal]()"
-          }
-        },
-        "OplTmsMax[1]": "transform[AO, 218]()",
-        "OplTmsMax[2]": "transform[AO, 219]()",
-        "VRefTmms": "transform[AO, 220]()",
-        "ModEna": "transform[BO, 29]()",
-        "VRefAdjEna": "transform[BO, 41]()"
+        "PFGnTgtSpt": "transform[AO, 210]()",
+        "PFLodTgtSpt": "transform[AO, 211]()",
+        "PFGnExtQud": "transform[BO, 10](equals(0))",
+        "PFLodExtQud": "transform[BO, 11](equals(0))",
+        "Mod": "transform[BO, 28]()"
       },
       "DWVR": {
         "ModPrio": "transform[AO, 221]()",
         "WinTms": "transform[AO, 222]()",
         "RmpTms": "transform[AO, 223]()",
         "RvrtTms": "transform[AO, 224]()",
-        "EcpRef": "transform[AO, 225]()",
+        "InEcpRef": "transform[AO, 225]()",
         "WVArCrv": {
           "numPts": "transform[AO, 246](when_equal('AO.244', 'AO.226'))",
           "crvPts[#]": {
@@ -1929,16 +2041,16 @@
             "yVal": "transform[#, yVal]()"
           }
         },
-        "OplTmsMax[1]": "transform[AO, 227]()",
-        "OplTmsMax[2]": "transform[AO, 228]()",
-        "ModEna": "transform[BO, 30]()"
+        "OplTmsMax": "transform[AO, 227]()",
+        "x-RmpDnTms": "transform[AO, 228]()",
+        "Mod": "transform[BO, 30]()"
       },
-      "DPFC": {
+      "x-DPFC": {
         "ModPrio": "transform[AO, 229]()",
         "WinTms": "transform[AO, 230]()",
         "RmpRte": "transform[AO, 231]()",
         "RvrtTms": "transform[AO, 232]()",
-        "EcpRef": "transform[AO, 233]()",
+        "InEcpRef": "transform[AO, 233]()",
         "PFTrg": "transform[AO, 234]()",
         "PFCorRef": {
           "rangeC": {
@@ -1947,316 +2059,24 @@
           }
         }
       },
-      "DPRG": {
+      "x-DPRG": {
         "ModPrio": "transform[AO, 237]()",
         "WinTms": "transform[AO, 238]()",
         "RmpTms": "transform[AO, 239]()",
         "RvrtTms": "transform[AO, 240]()",
         "PrcRef": "transform[AO, 241]()",
-        "OplTmsMax[1]": "transform[AO, 242]()",
-        "OplTmsMax[2]": "transform[AO, 243]()",
-        "ModEna": "transform[BO, 32]()"
-      },
-      "DGSMn": {
-        "InCrv": "transform[AO, 244]()",
-        "ModTyp": "transform[AO, 245]()"
-      },
-      "FMARn": {
-        "PairArr": {
-          "NumPts": "transform[AO, 246]()",
-          "CrvPts[#]": {
-            "#": "transform[AO](pairs(249, 100, xVal, yVal), take('AO.246'))",
-            "xVal": "transform[#, xVal]()",
-            "yVal": "transform[#, yVal]()"
-          }
-        },
-        "IndpUnits": "transform[AO, 247]()",
-        "DepRef": "transform[AO, 248]()"
+        "OplTmsMax": "transform[AO, 242]()",
+        "x-RmpDnTms": "transform[AO, 243]()",
+        "Mod": "transform[BO, 32]()"
       },
       "FSCC": {
         "Schd": "transform[AO, 461]()"
       },
-      "FSCCn": {
-        "Schd": "transform[AO, 462]()"
-      },
-      "FSCHn": {
-        "SchdPrio": "transform[AO, 463]()",
-        "StrTm[Date]": "transform[AO, 465]()",
-        "StrTm[Time]": "transform[AO, 466]()",
-        "NxtStrTm": "transform[AO, 467]()",
-        "SchdReuse": "transform[AO, 468]()",
-        "NumEntr": "transform[AO, 469]()",
-        "SchdIntv[1]": "transform[AO, 470]()",
-        "SchdEntr[1]": "transform[AO, 471]()",
-        "SchdIntv[2]": "transform[AO, 472]()",
-        "SchdEntr[2]": "transform[AO, 473]()",
-        "SchdIntv[3]": "transform[AO, 474]()",
-        "SchdEntr[3]": "transform[AO, 475]()",
-        "SchdIntv[4]": "transform[AO, 476]()",
-        "SchdEntr[4]": "transform[AO, 477]()",
-        "SchdIntv[5]": "transform[AO, 478]()",
-        "SchdEntr[5]": "transform[AO, 479]()",
-        "SchdIntv[6]": "transform[AO, 480]()",
-        "SchdEntr[6]": "transform[AO, 481]()",
-        "SchdIntv[7]": "transform[AO, 482]()",
-        "SchdEntr[7]": "transform[AO, 483]()",
-        "SchdIntv[8]": "transform[AO, 484]()",
-        "SchdEntr[8]": "transform[AO, 485]()",
-        "SchdIntv[9]": "transform[AO, 486]()",
-        "SchdEntr[9]": "transform[AO, 487]()",
-        "SchdIntv[10]": "transform[AO, 488]()",
-        "SchdEntr[10]": "transform[AO, 489]()",
-        "SchdIntv[11]": "transform[AO, 490]()",
-        "SchdEntr[11]": "transform[AO, 491]()",
-        "SchdIntv[12]": "transform[AO, 492]()",
-        "SchdEntr[12]": "transform[AO, 493]()",
-        "SchdIntv[13]": "transform[AO, 494]()",
-        "SchdEntr[13]": "transform[AO, 495]()",
-        "SchdIntv[14]": "transform[AO, 496]()",
-        "SchdEntr[14]": "transform[AO, 497]()",
-        "SchdIntv[15]": "transform[AO, 498]()",
-        "SchdEntr[15]": "transform[AO, 499]()",
-        "SchdIntv[16]": "transform[AO, 500]()",
-        "SchdEntr[16]": "transform[AO, 501]()",
-        "SchdIntv[17]": "transform[AO, 502]()",
-        "SchdEntr[17]": "transform[AO, 503]()",
-        "SchdIntv[18]": "transform[AO, 504]()",
-        "SchdEntr[18]": "transform[AO, 505]()",
-        "SchdIntv[19]": "transform[AO, 506]()",
-        "SchdEntr[19]": "transform[AO, 507]()",
-        "SchdIntv[20]": "transform[AO, 508]()",
-        "SchdEntr[20]": "transform[AO, 509]()",
-        "SchdIntv[21]": "transform[AO, 510]()",
-        "SchdEntr[21]": "transform[AO, 511]()",
-        "SchdIntv[22]": "transform[AO, 512]()",
-        "SchdEntr[22]": "transform[AO, 513]()",
-        "SchdIntv[23]": "transform[AO, 514]()",
-        "SchdEntr[23]": "transform[AO, 515]()",
-        "SchdIntv[24]": "transform[AO, 516]()",
-        "SchdEntr[24]": "transform[AO, 517]()",
-        "SchdIntv[25]": "transform[AO, 518]()",
-        "SchdEntr[25]": "transform[AO, 519]()",
-        "SchdIntv[26]": "transform[AO, 520]()",
-        "SchdEntr[26]": "transform[AO, 521]()",
-        "SchdIntv[27]": "transform[AO, 522]()",
-        "SchdEntr[27]": "transform[AO, 523]()",
-        "SchdIntv[28]": "transform[AO, 524]()",
-        "SchdEntr[28]": "transform[AO, 525]()",
-        "SchdIntv[29]": "transform[AO, 526]()",
-        "SchdEntr[29]": "transform[AO, 527]()",
-        "SchdIntv[30]": "transform[AO, 528]()",
-        "SchdEntr[30]": "transform[AO, 529]()",
-        "SchdIntv[31]": "transform[AO, 530]()",
-        "SchdEntr[31]": "transform[AO, 531]()",
-        "SchdIntv[32]": "transform[AO, 532]()",
-        "SchdEntr[32]": "transform[AO, 533]()",
-        "SchdIntv[33]": "transform[AO, 534]()",
-        "SchdEntr[33]": "transform[AO, 535]()",
-        "SchdIntv[34]": "transform[AO, 536]()",
-        "SchdEntr[34]": "transform[AO, 537]()",
-        "SchdIntv[35]": "transform[AO, 538]()",
-        "SchdEntr[35]": "transform[AO, 539]()",
-        "SchdIntv[36]": "transform[AO, 540]()",
-        "SchdEntr[36]": "transform[AO, 541]()",
-        "SchdIntv[37]": "transform[AO, 542]()",
-        "SchdEntr[37]": "transform[AO, 543]()",
-        "SchdIntv[38]": "transform[AO, 544]()",
-        "SchdEntr[38]": "transform[AO, 545]()",
-        "SchdIntv[39]": "transform[AO, 546]()",
-        "SchdEntr[39]": "transform[AO, 547]()",
-        "SchdIntv[40]": "transform[AO, 548]()",
-        "SchdEntr[40]": "transform[AO, 549]()",
-        "SchdIntv[41]": "transform[AO, 550]()",
-        "SchdEntr[41]": "transform[AO, 551]()",
-        "SchdIntv[42]": "transform[AO, 552]()",
-        "SchdEntr[42]": "transform[AO, 553]()",
-        "SchdIntv[43]": "transform[AO, 554]()",
-        "SchdEntr[43]": "transform[AO, 555]()",
-        "SchdIntv[44]": "transform[AO, 556]()",
-        "SchdEntr[44]": "transform[AO, 557]()",
-        "SchdIntv[45]": "transform[AO, 558]()",
-        "SchdEntr[45]": "transform[AO, 559]()",
-        "SchdIntv[46]": "transform[AO, 560]()",
-        "SchdEntr[46]": "transform[AO, 561]()",
-        "SchdIntv[47]": "transform[AO, 562]()",
-        "SchdEntr[47]": "transform[AO, 563]()",
-        "SchdIntv[48]": "transform[AO, 564]()",
-        "SchdEntr[48]": "transform[AO, 565]()",
-        "SchdIntv[49]": "transform[AO, 566]()",
-        "SchdEntr[49]": "transform[AO, 567]()",
-        "SchdIntv[50]": "transform[AO, 568]()",
-        "SchdEntr[50]": "transform[AO, 569]()",
-        "SchdIntv[51]": "transform[AO, 570]()",
-        "SchdEntr[51]": "transform[AO, 571]()",
-        "SchdIntv[52]": "transform[AO, 572]()",
-        "SchdEntr[52]": "transform[AO, 573]()",
-        "SchdIntv[53]": "transform[AO, 574]()",
-        "SchdEntr[53]": "transform[AO, 575]()",
-        "SchdIntv[54]": "transform[AO, 576]()",
-        "SchdEntr[54]": "transform[AO, 577]()",
-        "SchdIntv[55]": "transform[AO, 578]()",
-        "SchdEntr[55]": "transform[AO, 579]()",
-        "SchdIntv[56]": "transform[AO, 580]()",
-        "SchdEntr[56]": "transform[AO, 581]()",
-        "SchdIntv[57]": "transform[AO, 582]()",
-        "SchdEntr[57]": "transform[AO, 583]()",
-        "SchdIntv[58]": "transform[AO, 584]()",
-        "SchdEntr[58]": "transform[AO, 585]()",
-        "SchdIntv[59]": "transform[AO, 586]()",
-        "SchdEntr[59]": "transform[AO, 587]()",
-        "SchdIntv[60]": "transform[AO, 588]()",
-        "SchdEntr[60]": "transform[AO, 589]()",
-        "SchdIntv[61]": "transform[AO, 590]()",
-        "SchdEntr[61]": "transform[AO, 591]()",
-        "SchdIntv[62]": "transform[AO, 592]()",
-        "SchdEntr[62]": "transform[AO, 593]()",
-        "SchdIntv[63]": "transform[AO, 594]()",
-        "SchdEntr[63]": "transform[AO, 595]()",
-        "SchdIntv[64]": "transform[AO, 596]()",
-        "SchdEntr[64]": "transform[AO, 597]()",
-        "SchdIntv[65]": "transform[AO, 598]()",
-        "SchdEntr[65]": "transform[AO, 599]()",
-        "SchdIntv[66]": "transform[AO, 600]()",
-        "SchdEntr[66]": "transform[AO, 601]()",
-        "SchdIntv[67]": "transform[AO, 602]()",
-        "SchdEntr[67]": "transform[AO, 603]()",
-        "SchdIntv[68]": "transform[AO, 604]()",
-        "SchdEntr[68]": "transform[AO, 605]()",
-        "SchdIntv[69]": "transform[AO, 606]()",
-        "SchdEntr[69]": "transform[AO, 607]()",
-        "SchdIntv[70]": "transform[AO, 608]()",
-        "SchdEntr[70]": "transform[AO, 609]()",
-        "SchdIntv[71]": "transform[AO, 610]()",
-        "SchdEntr[71]": "transform[AO, 611]()",
-        "SchdIntv[72]": "transform[AO, 612]()",
-        "SchdEntr[72]": "transform[AO, 613]()",
-        "SchdIntv[73]": "transform[AO, 614]()",
-        "SchdEntr[73]": "transform[AO, 615]()",
-        "SchdIntv[74]": "transform[AO, 616]()",
-        "SchdEntr[74]": "transform[AO, 617]()",
-        "SchdIntv[75]": "transform[AO, 618]()",
-        "SchdEntr[75]": "transform[AO, 619]()",
-        "SchdIntv[76]": "transform[AO, 620]()",
-        "SchdEntr[76]": "transform[AO, 621]()",
-        "SchdIntv[77]": "transform[AO, 622]()",
-        "SchdEntr[77]": "transform[AO, 623]()",
-        "SchdIntv[78]": "transform[AO, 624]()",
-        "SchdEntr[78]": "transform[AO, 625]()",
-        "SchdIntv[79]": "transform[AO, 626]()",
-        "SchdEntr[79]": "transform[AO, 627]()",
-        "SchdIntv[80]": "transform[AO, 628]()",
-        "SchdEntr[80]": "transform[AO, 629]()",
-        "SchdIntv[81]": "transform[AO, 630]()",
-        "SchdEntr[81]": "transform[AO, 631]()",
-        "SchdIntv[82]": "transform[AO, 632]()",
-        "SchdEntr[82]": "transform[AO, 633]()",
-        "SchdIntv[83]": "transform[AO, 634]()",
-        "SchdEntr[83]": "transform[AO, 635]()",
-        "SchdIntv[84]": "transform[AO, 636]()",
-        "SchdEntr[84]": "transform[AO, 637]()",
-        "SchdIntv[85]": "transform[AO, 638]()",
-        "SchdEntr[85]": "transform[AO, 639]()",
-        "SchdIntv[86]": "transform[AO, 640]()",
-        "SchdEntr[86]": "transform[AO, 641]()",
-        "SchdIntv[87]": "transform[AO, 642]()",
-        "SchdEntr[87]": "transform[AO, 643]()",
-        "SchdIntv[88]": "transform[AO, 644]()",
-        "SchdEntr[88]": "transform[AO, 645]()",
-        "SchdIntv[89]": "transform[AO, 646]()",
-        "SchdEntr[89]": "transform[AO, 647]()",
-        "SchdIntv[90]": "transform[AO, 648]()",
-        "SchdEntr[90]": "transform[AO, 649]()",
-        "SchdIntv[91]": "transform[AO, 650]()",
-        "SchdEntr[91]": "transform[AO, 651]()",
-        "SchdIntv[92]": "transform[AO, 652]()",
-        "SchdEntr[92]": "transform[AO, 653]()",
-        "SchdIntv[93]": "transform[AO, 654]()",
-        "SchdEntr[93]": "transform[AO, 655]()",
-        "SchdIntv[94]": "transform[AO, 656]()",
-        "SchdEntr[94]": "transform[AO, 657]()",
-        "SchdIntv[95]": "transform[AO, 658]()",
-        "SchdEntr[95]": "transform[AO, 659]()",
-        "SchdIntv[96]": "transform[AO, 660]()",
-        "SchdEntr[96]": "transform[AO, 661]()",
-        "SchdIntv[97]": "transform[AO, 662]()",
-        "SchdEntr[97]": "transform[AO, 663]()",
-        "SchdIntv[98]": "transform[AO, 664]()",
-        "SchdEntr[98]": "transform[AO, 665]()",
-        "SchdIntv[99]": "transform[AO, 666]()",
-        "SchdEntr[99]": "transform[AO, 667]()",
-        "SchdIntv[100]": "transform[AO, 668]()",
-        "SchdEntr[100]": "transform[AO, 669]()",
-        "SchdSt": {
-          "3": "transform[BO, 2000]()"
-        },
-        "SchdReuse[1]": "transform[BO, 2001]()",
-        "SchdReuse[2]": "transform[BO, 2002]()",
-        "SchdReuse[3]": "transform[BO, 2003]()",
-        "SchdReuse[4]": "transform[BO, 2004]()",
-        "SchdReuse[5]": "transform[BO, 2005]()",
-        "SchdReuse[6]": "transform[BO, 2006]()",
-        "SchdReuse[7]": "transform[BO, 2007]()"
-      },
-      "MESAn": {
-        "SchdVal": {
-          "valEq": "transform[AO, 464]()"
-        }
-      },
-      "DCTE": {
-        "CeaEgzReqCtl": {
-          "2": "transform[BO, 1]()",
-          "1": "transform[BO, 2]()"
-        }
-      },
       "CSWI": {
-        "Pos": "transform[BO, 5]()"
+        "Pos": "transform[BO, 5](select(2, 1))"
       },
       "DSTO": {
-        "AGra": "transform[BO, 8]()"
-      },
-      "DHFW": {
-        "HysEna": "transform[BO, 34]()",
-        "SnptEna": "transform[BO, 35]()"
-      },
-      "DLVT": {
-        "TrZnSt": {
-          "PTUV": {
-            "TmVCrv": {
-              "numPts": "transform[AO, 246](when_equal('AO.244', 'AO.24'))",
-              "crvPts[#]": {
-                "#": "transform[AO](when_equal('AO.244', 'AO.24'), pairs(249, 100, xVal, yVal), take('AO.246'))",
-                "xVal": "transform[#, xVal]()",
-                "yVal": "transform[#, yVal]()"
-              }
-            }
-          }
-        },
-        "CeaZnSt": {
-          "PTUV": {
-            "TmVCrv": {
-              "numPts": "transform[AO, 246](when_equal('AO.244', 'AO.26'))",
-              "crvPts[#]": {
-                "#": "transform[AO](when_equal('AO.244', 'AO.26'), pairs(249, 100, xVal, yVal), take('AO.246'))",
-                "xVal": "transform[#, xVal]()",
-                "yVal": "transform[#, yVal]()"
-              }
-            }
-          }
-        }
-      },
-      "DLFT": {
-        "TrZnSt": {
-          "PTUF": {
-            "TmHzCrv": {
-              "numPts": "transform[AO, 246](when_equal('AO.244', 'AO.29'))",
-              "crvPts[#]": {
-                "#": "transform[AO](when_equal('AO.244', 'AO.29'), pairs(249, 100, xVal, yVal), take('AO.246'))",
-                "xVal": "transform[#, xVal]()",
-                "yVal": "transform[#, yVal]()"
-              }
-            }
-          }
-        }
+        "x-CapUnit": "transform[BO, 8]()"
       }
     }
   }
