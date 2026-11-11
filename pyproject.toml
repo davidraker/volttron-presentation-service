@@ -8,6 +8,7 @@ version = "0.2"
 description = "The interoperability service: resources, formats and the transforms between them, with discovery."
 authors = [{name = "David Raker", email = "david.raker@pnnl.gov"}]
 license = "Apache-2.0"
+license-files = ["LICENSE", "COPYRIGHT.md"]
 readme = "README.md"
 requires-python = ">=3.10,<4.0"
 classifiers = [
