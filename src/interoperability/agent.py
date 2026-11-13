@@ -308,6 +308,10 @@ class PresentationService(Agent):
                 # Add the target data format & transform definition to the response. An empty chain means the
                 # resource is already in that format; a missing chain raises TransformNotFoundError to the caller.
                 resource_dict['target_format'] = as_format
+                # TODO: A write chain is a separately registered mapping in the reverse direction. The inverse
+                #  pipelines of icm.transforms (the reversed chain of each function's inverse, as the driver framework
+                #  uses for its Transform column) could derive it from the read chain instead. Deferred until a format
+                #  pair needs a write chain that no registered mapping gives (DRIVER_TRANSFORMS_PLAN.md, section 9).
                 source, target = ((resource_dict['data_format'], as_format) if direction == 'read'
                                   else (as_format, resource_dict['data_format']))
                 chain, retention, path = self.transform_registry.lookup_scored(source, target, fields)

@@ -167,7 +167,10 @@ def discover_rtu(port: str, unit: int = 1, baudrate: int = 9600, parity: str = '
 
 # ------------------------------------------------------------------------------------------- registries
 def _included(device: DiscoveredDevice, scaling: str):
-    return [p for p in device.points if not (scaling == 'driver' and p.is_scale_factor)]
+    """Every point, in both scaling modes. The scale-factor points stay in a driver-scaling registry because the
+    scaled points' ``sunssf`` transforms read them (as poll-once points); they are left out of the *fake* registry
+    in driver mode, where the values are already scaled."""
+    return list(device.points)
 
 
 def modbus_registry_rows(device: DiscoveredDevice, scaling: str) -> list[dict]:
@@ -183,7 +186,9 @@ def modbus_registry_rows(device: DiscoveredDevice, scaling: str) -> list[dict]:
                 continue
         transform = ''
         if scaling == 'driver' and p.scale_factor is not None and not p.is_scale_factor:
-            transform = f'scale({10.0 ** p.scale_factor!r})' if isinstance(p.scale_factor, int) else f'scale_reg_pow_10({p.scale_factor})'
+            # A constant factor is a plain scale; a factor register is a sunssf reference, which also treats the
+            # register's "not implemented" value (-32768) as unavailable (DRIVER_TRANSFORMS_PLAN.md, section 5).
+            transform = f'scale({10.0 ** p.scale_factor!r})' if isinstance(p.scale_factor, int) else f'sunssf({p.scale_factor})'
         # Scale factors and the nameplate models (1 common, 701 identification) are read once at setup; the rest is polled.
         data_source = 'poll_once' if p.is_scale_factor or p.model_id in NAMEPLATE_MODELS else 'short_poll'
         rows.append({'volttron_point_name': p.name, 'address': p.address, 'data_type': data_type, 'table': 'holding',
@@ -198,6 +203,8 @@ def fake_registry_rows(device: DiscoveredDevice, scaling: str) -> list[dict]:
     values a scaling driver would publish (``driver`` scaling)."""
     rows = []
     for p in _included(device, scaling):
+        if scaling == 'driver' and p.is_scale_factor:
+            continue                                            # the fake device publishes scaled values, no factors
         value = p.value if scaling == 'transform' else device.scaled_value(p)
         if p.is_string:
             kind = 'str'
@@ -233,7 +240,9 @@ def presentation_config(device: DiscoveredDevice, device_format: str, device_top
                         scaling: str, alias_formats: dict[str, str | dict]) -> tuple[dict, list[str]]:
     """Service configuration: format, transforms, the canonical resource and one alias per requested format
     (see :func:`~interoperability.discovery.device_formats.resource_mappings` for the alias specs)."""
-    names = [p.name for p in _included(device, scaling)]
+    # The device format describes the engineering data; in driver scaling the factor points are the driver's
+    # business (its sunssf transforms read them) and are not fields of the format.
+    names = [p.name for p in device.points if not (scaling == 'driver' and p.is_scale_factor)]
     built = sunspec_device_transforms(device_format, names, scaling=scaling, scale_factors=device.scale_factors)
     return ({'formats': {device_format: device_format_declaration(names, scaling)},
              'transforms': built.definitions,

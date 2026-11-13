@@ -111,8 +111,9 @@ def test_generated_case_is_current(device, mode):
 def test_registries_reflect_the_scaling_mode(device):
     transform_rows = {r['volttron_point_name']: r for r in modbus_registry_rows(device, 'transform')}
     driver_rows = {r['volttron_point_name']: r for r in modbus_registry_rows(device, 'driver')}
-    assert '701_W_SF' in transform_rows and '701_W_SF' not in driver_rows          # SF points only when the transform scales
-    assert transform_rows['701_Hz']['transform'] == '' and driver_rows['701_Hz']['transform'] == 'scale_reg_pow_10(701_Hz_SF)'
+    assert '701_W_SF' in transform_rows and '701_W_SF' in driver_rows              # the driver's sunssf transforms read the factor points
+    assert driver_rows['701_W_SF']['data_source'] == 'poll_once' and driver_rows['701_W_SF']['transform'] == ''
+    assert transform_rows['701_Hz']['transform'] == '' and driver_rows['701_Hz']['transform'] == 'sunssf(701_Hz_SF)'
     assert transform_rows['701_Hz']['data_type'] == 'UINT32' and transform_rows['701_Hz']['address'] == 40070 + 17
     assert transform_rows['1_Mn']['data_type'] == 'string[32]'
     fake_transform = {r['volttron_point_name']: r for r in fake_registry_rows(device, 'transform')}

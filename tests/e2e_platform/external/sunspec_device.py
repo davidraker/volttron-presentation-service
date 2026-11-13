@@ -10,7 +10,7 @@ import socket
 import struct
 import threading
 from pathlib import Path
-from socketserver import TCPServer
+from socketserver import ThreadingTCPServer
 
 from umodbus import conf
 from umodbus.client import tcp
@@ -65,22 +65,35 @@ class PointTable:
         return struct.unpack(FORMATS[dtype.upper()], data)[0]
 
 
+SUNS_BASE = 40000                     # where a SunSpec device places the 'SunS' marker (also 0 and 50000 by the spec)
+
+
 class SunSpecDevice:
     """A Modbus TCP slave (unit ``unit_id``) whose holding registers are the registry's points at their addresses,
-    seeded from the registry's default values. The harness reads and sets its state directly: it *is* the device."""
-    def __init__(self, registry_csv: Path, host: str = '127.0.0.1', port: int = 0, unit_id: int = 1):
+    seeded from the registry's default values. The harness reads and sets its state directly: it *is* the device.
+
+    With ``device_json`` (the pysunspec2 device description the registry was discovered from) the device also serves
+    the SunSpec structure a scanner looks for: the ``SunS`` marker at 40000, each model's ID and length header and
+    its whole register image, and the end marker, so pysunspec2 (and SunSpec discovery) can scan it as a real
+    inverter. Registry defaults still seed the point values afterwards."""
+    def __init__(self, registry_csv: Path, host: str = '127.0.0.1', port: int = 0, unit_id: int = 1,
+                 device_json: Path | None = None):
         self.table = PointTable(registry_csv)
         self.unit_id = unit_id
         self.words: dict[int, int] = {}
         self.written: list[tuple[str, object]] = []        # what masters wrote, in order
         self._lock = threading.Lock()
+        if device_json is not None:
+            self._serve_sunspec_structure(Path(device_json))
         for name, value in self.table.defaults.items():
             self.set_point(name, value)
         for name, (address, dtype, count) in self.table.points.items():
             for a in range(address, address + count):
                 self.words.setdefault(a, 0)
-        TCPServer.allow_reuse_address = True
-        self.server = get_server(TCPServer, (host, port), RequestHandler)
+        # Threading: a master holding a connection open (the proxy) must not block a scanner's connection.
+        ThreadingTCPServer.allow_reuse_address = True
+        ThreadingTCPServer.daemon_threads = True
+        self.server = get_server(ThreadingTCPServer, (host, port), RequestHandler)
         self.host, self.port = self.server.server_address[:2]
         words = self.words
         lock = self._lock
@@ -97,6 +110,24 @@ class SunSpecDevice:
                 words[address] = int(value) & 0xFFFF
             device._note_write(address)
         self._thread = threading.Thread(target=self.server.serve_forever, name='sunspec-device', daemon=True)
+
+    def _serve_sunspec_structure(self, device_json: Path):
+        """Lay out the 'SunS' marker, every model's header and register image, and the end marker from a pysunspec2
+        device description (the models' addresses and lengths come from pysunspec2 itself)."""
+        import sunspec2.file.client as file_client
+        device = file_client.FileClientDevice(str(device_json))
+        device.scan()
+        self.words[SUNS_BASE], self.words[SUNS_BASE + 1] = 0x5375, 0x6E53          # 'Su' 'nS'
+        end = SUNS_BASE + 2
+        for model_id, instances in device.models.items():
+            if not isinstance(model_id, int):
+                continue
+            for model in instances:
+                image = model.get_mb()                                             # ID, L and the points, big-endian
+                for i, word in enumerate(struct.unpack(f'>{len(image) // 2}H', image)):
+                    self.words[model.model_addr + i] = word
+                end = max(end, model.model_addr + len(image) // 2)
+        self.words[end], self.words[end + 1] = 0xFFFF, 0                            # end-of-models marker
 
     def start(self):
         self._thread.start()
