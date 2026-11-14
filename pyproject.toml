@@ -31,9 +31,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# discovery: the SunSpec discovery tooling (interoperability.discovery.sunspec) needs pysunspec2.
+# discovery: scanning devices. pysunspec2 for SunSpec (interoperability.discovery.sunspec), dnp3py for the integrity poll
+# of a DNP3 outstation (interoperability.discovery.dnp3_scan).
 # openfmb: protobuf encoding of OpenFMB profiles (icm.resources.codecs, through icm-lib-resources) needs the protobuf runtime.
-discovery = ["pysunspec2>=1.3"]
+discovery = ["pysunspec2>=1.3", "dnp3py>=0.6"]
 openfmb = ["protobuf>=6.31.1"]
 
 [project.scripts]

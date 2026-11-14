@@ -12,8 +12,9 @@ segment>.csv``), ``format_name`` (default the last topic segment), ``interval``,
 
 - ``sunspec``: ``host``, ``port``, ``unit`` for a reachable unit, or ``device_json`` (the text of a pysunspec2 device
   description) for an offline scan; ``scaling`` (``transform`` or ``driver``); ``role`` (``client`` or ``server``).
-- ``dnp3``: ``profile_json`` (the text of an IEEE 1815.2 test-tool profile) or ``indexes`` (``{table: [index, …]}``);
-  ``outstation_ip``, ``port``, ``master_id``, ``outstation_id``; ``role``.
+- ``dnp3``: ``profile_json`` (the text of an IEEE 1815.2 test-tool profile) or ``indexes`` (``{table: [index, …]}``), or
+  neither, in which case the outstation at ``outstation_ip``/``port`` is scanned (an integrity poll lists its points);
+  ``master_id``, ``outstation_id``; ``role``.
 - ``ieee2030_5``: ``device_format`` (the format of the device to mirror), ``mirror_format``, ``server_url`` and the
   certificate paths; ``role``.
 """
@@ -126,8 +127,22 @@ def _discover_dnp3(options: dict, common: dict, driver_identity: str, service_id
     elif options.get('indexes'):
         device = dnp3_discovery.discover_indexes(options['indexes'], options.get('values'), common['stem'])
         source = 'point indexes'
+    elif options.get('outstation_ip'):
+        # A reachable outstation: an integrity poll says which indexes it implements; 1815.2 says what they mean.
+        from .dnp3_scan import scan_outstation_isolated
+        host, port = options['outstation_ip'], int(options.get('port') or 20000)
+        master_id, outstation_id = int(options.get('master_id') or 2), int(options.get('outstation_id') or 1)
+        try:
+            scanned = scan_outstation_isolated(host, port, master_id, outstation_id, timeout=float(options.get('timeout') or 10.0))
+        except RuntimeError as e:
+            raise ValueError(str(e)) from e
+        if not scanned.indexes:
+            raise ValueError(f'the outstation at {host}:{port} reported no points; ' + '; '.join(scanned.notes))
+        device = dnp3_discovery.discover_indexes(scanned.indexes, scanned.values, common['stem'])
+        device.notes.extend(scanned.notes)
+        source = f'outstation {host}:{port} (master {master_id}, outstation {outstation_id})'
     else:
-        raise ValueError('dnp3 discovery needs profile_json or indexes')
+        raise ValueError('dnp3 discovery needs an outstation address to scan, a profile_json, or indexes')
     scaling = options.get('scaling', 'transform')
     rows = dnp3_discovery.dnp3_registry_rows(device, scaling)
     device_config = dnp3_discovery.device_config('dnp3', common['registry_name'], outstation_ip=options.get('outstation_ip', '127.0.0.1'),
