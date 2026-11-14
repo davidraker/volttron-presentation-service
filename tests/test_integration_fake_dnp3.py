@@ -95,7 +95,7 @@ def test_profile_discovery_reads_the_point_set(device):
     # Any index listing works as a source, e.g. an integrity poll; unknown indexes are reported, not silently kept.
     polled = discover_indexes({'AI': [2, 3, 99999], 'BO': [3]}, values={'AI_2': 2400})
     assert [p.name for p in polled.points] == ['AI_2', 'AI_3', 'BO_3'] and polled.points[0].value == 2400
-    assert polled.notes == ["'AI_99999': AI index 99999 is not in the IEEE 1815.2 point list"]
+    assert polled.notes == ['AI: 1 index not in the IEEE 1815.2 point list, skipped: 99999']
 
 
 def test_generated_case_is_current(device, mode):

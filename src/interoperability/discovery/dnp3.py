@@ -71,14 +71,14 @@ def discover_indexes(indexes_by_table: dict[str, list[int]], values: dict[str, A
     """Describe a point set given as ``{'AI': [2, 3, ...], 'BI': [...]}``, e.g. the result of an integrity poll,
     using the IEEE 1815.2 point registry for meaning. Unknown indexes are reported and skipped."""
     values = values or {}
-    points, notes = [], []
+    points, notes, unknown = [], [], {}
     for table, indexes in indexes_by_table.items():
         for index in sorted(set(indexes)):
             name = f'{table}_{index}'
             try:
                 definition = dnp3_point_definition(name)
-            except ValueError as e:
-                notes.append(str(e))
+            except ValueError:
+                unknown.setdefault(table, []).append(index)
                 continue
             multiplier, offset = dnp3_scaling(name)
             value = values.get(name, definition.default)
@@ -90,7 +90,23 @@ def discover_indexes(indexes_by_table: dict[str, list[int]], values: dict[str, A
                 name=name, table=table, index=index, uid=definition.uid, description=definition.name.split('.')[0].strip(),
                 units=definition.units or '', multiplier=multiplier, offset=offset, writable=table in ('AO', 'BO'),
                 value=value, mandatory=bool(definition.mandatory_1547 or definition.mandatory_1815)))
+    for table, missing in unknown.items():       # one note per table, as ranges: a scan can report hundreds of vendor points
+        notes.append(f'{table}: {len(missing)} index{"es" if len(missing) != 1 else ""} not in the IEEE 1815.2 point list, skipped: {index_ranges(missing)}')
     return DiscoveredDnp3Device(points, profile_name, notes)
+
+
+def index_ranges(indexes: list[int]) -> str:
+    """[1, 2, 3, 7, 10, 11] -> '1-3, 7, 10-11'."""
+    runs, start, prev = [], None, None
+    for i in sorted(set(indexes)) + [None]:
+        if start is None:
+            start = prev = i
+        elif i is not None and i == prev + 1:
+            prev = i
+        else:
+            runs.append(str(start) if start == prev else f'{start}-{prev}')
+            start = prev = i
+    return ', '.join(runs)
 
 
 def discover_profile(path: str | Path) -> DiscoveredDnp3Device:
