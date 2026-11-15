@@ -8,13 +8,13 @@ from typing import cast
 
 try:
     distribution('volttron-core')
-    from volttron.client.vip.agent import Agent, PubSub, RPC
+    from volttron.client.vip.agent import Core, Agent, PubSub, RPC
     from volttron.utils import vip_main
 except PackageNotFoundError:
     # noinspection PyUnresolvedReferences
     from volttron.platform.agent.utils import vip_main
     # noinspection PyUnresolvedReferences
-    from volttron.platform.vip.agent import Agent, PubSub, RPC
+    from volttron.platform.vip.agent import Core, Agent, PubSub, RPC
 
 from icm.transforms.parser import TransformParser, UnknownFunction
 from .transform_registry import TransformNotFoundError, TransformRegistry
@@ -31,6 +31,12 @@ def _field_map_rows(field_map) -> list[dict]:
 
 
 class PresentationService(Agent):
+    @Core.receiver('onstart')
+    def _start_heartbeat(self, sender, **kwargs):
+        # The platform's health service learns of an agent from its heartbeats; without them the status this agent
+        # sets never reaches the health listing (nor the configuration UI).
+        self.vip.heartbeat.start()
+
     def __init__(self, **kwargs):
         super(PresentationService, self).__init__(**kwargs)
 
