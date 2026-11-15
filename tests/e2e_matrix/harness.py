@@ -403,7 +403,7 @@ def service_config(dnp3_names):
     dnp3_case = json.loads((DNP3_CASE / 'presentation_config.json').read_text())
     formats = {**sunspec_case['formats'], **dnp3_case['formats'], SERVED_FORMAT['DNP3']: dnp3_case['formats'][CLIENT_FORMAT['DNP3']]}
     transforms = sunspec_case['transforms'] + dnp3_case['transforms'] + \
-        dnp3_device_transforms(SERVED_FORMAT['DNP3'], dnp3_names, served=True).definitions
+        dnp3_device_transforms(SERVED_FORMAT['DNP3'], dnp3_names, scaling='service', served=True).definitions
     registry = mirror_gen.load_registry(SUNSPEC_CASE / 'presentation_config.json')
     mirror = mirror_gen.discover_mirror(registry, 'fake_sunspec_pv')
     for fmt, served in ((CLIENT_FORMAT['2030.5'], False), (SERVED_FORMAT['2030.5'], True)):

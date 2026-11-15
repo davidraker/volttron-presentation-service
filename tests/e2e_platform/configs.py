@@ -241,7 +241,7 @@ def build(work: Path, ep: Endpoints, openfmb_mode: str, rtc: bool = False, persi
     dnp3_case = json.loads((DNP3_CASE / 'presentation_config.json').read_text())
     formats = {**sunspec_case['formats'], **dnp3_case['formats'], SERVED_FORMAT['DNP3']: dnp3_case['formats'][CLIENT_FORMAT['DNP3']]}
     transforms = sunspec_case['transforms'] + dnp3_case['transforms'] + \
-        dnp3_device_transforms(SERVED_FORMAT['DNP3'], [r['volttron_point_name'] for r in dnp3_rows], served=True).definitions
+        dnp3_device_transforms(SERVED_FORMAT['DNP3'], [r['volttron_point_name'] for r in dnp3_rows], scaling='service', served=True).definitions
     for fmt, served in ((CLIENT_FORMAT['2030.5'], False), (SERVED_FORMAT['2030.5'], True)):
         fragment = mirror_gen.presentation_fragment(fmt, mirror, 'unused', ['unused'], served=served)
         formats.update(fragment['formats'])
