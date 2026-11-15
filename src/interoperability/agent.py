@@ -272,6 +272,18 @@ class PresentationService(Agent):
         from .discovery.service import discover as run_discovery
         return run_discovery(protocol, options or {}, self.transform_registry)
 
+    @RPC.export
+    def driver_health(self, topic=None, regex: str | None = None, driver_identity: str = 'platform.driver') -> dict:
+        """The platform driver's health() report, per remote, relayed for clients that reach agents through the web
+        service, whose RPC proxy never forwards to the driver itself."""
+        return self.vip.rpc.call(driver_identity, 'health', topic, regex).get(timeout=15)
+
+    @RPC.export
+    def driver_status(self, topic=None, regex: str | None = None, driver_identity: str = 'platform.driver') -> dict:
+        """The platform driver's status() of the selected points (active, last value and time, stale, poll error),
+        relayed as :meth:`driver_health` is."""
+        return self.vip.rpc.call(driver_identity, 'status', topic, regex).get(timeout=15)
+
     @PubSub.subscribe('pubsub', 'mapper/update')
     def ingest_mappings(self, _, __, ___, ____, _____, message):
         if not isinstance(message, list) or not all(isinstance(m, dict) for m in message):

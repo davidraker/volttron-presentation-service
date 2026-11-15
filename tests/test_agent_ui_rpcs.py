@@ -119,3 +119,21 @@ def test_discover_rejects_unknown_protocol_and_missing_topic(service):
         service.discover('zigbee', {'topic': 'x'})
     with pytest.raises(ValueError):
         service.discover('sunspec', {'host': 'h'})
+
+
+def test_driver_health_and_status_are_relayed_to_the_driver(service):
+    """The web service's RPC proxy never reaches the driver, so the UI asks this agent, which asks the driver over VIP."""
+    calls = []
+
+    class Result:
+        def __init__(self, value): self.value = value
+        def get(self, timeout=None): return self.value
+
+    class RPCStub:
+        def call(self, identity, method, *args):
+            calls.append((identity, method, args))
+            return Result({'devices/x': {'status': 'GOOD'}} if method == 'health' else {'devices/x/p': {'active': True}})
+    service.vip.rpc = RPCStub()
+    assert service.driver_health() == {'devices/x': {'status': 'GOOD'}}
+    assert service.driver_status('devices/x', None) == {'devices/x/p': {'active': True}}
+    assert calls == [('platform.driver', 'health', (None, None)), ('platform.driver', 'status', ('devices/x', None))]
