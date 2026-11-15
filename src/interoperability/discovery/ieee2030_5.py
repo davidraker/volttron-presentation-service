@@ -170,12 +170,17 @@ def write_csv(path: Path, rows: list[dict]) -> None:
         writer.writerows(rows)
 
 
-def device_config(registry_name: str, *, server_url: str = 'https://127.0.0.1:8443', cert_path: str = '/etc/volttron/sep2/device.pem',
-                  key_path: str = '/etc/volttron/sep2/device.key', ca_path: str | None = '/etc/volttron/sep2/ca.pem',
+def device_config(registry_name: str, *, server_url: str = 'https://127.0.0.1:8443', cert_path: str | None = None,
+                  key_path: str | None = None, ca_path: str | None = None,
                   pin: int | None = None, notify_host: str | None = None, notify_port: int = 8444, interval: float = 60,
                   **extra) -> dict:
-    remote: dict[str, Any] = {'driver_type': 'ieee2030_5', 'server_url': server_url, 'cert_path': cert_path,
-                              'key_path': key_path, 'ca_path': ca_path, 'subscribe': notify_host is not None}
+    """The mirror's device entry. The client certificate, its key and the CA are the device's identity towards the
+    server and have no sensible default: left out, the entry says so and the driver refuses it with a clear message
+    instead of failing TLS against a path that does not exist."""
+    remote: dict[str, Any] = {'driver_type': 'ieee2030_5', 'server_url': server_url, 'subscribe': notify_host is not None}
+    for key, value in (('cert_path', cert_path), ('key_path', key_path), ('ca_path', ca_path)):
+        if value:
+            remote[key] = value
     if pin is not None:
         remote['pin'] = pin
     if notify_host is not None:

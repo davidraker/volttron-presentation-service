@@ -185,8 +185,11 @@ def _discover_sep2(options: dict, common: dict, registry, driver_identity: str, 
                                                     alias=options.get('alias') or None, served=served)     # default: <name>_2030_5
     _set_publication(fragment, common)
     remote = device_config['remote_config']
+    notes = []
+    if not served and not (remote.get('cert_path') and remote.get('key_path')):
+        notes.append('no client certificate and key: the 2030.5 client cannot register with the server until cert_path and key_path (and the CA) are set on the device')
     return {'protocol': 'ieee2030_5', 'source': f'mirror of {device_format}', 'identity': {}, 'remote_id': ['2030.5', str(remote.get('server_url'))],
-            'points': len(rows), 'notes': [],
+            'points': len(rows), 'notes': notes,
             'entries': _entries(driver_identity, service_identity, common, _device_entry(device_config, common), rows, fragment)}
 
 
