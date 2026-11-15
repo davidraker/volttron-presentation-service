@@ -181,7 +181,7 @@ def _discover_sep2(options: dict, common: dict, registry, driver_identity: str, 
         for row in rows:
             row['data_source'] = 'server'
     fragment = sep2_discovery.presentation_fragment(common['format_name'], mirror, f"devices/{common['topic']}", common['uai'],
-                                                    alias=options.get('alias', 'sep2'), served=served)
+                                                    alias=options.get('alias') or None, served=served)     # default: <name>_2030_5
     _set_publication(fragment, common)
     remote = device_config['remote_config']
     return {'protocol': 'ieee2030_5', 'source': f'mirror of {device_format}', 'identity': {}, 'remote_id': ['2030.5', str(remote.get('server_url'))],

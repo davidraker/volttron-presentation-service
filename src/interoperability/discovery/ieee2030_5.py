@@ -204,9 +204,16 @@ def mirror_transforms(mirror_format: str, mirror: DiscoveredMirror, *, served: b
                             'driver', list(mirror.notes))
 
 
+def default_alias(uai: list[str]) -> str:
+    """The alias that presents the mirror in the ``2030.5`` convention: the device's own name with the convention
+    appended (``der`` -> ``der_2030_5``), a sibling of the canonical UAI."""
+    return f'{uai[-1]}_2030_5'
+
+
 def presentation_fragment(mirror_format: str, mirror: DiscoveredMirror, device_topic: str, uai: list[str],
-                          alias: str = 'sep2', *, served: bool = False) -> dict:
+                          alias: str | None = None, *, served: bool = False) -> dict:
     """``formats``, ``transforms`` and ``mappings`` entries for the mirror, to merge into the service configuration."""
+    alias = alias or default_alias(uai)
     rows = registry_rows(mirror)
     names = [row['volttron_point_name'] for row in rows]
     built = mirror_transforms(mirror_format, mirror, served=served)
@@ -216,7 +223,7 @@ def presentation_fragment(mirror_format: str, mirror: DiscoveredMirror, device_t
 
 
 def write_case(registry: TransformRegistry, device_format: str, out: Path, *, mirror_format: str, device_topic: str,
-               uai: list[str], alias: str = 'sep2', served: bool = False, **server) -> dict[str, Path]:
+               uai: list[str], alias: str | None = None, served: bool = False, **server) -> dict[str, Path]:
     """Write the mirror's registry, device config, presentation fragment and discovery record. A ``served`` mirror is a
     2030.5 server the platform itself serves (the ieee2030_5 driver's server role), whose downward points the platform writes."""
     out = Path(out)

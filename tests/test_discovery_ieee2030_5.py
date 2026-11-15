@@ -103,3 +103,13 @@ def test_inverter_to_mirror_chain_through_the_service(registry, mirror):
     assert all(not k.startswith('DERControl') for k in flat)         # controls do not flow into the server
     sunspec = TransformParser().build_transform_from_schema(registry.lookup('fake_sunspec_pv', 'sunspec')).execute([fake_driver_all_message(CASE, 'transform'), {}])
     assert flat['MirrorMeterReading_W'] == pytest.approx(sunspec['701']['W'])
+
+
+def test_the_alias_is_named_after_the_device_in_the_convention(registry, mirror):
+    """A mirror at devices/icm/sep2/der gets its 2030.5-convention alias at devices/icm/sep2/der_2030_5, not a sibling
+    called sep2 (which read as devices/icm/sep2/sep2 in the UI)."""
+    fragment = ieee2030_5.presentation_fragment('der', mirror, 'devices/icm/sep2/der', ['devices', 'icm', 'sep2', 'der'])
+    assert [m['uai'] for m in fragment['mappings']] == [['devices', 'icm', 'sep2', 'der'], ['devices', 'icm', 'sep2', 'der_2030_5']]
+    assert fragment['mappings'][1]['resource']['data_format'] == '2030.5'
+    named = ieee2030_5.presentation_fragment('der', mirror, 'devices/icm/sep2/der', ['devices', 'icm', 'sep2', 'der'], alias='utility_view')
+    assert named['mappings'][1]['uai'] == ['devices', 'icm', 'sep2', 'utility_view']
