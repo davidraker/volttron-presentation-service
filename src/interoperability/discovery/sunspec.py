@@ -205,7 +205,7 @@ def fake_registry_rows(device: DiscoveredDevice, scaling: str) -> list[dict]:
     for p in _included(device, scaling):
         if scaling == 'driver' and p.is_scale_factor:
             continue                                            # the fake device publishes scaled values, no factors
-        value = p.value if scaling == 'transform' else device.scaled_value(p)
+        value = p.value if scaling == 'service' else device.scaled_value(p)
         if p.is_string:
             kind = 'str'
         elif isinstance(value, float) or p.type in FLOAT_TYPES:
@@ -300,7 +300,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument('--port', type=int, default=502)
     parser.add_argument('--unit', type=int, default=1, help='Modbus unit (slave) id')
     parser.add_argument('--out', type=Path, required=True)
-    parser.add_argument('--scaling', choices=SCALING_MODES, default='transform')
+    parser.add_argument('--scaling', choices=SCALING_MODES, default='driver', help='who applies the scale factors: the driver (Transform column) or the service (its format transform)')
     parser.add_argument('--format-name', default='sunspec_device')
     parser.add_argument('--device-topic', default='devices/site1/feeder1/inverter')
     parser.add_argument('--uai', default=None, help='UAI of the canonical resource, "/"-separated; default: the device topic\'s segments')

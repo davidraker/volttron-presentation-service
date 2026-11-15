@@ -5,7 +5,7 @@
     "SN": "sn-123456789",
     "Vr": "1.2.3"
   },
-  "scaling": "transform",
+  "scaling": "service",
   "scale_factors": {
     "701_A_SF": -1,
     "701_V_SF": -1,

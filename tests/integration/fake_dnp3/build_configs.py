@@ -5,7 +5,7 @@ Input (this directory):
                                 conformant outstation implements, the offline stand-in for an integrity poll
 
 Outputs (this directory, overwritten), one sub-directory per scaling mode:
-  transform_scaling/   the driver publishes raw counts; the transforms apply the profile multipliers
+  service_scaling/   the driver publishes raw counts; the transforms apply the profile multipliers
   driver_scaling/      the driver applies them (registry Transform / Scaling columns); the transforms do not
 
 Each holds the fake and dnp3 driver registries, device configs for both interfaces, the presentation service
@@ -37,7 +37,7 @@ ALIASES = {
 
 def main() -> None:
     device = discover_profile(HERE / 'profile_mandatory_1547.json')
-    for scaling in ('transform', 'driver'):
+    for scaling in ('service', 'driver'):
         written = write_case(device, HERE / f'{scaling}_scaling', device_format=DEVICE_FORMAT, device_topic=DEVICE_TOPIC,
                              uai=UAI, scaling=scaling, alias_formats=ALIASES)
         print(f'{scaling} scaling: {len(written)} files under {written["presentation_config"].parent}')

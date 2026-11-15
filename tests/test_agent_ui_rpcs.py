@@ -9,8 +9,8 @@ import pytest
 import interoperability.agent as agent_module
 from interoperability.transform_registry import TransformNotFoundError
 
-CASE = Path(__file__).parent / 'integration' / 'fake_sunspec' / 'transform_scaling' / 'presentation_config.json'
-SCAN = Path(__file__).parent / 'integration' / 'fake_sunspec' / 'transform_scaling' / 'discovery.json'
+CASE = Path(__file__).parent / 'integration' / 'fake_sunspec' / 'service_scaling' / 'presentation_config.json'
+SCAN = Path(__file__).parent / 'integration' / 'fake_sunspec' / 'service_scaling' / 'discovery.json'
 
 
 @pytest.fixture
@@ -33,7 +33,7 @@ def test_list_formats_marks_hubs_declarations_and_edges(service):
     formats = service.list_formats()
     assert formats['61850']['hub'] and formats['61850']['universe'] > 100 and 'sunspec' in formats['61850']['edges_out']
     assert formats['openfmb.solar.reading']['declared'] and formats['openfmb.solar.reading']['proto'] == 'solarmodule.SolarReadingProfile'
-    assert formats['fake_sunspec_pv']['declared'] and formats['fake_sunspec_pv']['scaling'] == 'transform' and not formats['fake_sunspec_pv']['hub']
+    assert formats['fake_sunspec_pv']['declared'] and formats['fake_sunspec_pv']['scaling'] == 'service' and not formats['fake_sunspec_pv']['hub']
 
 
 def test_list_transforms_tells_bundled_from_local(service):

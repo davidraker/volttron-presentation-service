@@ -23,7 +23,7 @@ from icm.transforms.parser import TransformParser
 from interoperability.transform_registry import TransformRegistry
 
 CASE = Path(__file__).parent / 'integration' / 'fake_dnp3'
-MODES = ('transform', 'driver')
+MODES = ('service', 'driver')
 
 
 def _rows(path: Path) -> list[dict]:
@@ -112,7 +112,7 @@ def test_generated_case_is_current(device, mode):
 
 
 def test_registries_reflect_the_scaling_mode(device):
-    transform_rows = {r['volttron_point_name']: r for r in dnp3_registry_rows(device, 'transform')}
+    transform_rows = {r['volttron_point_name']: r for r in dnp3_registry_rows(device, 'service')}
     driver_rows = {r['volttron_point_name']: r for r in dnp3_registry_rows(device, 'driver')}
     assert transform_rows['AI_2'] == {'point_name': 'DGEN.VMinRtg', 'volttron_point_name': 'AI_2', 'object_group': 30, 'variation': 6,
                                       'index': 2, 'scaling': 1, 'units': 'Volts', 'writable': 'FALSE', 'data_source': 'poll_once',
@@ -121,8 +121,8 @@ def test_registries_reflect_the_scaling_mode(device):
     assert transform_rows['AO_217']['data_source'] == 'short_poll'                                                             # writable: never nameplate
     assert driver_rows['AI_2']['scaling'] == 0.1 and driver_rows['AI_2']['transform'] == 'scale(0.1)'
     assert driver_rows['AO_217']['object_group'] == 40 and driver_rows['AO_217']['transform'] == ''      # multiplier 1: nothing to apply
-    assert {r['volttron_point_name']: r['object_group'] for r in dnp3_registry_rows(device, 'transform') if r['volttron_point_name'] in ('BI_0', 'BO_3', 'CTR_5000')} == {'BI_0': 1, 'BO_3': 10, 'CTR_5000': 20}
-    fake = {r['volttron_point_name']: r for r in fake_registry_rows(device, 'transform')}
+    assert {r['volttron_point_name']: r['object_group'] for r in dnp3_registry_rows(device, 'service') if r['volttron_point_name'] in ('BI_0', 'BO_3', 'CTR_5000')} == {'BI_0': 1, 'BO_3': 10, 'CTR_5000': 20}
+    fake = {r['volttron_point_name']: r for r in fake_registry_rows(device, 'service')}
     assert fake['BI_0']['type'] == 'boolean' and fake['CTR_5000']['type'] == 'int' and fake['AI_2']['type'] == 'int'
 
 
@@ -132,7 +132,7 @@ def test_point_names_and_profile_scaling():
     for bad in ['AI297', 'XX_1', 'AI_99999', '701_W']:
         with pytest.raises(ValueError):
             dnp3_point_path(bad)
-    read, readback, write = dnp3_device_transforms('dev', ['AI_2', 'AO_217', 'AO_88'], scaling='transform').definitions
+    read, readback, write = dnp3_device_transforms('dev', ['AI_2', 'AO_217', 'AO_88'], scaling='service').definitions
     # Reads start by unwrapping the driver's [values, meta] publish, then map the flat points.
     assert read['pattern'] == {'#': 'transform(device_values())', 'AI': {'2': 'transform[AI_2](scale(0.1))'}}
     assert readback['pattern']['AO']['88'] == 'transform[AO_88](scale(0.1))'
@@ -146,7 +146,7 @@ def test_point_names_and_profile_scaling():
 # ---- the device used through each alias ----
 
 def test_device_read_as_1815_2_inputs_and_beyond(service, mode):
-    raw = {'AI_2': 2110, 'AI_3': 2640} if mode == 'transform' else {'AI_2': 211.0, 'AI_3': 264.0}   # VMinRtg, VMaxRtg (x0.1)
+    raw = {'AI_2': 2110, 'AI_3': 2640} if mode == 'service' else {'AI_2': 211.0, 'AI_3': 264.0}   # VMinRtg, VMaxRtg (x0.1)
     message = fake_driver_all_message(mode, **raw)
     tree, registry = service
     inputs = TransformParser().build_transform_from_schema(registry.lookup('fake_dnp3_der', '1815.2.inputs')).execute(message)
@@ -184,7 +184,7 @@ def test_device_used_as_openfmb_ess_reading_profile(service, mode, config):
 
 def test_both_scaling_modes_yield_the_same_inputs_message():
     outputs = []
-    for mode, raw in (('transform', {'AI_2': 2110}), ('driver', {'AI_2': 211.0})):
+    for mode, raw in (('service', {'AI_2': 2110}), ('driver', {'AI_2': 211.0})):
         config = json.loads((CASE / f'{mode}_scaling' / 'presentation_config.json').read_text())
         pattern = next(d['pattern'] for d in config['transforms'] if d['output_format'] == '1815.2.inputs')
         outputs.append(TransformParser().build_transform_from_schema(pattern).execute(fake_driver_all_message(mode, **raw)))
@@ -198,17 +198,17 @@ def test_writes_reach_the_device_as_ordered_flat_batches(service, mode):
     control = {'DERControl': {'opModMaxLimW': 80},
                'DERCurve': {'opModVoltVar': {'CurveData': [{'xvalue': 95, 'yvalue': 44}, {'xvalue': 105, 'yvalue': -44}]}}}
     out = TransformParser().build_transform_from_schema(chain).execute(control)
-    limit = 800.0 if mode == 'transform' else 80        # AO 87 has multiplier 0.1: the device edge undoes it, or the driver will
+    limit = 800.0 if mode == 'service' else 80        # AO 87 has multiplier 0.1: the device edge undoes it, or the driver will
     assert out['AO_87'] == limit and out['BO_17'] is True            # an active control implies its mode enable
     batch = out['sequence'][0]
     assert list(batch)[:4] == ['AO_244', 'AO_245', 'AO_246', 'AO_249'] and list(batch)[-1] == 'AO_217'   # select, type, count, points, assign
     assert batch['AO_244'] == 1 and batch['AO_245'] == 2 and batch['AO_246'] == 2 and batch['AO_249'] == 95
-    assert batch['AO_250'] == (440.0 if mode == 'transform' else 44)               # var point multiplier 0.1
+    assert batch['AO_250'] == (440.0 if mode == 'service' else 44)               # var point multiplier 0.1
     # The 61850 route to the device also carries its schedule entries as further batches.
     sched = {'FSCH': {'SchdEntr': [{'StrTm': 5, 'DWMX': {'LimW': 50}}]}, 'DFPF': {'PFGnTgt': 0.9}}
     via_61850 = TransformParser().build_transform_from_schema(registry.lookup('61850', 'fake_dnp3_der')).execute(sched)
     assert 'AO_87' not in via_61850                                                     # LimW inside the schedule, not immediate
-    assert via_61850['AO_210'] == (900.0 if mode == 'transform' else 0.9) or via_61850.get('AO_210') is not None
+    assert via_61850['AO_210'] == (900.0 if mode == 'service' else 0.9) or via_61850.get('AO_210') is not None
 
 
 def test_point_map_for_the_2030_5_agent(service):

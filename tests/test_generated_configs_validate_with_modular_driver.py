@@ -46,7 +46,7 @@ def _classes(driver: str):
     ('fake_sunspec', 'fake_sunspec_pv', 'fake'), ('fake_sunspec', 'fake_sunspec_pv', 'modbus'),
     ('fake_dnp3', 'fake_dnp3_der', 'fake'), ('fake_dnp3', 'fake_dnp3_der', 'dnp3'),
     ('fake_sunspec', 'fake_sunspec_pv_sep2', 'ieee2030_5')])
-@pytest.mark.parametrize('mode', ['transform', 'driver'])
+@pytest.mark.parametrize('mode', ['service', 'driver'])
 def test_generated_configs_validate(case, stem, driver, mode):
     out = CASES / case / f'{mode}_scaling'
     point_cls, remote_cls = _classes(driver)

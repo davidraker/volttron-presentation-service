@@ -1,6 +1,6 @@
 {
   "profile": "profile_mandatory_1547",
-  "scaling": "transform",
+  "scaling": "service",
   "points": [
     {
       "name": "AI_2",

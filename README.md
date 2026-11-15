@@ -480,14 +480,15 @@ names alone, validated against the SunSpec model classes:
 **Scale factors.** SunSpec values are integers scaled by a companion `_SF` register, and where that
 scaling happens is a build-time choice, `scaling`, that fixes the registry and the transforms together:
 
-* `transform`: the driver publishes raw registers, the `_SF` points included. Reads apply
-  `scale_reg_pow_10('/705_V_SF')` against the published factor (the leading `/` resolves the path from
-  the message root, even inside a curve). Writes bake the discovered factor in as a constant with
-  `scale()` and `scale_fields()`, since a write arriving from another protocol carries no factor; points
-  whose factor was not discovered are listed in the result's `notes` and left unscaled.
-* `driver`: the driver applies the factors itself. The modbus registry carries a `Transform` column
-  entry per scaled point (`scale_reg_pow_10(705_V_SF)`, the modbus_tk syntax the platform driver is
-  adopting), the `_SF` points are omitted, and the transforms pass values through unchanged.
+* `driver` (the default): the driver applies the factors itself. The modbus registry carries a `Transform`
+  column entry per scaled point (`sunssf(705_V_SF)`), the `_SF` points are omitted, and the transforms
+  pass values through unchanged.
+* `service`: the driver publishes raw registers, the `_SF` points included, and the service's device-format
+  transform scales them. Reads apply `scale_reg_pow_10('/705_V_SF')` against the published factor (the
+  leading `/` resolves the path from the message root, even inside a curve). Writes bake the discovered
+  factor in as a constant with `scale()` and `scale_fields()`, since a write arriving from another protocol
+  carries no factor; points whose factor was not discovered are listed in the result's `notes` and left
+  unscaled.
 
 `infer_scaling(rows)` tells the two apart for an existing registry. Whichever side scales, the SunSpec
 message that comes out is the same; the integration test asserts it.

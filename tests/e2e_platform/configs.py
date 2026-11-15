@@ -15,8 +15,8 @@ from interoperability.discovery.device_formats import dnp3_device_transforms, re
 from icm.resources.openfmb.bus import topic_of
 
 TESTS = Path(__file__).resolve().parents[1]
-SUNSPEC_CASE = TESTS / 'integration' / 'fake_sunspec' / 'transform_scaling'
-DNP3_CASE = TESTS / 'integration' / 'fake_dnp3' / 'transform_scaling'
+SUNSPEC_CASE = TESTS / 'integration' / 'fake_sunspec' / 'service_scaling'
+DNP3_CASE = TESTS / 'integration' / 'fake_dnp3' / 'service_scaling'
 
 DEVICES = ('SunSpec', 'DNP3', '2030.5')
 ROLES = ('client', 'served')

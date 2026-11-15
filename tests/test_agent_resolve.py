@@ -8,7 +8,7 @@ import pytest
 import interoperability.agent as agent_module
 from icm.transforms.parser import TransformParser
 
-CASE = Path(__file__).parent / 'integration' / 'fake_sunspec' / 'transform_scaling' / 'presentation_config.json'
+CASE = Path(__file__).parent / 'integration' / 'fake_sunspec' / 'service_scaling' / 'presentation_config.json'
 
 
 @pytest.fixture
@@ -32,7 +32,7 @@ def test_bundled_formats_declare_the_openfmb_profiles(service):
     svc, _ = service
     assert svc.transform_registry.format_spec('openfmb.ess.reading') == {'hub': False, 'proto': 'essmodule.ESSReadingProfile'}
     assert svc.transform_registry.format_spec('openfmb.solar.control')['proto'] == 'solarmodule.SolarControlProfile'
-    assert svc.transform_registry.format_spec('fake_sunspec_pv')['scaling'] == 'transform'
+    assert svc.transform_registry.format_spec('fake_sunspec_pv')['scaling'] == 'service'
     assert svc.transform_registry.format_spec('never.declared') == {}
 
 

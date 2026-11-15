@@ -15,12 +15,12 @@ Names are validated against the generated SunSpec model classes.
 Scale factors. SunSpec values are integers scaled by a companion ``_SF`` register. Where the scaling
 happens is a build-time choice, ``scaling``:
 
-* ``'transform'``: the driver publishes raw registers, including the ``_SF`` points. Reads apply
-  ``scale_reg_pow_10`` against the published factor; writes bake the factor in as a constant, which
-  requires the discovered values (``scale_factors``), since a write arriving from another protocol
-  carries none.
-* ``'driver'``: the driver applies the factors (its registry carries a ``Transform`` column) and the
+* ``'driver'`` (the default): the driver applies the factors (its registry carries a ``Transform`` column) and the
   ``_SF`` points are not published. Values pass through unscaled in both directions.
+* ``'service'``: the driver publishes raw registers, including the ``_SF`` points, and the service's device-format
+  transform scales them. Reads apply ``scale_reg_pow_10`` against the published factor; writes bake the factor in
+  as a constant, which requires the discovered values (``scale_factors``), since a write arriving from another
+  protocol carries none.
 """
 from __future__ import annotations
 
@@ -37,7 +37,15 @@ _INDEXED = re.compile(r'^([A-Za-z_][A-Za-z0-9_]*?)(\d+)$')
 DEVICE_STAGE_INPUT = {'#': 'transform(device_values())'}
 #: SunSpec point that counts the valid entries of a sibling ``Pt`` list.
 ACTIVE_COUNT = 'ActPt'
-SCALING_MODES = ('transform', 'driver')
+SCALING_MODES = ('driver', 'service')
+
+
+def scaling_mode(value: str | None, default: str = 'driver') -> str:
+    """A scaling mode from user input: the default when absent, anything but the two modes refused."""
+    mode = value or default
+    if mode not in SCALING_MODES:
+        raise ValueError(f'scaling must be one of {SCALING_MODES}, got {value!r}')
+    return mode
 
 
 def _levels(point_name: str) -> list[tuple[type, tuple[str, ...]]]:
@@ -133,12 +141,12 @@ def is_scale_factor_point(point_name: str) -> bool:
 
 def infer_scaling(rows: list[dict]) -> str:
     """Which side scales, from an existing registry: rows with a ``Transform`` entry mean the driver does;
-    ``_SF`` points present with no transforms mean the transform must."""
+    ``_SF`` points present with no transforms mean the service must."""
     if any((row.get('transform') or '').strip() for row in rows):
         return 'driver'
     names = [row.get('volttron_point_name', '') for row in rows]
     if any(is_scale_factor_point(n) for n in names if n):
-        return 'transform'
+        return 'service'
     raise ValueError('cannot infer scaling: the registry has neither Transform entries nor scale factor points')
 
 
@@ -151,8 +159,7 @@ class DeviceTransforms:
 
 class _Builder:
     def __init__(self, point_names: list[str], scaling: str, scale_factors: dict[str, int] | None):
-        if scaling not in SCALING_MODES:
-            raise ValueError(f'scaling must be one of {SCALING_MODES}, got {scaling!r}')
+        scaling = scaling_mode(scaling)
         self.scaling = scaling
         self.scale_factors = scale_factors or {}
         self.names = set(point_names)
@@ -162,7 +169,7 @@ class _Builder:
     # --- scaling decisions -------------------------------------------------------------------------------
     def read_functions(self, point: str) -> str:
         """Functions applied when reading a point from the device (device -> sunspec)."""
-        if self.scaling != 'transform':
+        if self.scaling != 'service':
             return ''
         sf = sunspec_scale_factor(point)
         if sf is None or is_scale_factor_point(point):
@@ -178,7 +185,7 @@ class _Builder:
 
     def write_factor(self, point: str) -> float | None:
         """Constant multiplier applied when writing a point to the device (sunspec -> device), if known."""
-        if self.scaling != 'transform':
+        if self.scaling != 'service':
             return None
         sf = sunspec_scale_factor(point)
         if sf is None or is_scale_factor_point(point):
@@ -265,7 +272,7 @@ class _Builder:
         return pattern
 
 
-def sunspec_device_transforms(device_format: str, point_names: list[str], *, scaling: str = 'transform',
+def sunspec_device_transforms(device_format: str, point_names: list[str], *, scaling: str = 'driver',
                               scale_factors: dict[str, int] | None = None) -> DeviceTransforms:
     """Transform definitions between a device format (flat SunSpec-named points) and ``sunspec``.
 
@@ -281,8 +288,9 @@ def sunspec_device_transforms(device_format: str, point_names: list[str], *, sca
     return DeviceTransforms(definitions, scaling, sorted(set(builder.notes)))
 
 
-def device_format_declaration(point_names: list[str], scaling: str = 'transform') -> dict:
+def device_format_declaration(point_names: list[str], scaling: str = 'driver') -> dict:
     """The ``formats`` entry for a device: a leaf whose fields are its point names, recording who scales."""
+    scaling = scaling_mode(scaling)
     return {'hub': False, 'scaling': scaling, 'fields': sorted(point_names)}
 
 
@@ -344,7 +352,7 @@ def _dnp3_functions(multiplier: float, offset: float, inverse: bool) -> str:
     return ', '.join(steps)
 
 
-def dnp3_device_transforms(device_format: str, point_names: list[str], *, scaling: str = 'transform',
+def dnp3_device_transforms(device_format: str, point_names: list[str], *, scaling: str = 'driver',
                            served: bool = False) -> DeviceTransforms:
     """Transform definitions between a DNP3 device format and the ``1815.2.inputs`` / ``1815.2.outputs`` formats.
 
@@ -356,8 +364,7 @@ def dnp3_device_transforms(device_format: str, point_names: list[str], *, scalin
     A ``served`` device is an outstation the platform itself serves (the DNP3 driver's outstation role): its
     inputs are written by the platform, so writes also come from ``1815.2.inputs``.
     """
-    if scaling not in SCALING_MODES:
-        raise ValueError(f'scaling must be one of {SCALING_MODES}, got {scaling!r}')
+    scaling = scaling_mode(scaling)
     by_table: dict[str, list[tuple[str, str]]] = defaultdict(list)
     for name in point_names:
         table, index = dnp3_point_path(name)
@@ -371,7 +378,7 @@ def dnp3_device_transforms(device_format: str, point_names: list[str], *, scalin
                 continue
             group: dict = {}
             for index, name in sorted(by_table[table], key=lambda t: int(t[0])):
-                multiplier, offset = dnp3_scaling(name) if scaling == 'transform' else (1.0, 0.0)
+                multiplier, offset = dnp3_scaling(name) if scaling == 'service' else (1.0, 0.0)
                 group[index] = f'transform[{name}]({_dnp3_functions(multiplier, offset, inverse=False)})'
                 from_protocol[name] = f'transform[{table}, {index}]({_dnp3_functions(multiplier, offset, inverse=True)})'
             to_protocol[table] = group
@@ -382,7 +389,7 @@ def dnp3_device_transforms(device_format: str, point_names: list[str], *, scalin
                 if not by_table.get(table):
                     continue
                 factors = []
-                if scaling == 'transform':
+                if scaling == 'service':
                     for index, name in by_table[table]:
                         multiplier, offset = dnp3_scaling(name)
                         if multiplier != 1:

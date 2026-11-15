@@ -155,13 +155,13 @@ def dnp3_registry_rows(device: DiscoveredDnp3Device, scaling: str, variations: d
 def fake_registry_rows(device: DiscoveredDnp3Device, scaling: str) -> list[dict]:
     rows = []
     for p in device.points:
-        value = p.value if scaling == 'transform' else device.scaled_value(p)
+        value = p.value if scaling == 'service' else device.scaled_value(p)
         kind = TABLE_TYPES[p.table]
         if kind == 'boolean':
             value = bool(value)
         elif kind == 'int' and isinstance(value, (int, float)):
             value = int(value)
-        elif kind == 'float' and scaling == 'transform' and isinstance(value, (int, float)) and float(value).is_integer():
+        elif kind == 'float' and scaling == 'service' and isinstance(value, (int, float)) and float(value).is_integer():
             value, kind = int(value), 'int'                 # raw DNP3 analogs are integers
         rows.append({'point_name': p.uid, 'volttron_point_name': p.name, 'units': p.units, 'units_details': p.description,
                      'writable': 'TRUE' if p.writable else 'FALSE', 'starting_value': value, 'type': kind,
@@ -233,7 +233,7 @@ def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--profile', type=Path, required=True, help='IEEE 1815.2 test-tool profile JSON')
     parser.add_argument('--out', type=Path, required=True)
-    parser.add_argument('--scaling', choices=SCALING_MODES, default='transform')
+    parser.add_argument('--scaling', choices=SCALING_MODES, default='driver', help='who applies the multipliers: the driver (Transform column) or the service (its format transform)')
     parser.add_argument('--format-name', default='dnp3_device')
     parser.add_argument('--device-topic', default='devices/site1/feeder1/der')
     parser.add_argument('--uai', default='site1/der')

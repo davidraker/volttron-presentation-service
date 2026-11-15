@@ -10,7 +10,7 @@ from icm.transforms.parser import TransformParser
 from icm.transforms.functions import immediate, MISSING
 
 TRANSFORMS = resources.files('interoperability').joinpath('transforms')
-SUNSPEC_CASE = Path(__file__).parent / 'integration' / 'fake_sunspec' / 'transform_scaling'
+SUNSPEC_CASE = Path(__file__).parent / 'integration' / 'fake_sunspec' / 'service_scaling'
 
 
 def _stage(name, index=0):
@@ -104,7 +104,7 @@ def test_discovery_tools_write_served_cases(tmp_path):
     case = json.loads(profile.read_text())
     device = dnp3_gen.DiscoveredDnp3Device(profile_name='fake', points=[dnp3_gen.DiscoveredDnp3Point(**p) for p in case['points']], notes=[])
     written = dnp3_gen.write_case(device, tmp_path / 'dnp3', device_format='os', device_topic='devices/os', uai=['s', 'os'],
-                                  scaling='transform', served=True)
+                                  scaling='service', served=True)
     config = json.loads(written['presentation_config'].read_text())
     assert ('1815.2.inputs', 'os') in {(t['input_format'], t['output_format']) for t in config['transforms']}
     registry = mirror_gen.load_registry(SUNSPEC_CASE / 'presentation_config.json')

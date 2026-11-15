@@ -29,7 +29,7 @@ PROFILES = [('fake_sunspec', 'fake_sunspec_pv', 'fake_sunspec_pv.fake.csv', 'ope
 
 
 def registry_for(case: Path) -> TransformRegistry:
-    config = json.loads((case / 'transform_scaling' / 'presentation_config.json').read_text())
+    config = json.loads((case / 'service_scaling' / 'presentation_config.json').read_text())
     registry = TransformRegistry()
     for name, spec in config['formats'].items():
         registry.declare_format(name, **spec)
@@ -75,7 +75,7 @@ def type_mismatches(descriptor, payload, path='') -> list[tuple[str, str]]:
 
 
 @pytest.mark.parametrize('case, device_format, registry_file, target, proto', PROFILES, ids=[p[3] for p in PROFILES])
-@pytest.mark.parametrize('mode', ['transform', 'driver'])
+@pytest.mark.parametrize('mode', ['service', 'driver'])
 def test_profile_leaves_match_their_protobuf_types(case, device_format, registry_file, target, proto, mode):
     registry = registry_for(CASES / case)
     chain, retention, path = registry.lookup_scored(device_format, target)

@@ -27,7 +27,7 @@ from interoperability.discovery.sunspec import discover_file, fake_registry_rows
 import case_helpers  # noqa: E402
 
 CASE = Path(__file__).parent / 'integration' / 'fake_sunspec'
-MODES = ('transform', 'driver')
+MODES = ('service', 'driver')
 
 
 from case_helpers import rows_of as _rows  # noqa: E402
@@ -109,14 +109,14 @@ def test_generated_case_is_current(device, mode):
 
 
 def test_registries_reflect_the_scaling_mode(device):
-    transform_rows = {r['volttron_point_name']: r for r in modbus_registry_rows(device, 'transform')}
+    transform_rows = {r['volttron_point_name']: r for r in modbus_registry_rows(device, 'service')}
     driver_rows = {r['volttron_point_name']: r for r in modbus_registry_rows(device, 'driver')}
     assert '701_W_SF' in transform_rows and '701_W_SF' in driver_rows              # the driver's sunssf transforms read the factor points
     assert driver_rows['701_W_SF']['data_source'] == 'poll_once' and driver_rows['701_W_SF']['transform'] == ''
     assert transform_rows['701_Hz']['transform'] == '' and driver_rows['701_Hz']['transform'] == 'sunssf(701_Hz_SF)'
     assert transform_rows['701_Hz']['data_type'] == 'UINT32' and transform_rows['701_Hz']['address'] == 40070 + 17
     assert transform_rows['1_Mn']['data_type'] == 'string[32]'
-    fake_transform = {r['volttron_point_name']: r for r in fake_registry_rows(device, 'transform')}
+    fake_transform = {r['volttron_point_name']: r for r in fake_registry_rows(device, 'service')}
     fake_driver = {r['volttron_point_name']: r for r in fake_registry_rows(device, 'driver')}
     assert fake_transform['701_Hz']['starting_value'] == 60010 and fake_driver['701_Hz']['starting_value'] == 60.01
     assert fake_transform['705_Crv1_Pt1_V']['starting_value'] == 9200 and fake_driver['705_Crv1_Pt1_V']['starting_value'] == 92.0
@@ -136,7 +136,7 @@ def test_point_names_scale_factors_and_underscored_names():
 
 def test_device_transforms_scale_where_the_mode_says():
     names = ['701_W', '701_W_SF', '705_Crv1_ActPt', '705_Crv1_Pt1_V', '705_Crv1_Pt1_Var', '705_V_SF', '705_DeptRef_SF']
-    by_transform = sunspec_device_transforms('dev', names, scaling='transform', scale_factors={'701_W_SF': 1, '705_V_SF': -2})
+    by_transform = sunspec_device_transforms('dev', names, scaling='service', scale_factors={'701_W_SF': 1, '705_V_SF': -2})
     read, write = by_transform.definitions
     assert read['pattern']['701']['W'] == "transform[701_W](scale_reg_pow_10('/701_W_SF'))"
     assert read['pattern']['705']['Crv[#] 1']['Pt[#]']['V'] == "transform[#, V](scale_reg_pow_10('/705_V_SF'))"
@@ -163,7 +163,7 @@ def test_device_used_as_sunspec(service, mode):
     curve = sunspec['705']['Crv'][0]
     assert curve['ActPt'] == 4 and curve['Pt'][:2] == [{'V': 92.0, 'Var': 30.0}, {'V': 96.7, 'Var': 0.0}]
     assert sunspec['711']['Ctl'][0]['DbOf'] == 600.3
-    if mode == 'transform':
+    if mode == 'service':
         assert sunspec['705']['V_SF'] == -2                                      # raw factors travel along
     else:
         assert 'V_SF' not in sunspec['705']

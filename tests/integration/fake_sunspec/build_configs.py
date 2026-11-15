@@ -5,7 +5,7 @@ Input (this directory):
                        stand-in for scanning a real inverter over Modbus
 
 Outputs (this directory, overwritten), one sub-directory per scaling mode:
-  transform_scaling/   the driver publishes raw registers and scale factors; the transforms scale
+  service_scaling/   the driver publishes raw registers and scale factors; the transforms scale
   driver_scaling/      the driver applies scale factors (registry Transform column); the transforms do not
 
 Each holds the fake and modbus driver registries, the device configs for both interfaces, the presentation
@@ -44,7 +44,7 @@ ALIASES = {
 
 def main() -> None:
     device = discover_file(HERE / 'device_1547.json')
-    for scaling in ('transform', 'driver'):
+    for scaling in ('service', 'driver'):
         written = write_case(device, HERE / f'{scaling}_scaling', device_format=DEVICE_FORMAT, device_topic=DEVICE_TOPIC,
                              uai=UAI, scaling=scaling, alias_formats=ALIASES)
         print(f'{scaling} scaling: {len(written)} files under {written["presentation_config"].parent}')

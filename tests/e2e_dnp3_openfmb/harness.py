@@ -38,7 +38,7 @@ from protocol_proxy.protocol.mqtt import mqtt_proxy as mqtt_module
 from protocol_proxy.protocol.mqtt.mqtt_proxy import MQTTProxy
 
 HERE = Path(__file__).resolve().parent
-CASE = HERE.parent / 'integration' / 'fake_dnp3' / 'transform_scaling'
+CASE = HERE.parent / 'integration' / 'fake_dnp3' / 'service_scaling'
 DEVICE_TOPIC = 'devices/site1/feeder1/der'
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 20020
 # Raw outstation values (profile multiplier 1 for the system meter; AI_2 has multiplier 0.1).

@@ -26,6 +26,7 @@ from pathlib import Path
 from typing import Any
 
 from . import dnp3 as dnp3_discovery
+from .device_formats import scaling_mode
 from . import ieee2030_5 as sep2_discovery
 from . import sunspec as sunspec_discovery
 from .device_formats import resource_mappings
@@ -84,7 +85,7 @@ def sunspec_data_source(point) -> str:
 
 
 def _discover_sunspec(options: dict, common: dict, driver_identity: str, service_identity: str) -> dict:
-    scaling = options.get('scaling', 'transform')
+    scaling = scaling_mode(options.get('scaling'))        # default: the driver applies the factors
     if options.get('device_json'):
         with tempfile.NamedTemporaryFile('w', suffix='.json', delete=False) as handle:
             handle.write(options['device_json'] if isinstance(options['device_json'], str) else json.dumps(options['device_json']))
@@ -143,7 +144,7 @@ def _discover_dnp3(options: dict, common: dict, driver_identity: str, service_id
         source = f'outstation {host}:{port} (master {master_id}, outstation {outstation_id})'
     else:
         raise ValueError('dnp3 discovery needs an outstation address to scan, a profile_json, or indexes')
-    scaling = options.get('scaling', 'transform')
+    scaling = scaling_mode(options.get('scaling'))        # default: the driver applies the factors
     rows = dnp3_discovery.dnp3_registry_rows(device, scaling)
     device_config = dnp3_discovery.device_config('dnp3', common['registry_name'], outstation_ip=options.get('outstation_ip', '127.0.0.1'),
                                                  port=int(options.get('port') or 20000), master_id=int(options.get('master_id') or 2),

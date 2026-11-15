@@ -11,7 +11,7 @@ from interoperability.discovery import ieee2030_5
 from icm.transforms.parser import TransformParser
 
 CASE = Path(__file__).parent / 'integration' / 'fake_sunspec'
-MODE_DIR = CASE / 'transform_scaling'
+MODE_DIR = CASE / 'service_scaling'
 
 
 @pytest.fixture(scope='module')
@@ -55,7 +55,7 @@ def test_registry_rows_validate_against_the_driver_schema(mirror):
 
 def test_generated_mirror_case_is_current(registry, mirror):
     """``build_configs.py`` wrote the mirror files; they must match what the generator produces now."""
-    for mode in ('transform', 'driver'):
+    for mode in ('service', 'driver'):
         out = CASE / f'{mode}_scaling'
         with (out / 'fake_sunspec_pv_sep2.ieee2030_5.csv').open() as f:
             rows = list(csv.DictReader(f))
@@ -97,11 +97,11 @@ def test_inverter_to_mirror_chain_through_the_service(registry, mirror):
     chain, retention, path = registry.lookup_scored('fake_sunspec_pv', 'fake_sunspec_pv_sep2')
     assert path == ['fake_sunspec_pv', 'sunspec', '2030.5', 'fake_sunspec_pv_sep2'] and retention > 0
     from case_helpers import fake_driver_all_message
-    flat = TransformParser().execute_chain(chain, [fake_driver_all_message(CASE, 'transform'), {}]) \
-        if hasattr(TransformParser(), 'execute_chain') else TransformParser().build_transform_from_schema(chain).execute([fake_driver_all_message(CASE, 'transform'), {}])
+    flat = TransformParser().execute_chain(chain, [fake_driver_all_message(CASE, 'service'), {}]) \
+        if hasattr(TransformParser(), 'execute_chain') else TransformParser().build_transform_from_schema(chain).execute([fake_driver_all_message(CASE, 'service'), {}])
     assert flat['DERSettings_setMaxW'] == pytest.approx(flat['DERSettings_setMaxW']) and 'MirrorMeterReading_W' in flat
     assert all(not k.startswith('DERControl') for k in flat)         # controls do not flow into the server
-    sunspec = TransformParser().build_transform_from_schema(registry.lookup('fake_sunspec_pv', 'sunspec')).execute([fake_driver_all_message(CASE, 'transform'), {}])
+    sunspec = TransformParser().build_transform_from_schema(registry.lookup('fake_sunspec_pv', 'sunspec')).execute([fake_driver_all_message(CASE, 'service'), {}])
     assert flat['MirrorMeterReading_W'] == pytest.approx(sunspec['701']['W'])
 
 

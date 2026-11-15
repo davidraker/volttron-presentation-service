@@ -74,8 +74,8 @@ from certs import generate_certs                                                
 
 HERE = Path(__file__).resolve().parent
 TESTS = HERE.parent
-SUNSPEC_CASE = TESTS / 'integration' / 'fake_sunspec' / 'transform_scaling'
-DNP3_CASE = TESTS / 'integration' / 'fake_dnp3' / 'transform_scaling'
+SUNSPEC_CASE = TESTS / 'integration' / 'fake_sunspec' / 'service_scaling'
+DNP3_CASE = TESTS / 'integration' / 'fake_dnp3' / 'service_scaling'
 WORK = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(tempfile.mkdtemp(prefix='e2e-matrix-'))
 ONLY = set(sys.argv[2].split(',')) if len(sys.argv) > 2 else None
 OPENFMB_MODE = os.environ.get('E2E_OPENFMB', 'harness')                    # harness | bus

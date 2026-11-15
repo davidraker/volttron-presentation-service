@@ -37,8 +37,8 @@ from sep2server import Sep2Server, ensure_image, generate_certs, write_fixture  
 
 HERE = Path(__file__).resolve().parent
 TESTS = HERE.parent
-SUNSPEC_CASE = TESTS / 'integration' / 'fake_sunspec' / 'transform_scaling'
-DNP3_CASE = TESTS / 'integration' / 'fake_dnp3' / 'transform_scaling'
+SUNSPEC_CASE = TESTS / 'integration' / 'fake_sunspec' / 'service_scaling'
+DNP3_CASE = TESTS / 'integration' / 'fake_dnp3' / 'service_scaling'
 DNP3_PORT, SEP2_PORT, ADMIN_PORT, NOTIFY_PORT = (int(a) for a in sys.argv[1:5])
 WORK = Path(sys.argv[5]) if len(sys.argv) > 5 else Path(tempfile.mkdtemp(prefix='sep2tele-'))
 DNP3_TOPIC, SEP2_TOPIC = 'devices/site1/feeder1/der', 'devices/site1/feeder1/der_sep2'
