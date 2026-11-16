@@ -74,7 +74,29 @@ def test_scan_lists_the_outstations_points():
         result = scan_outstation('127.0.0.1', running.port, MASTER, OUTSTATION, timeout=10)
     assert_covers_profile(result.indexes, expected)
     assert 'AI_537' in result.values and isinstance(result.values['AI_537'], float) and isinstance(result.values['BI_0'], bool)
-    assert result.points == sum(len(v) for v in result.indexes.values()) and not result.notes
+    assert result.points == sum(len(v) for v in result.indexes.values())
+    assert [n for n in result.notes if 'ONLINE' not in n] == []                 # only the offline note, if the dummy serves any
+    assert all(name in result.values for name in result.offline)
+
+
+def test_points_without_the_online_flag_are_listed_and_noted():
+    """The IEEE 1815.2 reference outstation adds its counters without an initial update, so they carry RESTART (0x02)
+    and no ONLINE until a freeze-and-clear; the driver would report them offline on every poll. The scan says so."""
+    from types import SimpleNamespace
+    from interoperability.discovery.dnp3_scan import _handler_class, QUALITY_ONLINE
+    handler = _handler_class()()
+    handler.on_analog_input([SimpleNamespace(index=537, value=4200.0, quality=QUALITY_ONLINE)], None)
+    handler.on_counter([SimpleNamespace(index=0, value=0, quality=0x02), SimpleNamespace(index=1, value=0, quality=QUALITY_ONLINE | 0x02)], None)
+    handler.on_binary_input([SimpleNamespace(index=0, value=True)], None)      # no quality attribute: taken as online
+    assert handler.quality['CTR'] == {0: 0x02, 1: 0x03} and handler.quality['BI'][0] == QUALITY_ONLINE
+    result = ScanResult()
+    for table, seen in handler.seen.items():
+        if seen:
+            result.indexes[table] = sorted(seen)
+            result.offline += [f'{table}_{i}' for i in result.indexes[table] if not handler.quality[table][i] & QUALITY_ONLINE]
+    assert result.offline == ['CTR_0']
+    again = ScanResult.from_json(json.loads(json.dumps(ScanResult(result.indexes, {}, ['n'], result.offline).to_json())))
+    assert again.offline == ['CTR_0'] and again.notes == ['n']
 
 
 def test_scan_in_a_subprocess_and_the_discover_rpc_match_the_profile():

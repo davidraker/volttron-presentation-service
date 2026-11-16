@@ -22,6 +22,7 @@ from typing import Any
 
 #: The 1815.2 tables and the static object groups an integrity poll reports them in.
 TABLE_GROUPS = {'AI': 30, 'AO': 40, 'BI': 1, 'BO': 10, 'CTR': 20}
+QUALITY_ONLINE = 0x01       # bit 0 of every DNP3 quality byte; clear means the outstation does not vouch for the value
 
 
 @dataclass
@@ -29,17 +30,19 @@ class ScanResult:
     indexes: dict[str, list[int]] = field(default_factory=dict)      # table -> sorted indexes
     values: dict[str, Any] = field(default_factory=dict)             # "AI_537" -> value read
     notes: list[str] = field(default_factory=list)
+    offline: list[str] = field(default_factory=list)                 # points reported without the ONLINE quality flag
 
     @property
     def points(self) -> int:
         return sum(len(v) for v in self.indexes.values())
 
     def to_json(self) -> dict:
-        return {'indexes': self.indexes, 'values': self.values, 'notes': self.notes}
+        return {'indexes': self.indexes, 'values': self.values, 'notes': self.notes, 'offline': self.offline}
 
     @classmethod
     def from_json(cls, data: dict) -> 'ScanResult':
-        return cls({k: [int(i) for i in v] for k, v in data.get('indexes', {}).items()}, dict(data.get('values', {})), list(data.get('notes', [])))
+        return cls({k: [int(i) for i in v] for k, v in data.get('indexes', {}).items()}, dict(data.get('values', {})), list(data.get('notes', [])),
+                   list(data.get('offline', [])))
 
 
 def _handler_class():
@@ -51,10 +54,12 @@ def _handler_class():
         def __init__(self):
             super().__init__()
             self.seen: dict[str, dict[int, Any]] = {table: {} for table in TABLE_GROUPS}
+            self.quality: dict[str, dict[int, int]] = {table: {} for table in TABLE_GROUPS}
 
         def _record(self, table, values, cast):
             for v in values:
                 self.seen[table][v.index] = cast(v.value)
+                self.quality[table][v.index] = int(getattr(v, 'quality', QUALITY_ONLINE))
 
         def on_binary_input(self, values, info):
             self._record('BI', values, bool)
@@ -98,6 +103,12 @@ async def scan_outstation_async(host: str, port: int = 20000, master_id: int = 2
         if seen:
             result.indexes[table] = sorted(seen)
             result.values.update({f'{table}_{index}': seen[index] for index in result.indexes[table]})
+            result.offline += [f'{table}_{index}' for index in result.indexes[table] if not handler.quality[table][index] & QUALITY_ONLINE]
+    if result.offline:
+        shown = ', '.join(result.offline[:8]) + (' …' if len(result.offline) > 8 else '')
+        result.notes.append(f'{len(result.offline)} point(s) are served without the ONLINE quality flag ({shown}): the outstation has not '
+                            'updated them since it started (typical of counters it never increments). The driver reports such points as '
+                            'offline on every poll until the outstation sets them; leave them out of the registry if the device never will.')
     truncated = [info for info in infos if getattr(info, 'truncation', None)]
     if truncated:
         result.notes.append(f'{len(truncated)} response fragment(s) were truncated; some points may be missing')
