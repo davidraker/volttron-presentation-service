@@ -103,7 +103,11 @@ def _discover_sunspec(options: dict, common: dict, driver_identity: str, service
                                                    port=int(options.get('port') or 502), unit=int(options.get('unit') or 1))
     role = options.get('role', 'client')
     if role != 'client':
-        device_config['remote_config']['driver_role'] = 'slave'
+        # A served unit: the platform's Modbus slave listens where bind_host says; a unit address is nobody's to reach.
+        remote = device_config['remote_config']
+        remote['driver_role'] = 'slave'
+        remote.pop('device_address', None)
+        remote['bind_host'] = options.get('bind_host') or '0.0.0.0'
         for row in rows:
             row['data_source'] = 'server'
     fragment, notes = sunspec_discovery.presentation_config(device, common['format_name'], f"devices/{common['topic']}",
@@ -151,7 +155,11 @@ def _discover_dnp3(options: dict, common: dict, driver_identity: str, service_id
                                                  outstation_id=int(options.get('outstation_id') or 1))
     served = options.get('role', 'client') != 'client'
     if served:
-        device_config['remote_config']['driver_role'] = 'outstation'
+        # A served outstation listens on bind_host:port for the external master; it has no outstation to reach.
+        remote = device_config['remote_config']
+        remote['driver_role'] = 'outstation'
+        remote.pop('outstation_ip', None)
+        remote['bind_host'] = options.get('bind_host') or '0.0.0.0'
         for row in rows:
             row['data_source'] = 'server'
     from .device_formats import dnp3_device_transforms, device_format_declaration
@@ -162,7 +170,7 @@ def _discover_dnp3(options: dict, common: dict, driver_identity: str, service_id
     _set_publication(fragment, common)
     remote = device_config['remote_config']
     return {'protocol': 'dnp3', 'source': source, 'identity': {'name': device.name} if hasattr(device, 'name') else {},
-            'remote_id': ['dnp3', str(remote.get('outstation_ip')), str(remote.get('port')), str(remote.get('outstation_id'))],
+            'remote_id': ['dnp3', str(remote.get('bind_host') if served else remote.get('outstation_ip')), str(remote.get('port')), str(remote.get('outstation_id'))],
             'points': len(rows), 'notes': getattr(device, 'notes', []),
             'entries': _entries(driver_identity, service_identity, common, _device_entry(device_config, common), rows, fragment)}
 
