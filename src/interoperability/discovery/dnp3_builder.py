@@ -27,6 +27,15 @@ CONFORMANCE_LABELS = {'1815': 'IEEE 1815.2 mandatory points', '1547': 'IEEE 1547
 TABLES = ('AI', 'AO', 'BI', 'BO', 'CTR')
 _ASSOCIATED = re.compile(r'^(AI|AO|BI|BO|CTR)[ _]?(\d+)$')
 _POINT_NAME = re.compile(r'^\s*(AI|AO|BI|BO|CTR)_(\d+)\s*$')
+#: Function points that name a stored curve by index (Volt-VAr Curve Index, the ride-through Must Trip Curve Index ...).
+_CURVE_REF = re.compile(r'\.(?:[A-Za-z]*Crv|BlkRef)$')
+_PAIR = re.compile(r'CrvPts\.(\d+)\.[xy]Val$')
+#: Schedule layouts: the point list's own schedules and the legacy "BC" area, each one edit buffer plus a status block per schedule.
+SCHEDULE_AREAS = {'schedules': ('Scheduling', 'FSCH'), 'bc_schedules': ('BC Scheduling', 'BC.FSCH')}
+_SCHEDULE_ENTRY = re.compile(r'(?:SchdIntv|SchdEntr|ValMV)\.(\d+)$')
+_SCHEDULE_BLOCK = re.compile(r'(?:^|\.)FSCH(\d+)\.')
+#: Equipment blocks: the point list defines instance 1 of each (the standard repeats them at POINTS_PER steps).
+EQUIPMENT_BLOCKS = {'meter': 'Meter', 'der_unit': 'DERUnit', 'inverter': 'Inverter', 'battery': 'Battery'}
 
 
 def _points():
@@ -83,6 +92,77 @@ def _key(purpose: str) -> str:
     return re.sub(r'[^a-z0-9]+', '_', purpose.lower()).strip('_')
 
 
+def _floor(names: Iterable[str], numbered: re.Pattern, definitions: dict, conformance: str) -> int:
+    """The highest number (pair, entry, block) among ``names`` that the conformance level makes mandatory."""
+    best = 0
+    for name in names:
+        m = numbered.search(definitions[name].uid)
+        if m and mandatory(definitions[name], conformance):
+            best = max(best, int(m.group(1)))
+    return best
+
+
+def curve_capability(definitions: dict | None = None) -> dict:
+    """The curve edit buffer: its header points, its X/Y pairs by number, how many pairs each conformance level makes
+    mandatory, and which function groups reference a stored curve (and so need the buffer at all)."""
+    definitions = definitions or _definitions()
+    header, pairs, referenced = [], defaultdict(list), defaultdict(list)
+    for name, d in definitions.items():
+        if d.purpose == 'Curve':
+            m = _PAIR.search(d.uid)
+            if m:
+                pairs[int(m.group(1))].append(name)
+            else:
+                header.append(name)
+        elif d.purpose not in ('Discovery',) and _CURVE_REF.search(d.uid) and name.startswith(('AI_', 'AO_')):
+            referenced[_key(d.purpose or 'Unassigned')].append(d.uid)
+    all_pairs = [n for names in pairs.values() for n in names]
+    return {'header': sorted(header, key=_split), 'pairs': {n: sorted(v, key=_split) for n, v in sorted(pairs.items())}, 'pairs_max': max(pairs) if pairs else 0,
+            'pairs_floor': {c: _floor(all_pairs, _PAIR, definitions, c) for c in CONFORMANCE},
+            'referenced_by': {k: sorted(set(v)) for k, v in sorted(referenced.items())}}
+
+
+def schedule_capability(area: str, definitions: dict | None = None) -> dict:
+    """A schedule area: the edit buffer's header, its entries by number, the status block of each stored schedule by
+    number, and the floors each conformance level sets on entries and schedules."""
+    definitions = definitions or _definitions()
+    purpose, _ = SCHEDULE_AREAS[area]
+    header, entries, blocks = [], defaultdict(list), defaultdict(list)
+    for name, d in definitions.items():
+        if d.purpose != purpose:
+            continue
+        block = _SCHEDULE_BLOCK.search(d.uid)
+        entry = _SCHEDULE_ENTRY.search(d.uid)
+        if block:
+            blocks[int(block.group(1))].append(name)
+        elif entry:
+            entries[int(entry.group(1))].append(name)
+        else:
+            header.append(name)
+    return {'header': sorted(header, key=_split), 'entries': {n: sorted(v, key=_split) for n, v in sorted(entries.items())},
+            'blocks': {n: sorted(v, key=_split) for n, v in sorted(blocks.items())},
+            'entries_max': max(entries) if entries else 0, 'blocks_max': max(blocks) if blocks else 0,
+            'entries_floor': {c: _floor([n for v in entries.values() for n in v], _SCHEDULE_ENTRY, definitions, c) for c in CONFORMANCE},
+            'blocks_floor': {c: _floor([n for v in blocks.values() for n in v], _SCHEDULE_BLOCK, definitions, c) for c in CONFORMANCE}}
+
+
+def equipment_capability(definitions: dict | None = None) -> dict[str, dict]:
+    """The equipment blocks (meter, DER unit, inverter, battery): the points of the one instance the point list defines."""
+    from icm.models.ieee1815_2 import PointGroup, profiles
+    definitions = definitions or _definitions()
+    out = {}
+    for key, class_name in EQUIPMENT_BLOCKS.items():
+        cls = getattr(profiles, class_name)
+        names = []
+        for info in cls.model_fields.values():
+            for ann in getattr(info.annotation, '__args__', (info.annotation,)):
+                if isinstance(ann, type) and issubclass(ann, PointGroup):
+                    names += [f'{ann.POINT_TYPE.value}_{i}' for _, idxs in ann.iter_points(1) for i in idxs if f'{ann.POINT_TYPE.value}_{i}' in definitions]
+        out[key] = {'key': key, 'label': cls.PURPOSE.replace(' equipment block', '').replace('DERUnit', 'DER unit'), 'points': sorted(set(names), key=_split),
+                    'start': cls.START, 'points_per_instance': cls.POINTS_PER, 'instances_defined': 1}
+    return out
+
+
 def catalog() -> list[FunctionGroup]:
     """The function groups of the IEEE 1815.2 point list, with the points each brings, in the order of a chooser:
     functions first, then scheduling, curves, equipment blocks and the extension areas."""
@@ -109,11 +189,31 @@ def catalog() -> list[FunctionGroup]:
 
 
 def catalog_json() -> dict:
-    """What a chooser needs: the groups and the size of each conformance core."""
+    """What a chooser needs: the conformance cores, the function groups (functions and extensions) with their optional
+    points listed, and the capabilities that are sized rather than ticked: the curve buffer, the schedule areas and
+    the equipment blocks."""
+    definitions = _definitions()
     groups = catalog()
-    return {'conformance': [{'key': k, 'label': CONFORMANCE_LABELS[k], 'points': sum(len(g.mandatory_1815) if k == '1815' else len(g.mandatory_1547) if k == '1547' else 0 for g in groups)}
-                            for k in CONFORMANCE],
-            'groups': [g.to_json() for g in groups]}
+    curves = curve_capability(definitions)
+    schedules = {area: schedule_capability(area, definitions) for area in SCHEDULE_AREAS}
+    equipment = equipment_capability(definitions)
+
+    def optional_points(g):
+        out = []
+        for name in g.optional:
+            d = definitions[name]
+            out.append({'name': name, 'uid': d.uid, 'description': (d.name or '').split('.')[0].strip()[:90], 'pair': _pair_of(d)})
+        return out
+    return {'conformance': [{'key': k, 'label': CONFORMANCE_LABELS[k], 'points': sum(1 for d in definitions.values() if mandatory(d, k))} for k in CONFORMANCE],
+            'groups': [{**g.to_json(), 'optional_points': optional_points(g), 'references_curves': g.key in curves['referenced_by']}
+                       for g in groups if g.section in ('functions', 'extensions')],
+            'curves': {'header_points': len(curves['header']), 'pairs_max': curves['pairs_max'], 'pairs_floor': curves['pairs_floor'],
+                       'points_per_pair': len(curves['pairs'].get(1, [])), 'referenced_by': curves['referenced_by']},
+            'schedules': [{'key': area, 'label': 'Schedules' if area == 'schedules' else 'Legacy (BC) schedules', 'header_points': len(cap['header']),
+                           'entries_max': cap['entries_max'], 'blocks_max': cap['blocks_max'], 'entries_floor': cap['entries_floor'], 'blocks_floor': cap['blocks_floor'],
+                           'points_per_entry': len(cap['entries'].get(1, [])), 'points_per_block': len(cap['blocks'].get(1, []))}
+                          for area, cap in schedules.items()],
+            'equipment': [{'key': e['key'], 'label': e['label'], 'points': len(e['points']), 'instances_defined': e['instances_defined']} for e in equipment.values()]}
 
 
 def _split(name: str) -> tuple[str, int]:
@@ -145,27 +245,69 @@ def with_pairs(names: Iterable[str], definitions: dict[str, Any] | None = None) 
     return chosen
 
 
-def compose(conformance: str = '1815', functions: Iterable[str | dict] = (), include_optional: bool = False) -> dict[str, list[int]]:
-    """The index listing of a served outstation: the conformance core, plus the chosen function groups (by key or
-    purpose; a dict ``{'key', 'optional'}`` chooses the group's optional points too), plus every paired point.
+def compose(conformance: str = '1815', functions: Iterable[str | dict] = (), include_optional: bool = False,
+            curves: dict | bool | None = None, schedules: dict | None = None, equipment: Iterable[str] = ()) -> dict[str, list[int]]:
+    """The index listing of a served outstation: the conformance core, the chosen function groups, the sized
+    capabilities, and every paired point.
 
-    A chosen group brings its mandatory points for either conformance level (its core) and, when asked, its
-    optional points. ``include_optional`` asks for the optional points of every chosen group."""
+    ``functions``: group keys or purposes, or dicts ``{'key', 'optional'}`` where ``optional`` is ``True`` (all of the
+    group's optional points) or a list of optional point names. ``include_optional`` asks for every chosen group's
+    optional points. A chosen group always brings its mandatory points for either conformance level (its core).
+
+    ``curves``: ``{'pairs': N}`` serves the curve edit buffer with N X/Y pairs (never fewer than the conformance level
+    makes mandatory); ``None`` serves it when a chosen function references a curve, at the conformance floor (4 pairs
+    when the level sets none); ``False`` leaves it out. ``schedules``: ``{'schedules': {'held': K, 'entries': M},
+    'bc_schedules': {...}}`` serves a schedule area with K status blocks and an M-entry edit buffer, floors applied.
+    ``equipment``: keys of equipment blocks to serve (one instance each)."""
     if conformance not in CONFORMANCE:
         raise ValueError(f'conformance must be one of {", ".join(CONFORMANCE)}, not {conformance!r}')
     definitions = _definitions()
     groups = {g.key: g for g in catalog()}
     by_purpose = {g.purpose.lower(): g for g in groups.values()}
     chosen: set[str] = {name for name, d in definitions.items() if mandatory(d, conformance)}
+    chosen_groups: list[FunctionGroup] = []
     for choice in functions:
-        key, optional = (choice.get('key') or choice.get('purpose') or '', bool(choice.get('optional', include_optional))) if isinstance(choice, dict) else (choice, include_optional)
+        key, optional = (choice.get('key') or choice.get('purpose') or '', choice.get('optional', include_optional)) if isinstance(choice, dict) else (choice, include_optional)
         group = groups.get(_key(str(key))) or by_purpose.get(str(key).lower())
         if group is None:
             raise ValueError(f'unknown IEEE 1815.2 function group {key!r}; the catalog lists the keys')
+        chosen_groups.append(group)
         chosen.update(group.mandatory_1815)
         chosen.update(group.mandatory_1547)
-        if optional:
+        if optional is True or include_optional:
             chosen.update(group.optional)
+        elif optional:
+            unknown = [n for n in optional if n not in group.optional]
+            if unknown:
+                raise ValueError(f'{group.purpose}: not among its optional points: {", ".join(map(str, unknown[:6]))}')
+            chosen.update(optional)
+    cap = curve_capability(definitions)
+    references = [g.purpose for g in chosen_groups if g.key in cap['referenced_by']]
+    if curves is None:
+        curves = {'pairs': cap['pairs_floor'][conformance] or 4} if references else False
+    if curves:
+        pairs = max(int(curves.get('pairs', 0)), cap['pairs_floor'][conformance])
+        chosen.update(cap['header'])
+        for n in range(1, pairs + 1):
+            chosen.update(cap['pairs'].get(n, []))
+    for area, spec in (schedules or {}).items():
+        if area not in SCHEDULE_AREAS:
+            raise ValueError(f'unknown schedule area {area!r}; choose from {", ".join(SCHEDULE_AREAS)}')
+        if not spec:
+            continue
+        s_cap = schedule_capability(area, definitions)
+        held = max(int(spec.get('held', 0)), s_cap['blocks_floor'][conformance])
+        entries = max(int(spec.get('entries', 0)), s_cap['entries_floor'][conformance])
+        chosen.update(s_cap['header'])
+        for n in range(1, entries + 1):
+            chosen.update(s_cap['entries'].get(n, []))
+        for n in range(1, held + 1):
+            chosen.update(s_cap['blocks'].get(n, []))
+    blocks = equipment_capability(definitions)
+    for key in equipment:
+        if key not in blocks:
+            raise ValueError(f'unknown equipment block {key!r}; choose from {", ".join(blocks)}')
+        chosen.update(blocks[key]['points'])
     chosen = with_pairs(chosen, definitions)
     listing: dict[str, list[int]] = defaultdict(list)
     for name in chosen:
@@ -182,10 +324,12 @@ class Validation:
     missing_mandatory: list[str] = field(default_factory=list)          # of the claimed conformance
     broken_pairs: list[tuple[str, str]] = field(default_factory=list)   # (present, missing partner)
     groups: list[dict] = field(default_factory=list)                    # per function group: present of total, core covered
+    curves_unserved: list[str] = field(default_factory=list)            # function groups present that reference curves, with no curve buffer served
+    curve_pairs: int = 0                                                # X/Y pairs of the curve buffer present
 
     @property
     def conformant(self) -> bool:
-        return not self.missing_mandatory and not self.unknown and not self.broken_pairs
+        return not self.missing_mandatory and not self.unknown and not self.broken_pairs and not self.curves_unserved
 
     def notes(self) -> list[str]:
         """What the review step should say, one line per finding kind, nothing when all is well."""
@@ -207,6 +351,10 @@ class Validation:
         if self.broken_pairs:
             shown = ', '.join(f'{a} without {b}' for a, b in self.broken_pairs[:6]) + (' …' if len(self.broken_pairs) > 6 else '')
             out.append(f'{len(self.broken_pairs)} output/read-back pair{"s" if len(self.broken_pairs) != 1 else ""} with one end missing ({shown})')
+        if self.curves_unserved:
+            out.append(f'{", ".join(self.curves_unserved)} reference stored curves but no curve edit buffer is served; the master cannot define the curves those functions use')
+        elif self.curve_pairs:
+            out.append(f'curve edit buffer with {self.curve_pairs} X/Y pairs')
         partial = [g for g in self.groups if 0 < g['present'] < g['points']]
         complete = [g for g in self.groups if g['present'] == g['points']]
         if complete:
@@ -217,7 +365,8 @@ class Validation:
 
     def to_json(self) -> dict:
         return {'conformance': self.conformance, 'conformant': self.conformant, 'points': self.points, 'unknown': self.unknown,
-                'missing_mandatory': self.missing_mandatory, 'broken_pairs': [list(p) for p in self.broken_pairs], 'groups': self.groups}
+                'missing_mandatory': self.missing_mandatory, 'broken_pairs': [list(p) for p in self.broken_pairs], 'groups': self.groups,
+                'curves_unserved': self.curves_unserved, 'curve_pairs': self.curve_pairs}
 
 
 def validate(indexes: dict[str, Iterable[int]], conformance: str = '1815') -> Validation:
@@ -240,12 +389,16 @@ def validate(indexes: dict[str, Iterable[int]], conformance: str = '1815') -> Va
         pair = _pair_of(definitions[name])
         if pair and pair in definitions and pair not in present:
             result.broken_pairs.append((name, pair))
+    cap = curve_capability(definitions)
+    result.curve_pairs = sum(1 for n, names in cap['pairs'].items() if any(p in present for p in names))
     for group in catalog():
         here = [p for p in group.points if p in present]
         if here:
             core = set(group.mandatory_1815) | set(group.mandatory_1547)
             result.groups.append({'key': group.key, 'purpose': group.purpose, 'present': len(here), 'points': len(group.points),
                                   'core_complete': core <= present if core else True})
+            if group.key in cap['referenced_by'] and not result.curve_pairs and any(definitions[p].uid in cap['referenced_by'][group.key] for p in here):
+                result.curves_unserved.append(group.purpose)
     return result
 
 

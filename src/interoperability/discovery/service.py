@@ -15,8 +15,9 @@ segment>.csv``), ``format_name`` (default the last topic segment), ``interval``,
 - ``dnp3``: ``profile_json`` (the text of an IEEE 1815.2 test-tool profile) or ``indexes`` (``{table: [index, …]}``), or
   neither, in which case the outstation at ``outstation_ip``/``port`` is scanned (an integrity poll lists its points);
   ``master_id``, ``outstation_id``; ``role``; for a served outstation ``bind_host``, ``conformance`` (``1815``, ``1547``, ``none``) and
-  either ``compose`` (``{'functions': [key | {'key', 'optional'}], 'include_optional'}``, the point set composed from the
-  standard by :mod:`interoperability.discovery.dnp3_builder`), ``registry_csv`` (a dnp3 registry's text) or ``profile_json``;
+  either ``compose`` (``{'functions': [key | {'key', 'optional': bool | [names]}], 'include_optional', 'curves': {'pairs', 'stored'},
+  'schedules': {area: {'held', 'entries'}}, 'equipment': [keys]}``, the point set composed from the standard by
+  :mod:`interoperability.discovery.dnp3_builder`), ``registry_csv`` (a dnp3 registry's text) or ``profile_json``;
   a served point set is validated against the standard and the result is in ``notes``.
 - ``ieee2030_5``: ``device_format`` (the format of the device to mirror), ``mirror_format``, ``server_url`` and the
   certificate paths; ``role``.
@@ -132,9 +133,10 @@ def _discover_dnp3(options: dict, common: dict, driver_identity: str, service_id
     if options.get('compose') is not None:
         # A served outstation composed from the standard: the conformance core, the chosen function groups, their pairs.
         spec = options['compose'] or {}
-        indexes = dnp3_builder.compose(conformance, spec.get('functions') or [], bool(spec.get('include_optional')))
+        indexes = dnp3_builder.compose(conformance, spec.get('functions') or [], bool(spec.get('include_optional')),
+                                       curves=spec.get('curves'), schedules=spec.get('schedules'), equipment=spec.get('equipment') or [])
         if not indexes:
-            raise ValueError('nothing to serve: choose a conformance level or at least one function group')
+            raise ValueError('nothing to serve: choose a conformance level, a function group, schedules or an equipment block')
         device = dnp3_discovery.discover_indexes(indexes, None, common['stem'])
         chosen = [c.get('key') if isinstance(c, dict) else c for c in spec.get('functions') or []]
         source = f'composed from IEEE 1815.2 ({dnp3_builder.CONFORMANCE_LABELS[conformance]}' + (f', function groups {", ".join(map(str, chosen))}' if chosen else '') + ')'
@@ -187,6 +189,17 @@ def _discover_dnp3(options: dict, common: dict, driver_identity: str, service_id
         remote['bind_host'] = options.get('bind_host') or '0.0.0.0'
         for row in rows:
             row['data_source'] = 'server'
+        # What the point map cannot say: how many curves and schedules the outstation stores behind its edit buffers.
+        # Recorded on the device entry for the served role to honour; the standard has no point for it.
+        spec = options.get('compose') or {}
+        storage = {}
+        if isinstance(spec.get('curves'), dict) and spec['curves'].get('stored'):
+            storage['curves_stored'] = int(spec['curves']['stored'])
+        for area, s in (spec.get('schedules') or {}).items():
+            if s and s.get('held'):
+                storage[f'{area}_held'] = int(s['held'])
+        if storage:
+            device_config['equipment_specific_fields'] = {'ieee1815_2': storage}
     from .device_formats import dnp3_device_transforms, device_format_declaration
     names = [row.get('volttron_point_name') or row.get('point_name') for row in rows]
     built = dnp3_device_transforms(common['format_name'], names, scaling=scaling, served=served)
