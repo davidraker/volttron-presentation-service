@@ -14,7 +14,10 @@ segment>.csv``), ``format_name`` (default the last topic segment), ``interval``,
   description) for an offline scan; ``scaling`` (``transform`` or ``driver``); ``role`` (``client`` or ``server``).
 - ``dnp3``: ``profile_json`` (the text of an IEEE 1815.2 test-tool profile) or ``indexes`` (``{table: [index, …]}``), or
   neither, in which case the outstation at ``outstation_ip``/``port`` is scanned (an integrity poll lists its points);
-  ``master_id``, ``outstation_id``; ``role``.
+  ``master_id``, ``outstation_id``; ``role``; for a served outstation ``bind_host``, ``conformance`` (``1815``, ``1547``, ``none``) and
+  either ``compose`` (``{'functions': [key | {'key', 'optional'}], 'include_optional'}``, the point set composed from the
+  standard by :mod:`interoperability.discovery.dnp3_builder`), ``registry_csv`` (a dnp3 registry's text) or ``profile_json``;
+  a served point set is validated against the standard and the result is in ``notes``.
 - ``ieee2030_5``: ``device_format`` (the format of the device to mirror), ``mirror_format``, ``server_url`` and the
   certificate paths; ``role``.
 """
@@ -123,7 +126,23 @@ def _discover_sunspec(options: dict, common: dict, driver_identity: str, service
 
 # ------------------------------------------------------------------------------------------------ DNP3
 def _discover_dnp3(options: dict, common: dict, driver_identity: str, service_identity: str) -> dict:
-    if options.get('profile_json'):
+    from . import dnp3_builder
+    served = options.get('role', 'client') != 'client'
+    conformance = options.get('conformance') or ('1815' if served else 'none')
+    if options.get('compose') is not None:
+        # A served outstation composed from the standard: the conformance core, the chosen function groups, their pairs.
+        spec = options['compose'] or {}
+        indexes = dnp3_builder.compose(conformance, spec.get('functions') or [], bool(spec.get('include_optional')))
+        if not indexes:
+            raise ValueError('nothing to serve: choose a conformance level or at least one function group')
+        device = dnp3_discovery.discover_indexes(indexes, None, common['stem'])
+        chosen = [c.get('key') if isinstance(c, dict) else c for c in spec.get('functions') or []]
+        source = f'composed from IEEE 1815.2 ({dnp3_builder.CONFORMANCE_LABELS[conformance]}' + (f', function groups {", ".join(map(str, chosen))}' if chosen else '') + ')'
+    elif options.get('registry_csv'):
+        indexes = dnp3_builder.indexes_from_registry(options['registry_csv'])
+        device = dnp3_discovery.discover_indexes(indexes, None, common['stem'])
+        source = 'registry file'
+    elif options.get('profile_json'):
         with tempfile.NamedTemporaryFile('w', suffix='.json', delete=False) as handle:
             handle.write(options['profile_json'] if isinstance(options['profile_json'], str) else json.dumps(options['profile_json']))
         device = dnp3_discovery.discover_profile(handle.name)
@@ -147,13 +166,19 @@ def _discover_dnp3(options: dict, common: dict, driver_identity: str, service_id
         device.notes.extend(scanned.notes)
         source = f'outstation {host}:{port} (master {master_id}, outstation {outstation_id})'
     else:
-        raise ValueError('dnp3 discovery needs an outstation address to scan, a profile_json, or indexes')
+        raise ValueError('dnp3 discovery needs an outstation address to scan, a profile_json, a registry_csv, indexes, or a compose specification')
+    if served or options.get('validate'):
+        # The point set against the standard: what a served outstation claims, it should serve.
+        listing: dict[str, list[int]] = {}
+        for point in device.points:
+            listing.setdefault(point.table, []).append(point.index)
+        validation = dnp3_builder.validate(listing, conformance)
+        device.notes.extend(validation.notes())
     scaling = scaling_mode(options.get('scaling'))        # default: the driver applies the factors
     rows = dnp3_discovery.dnp3_registry_rows(device, scaling)
     device_config = dnp3_discovery.device_config('dnp3', common['registry_name'], outstation_ip=options.get('outstation_ip', '127.0.0.1'),
                                                  port=int(options.get('port') or 20000), master_id=int(options.get('master_id') or 2),
                                                  outstation_id=int(options.get('outstation_id') or 1))
-    served = options.get('role', 'client') != 'client'
     if served:
         # A served outstation listens on bind_host:port for the external master; it has no outstation to reach.
         remote = device_config['remote_config']

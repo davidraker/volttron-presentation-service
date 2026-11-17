@@ -273,6 +273,13 @@ class PresentationService(Agent):
         return run_discovery(protocol, options or {}, self.transform_registry)
 
     @RPC.export
+    def dnp3_functions(self) -> dict:
+        """The IEEE 1815.2 function groups a served outstation is composed from, with the size of each conformance core:
+        what a chooser shows before ``discover('dnp3', {'role': 'server', 'compose': ...})``."""
+        from .discovery.dnp3_builder import catalog_json
+        return catalog_json()
+
+    @RPC.export
     def driver_health(self, topic=None, regex: str | None = None, driver_identity: str = 'platform.driver') -> dict:
         """The platform driver's health() report, per remote, relayed for clients that reach agents through the web
         service, whose RPC proxy never forwards to the driver itself."""
