@@ -570,7 +570,24 @@ RPC methods exported by the service:
 | `resolve(uai, as_format=None, strict=False)`        | dict                     | Resolve a UAI to its canonical resource. When `as_format` is given (or the UAI is an alias, whose format is used), the result also includes `target_format` and `transform`, the ordered list of transform patterns from the resource's `data_format` to `as_format` (empty when they are the same format), `parameters` (the canonical resource's merged with each alias's, outermost winning), `encoding` (`json` unless an alias declares otherwise) and, for a non-JSON encoding, `codec`: `{"encoding": "protobuf", "proto": "<format's protobuf message>"}`. Returns `{}` if nothing canonical is found, fails with a `TransformNotFoundError` if the resource cannot be converted to `as_format`, and with a `ValueError` if protobuf is asked for a format that declares no `proto`. |
 | `lookup_transform(input_format, output_format)`     | list of pattern dicts    | The transform chain between two formats. An empty list means no transform is needed (same format). When no chain exists the call fails with a `TransformNotFoundError` saying whether a format is unknown or the formats are simply not connected. |
 | `register_transform(input_format, output_format, pattern, update=False, lossiness=None)` | bool | Add a transform edge at runtime. If the pair already has a different transform it is kept, with a warning, unless `update` is true. Registering the same pattern again is a no-op. Malformed patterns are rejected here. Returns whether the registry changed. |
+| `transform_chain(input_format, output_format, fields=None)` | dict | The best chain between two formats with the formats it passes through and the fraction of `fields` it retains: `{'transform', 'path', 'retention'}`. |
+| `list_formats()` | dict | Every declared format: hub or device format, bundled or local, and the edges that leave it. |
+| `list_transforms()` | list of dicts | Every transform edge, bundled or local, with its lossiness. |
+| `describe_transform(input_format, output_format)` | dict | One edge in full: its pattern, functions and the fields it maps. |
+| `edge_report(input_format, output_format)` | dict | How one edge treats each field of its input format. |
+| `chain_report(input_format, output_format, fields=None)` | dict | The chain between two formats hop by hop, with what each hop keeps and drops. |
+| `compile_pattern(pattern, input_format=None)` | dict | Compile a transform pattern without registering it: its mappings, unmapped targets, unknown functions and warnings. |
+| `preview(input_format, output_format, message, fields=None)` | dict | Run the chain the service would pick over one message, without writing or publishing anything. |
+| `check_references()` | dict | Alias reference cycles and dangling aliases. |
+| `discover(protocol, options=None)` | dict | Run a discovery generator (`sunspec`, `dnp3`, `ieee2030_5`) and return the entries a device needs, for review and storage by the caller: registry rows, device entry, and the configuration fragment (format, transforms, resource). `role: 'server'` describes a device the platform serves; for DNP3, `compose` builds its point set from the IEEE 1815.2 standard (see `interoperability.discovery.dnp3_builder`). |
+| `dnp3_functions()` | dict | The IEEE 1815.2 function groups a served outstation is composed from, with the size of each conformance core. |
+| `driver_health(topic=None, regex=None, driver_identity='platform.driver')`, `driver_status(...)` | dict | The platform driver's `health()` and `status()` reports, relayed for clients that reach agents through the web service, whose RPC proxy never forwards to the driver itself. |
 | `score_transform(input_format, output_format, fields=None)` | dict | The chain `lookup_transform` would choose, as `path` (the formats passed through) and `retention`, the fraction of source fields that reach the end, scored over `fields` if given. |
+
+Clients that reach the service through the platform's web service are subject to its RPC proxy's `rpc-allow-list`,
+which forwards only the methods it names. The configuration UI needs `resolve, list_formats, list_transforms,
+describe_transform, chain_report, compile_pattern, discover, dnp3_functions, driver_health` on this service (and
+`statistics` on the Resource Bridge); the UI's README lists which feature uses which.
 
 Pubsub subscriptions:
 
