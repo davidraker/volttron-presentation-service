@@ -211,6 +211,11 @@ def _discover_dnp3(options: dict, common: dict, driver_identity: str, service_id
         remote['bind_host'] = options.get('bind_host') or '0.0.0.0'
         for row in rows:
             row['data_source'] = 'server'
+        if stores:
+            # The addresses the proxy applies the standard's rules with: curve references and enables, the referenced
+            # flag, the schedule areas' command, flag, status, entry and block points. On the remote config, which is what
+            # the interface registers with the proxy.
+            device_config['remote_config']['mux_areas'] = dnp3_builder.mux_area_config(composed)
         # What the point map cannot say: how many curves and schedules the outstation stores behind its edit buffers.
         # Recorded on the device entry for the served role to honour; the standard has no point for it.
         spec = options.get('compose') or {}

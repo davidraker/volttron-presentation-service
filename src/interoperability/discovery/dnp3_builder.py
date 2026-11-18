@@ -546,6 +546,77 @@ def validate_rows(rows: list[dict]) -> list[str]:
     return findings
 
 
+def _address(name: str | None) -> dict | None:
+    if not name:
+        return None
+    from .device_formats import DNP3_GROUPS
+    table, index = _split(name)
+    return {'group': DNP3_GROUPS[table], 'index': index}
+
+
+def mux_area_config(indexes: dict[str, Iterable[int]], definitions: dict | None = None) -> dict:
+    """What the proxy needs to apply the standard's rules to the multiplexed areas of a composed listing, as addresses
+    (DNP3_SERVED_CURVE_SCHEDULE_STORAGE_PLAN.md 3.2; ``multiplex.py`` in the proxy): for curves the function points that
+    name a curve and the enable point of their function, and the "referenced by a mode" flag; for each schedule area its
+    command, flag and status points, the identity, priority and entry-count points, the entries, the status blocks, the
+    count point, and the served outputs a schedule may act on with their ranges. Everything is found by the standard's
+    identifiers (``DVVR.Mod``, ``FSCHn.SchdSt.2`` ...), never by index."""
+    definitions = definitions or _definitions()
+    present = {f'{t}_{int(i)}' for t, v in indexes.items() for i in v}
+    by_uid = defaultdict(dict)                   # uid -> {table: name} among the present points
+    for name in present:
+        by_uid[definitions[name].uid][name.split('_')[0]] = name
+    cap = curve_capability(definitions)
+    config: dict = {}
+    # curves: references with their function's enable (the group's `<node>.Mod` output), and the flag
+    groups = {g.key: g for g in catalog()}
+    references = []
+    for group_key, uids in cap['referenced_by'].items():
+        group = groups.get(group_key)
+        enables = [n for n in (group.points if group else []) if n in present and n.startswith('BO_') and definitions[n].uid.endswith('.Mod')]
+        for uid in uids:
+            point = by_uid.get(uid, {}).get('AO')
+            if point:
+                references.append({'point': _address(point), 'enable': _address(enables[0]) if enables else None, 'uid': uid})
+    flag = by_uid.get('MESA.CrvRef', {}).get('BI')
+    if references or flag:
+        config['curve'] = {'references': references, 'referenced_flag': _address(flag)}
+    # the outputs a schedule may act on, with their ranges
+    targets = [{**_address(n), 'minimum': definitions[n].minimum, 'maximum': definitions[n].maximum}
+               for n in sorted(present, key=_split) if n.startswith(('AO_', 'BO_')) and not definitions[n].purpose in ('Scheduling', 'BC Scheduling', 'Curve')]
+    # schedule areas, by the standard's identifiers
+    def ao(uid): return by_uid.get(uid, {}).get('AO')
+    def ai(uid): return by_uid.get(uid, {}).get('AI')
+    def bo(uid): return by_uid.get(uid, {}).get('BO')
+    def bi(uid): return by_uid.get(uid, {}).get('BI')
+    for label, prefix, entry_fields in (('schedule', '', (('offset', 'FSCHn.SchdIntv.{n}'), ('type', 'Type.FSCHn.SchdEntr.{n}'), ('index', 'Point.FSCHn.SchdEntr.{n}'), ('value', 'FSCHn.ValMV.{n}'))),
+                                        ('bc_schedule', 'BC.', (('offset', 'BC.FSCHn.SchdIntv.{n}'), ('value', 'BC.FSCHn.SchdEntr.{n}')))):
+        if not any(definitions[n].purpose == ('BC Scheduling' if prefix else 'Scheduling') for n in present):
+            continue
+        schedule = {'submit': _address(bo(f'{prefix}FSCHn.SchdSt.2')) if not prefix else None,
+                    'enable': _address(bo(f'{prefix}FSCHn.SchdSt.3')),
+                    'validated': _address(bi(f'{prefix}FSCHn.SchdSt.2')), 'enabled': _address(bi(f'{prefix}FSCHn.SchdSt.3')),
+                    'status': _address(ai(f'{prefix}FSCHn.SchdSt.2')),
+                    'id': _address(ao(f'{prefix}FSCCn.Schd')), 'priority': _address(ao(f'{prefix}FSCHn.SchdPrio')), 'num_entries': _address(ao(f'{prefix}FSCHn.NumEntr')),
+                    'count': _address(ai('MESA.NumSchd')) if not prefix else None, 'targets': targets}
+        entries = []
+        for n in range(1, 101):
+            entry = {field: _address(ao(pattern.format(n=n))) for field, pattern in entry_fields}
+            if not entry.get('offset'):
+                break
+            entries.append(entry)
+        schedule['entries'] = entries
+        blocks = {}
+        for k in range(1, 201):
+            status = ai(f'{prefix}FSCH{k}.SchdSt')
+            if not status:
+                break
+            blocks[k] = {'status': _address(status), 'priority': _address(ai(f'{prefix}FSCH{k}.SchdPrio')), 'step': _address(ai(f'{prefix}FSCH{k}.ActStrTm'))}
+        schedule['blocks'] = blocks
+        config[label] = {'schedule': {k: v for k, v in schedule.items() if v not in (None, [], {})}}
+    return config
+
+
 def indexes_from_registry(text: str) -> dict[str, list[int]]:
     """The index listing of a registry CSV whose point names are ``AI_537``, ``BO_17`` ... (the dnp3 driver's registries,
     including those this service writes). The first column that carries such names is read."""

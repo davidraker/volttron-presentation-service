@@ -227,3 +227,33 @@ def test_discover_served_composition_emits_store_rows_and_hub_transforms():
     assert to_inputs['pattern']['curves']['2']['333'] == 'transform[curve2_X1]()' and '333' not in to_inputs['pattern'].get('AI', {})
     assert any(n.startswith('stored instances: 2 curves') for n in result['notes'])
     assert not any('no curve edit buffer is served' in n for n in result['notes']), 'the composition is validated as composed, buffers included'
+
+
+def test_mux_area_config_names_the_rule_points_by_identifier():
+    """The proxy applies the standard's rules by address; the builder finds the addresses by the standard's identifiers:
+    a function's curve index and its enable (`<node>.Mod`), the referenced flag, a schedule area's commands, flags,
+    status, identity, entry and block points, and the outputs a schedule may act on."""
+    composed = builder.compose('1815', ['volt_var', 'volt_ride_through'], curves={'pairs': 2}, schedules={'schedules': {'held': 2, 'entries': 2}, 'bc_schedules': {'held': 1, 'entries': 1}})
+    config = builder.mux_area_config(composed)
+    refs = {r['uid']: r for r in config['curve']['references']}
+    assert refs['DVVR.VVArCrv']['point'] == {'group': 40, 'index': 217} and refs['DVVR.VVArCrv']['enable'] == {'group': 10, 'index': 29}
+    assert refs['DHVT.PTOV1.BlkRef']['enable'] == {'group': 10, 'index': 12}, 'the ride-through curves lock with the ride-through mode'
+    assert config['curve']['referenced_flag'] == {'group': 1, 'index': 107}
+    schedule = config['schedule']['schedule']
+    assert schedule['submit'] == {'group': 10, 'index': 3000} and schedule['enable'] == {'group': 10, 'index': 3001}
+    assert schedule['validated'] == {'group': 1, 'index': 3000} and schedule['enabled'] == {'group': 1, 'index': 3001} and schedule['status'] == {'group': 30, 'index': 3010}
+    assert schedule['id'] == {'group': 40, 'index': 3001} and schedule['num_entries'] == {'group': 40, 'index': 3009} and schedule['count'] == {'group': 30, 'index': 24}
+    assert schedule['entries'][0] == {'offset': {'group': 40, 'index': 3010}, 'type': {'group': 40, 'index': 3011}, 'index': {'group': 40, 'index': 3012}, 'value': {'group': 40, 'index': 3013}}
+    assert len(schedule['entries']) == 20, 'the 1815.2 core serves twenty entries; the composition asked for two, the floor wins'
+    assert schedule['blocks'][1]['status'] == {'group': 30, 'index': 3500} and len(schedule['blocks']) == 20
+    assert any(t['index'] == 217 and t['maximum'] is not None for t in schedule['targets']) and not any(3000 <= t['index'] <= 3409 for t in schedule['targets'])
+    bc = config['bc_schedule']['schedule']
+    assert 'submit' not in bc and bc['enable'] == {'group': 10, 'index': 2000} and bc['entries'][0] == {'offset': {'group': 40, 'index': 2009}, 'value': {'group': 40, 'index': 2010}}
+    assert builder.mux_area_config(builder.compose('none', ['constant_pf'])) == {}, 'no multiplexed area, nothing to configure'
+
+
+def test_discover_puts_mux_areas_on_the_served_remote_config():
+    result = discovery_service.discover('dnp3', {'topic': 'site/served', 'role': 'server', 'conformance': 'none',
+                                                 'compose': {'functions': ['volt_var'], 'curves': {'pairs': 2, 'stored': 2}}}, None)
+    remote = next(e for e in result['entries'] if e['name'].startswith('devices/'))['data']['remote_config']
+    assert remote['mux_areas']['curve']['references'][0]['uid'] == 'DVVR.VVArCrv' and 'schedule' not in remote['mux_areas']
