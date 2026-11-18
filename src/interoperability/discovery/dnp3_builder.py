@@ -36,6 +36,14 @@ _SCHEDULE_ENTRY = re.compile(r'(?:SchdIntv|SchdEntr|ValMV)\.(\d+)$')
 _SCHEDULE_BLOCK = re.compile(r'(?:^|\.)FSCH(\d+)\.')
 #: Equipment blocks: the point list defines instance 1 of each (the standard repeats them at POINTS_PER steps).
 EQUIPMENT_BLOCKS = {'meter': 'Meter', 'der_unit': 'DERUnit', 'inverter': 'Inverter', 'battery': 'Battery'}
+#: Registry columns of the multiplexed areas (DNP3_SERVED_CURVE_SCHEDULE_STORAGE_PLAN.md, 3.1): a store row is the value of
+#: a buffer point for one stored instance; the selector row is the one wire point of an area with data of its own.
+MUX_COLUMNS = ('mux_area', 'mux_slot', 'readback_object_group', 'readback_variation', 'readback_index')
+SELECTOR = 'selector'
+#: Buffer points that are the outstation's own doing for the selected instance (`MESA.CrvRef`, the selected schedule's
+#: status and validation state): wire rows the proxy writes, not store rows.
+_COMPUTED = re.compile(r'\.(CrvRef|SchdSt(\.\d+)?)$')
+MUX_AREAS = {'curve': 'curve', 'schedules': 'schedule', 'bc_schedules': 'bc_schedule'}     # capability key -> mux_area label
 
 
 def _points():
@@ -400,6 +408,142 @@ def validate(indexes: dict[str, Iterable[int]], conformance: str = '1815') -> Va
             if group.key in cap['referenced_by'] and not result.curve_pairs and any(definitions[p].uid in cap['referenced_by'][group.key] for p in here):
                 result.curves_unserved.append(group.purpose)
     return result
+
+
+def _short(uid: str) -> str:
+    """A point name fragment from a 61850 identifier: ``FMARn.PairArr.CrvPts.4.yVal`` -> ``Y4``, ``DGSMn.ModTyp`` -> ``ModTyp``,
+    ``FSCHn.SchdIntv.7`` -> ``SchdIntv7``, ``Type.FSCHn.SchdEntr.2`` -> ``Type_SchdEntr2``."""
+    m = _PAIR.search(uid)
+    if m:
+        return f'{"X" if uid.endswith("xVal") else "Y"}{m.group(1)}'
+    parts = [p for p in uid.split('.') if p not in ('BC', 'FSCC', 'FSCCn', 'FSCHn', 'FMARn', 'PairArr', 'DGSMn', 'MESAn')]
+    leading = []
+    while parts and parts[0] in ('Type', 'Point'):
+        leading.append(parts.pop(0))
+    return '_'.join(leading + [''.join(parts)])
+
+
+@dataclass
+class StoreRow:
+    """One value of a multiplexed area for one stored instance, and the wire points it is presented through."""
+    area: str                 # mux_area label: curve, schedule, bc_schedule
+    slot: int | str           # 1-based, or SELECTOR
+    name: str                 # volttron_point_name, free
+    written: str              # the buffer point the master writes (AO_249) or, for an input-only buffer point, reads (AI_3010)
+    readback: str | None      # the input that shows it back (AI_333), when the written point is an output
+    uid: str
+    description: str
+
+    def columns(self) -> dict:
+        from .device_formats import DNP3_GROUPS
+        from .dnp3 import DEFAULT_VARIATIONS
+        table, index = _split(self.written)
+        out = {'mux_area': self.area, 'mux_slot': self.slot, 'readback_object_group': '', 'readback_variation': '', 'readback_index': ''}
+        if self.readback:
+            r_table, r_index = _split(self.readback)
+            out.update({'readback_object_group': DNP3_GROUPS[r_table], 'readback_variation': DEFAULT_VARIATIONS[r_table], 'readback_index': r_index})
+        return out
+
+
+def mux_areas(indexes: dict[str, Iterable[int]], definitions: dict | None = None) -> dict[str, dict]:
+    """The multiplexed areas a composed listing touches: for each, its selector (AO and read-back AI), the buffer points
+    present (written point with its read-back), and the computed wire points. Keys are mux_area labels."""
+    definitions = definitions or _definitions()
+    present = {f'{t}_{int(i)}' for t, v in indexes.items() for i in v}
+    areas: dict[str, dict] = {}
+    caps = {'curve': curve_capability(definitions)}
+    caps.update({MUX_AREAS[a]: schedule_capability(a, definitions) for a in SCHEDULE_AREAS})
+    for label, cap in caps.items():
+        buffer = set(cap['header']) | {n for names in (cap.get('pairs') or cap.get('entries') or {}).values() for n in names}
+        here = buffer & present
+        if not here:
+            continue
+        pairs: dict[str, str | None] = {}          # written -> readback
+        selector_ao = selector_ai = None
+        computed = []
+        for name in sorted(here, key=_split):
+            d = definitions[name]
+            partner = _pair_of(d)
+            if 'Selector' in (d.name or '') or d.uid.endswith(('.InCrv', 'FSCC.Schd')):
+                if name.startswith(('AO_', 'BO_')):
+                    selector_ao = name
+                else:
+                    selector_ai = name
+                continue
+            if _COMPUTED.search(d.uid):
+                computed.append(name)
+                continue
+            if name.startswith(('AO_', 'BO_')):
+                pairs[name] = partner if partner in here else None
+            elif not (partner and partner in here and partner.startswith(('AO_', 'BO_'))):
+                pairs[name] = None                    # an input-only buffer point: the outstation's view of the selected instance
+        areas[label] = {'selector': selector_ao, 'selector_readback': selector_ai, 'buffer': pairs, 'computed': computed}
+    return areas
+
+
+def store_rows(indexes: dict[str, Iterable[int]], slots: dict[str, int], definitions: dict | None = None) -> tuple[dict[str, list[int]], list[StoreRow]]:
+    """Split a composed listing into the wire points and the store rows of its multiplexed areas.
+
+    ``slots`` gives the stored instances per mux_area label (``{'curve': 4, 'schedule': 20}``). The buffer points of
+    each area leave the wire listing (the proxy derives them from the store rows); the selector and the computed points
+    stay. Returns the remaining listing and the rows: one selector row per area, then one store row per buffer value
+    per slot, named ``<area><slot>_<short uid>``."""
+    definitions = definitions or _definitions()
+    areas = mux_areas(indexes, definitions)
+    drop: set[str] = set()
+    rows: list[StoreRow] = []
+    for label, area in areas.items():
+        count = int(slots.get(label, 1) or 1)
+        for written, readback in area['buffer'].items():
+            drop.add(written)
+            if readback:
+                drop.add(readback)
+        if area['selector']:
+            d = definitions[area['selector']]
+            rows.append(StoreRow(label, SELECTOR, f'{label}_Selector', area['selector'], area['selector_readback'], d.uid, (d.name or '').split('.')[0].strip()))
+            drop.add(area['selector'])
+            if area['selector_readback']:
+                drop.add(area['selector_readback'])
+        for slot in range(1, count + 1):
+            used: set[str] = set()
+            for written, readback in area['buffer'].items():
+                d = definitions[written]
+                name = f'{label}{slot}_{_short(d.uid)}'
+                if name in used:                       # the point list reuses an identifier (start and stop dates): the address tells them apart
+                    name = f'{name}_{_split(written)[1]}'
+                used.add(name)
+                rows.append(StoreRow(label, slot, name, written, readback, d.uid, (d.name or '').split('.')[0].strip()))
+    remaining = {t: [i for i in v if f'{t}_{int(i)}' not in drop] for t, v in indexes.items()}
+    return {t: v for t, v in remaining.items() if v}, rows
+
+
+def validate_rows(rows: list[dict]) -> list[str]:
+    """Shape checks on a registry's multiplexed rows: addresses inside the area's buffer, slots dense from 1, exactly one
+    selector per area, read-back present where the written point is an output. Returns findings, empty when sound."""
+    definitions = _definitions()
+    caps = {'curve': curve_capability(definitions)}
+    caps.update({MUX_AREAS[a]: schedule_capability(a, definitions) for a in SCHEDULE_AREAS})
+    findings = []
+    by_area: dict[str, list[dict]] = defaultdict(list)
+    for row in rows:
+        if str(row.get('mux_area') or '').strip():
+            by_area[str(row['mux_area']).strip()].append(row)
+    for label, area_rows in by_area.items():
+        cap = caps.get(label)
+        buffer = set(cap['header']) | {n for names in (cap.get('pairs') or cap.get('entries') or {}).values() for n in names} if cap else set()
+        selectors = [r for r in area_rows if str(r.get('mux_slot')).strip() == SELECTOR]
+        if len(selectors) != 1:
+            findings.append(f'{label}: {len(selectors)} selector rows (exactly one expected)')
+        slots = sorted({int(r['mux_slot']) for r in area_rows if str(r.get('mux_slot')).strip() not in ('', SELECTOR) and str(r['mux_slot']).strip().isdigit()})
+        if slots and slots != list(range(1, slots[-1] + 1)):
+            findings.append(f'{label}: slots are not dense from 1: {slots}')
+        for r in area_rows:
+            name = f'{ {30: "AI", 40: "AO", 1: "BI", 10: "BO", 20: "CTR"}.get(int(r["object_group"]), "?") }_{int(r["index"])}'
+            if cap and name not in buffer and str(r.get('mux_slot')).strip() != SELECTOR:
+                findings.append(f'{label}: {r.get("volttron_point_name")} at {name} is not a buffer point of the area')
+            if name.startswith(('AO_', 'BO_')) and not str(r.get('readback_index') or '').strip():
+                findings.append(f'{label}: {r.get("volttron_point_name")} writes {name} but names no read-back input')
+    return findings
 
 
 def indexes_from_registry(text: str) -> dict[str, list[int]]:

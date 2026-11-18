@@ -152,6 +152,33 @@ def dnp3_registry_rows(device: DiscoveredDnp3Device, scaling: str, variations: d
     return rows
 
 
+def store_registry_rows(stores, scaling: str, variations: dict[str, int] | None = None) -> list[dict]:
+    """Registry rows for a served outstation's store rows (``dnp3_builder.StoreRow``): the written point's address, the
+    read-back's under ``readback_*``, ``mux_area`` and ``mux_slot``; served, writable, scaled like the written point."""
+    variations = {**DEFAULT_VARIATIONS, **(variations or {})}
+    rows = []
+    for store in stores:
+        table, index = store.written.split('_')
+        definition = dnp3_point_definition(store.written)
+        multiplier, offset = dnp3_scaling(store.written)
+        transform = ''
+        if scaling == 'driver' and (multiplier != 1 or offset):
+            transform = ', '.join(([f'scale({multiplier!r})'] if multiplier != 1 else []) + ([f'add({offset!r})'] if offset else []))
+        rows.append({'point_name': store.uid, 'volttron_point_name': store.name, 'object_group': DNP3_GROUPS[table],
+                     'variation': variations[table], 'index': int(index),
+                     'scaling': multiplier if scaling == 'driver' else 1, 'units': definition.units or '',
+                     'writable': 'TRUE', 'data_source': 'server', 'transform': transform,
+                     'notes': f'{store.description} (stored {store.area} {store.slot})' if store.slot != 'selector' else store.description,
+                     **store.columns()})
+    return rows
+
+
+def with_mux_columns(rows: list[dict]) -> list[dict]:
+    """Every row with the multiplexing columns present (empty on wire rows), so a CSV has one header."""
+    from .dnp3_builder import MUX_COLUMNS
+    return [{**row, **{c: row.get(c, '') for c in MUX_COLUMNS}} for row in rows]
+
+
 def fake_registry_rows(device: DiscoveredDnp3Device, scaling: str) -> list[dict]:
     rows = []
     for p in device.points:

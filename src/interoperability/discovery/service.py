@@ -25,6 +25,7 @@ segment>.csv``), ``format_name`` (default the last topic segment), ``interval``,
 from __future__ import annotations
 
 import json
+from collections import defaultdict
 import tempfile
 from pathlib import Path
 from typing import Any
@@ -129,6 +130,7 @@ def _discover_sunspec(options: dict, common: dict, driver_identity: str, service
 def _discover_dnp3(options: dict, common: dict, driver_identity: str, service_identity: str) -> dict:
     from . import dnp3_builder
     served = options.get('role', 'client') != 'client'
+    stores: list = []
     conformance = options.get('conformance') or ('1815' if served else 'none')
     if options.get('compose') is not None:
         # A served outstation composed from the standard: the conformance core, the chosen function groups, their pairs.
@@ -137,6 +139,14 @@ def _discover_dnp3(options: dict, common: dict, driver_identity: str, service_id
                                        curves=spec.get('curves'), schedules=spec.get('schedules'), equipment=spec.get('equipment') or [])
         if not indexes:
             raise ValueError('nothing to serve: choose a conformance level, a function group, schedules or an equipment block')
+        composed = indexes
+        if served:
+            # The buffers of the multiplexed areas leave the wire listing; the stored instances become store rows.
+            slots = {'curve': int((spec.get('curves') or {}).get('stored', 1) or 1) if isinstance(spec.get('curves'), dict) else 1}
+            for area_key, label in dnp3_builder.MUX_AREAS.items():
+                if area_key in dnp3_builder.SCHEDULE_AREAS:
+                    slots[label] = int(((spec.get('schedules') or {}).get(area_key) or {}).get('held', 1) or 1)
+            indexes, stores = dnp3_builder.store_rows(indexes, slots)
         device = dnp3_discovery.discover_indexes(indexes, None, common['stem'])
         chosen = [c.get('key') if isinstance(c, dict) else c for c in spec.get('functions') or []]
         source = f'composed from IEEE 1815.2 ({dnp3_builder.CONFORMANCE_LABELS[conformance]}' + (f', function groups {", ".join(map(str, chosen))}' if chosen else '') + ')'
@@ -170,14 +180,26 @@ def _discover_dnp3(options: dict, common: dict, driver_identity: str, service_id
     else:
         raise ValueError('dnp3 discovery needs an outstation address to scan, a profile_json, a registry_csv, indexes, or a compose specification')
     if served or options.get('validate'):
-        # The point set against the standard: what a served outstation claims, it should serve.
+        # The point set against the standard: what a served outstation claims, it should serve. A composed set is
+        # checked as composed, buffers included: the store rows carry them off the wire listing, not out of the device.
         listing: dict[str, list[int]] = {}
         for point in device.points:
             listing.setdefault(point.table, []).append(point.index)
+        if stores:
+            listing = {t: list(v) for t, v in composed.items()}
         validation = dnp3_builder.validate(listing, conformance)
         device.notes.extend(validation.notes())
     scaling = scaling_mode(options.get('scaling'))        # default: the driver applies the factors
     rows = dnp3_discovery.dnp3_registry_rows(device, scaling)
+    if stores:
+        rows = dnp3_discovery.with_mux_columns(rows) + dnp3_discovery.store_registry_rows(stores, scaling)
+        findings = dnp3_builder.validate_rows(rows)
+        device.notes.extend(findings)
+        counts = defaultdict(set)
+        for store in stores:
+            if store.slot != 'selector':
+                counts[store.area].add(store.slot)
+        device.notes.append('stored instances: ' + ', '.join(f'{len(v)} {k}{"s" if len(v) != 1 else ""} ({len([s for s in stores if s.area == k and s.slot != "selector"]) // max(len(v), 1)} values each)' for k, v in counts.items()))
     device_config = dnp3_discovery.device_config('dnp3', common['registry_name'], outstation_ip=options.get('outstation_ip', '127.0.0.1'),
                                                  port=int(options.get('port') or 20000), master_id=int(options.get('master_id') or 2),
                                                  outstation_id=int(options.get('outstation_id') or 1))
@@ -202,7 +224,9 @@ def _discover_dnp3(options: dict, common: dict, driver_identity: str, service_id
             device_config['equipment_specific_fields'] = {'ieee1815_2': storage}
     from .device_formats import dnp3_device_transforms, device_format_declaration
     names = [row.get('volttron_point_name') or row.get('point_name') for row in rows]
-    built = dnp3_device_transforms(common['format_name'], names, scaling=scaling, served=served)
+    wire_names = [n for n in names if not stores or n not in {s.name for s in stores}]
+    built = dnp3_device_transforms(common['format_name'], wire_names, scaling=scaling, served=served,
+                                   stores=[{'name': s.name, 'area': s.area, 'slot': s.slot, 'written': s.written, 'readback': s.readback} for s in stores])
     fragment = {'formats': {common['format_name']: device_format_declaration(names, scaling)}, 'transforms': built.definitions,
                 'mappings': resource_mappings(common['format_name'], f"devices/{common['topic']}", common['uai'], common['aliases'])}
     _set_publication(fragment, common)

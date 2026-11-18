@@ -353,7 +353,7 @@ def _dnp3_functions(multiplier: float, offset: float, inverse: bool) -> str:
 
 
 def dnp3_device_transforms(device_format: str, point_names: list[str], *, scaling: str = 'driver',
-                           served: bool = False) -> DeviceTransforms:
+                           served: bool = False, stores: list[dict] | None = None) -> DeviceTransforms:
     """Transform definitions between a DNP3 device format and the ``1815.2.inputs`` / ``1815.2.outputs`` formats.
 
     Multipliers and offsets come from the IEEE 1815.2 profile, so both directions can be scaled without
@@ -363,16 +363,34 @@ def dnp3_device_transforms(device_format: str, point_names: list[str], *, scalin
     ``1815.2.outputs``, with curve write batches (``sequence``) carried to the device as lists of flat points.
     A ``served`` device is an outstation the platform itself serves (the DNP3 driver's outstation role): its
     inputs are written by the platform, so writes also come from ``1815.2.inputs``.
+
+    ``stores`` are the store rows of a served outstation's multiplexed areas (``dnp3_builder.store_rows``): each
+    ``{'name', 'area', 'slot', 'written', 'readback'}`` is one value of a stored curve or schedule. In the hub formats
+    they sit under ``<area>.<slot>.<index>``: the written point's index under ``1815.2.outputs`` and the read-back's
+    under ``1815.2.inputs``, so ``curves`` in the hub is the set of stored curves keyed by slot, each with the buffer's
+    own indexes, and the hub's buffer tables are not used for them.
     """
     scaling = scaling_mode(scaling)
     by_table: dict[str, list[tuple[str, str]]] = defaultdict(list)
     for name in point_names:
         table, index = dnp3_point_path(name)
         by_table[table].append((index, name))
+    stores = [s for s in (stores or []) if s.get('slot') not in (None, '', 'selector')]
     definitions = []
     for fmt, tables in (('1815.2.inputs', DNP3_INPUT_TABLES), ('1815.2.outputs', DNP3_OUTPUT_TABLES)):
         to_protocol: dict = {}
         from_protocol: dict = {}
+        for store in stores:
+            # the face of the value that belongs to this format: written point (outputs) or read-back (inputs)
+            face = store['written'] if fmt == '1815.2.outputs' else (store.get('readback') or (store['written'] if dnp3_point_path(store['written'])[0] in DNP3_INPUT_TABLES else None))
+            if not face or dnp3_point_path(face)[0] not in tables:
+                continue
+            table, index = dnp3_point_path(face)
+            multiplier, offset = dnp3_scaling(store['written']) if scaling == 'service' else (1.0, 0.0)
+            area_group = to_protocol.setdefault(f'{store["area"]}s', {}).setdefault(str(store['slot']), {})
+            area_group[index] = f'transform[{store["name"]}]({_dnp3_functions(multiplier, offset, inverse=False)})'
+            if fmt == '1815.2.outputs' or served:
+                from_protocol[store['name']] = f'transform[{store["area"]}s, {store["slot"]}, {index}]({_dnp3_functions(multiplier, offset, inverse=True)})'
         for table in tables:
             if not by_table.get(table):
                 continue
@@ -399,7 +417,7 @@ def dnp3_device_transforms(device_format: str, point_names: list[str], *, scalin
             from_protocol['sequence[#]'] = batch
         if to_protocol:
             definitions.append({'input_format': device_format, 'output_format': fmt,
-                                'pattern': {**DEVICE_STAGE_INPUT, **to_protocol}})
+                                'pattern': {**DEVICE_STAGE_INPUT, **to_protocol}})     # stores ride along as <area>s.<slot>.<index>
             # Inputs (AI, BI, counters) are read-only on the device, so nothing is written back to them; writes
             # reach the device only through the outputs format, which also carries the ordered curve batches.
             if fmt == '1815.2.outputs' or served:

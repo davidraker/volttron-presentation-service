@@ -166,3 +166,64 @@ def test_discover_records_stored_curves_and_schedules_on_the_device():
     registry = next(e for e in result['entries'] if e['type'] == 'csv')
     names = {r['volttron_point_name'] for r in registry['data']}
     assert 'AI_5000' in names and 'AI_3515' in names and 'AI_3518' not in names
+
+
+def test_store_rows_take_the_buffers_off_the_wire_and_name_both_faces():
+    """A served outstation's registry describes the data: one selector row per area, one store row per buffer value per
+    stored instance with the written address and its read-back, no buffer rows; the computed points stay wire points."""
+    composed = builder.compose('none', ['volt_var'], curves={'pairs': 3}, schedules={'schedules': {'held': 2, 'entries': 2}})
+    areas = builder.mux_areas(composed)
+    assert areas['curve']['selector'] == 'AO_244' and areas['curve']['selector_readback'] == 'AI_328'
+    assert areas['curve']['buffer']['AO_249'] == 'AI_333' and areas['curve']['computed'] == ['BI_107']
+    assert areas['schedule']['selector'] == 'AO_3000' and 'BO_3000' in areas['schedule']['computed'], 'submit is a command on the selected schedule, not a stored value'
+    wire, rows = builder.store_rows(composed, {'curve': 2, 'schedule': 2})
+    names = {f'{t}_{i}' for t, v in wire.items() for i in v}
+    assert not names & {'AO_244', 'AI_328', 'AO_249', 'AI_333', 'AO_3001', 'AI_3001'}, 'buffers and selectors have no wire rows'
+    assert {'BI_107', 'AI_297', 'AO_217', 'BO_3000'} <= names
+    selectors = [r for r in rows if r.slot == builder.SELECTOR]
+    assert [(r.area, r.written, r.readback) for r in selectors] == [('curve', 'AO_244', 'AI_328'), ('schedule', 'AO_3000', 'AI_3000')]
+    curve_rows = [r for r in rows if r.area == 'curve' and r.slot != builder.SELECTOR]
+    assert len(curve_rows) == 2 * 10 and {r.slot for r in curve_rows} == {1, 2}
+    x1 = next(r for r in curve_rows if r.slot == 2 and r.written == 'AO_249')
+    assert (x1.name, x1.readback, x1.uid) == ('curve2_X1', 'AI_333', 'FMARn.PairArr.CrvPts.1.xVal')
+    assert len({r.name for r in rows}) == len(rows), 'names are unique (the point list reuses identifiers; the address disambiguates)'
+    assert all(r.name.startswith('schedule1_') for r in rows if r.area == 'schedule' and r.slot == 1)
+    cols = next(r for r in rows if r.name == 'curve1_ModTyp').columns()
+    assert cols == {'mux_area': 'curve', 'mux_slot': 1, 'readback_object_group': 30, 'readback_variation': 6, 'readback_index': 329}
+
+
+def test_validate_rows_checks_the_registry_shape():
+    good = [{'volttron_point_name': 'curve_Selector', 'object_group': 40, 'index': 244, 'readback_index': 328, 'mux_area': 'curve', 'mux_slot': 'selector'},
+            {'volttron_point_name': 'c1_X1', 'object_group': 40, 'index': 249, 'readback_index': 333, 'mux_area': 'curve', 'mux_slot': 1},
+            {'volttron_point_name': 'c2_X1', 'object_group': 40, 'index': 249, 'readback_index': 333, 'mux_area': 'curve', 'mux_slot': 2},
+            {'volttron_point_name': 'AI_297', 'object_group': 30, 'index': 297}]
+    assert builder.validate_rows(good) == []
+    bad = [{'volttron_point_name': 'c1_X1', 'object_group': 40, 'index': 249, 'readback_index': '', 'mux_area': 'curve', 'mux_slot': 1},
+           {'volttron_point_name': 'c3_X1', 'object_group': 40, 'index': 249, 'readback_index': 333, 'mux_area': 'curve', 'mux_slot': 3},
+           {'volttron_point_name': 'stray', 'object_group': 30, 'index': 297, 'mux_area': 'curve', 'mux_slot': 1}]
+    findings = ' '.join(builder.validate_rows(bad))
+    assert '0 selector rows' in findings and 'not dense from 1: [1, 3]' in findings
+    assert 'c1_X1 writes AO_249 but names no read-back input' in findings and 'stray at AI_297 is not a buffer point' in findings
+
+
+def test_discover_served_composition_emits_store_rows_and_hub_transforms():
+    result = discovery_service.discover('dnp3', {'topic': 'site/served', 'role': 'server', 'conformance': 'none', 'bind_host': '127.0.0.1',
+                                                 'compose': {'functions': ['volt_var'], 'curves': {'pairs': 3, 'stored': 2}}}, None)
+    rows = next(e for e in result['entries'] if e['type'] == 'csv')['data']
+    assert set(rows[0]) >= set(builder.MUX_COLUMNS), 'every row carries the columns, empty on wire rows'
+    store = [r for r in rows if r['mux_area']]
+    wire = [r for r in rows if not r['mux_area']]
+    assert len(store) == 1 + 2 * 10 and all(r['data_source'] == 'server' and r['writable'] == 'TRUE' for r in store)
+    assert not {r['volttron_point_name'] for r in wire} & {'AO_244', 'AI_328', 'AO_249', 'AI_333'}
+    sel = next(r for r in store if r['mux_slot'] == 'selector')
+    assert (sel['object_group'], sel['index'], sel['readback_object_group'], sel['readback_index']) == (40, 244, 30, 328)
+    fragment = next(e for e in result['entries'] if e.get('fragment'))['fragment']
+    assert set(fragment['formats']['served']['fields']) >= {'curve_Selector', 'curve1_X1', 'curve2_Y3', 'AI_297', 'BI_107'}
+    to_outputs = next(t for t in fragment['transforms'] if (t['input_format'], t['output_format']) == ('served', '1815.2.outputs'))
+    assert to_outputs['pattern']['curves']['2']['249'] == 'transform[curve2_X1]()'
+    from_outputs = next(t for t in fragment['transforms'] if (t['input_format'], t['output_format']) == ('1815.2.outputs', 'served'))
+    assert from_outputs['pattern']['curve2_X1'] == 'transform[curves, 2, 249]()'
+    to_inputs = next(t for t in fragment['transforms'] if (t['input_format'], t['output_format']) == ('served', '1815.2.inputs'))
+    assert to_inputs['pattern']['curves']['2']['333'] == 'transform[curve2_X1]()' and '333' not in to_inputs['pattern'].get('AI', {})
+    assert any(n.startswith('stored instances: 2 curves') for n in result['notes'])
+    assert not any('no curve edit buffer is served' in n for n in result['notes']), 'the composition is validated as composed, buffers included'
