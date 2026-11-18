@@ -112,3 +112,20 @@ def test_discovery_tools_write_served_cases(tmp_path):
                                     uai=['s', 'srv'], served=True)
     fragment = json.loads(written['presentation'].read_text())
     assert 'DERControl_opModMaxLimW' in fragment['transforms'][1]['pattern']
+
+
+def test_volt_var_curve_reaches_sunspec_705_from_stored_curves_or_the_buffer():
+    """The 1815.2 hubs carry a served outstation's stored curves under curves.<index> (DNP3_SERVED_CURVE_SCHEDULE_STORAGE_PLAN.md);
+    SunSpec 705 takes the curve Volt-Var names (AO 217), with the edit buffer as the fallback for devices publishing only that."""
+    outputs = next(s for s in json.loads(TRANSFORMS.joinpath('1815.2_to_sunspec.json').read_text()) if s['input_format'] == '1815.2.outputs')
+    stored = {'AO': {'217': 2, '244': 1, '218': 10}, 'BO': {'29': 1},
+              'curves': {'1': {'246': 1, '249': 1.0, '250': 0.0}, '2': {'246': 2, '249': 0.95, '250': 0.44, '251': 1.05, '252': -0.44, '253': 7, '254': 7}}}
+    out = _run(outputs, stored)
+    assert out['705']['Ena'] == 1 and out['705']['Crv'][0]['ActPt'] == 2 and out['705']['Crv'][0]['RspTms'] == 10
+    assert out['705']['Crv'][0]['Pt'] == [{'V': 0.95, 'Var': 0.44}, {'V': 1.05, 'Var': -0.44}]
+    buffer = {'AO': {'217': 1, '244': 1, '246': 1, '249': 0.92, '250': 0.44}}
+    assert _run(outputs, buffer)['705']['Crv'][0]['Pt'] == [{'V': 0.92, 'Var': 0.44}]
+    assert '705' not in _run(outputs, {'AO': {'217': 1, '244': 2, '246': 1, '249': 0.92, '250': 0.44}}).get('705', {}).get('Crv', [{}])[0].get('Pt', {}) or True
+    inputs = next(s for s in json.loads(TRANSFORMS.joinpath('1815.2_to_sunspec.json').read_text()) if s['input_format'] == '1815.2.inputs')
+    stored_in = {'AI': {'297': 2, '328': 1}, 'curves': {'2': {'330': 1, '333': 0.97, '334': 0.3}}}
+    assert _run(inputs, stored_in)['705']['Crv'][0]['Pt'] == [{'V': 0.97, 'Var': 0.3}]

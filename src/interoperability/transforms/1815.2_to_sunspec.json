@@ -89,14 +89,14 @@
       "705": {
         "Ena": "transform[BI, 81]()",
         "Crv[#]": {
-          "#": "transform(as_list())",
+          "#": "transform(curve_of('AI.297', 'curves', 'AI', 'AI.328'), as_list())",
           "VRef": "transform[AI, 29]()",
           "VRefAutoEna": "transform[BI, 93]()",
           "VRefAutoTms": "transform[AI, 300]()",
           "RspTms": "transform[AI, 298]()",
-          "ActPt": "transform[AI, 330](when_equal('AI.328', 'AI.297'))",
+          "ActPt": "transform[#, 330]()",
           "Pt[#]": {
-            "#": "transform[AI](when_equal('AI.328', 'AI.297'), pairs(333, 100, V, Var), take('AI.330'))",
+            "#": "transform[#](pairs(333, 100, V, Var), take('330'))",
             "V": "transform[#, V]()",
             "Var": "transform[#, Var]()"
           }
@@ -105,11 +105,11 @@
       "706": {
         "Ena": "transform[BI, 77]()",
         "Crv[#]": {
-          "#": "transform(as_list())",
+          "#": "transform(curve_of('AI.248', 'curves', 'AI', 'AI.328'), as_list())",
           "RspTms": "transform[AI, 251]()",
-          "ActPt": "transform[AI, 330](when_equal('AI.328', 'AI.248'))",
+          "ActPt": "transform[#, 330]()",
           "Pt[#]": {
-            "#": "transform[AI](when_equal('AI.328', 'AI.248'), pairs(333, 100, V, W), take('AI.330'))",
+            "#": "transform[#](pairs(333, 100, V, W), take('330'))",
             "V": "transform[#, V]()",
             "W": "transform[#, W]()"
           }
@@ -197,10 +197,10 @@
       "712": {
         "Ena": "transform[BI, 82]()",
         "Crv[#]": {
-          "#": "transform(as_list())",
-          "ActPt": "transform[AI, 330](when_equal('AI.328', 'AI.308'))",
+          "#": "transform(curve_of('AI.308', 'curves', 'AI', 'AI.328'), as_list())",
+          "ActPt": "transform[#, 330]()",
           "Pt[#]": {
-            "#": "transform[AI](when_equal('AI.328', 'AI.308'), pairs(333, 100, W, Var), take('AI.330'))",
+            "#": "transform[#](pairs(333, 100, W, Var), take('330'))",
             "W": "transform[#, W]()",
             "Var": "transform[#, Var]()"
           }
@@ -302,14 +302,14 @@
       "705": {
         "Ena": "transform[BO, 29]()",
         "Crv[#]": {
-          "#": "transform(as_list())",
+          "#": "transform(curve_of('AO.217', 'curves', 'AO', 'AO.244'), as_list())",
           "VRef": "transform[AO, 0]()",
           "VRefAutoEna": "transform[BO, 41]()",
           "VRefAutoTms": "transform[AO, 220]()",
           "RspTms": "transform[AO, 218]()",
-          "ActPt": "transform[AO, 246](when_equal('AO.244', 'AO.217'))",
+          "ActPt": "transform[#, 246]()",
           "Pt[#]": {
-            "#": "transform[AO](when_equal('AO.244', 'AO.217'), pairs(249, 100, V, Var), take('AO.246'))",
+            "#": "transform[#](pairs(249, 100, V, Var), take('246'))",
             "V": "transform[#, V]()",
             "Var": "transform[#, Var]()"
           }
@@ -318,11 +318,11 @@
       "706": {
         "Ena": "transform[BO, 25]()",
         "Crv[#]": {
-          "#": "transform(as_list())",
+          "#": "transform(curve_of('AO.173', 'curves', 'AO', 'AO.244'), as_list())",
           "RspTms": "transform[AO, 175]()",
-          "ActPt": "transform[AO, 246](when_equal('AO.244', 'AO.173'))",
+          "ActPt": "transform[#, 246]()",
           "Pt[#]": {
-            "#": "transform[AO](when_equal('AO.244', 'AO.173'), pairs(249, 100, V, W), take('AO.246'))",
+            "#": "transform[#](pairs(249, 100, V, W), take('246'))",
             "V": "transform[#, V]()",
             "W": "transform[#, W]()"
           }
@@ -410,10 +410,10 @@
       "712": {
         "Ena": "transform[BO, 30]()",
         "Crv[#]": {
-          "#": "transform(as_list())",
-          "ActPt": "transform[AO, 246](when_equal('AO.244', 'AO.226'))",
+          "#": "transform(curve_of('AO.226', 'curves', 'AO', 'AO.244'), as_list())",
+          "ActPt": "transform[#, 246]()",
           "Pt[#]": {
-            "#": "transform[AO](when_equal('AO.244', 'AO.226'), pairs(249, 100, W, Var), take('AO.246'))",
+            "#": "transform[#](pairs(249, 100, W, Var), take('246'))",
             "W": "transform[#, W]()",
             "Var": "transform[#, Var]()"
           }
