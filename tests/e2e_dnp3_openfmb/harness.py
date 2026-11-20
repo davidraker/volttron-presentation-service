@@ -8,6 +8,7 @@ would publish, the adapter's VIP subscription callback is invoked with what the 
 proxy's paho client is a mock whose publish() call is inspected. Run by test_e2e_dnp3_to_openfmb.py in its own
 process (gevent monkey patching first). Exit status is non-zero if any check fails."""
 from gevent import monkey; monkey.patch_all()
+from volttrontesting.harness import Checklist
 import csv, json, logging, os, socket, subprocess, sys, time
 from importlib import resources
 from pathlib import Path
@@ -51,9 +52,8 @@ for _ in range(100):
     except OSError: time.sleep(0.1)
 else: sys.exit('outstation did not start')
 
-checks = []
-def check(name, cond, detail=''):
-    checks.append((name, bool(cond))); print(('PASS ' if cond else 'FAIL ') + name + (f'  {detail}' if detail else ''))
+CHECKS = Checklist()
+check = CHECKS.check
 
 iface = None
 try:
@@ -172,6 +172,4 @@ finally:
             proc = getattr(p, 'process', None)
             if proc: proc.terminate()
     sim.terminate()
-failed = [n for n, ok in checks if not ok]
-print(f'\n{len(checks) - len(failed)}/{len(checks)} passed' + (f'; FAILED: {failed}' if failed else ''))
-sys.exit(1 if failed else 0)
+CHECKS.finish()

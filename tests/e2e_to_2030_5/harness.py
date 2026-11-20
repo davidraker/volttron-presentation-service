@@ -10,6 +10,7 @@ its own process (gevent monkey patching first). Exit status is non-zero if any c
 
 Arguments: <dnp3 port> <sep2 port> <sep2 admin port> <notify port> [work dir]."""
 from gevent import monkey; monkey.patch_all()
+from volttrontesting.harness import Checklist
 import asyncio, csv, json, logging, os, socket, subprocess, sys, tempfile, time
 from pathlib import Path
 
@@ -45,9 +46,8 @@ DNP3_TOPIC, SEP2_TOPIC = 'devices/site1/feeder1/der', 'devices/site1/feeder1/der
 # Raw outstation values: system meter (multiplier 1) and the nameplate voltages AI_2/AI_3 (multiplier 0.1).
 METER = {'AI_536': 60, 'AI_537': 12500, 'AI_541': -300, 'AI_547': 2400, 'AI_549': 2410, 'AI_551': 2390, 'AI_554': 52, 'AI_2': 2110, 'AI_3': 2640}
 
-checks = []
-def check(name, cond, detail=''):
-    checks.append((name, bool(cond))); print(('PASS ' if cond else 'FAIL ') + name + (f'  {detail}' if detail else ''))
+CHECKS = Checklist()
+check = CHECKS.check
 
 def rows_of(path):
     with Path(path).open(newline='') as f:
@@ -234,6 +234,4 @@ finally:
     sim.terminate()
     if os.environ.get('SEP2_E2E_KEEP') != '1':
         server.stop()
-failed = [n for n, ok in checks if not ok]
-print(f'\n{len(checks) - len(failed)}/{len(checks)} passed' + (f'; FAILED: {failed}' if failed else ''))
-sys.exit(1 if failed else 0)
+CHECKS.finish()

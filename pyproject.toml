@@ -54,8 +54,9 @@ discovery = ["pysunspec2"]
 openfmb = ["protobuf"]
 
 
-#[tool.poetry.group.dev.dependencies]
-#volttron-testing = "^0.4.0rc0"
+[tool.poetry.group.dev.dependencies]
+# PlatformCLI, AgentSources and the harness helpers for the end-to-end tests (first released after 0.5.1rc4).
+volttron-testing = ">0.5.1rc4"
 #pytest = "^6.2.5"
 #pytest-cov = "^3.0.0"
 #mock = "^4.0.3"

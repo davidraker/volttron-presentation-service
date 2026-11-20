@@ -36,6 +36,13 @@ server's control, the published protobuf decodes. Who does the transforming and 
 Exit status is non-zero if any path fails. Run by test_e2e_matrix.py; ``E2E_LOG`` names the log file.
 Arguments: [work dir] [paths], paths as ``telemetry:SunSpec>DNP3,control:OpenFMB>2030.5`` to run a subset."""
 from gevent import monkey; monkey.patch_all()
+import functools
+
+from volttrontesting import harness
+from volttrontesting.harness import Checklist, compare, dig, free_port, near
+
+# The harness's own waits let exceptions through: a predicate that raises is a bug here, not a service starting up.
+wait_for = functools.partial(harness.wait_for, ignore=())
 import csv, json, logging, os, socket, sys, tempfile, time, traceback
 from importlib import resources
 from pathlib import Path
@@ -113,12 +120,6 @@ CEE_APP_PATH = os.environ.get('CEE_APP_PATH', str(TESTS.parents[1] / 'ctrl-eval-
 JULIA_PATH = os.environ.get('JULIA', str(Path.home() / '.juliaup' / 'bin' / 'julia'))
 
 
-def free_port():
-    with socket.socket() as s:
-        s.bind(('127.0.0.1', 0))
-        return s.getsockname()[1]
-
-
 class Core: spawn = staticmethod(gevent.spawn)
 class Agent:
     core = Core()
@@ -130,14 +131,6 @@ class Agent:
         if prefix is None: return out
         return {t[len(prefix) + 1:]: v for t, v in out.items() if t.startswith(prefix + '/')}
     def clear(self): self.pushed.clear()
-
-
-def wait_for(predicate, timeout=5.0, interval=0.05):
-    deadline = time.time() + timeout
-    while time.time() < deadline:
-        if predicate(): return True
-        gevent.sleep(interval)
-    return predicate()
 
 
 def rows_of(path):
@@ -161,10 +154,8 @@ def strip(results, prefix):
     return {t[len(prefix) + 1:]: v for t, v in results.items() if t.startswith(prefix + '/')}
 
 
-results = []     # (kind, src, dst, ok, path, detail)
-def record(kind, src, dst, ok, path, detail):
-    results.append((kind, src, dst, bool(ok), path, detail))
-    print(f'{"PASS" if ok else "FAIL"} {kind:9} {src:>7} -> {dst:<7} via {path}  {detail}', flush=True)
+CHECKS = Checklist()
+record = CHECKS.record     # PASS/FAIL kind src -> dst via path  detail
 
 
 def wanted(kind, src, dst):
@@ -655,24 +646,6 @@ class BusAdapterHarness:
         self._patch.stop()
 
 
-def near(a, b, tol=1e-6):
-    try:
-        return abs(float(a) - float(b)) <= tol
-    except (TypeError, ValueError):
-        return a == b
-
-
-def compare(view, expected):
-    bad = {k: view.get(k) for k, v in expected.items() if not near(view.get(k), v)}
-    return not bad, ('' if not bad else f'external party sees {bad}, expected {expected}')
-
-
-def dig(d, *path):
-    for p in path:
-        d = d.get(p) if isinstance(d, dict) else (d[p] if isinstance(d, list) and isinstance(p, int) and p < len(d) else None)
-    return d
-
-
 def summary(out, n=6):
     keys = sorted(out) if isinstance(out, dict) else []
     return f'{len(keys)} fields out {keys[:n]}{"..." if len(keys) > n else ""}'
@@ -947,9 +920,8 @@ def main():
             bus_adapter.stop()
         for p in parties.values():
             p.stop()
-    failed = [(k, s, d) for k, s, d, ok, *_ in results if not ok]
-    print(f'\n{len(results) - len(failed)}/{len(results)} passed' + (f'; FAILED: {[f"{k} {s}>{d}" for k, s, d in failed]}' if failed else ''))
-    return 1 if failed else 0
+    print('\n' + CHECKS.summary(), flush=True)
+    return CHECKS.exit_code
 
 
 if __name__ == '__main__':

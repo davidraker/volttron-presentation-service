@@ -40,6 +40,7 @@ sys.path.insert(0, str(HERE / 'external'))
 import configs                                                                     # noqa: E402
 from configs import DEVICES, MRID, OPENFMB_FAMILY, PROTO, device_topic, openfmb_alias, roles   # noqa: E402
 from volttron_platform import Platform                                                      # noqa: E402
+from volttrontesting.harness import dig, free_port, near, port_open, wait_for               # noqa: E402
 import dnp3_tool                                                                   # noqa: E402
 import sep2                                                                        # noqa: E402
 from openfmb_party import OpenFmbParty                                             # noqa: E402
@@ -60,36 +61,6 @@ PIN = 111115
 SUNSPEC_CSV = configs.SUNSPEC_CASE / 'fake_sunspec_pv.modbus.csv'
 
 
-def free_port():
-    with socket.socket() as s:
-        s.bind(('127.0.0.1', 0))
-        return s.getsockname()[1]
-
-
-def wait_for(predicate, timeout, interval=1.0):
-    deadline = time.time() + timeout
-    while time.time() < deadline:
-        try:
-            value = predicate()
-        except Exception:
-            value = None
-        if value:
-            return value
-        time.sleep(interval)
-    try:
-        return predicate()
-    except Exception:
-        return None
-
-
-def port_open(host, port):
-    try:
-        socket.create_connection((host, port), timeout=0.5).close()
-        return True
-    except OSError:
-        return False
-
-
 class Mosquitto:
     def __init__(self, port, name='e2e-mosquitto'):
         self.port, self.name = port, name
@@ -105,19 +76,6 @@ class Mosquitto:
 
     def stop(self):
         subprocess.run(['docker', 'rm', '-f', self.name], capture_output=True)
-
-
-def dig(d, *path):
-    for p in path:
-        d = d.get(p) if isinstance(d, dict) else (d[p] if isinstance(d, list) and isinstance(p, int) and p < len(d) else None)
-    return d
-
-
-def near(a, b, tol=1e-6):
-    try:
-        return abs(float(a) - float(b)) <= tol
-    except (TypeError, ValueError):
-        return a == b
 
 
 class Matrix:

@@ -12,6 +12,8 @@ from pathlib import Path
 
 import pytest
 
+from volttrontesting.harness import run_harness
+
 if os.environ.get('E2E_PLATFORM') != '1':
     pytest.skip('set E2E_PLATFORM=1 to run the real-platform matrix', allow_module_level=True)
 for module in ('volttron.driver.interfaces.modbus.modbus', 'volttron.driver.interfaces.dnp3.dnp3', 'volttron.driver.interfaces.ieee2030_5.ieee2030_5',
@@ -31,8 +33,5 @@ def test_real_platform_matrix(tmp_path, openfmb_mode, rtc, expected):
     if rtc:
         pytest.importorskip('rt_control')
         pytest.importorskip('julia')
-    proc = subprocess.run([sys.executable, str(RUN), '--openfmb', openfmb_mode, '--work', str(tmp_path / 'work')] + (['--rtc'] if rtc else []),
-                          capture_output=True, text=True, timeout=3600)
-    report = proc.stdout + proc.stderr
-    assert proc.returncode == 0, report
-    assert f'{expected}/{expected} passed' in proc.stdout, report
+    args = ['--openfmb', openfmb_mode, '--work', tmp_path / 'work'] + (['--rtc'] if rtc else [])
+    run_harness(RUN, *args, timeout=3600).assert_ok(f'{expected}/{expected} passed')
