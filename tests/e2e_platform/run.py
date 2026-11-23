@@ -4,9 +4,9 @@ The platform (volttron-core, ZMQ bus, auth on) runs from this venv in a fresh VO
 the presentation service, the Resource Bridge and the Message Bus Adapter installed as agents and configured through the
 config store (``configs.py``). Around it, nothing of ours:
 
-* a SunSpec inverter and a Modbus master on uModbus (``external/sunspec_device.py``);
+* a SunSpec inverter and a Modbus master on uModbus (``protocol_proxy.protocol.modbus.testing``, the Modbus proxy's testing extra);
 * the IEEE 1815.2 test tool's reference outstation and reference control station, Rust on the Step Function dnp3 crate
-  (``external/dnp3_tool.py``);
+  (``protocol_proxy.protocol.dnp3.testing``);
 * the GridAPPS-D Go ``sep2server`` as the utility and the Go ``inverterclient`` as a DER client (``external/sep2.py``);
 * mosquitto as the OpenFMB broker and a paho/protobuf participant (``external/openfmb_party.py``).
 
@@ -41,10 +41,10 @@ import configs                                                                  
 from configs import DEVICES, MRID, OPENFMB_FAMILY, PROTO, device_topic, openfmb_alias, roles   # noqa: E402
 from volttron_platform import Platform                                                      # noqa: E402
 from volttrontesting.harness import dig, free_port, near, port_open, wait_for               # noqa: E402
-import dnp3_tool                                                                   # noqa: E402
+from protocol_proxy.protocol.dnp3 import testing as dnp3_tool                     # noqa: E402
 import sep2                                                                        # noqa: E402
 from openfmb_party import OpenFmbParty                                             # noqa: E402
-from sunspec_device import ModbusMaster, SunSpecDevice                             # noqa: E402
+from protocol_proxy.protocol.modbus.testing import ModbusMaster, SunSpecDevice     # noqa: E402
 from interoperability.openfmb_bus import topic_of                                  # noqa: E402
 from interoperability.codecs.openfmb import decode as decode_profile                # noqa: E402
 

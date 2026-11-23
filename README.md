@@ -777,15 +777,10 @@ modular platform driver tree, with `platform-driver-agent/` and `interfaces/pymo
 `IEEE1815_2_TEST_TOOL` (a checkout of the IEEE 1815.2 test tool, for its reference outstation and profile).
 `tests/test_generated_configs_validate_with_modular_driver.py` uses `VOLTTRON_MODULAR_DRIVERS` too and skips
 without it.
-
-The real-platform matrix (`tests/e2e_platform/`, opt-in with `E2E_PLATFORM=1`) installs agents from checkouts
-named by environment variables rather than from any assumed directory layout: `VOLTTRON_MODULAR_DRIVERS` (the
-modular platform driver tree, with `platform-driver-agent/` and `interfaces/pymodbus/` beneath it;
-`PYMODBUS_DRIVER_REPO` overrides the latter), `DER_CONTROL_MODULES` (the directory holding the
-`interoperability_service`, `resource-bridge`, `message-bus-adapter` and `rtc_agent` checkouts) and
-`IEEE1815_2_TEST_TOOL` (a checkout of the IEEE 1815.2 test tool, for its reference outstation and profile).
-`tests/test_generated_configs_validate_with_modular_driver.py` uses `VOLTTRON_MODULAR_DRIVERS` too and skips
-without it.
+Its external parties come from the packages of the protocols they test: the SunSpec device and Modbus master from
+the Modbus proxy (`protocol_proxy.protocol.modbus.testing`, the `testing` extra), the 1815.2 tool's reference
+outstation and control station from the DNP3 proxy (`protocol_proxy.protocol.dnp3.testing`), and the Go 2030.5
+server from the 2030.5 driver (`volttron.driver.interfaces.ieee2030_5.testing`).
 
 ## Status and known limitations
 

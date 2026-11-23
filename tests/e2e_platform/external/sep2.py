@@ -6,16 +6,12 @@ import json
 import os
 import re
 import subprocess
-import sys
 import time
 from pathlib import Path
 
-import volttron.driver.interfaces.ieee2030_5 as sep2_package
-
-E2E_DIR = Path(os.environ.get('IEEE2030_5_DRIVER_REPO', Path(sep2_package.__file__).resolve().parents[5])) / 'tests' / 'e2e_sep2server'
-sys.path.insert(0, str(E2E_DIR))
-from sep2server import ADMIN_KEY, IMAGE as SERVER_IMAGE, PEN, Sep2Server, _run_certs, ensure_image, write_fixture   # noqa: E402
-from protocol_proxy.protocol.ieee2030_5.identity import lfdi_from_cert, sfdi_from_lfdi                               # noqa: E402
+from protocol_proxy.protocol.ieee2030_5.identity import lfdi_from_cert, sfdi_from_lfdi
+from volttron.driver.interfaces.ieee2030_5.testing import (ADMIN_KEY, IMAGE as SERVER_IMAGE, PEN, Sep2Server, ensure_image,
+                                                         run_certs, write_fixture)
 
 CLIENT_IMAGE = os.environ.get('SEP2CLIENT_IMAGE', 'inverterclient:e2e')
 
@@ -30,14 +26,14 @@ def generate_certs(cert_dir: Path) -> dict[str, Path]:
     for our client's notification listener."""
     cert_dir.mkdir(parents=True, exist_ok=True)
     cert_dir.chmod(0o755)
-    _run_certs(cert_dir, 'generate-ca', '-out', '/tls')
-    _run_certs(cert_dir, 'generate-server', '-out', '/tls', '-ca', '/tls/ca.crt', '-ca-key', '/tls/ca.key', '-hosts', '127.0.0.1,localhost')
-    _run_certs(cert_dir, 'generate-device', '-out', '/tls', '-ca', '/tls/ca.crt', '-ca-key', '/tls/ca.key', '-name', 'volttron',
+    run_certs(cert_dir, 'generate-ca', '-out', '/tls')
+    run_certs(cert_dir, 'generate-server', '-out', '/tls', '-ca', '/tls/ca.crt', '-ca-key', '/tls/ca.key', '-hosts', '127.0.0.1,localhost')
+    run_certs(cert_dir, 'generate-device', '-out', '/tls', '-ca', '/tls/ca.crt', '-ca-key', '/tls/ca.key', '-name', 'volttron',
                '-hw-serial', 'VT0001', '-hw-type', f'1.3.6.1.4.1.{PEN}.1')
-    _run_certs(cert_dir, 'generate-device', '-out', '/tls', '-ca', '/tls/ca.crt', '-ca-key', '/tls/ca.key', '-name', 'goclient',
+    run_certs(cert_dir, 'generate-device', '-out', '/tls', '-ca', '/tls/ca.crt', '-ca-key', '/tls/ca.key', '-name', 'goclient',
                '-hw-serial', 'GO0001', '-hw-type', f'1.3.6.1.4.1.{PEN}.1')
     (cert_dir / 'notify').mkdir(exist_ok=True)
-    _run_certs(cert_dir, 'generate-server', '-out', '/tls/notify', '-ca', '/tls/ca.crt', '-ca-key', '/tls/ca.key',
+    run_certs(cert_dir, 'generate-server', '-out', '/tls/notify', '-ca', '/tls/ca.crt', '-ca-key', '/tls/ca.key',
                '-hosts', '127.0.0.1,localhost', '-cn', 'VOLTTRON notify')
     for key in cert_dir.rglob('*.key'):
         key.chmod(0o644)

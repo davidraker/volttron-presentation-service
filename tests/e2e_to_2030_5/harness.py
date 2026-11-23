@@ -19,7 +19,6 @@ import gevent
 logging.basicConfig(filename=os.environ.get('E2E_LOG', '/tmp/telemetry_2030_5_e2e.log'), level=logging.INFO,
                     format='%(asctime)s %(name)s %(levelname)s %(message)s')
 
-import volttron.driver.interfaces.ieee2030_5 as sep2_package
 from volttron.driver.base.config import RemoteConfig
 from volttron.driver.interfaces.dnp3.dnp3 import Dnp3
 from volttron.driver.interfaces.dnp3.config import Dnp3PointConfig
@@ -32,9 +31,7 @@ from protocol_proxy.protocol.ieee2030_5.transport import Sep2Http
 from interoperability.discovery import ieee2030_5 as mirror_gen
 from interoperability.transform_parser import TransformParser
 
-E2E_DIR = Path(os.environ.get('IEEE2030_5_DRIVER_REPO', Path(sep2_package.__file__).resolve().parents[5])) / 'tests' / 'e2e_sep2server'
-sys.path.insert(0, str(E2E_DIR))
-from sep2server import Sep2Server, ensure_image, generate_certs, write_fixture      # noqa: E402
+from volttron.driver.interfaces.ieee2030_5.testing import Sep2Server, ensure_image, generate_certs, write_fixture
 
 HERE = Path(__file__).resolve().parent
 TESTS = HERE.parent

@@ -6,7 +6,7 @@ mappings (a canonical resource per device and an OpenFMB reading and control ali
 bridges (device to device, plus device to OpenFMB topic in ``bus`` mode) and the Message Bus Adapter."""
 import csv
 import json
-import os
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -15,20 +15,12 @@ from interoperability.discovery.device_formats import dnp3_device_transforms, re
 from interoperability.openfmb_bus import topic_of
 
 TESTS = Path(__file__).resolve().parents[1]
-SUNSPEC_CASE = TESTS / 'integration' / 'fake_sunspec' / 'transform_scaling'
-DNP3_CASE = TESTS / 'integration' / 'fake_dnp3' / 'transform_scaling'
+sys.path.insert(0, str(TESTS))                       # the tests directory: e2e_naming, shared by both harnesses
+from e2e_naming import (CEE_APP_PATH, CLIENT_FORMAT, DEVICES, DNP3_CASE, JULIA_PATH, MRID, OPENFMB_FAMILY, PROFILE, PROTO,  # noqa: E402
+                        RTC_FORMAT, RTC_UAI, SERVED_FORMAT, SUNSPEC_CASE, bridge_name, device_topic, openfmb_alias, roles,
+                        rows_of, uai)
 
-DEVICES = ('SunSpec', 'DNP3', '2030.5')
 ROLES = ('client', 'served')
-CLIENT_FORMAT = {'SunSpec': 'fake_sunspec_pv', 'DNP3': 'fake_dnp3_der', '2030.5': 'fake_sunspec_pv_sep2'}
-SERVED_FORMAT = {'SunSpec': 'fake_sunspec_pv', 'DNP3': 'fake_dnp3_der_served', '2030.5': 'fake_sunspec_pv_sep2_served'}
-OPENFMB_FAMILY = {'SunSpec': 'solar', 'DNP3': 'ess', '2030.5': 'ess'}
-PROFILE = {'solar': 'Solar', 'ess': 'ESS'}
-PROTO = {'solar': ('solarmodule.SolarReadingProfile', 'solarmodule.SolarControlProfile'),
-         'ess': ('essmodule.ESSReadingProfile', 'essmodule.ESSControlProfile')}
-MRID = {('SunSpec', 'client'): '7d1a2b3c-0000-4000-8000-000000000001', ('SunSpec', 'served'): '7d1a2b3c-0000-4000-8000-000000000011',
-        ('DNP3', 'client'): '9c2e4f10-0000-4000-8000-000000000002', ('DNP3', 'served'): '9c2e4f10-0000-4000-8000-000000000012',
-        ('2030.5', 'client'): '5e6f7a80-0000-4000-8000-000000000003', ('2030.5', 'served'): '5e6f7a80-0000-4000-8000-000000000013'}
 DNP3_TELEMETRY_POINTS = ['AI_536', 'AI_537', 'AI_3', 'AI_2']
 SUNSPEC_METER_POINTS = ['701_W', '701_W_SF', '701_Hz', '701_Hz_SF']           # the OpenFMB party feeds var and voltage
 # Telemetry bridges carry a device's measurements, nameplate and status, never its control settings: on the hub a
@@ -50,44 +42,8 @@ RESOURCE_BRIDGE, BUS_ADAPTER, SERVICE, DRIVER = 'platform.resource_bridge', 'pla
 # hub's logical nodes). Controls reach it on RTC_CONTROL_TOPIC through a Resource Bridge bus end; it publishes its status
 # on RTC_STATUS_TOPIC every tick. Its fake 10 kW storage follows a 4.321 kW setpoint at 50 % state of charge.
 RTC_IDENTITY = 'der.rtc'
-RTC_UAI = ['matrix', 'RTC']
-RTC_FORMAT = 'rtc_controller'
 RTC_CONTROL_TOPIC, RTC_STATUS_TOPIC, RTC_MODES_TOPIC = 'rtc/matrix/control', 'rtc/matrix/status', 'rtc/matrix/modes'
 RTC_CAPACITY_KW, RTC_W, RTC_SOC = 10.0, 4321, 50.0
-for _role in ('rtc', 'client', 'served'):
-    MRID[('RTC', _role)] = 'a1b2c3d4-0000-4000-8000-000000000021'
-OPENFMB_FAMILY['RTC'] = 'ess'
-CEE_APP_PATH = os.environ.get('CEE_APP_PATH', str(TESTS.parents[1] / 'ctrl-eval-engine' / 'app'))
-JULIA_PATH = os.environ.get('JULIA', str(Path.home() / '.juliaup' / 'bin' / 'julia'))
-
-
-def uai(protocol, role):
-    return ['matrix', protocol, role]
-
-
-def device_topic(protocol, role):
-    return f'devices/matrix/{protocol}/{role}'
-
-
-def roles(kind, src, dst):
-    """Which role of each party a path uses: our side's device at the source and at the target."""
-    if kind == 'telemetry':
-        return ('served' if src == '2030.5' else 'client'), ('client' if dst == '2030.5' else 'served')
-    return ('client' if src == '2030.5' else 'served'), ('served' if dst == '2030.5' else 'client')
-
-
-def bridge_name(kind, src, dst):
-    return f'{kind}_{src}_{dst}'.replace('.', '_')
-
-
-def openfmb_alias(protocol, role, kind):
-    family = OPENFMB_FAMILY[protocol]
-    return ['openfmb', f'{family}module', f'{PROFILE[family]}{"Reading" if kind == "reading" else "Control"}Profile', MRID[(protocol, role)]]
-
-
-def rows_of(path):
-    with Path(path).open(newline='') as f:
-        return list(csv.DictReader(f))
 
 
 def write_csv(path: Path, rows: list[dict]):

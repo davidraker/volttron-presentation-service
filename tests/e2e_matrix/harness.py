@@ -43,7 +43,7 @@ from volttrontesting.harness import Checklist, compare, dig, free_port, near
 
 # The harness's own waits let exceptions through: a predicate that raises is a bug here, not a service starting up.
 wait_for = functools.partial(harness.wait_for, ignore=())
-import csv, json, logging, os, socket, sys, tempfile, time, traceback
+import json, logging, os, socket, sys, tempfile, time, traceback
 from importlib import resources
 from pathlib import Path
 from types import SimpleNamespace
@@ -55,7 +55,6 @@ import gevent
 logging.basicConfig(filename=os.environ.get('E2E_LOG', '/tmp/e2e_matrix.log'), level=logging.INFO,
                     format='%(asctime)s %(name)s %(levelname)s %(message)s')
 
-import volttron.driver.interfaces.ieee2030_5 as sep2_package
 from volttron.driver.base.config import RemoteConfig
 from volttron.driver.interfaces.dnp3.dnp3 import Dnp3
 from volttron.driver.interfaces.dnp3.config import Dnp3PointConfig
@@ -76,13 +75,14 @@ from interoperability.discovery import ieee2030_5 as mirror_gen
 from interoperability.discovery.device_formats import dnp3_device_transforms, dnp3_scaling, resource_mappings
 from interoperability.transform_parser import TransformParser
 
-sys.path.insert(0, str(Path(os.environ.get('IEEE2030_5_DRIVER_REPO', Path(sep2_package.__file__).resolve().parents[5])) / 'tests' / 'e2e_loopback'))
-from certs import generate_certs                                                      # noqa: E402
+from volttron.driver.interfaces.ieee2030_5.testing import generate_local_certs as generate_certs
 
 HERE = Path(__file__).resolve().parent
 TESTS = HERE.parent
-SUNSPEC_CASE = TESTS / 'integration' / 'fake_sunspec' / 'transform_scaling'
-DNP3_CASE = TESTS / 'integration' / 'fake_dnp3' / 'transform_scaling'
+sys.path.insert(0, str(TESTS))                       # the tests directory: e2e_naming, shared by both harnesses
+from e2e_naming import (CEE_APP_PATH, CLIENT_FORMAT, DEVICES, DNP3_CASE, JULIA_PATH, MRID, OPENFMB_FAMILY, PROFILE, PROTO,  # noqa: E402
+                        RTC_FORMAT, RTC_UAI, SERVED_FORMAT, SUNSPEC_CASE, bridge_name, device_topic, openfmb_alias, roles,
+                        rows_of, uai)
 WORK = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(tempfile.mkdtemp(prefix='e2e-matrix-'))
 ONLY = set(sys.argv[2].split(',')) if len(sys.argv) > 2 else None
 OPENFMB_MODE = os.environ.get('E2E_OPENFMB', 'harness')                    # harness | bus
@@ -92,17 +92,7 @@ RTC_ENABLED = os.environ.get('E2E_RTC') == '1'          # fifth party: the real-
 assert not RTC_ENABLED or OPENFMB_MODE == 'bus', 'E2E_RTC=1 needs E2E_OPENFMB=bus (Resource Bridge bus ends carry the hub format)'
 
 PROTOCOLS = ('SunSpec', 'DNP3', '2030.5', 'OpenFMB')
-DEVICES = ('SunSpec', 'DNP3', '2030.5')
-CLIENT_FORMAT = {'SunSpec': 'fake_sunspec_pv', 'DNP3': 'fake_dnp3_der', '2030.5': 'fake_sunspec_pv_sep2'}
-SERVED_FORMAT = {'SunSpec': 'fake_sunspec_pv', 'DNP3': 'fake_dnp3_der_served', '2030.5': 'fake_sunspec_pv_sep2_served'}
-OPENFMB_FAMILY = {'SunSpec': 'solar', 'DNP3': 'ess', '2030.5': 'ess'}           # the OpenFMB profile family used with each partner
-PROFILE = {'solar': 'Solar', 'ess': 'ESS'}
-PROTO = {'solar': ('solarmodule.SolarReadingProfile', 'solarmodule.SolarControlProfile'),
-         'ess': ('essmodule.ESSReadingProfile', 'essmodule.ESSControlProfile')}
 # Every device (protocol, role) is also an OpenFMB conducting equipment with its own mRID, reading and control profile.
-MRID = {('SunSpec', 'client'): '7d1a2b3c-0000-4000-8000-000000000001', ('SunSpec', 'served'): '7d1a2b3c-0000-4000-8000-000000000011',
-        ('DNP3', 'client'): '9c2e4f10-0000-4000-8000-000000000002', ('DNP3', 'served'): '9c2e4f10-0000-4000-8000-000000000012',
-        ('2030.5', 'client'): '5e6f7a80-0000-4000-8000-000000000003', ('2030.5', 'served'): '5e6f7a80-0000-4000-8000-000000000013'}
 # The stimulus every path carries: a system meter reading (W, Hz) and an enabled active power limit (percent of WMax).
 W, HZ = 4321, 60
 LIMIT_PCT = 50
@@ -110,14 +100,8 @@ AO_87_RAW = round(LIMIT_PCT / dnp3_scaling('AO_87')[0])      # the 1815.2 profil
 PIN = 111115
 # The RTC agent: a bus-only resource in the `rtc_controller` format (plain copies of the 61850 hub's logical nodes).
 # Controls reach it on RTC_CONTROL_TOPIC through a Resource Bridge bus end; it publishes its status on RTC_STATUS_TOPIC.
-RTC_UAI = ['matrix', 'RTC']
-RTC_FORMAT = 'rtc_controller'
 RTC_CONTROL_TOPIC, RTC_STATUS_TOPIC, RTC_MODES_TOPIC = 'rtc/matrix/control', 'rtc/matrix/status', 'rtc/matrix/modes'
 RTC_CAPACITY_KW = 10.0                                     # its (fake) storage: WMax; the 50 % limit is 5 kW, its power W = 4.321 kW
-MRID[('RTC', 'rtc')] = 'a1b2c3d4-0000-4000-8000-000000000021'
-OPENFMB_FAMILY['RTC'] = 'ess'
-CEE_APP_PATH = os.environ.get('CEE_APP_PATH', str(TESTS.parents[1] / 'ctrl-eval-engine' / 'app'))
-JULIA_PATH = os.environ.get('JULIA', str(Path.home() / '.juliaup' / 'bin' / 'julia'))
 
 
 class Core: spawn = staticmethod(gevent.spawn)
@@ -131,11 +115,6 @@ class Agent:
         if prefix is None: return out
         return {t[len(prefix) + 1:]: v for t, v in out.items() if t.startswith(prefix + '/')}
     def clear(self): self.pushed.clear()
-
-
-def rows_of(path):
-    with Path(path).open(newline='') as f:
-        return list(csv.DictReader(f))
 
 
 def leaves(value, prefix=()):
@@ -160,31 +139,6 @@ record = CHECKS.record     # PASS/FAIL kind src -> dst via path  detail
 
 def wanted(kind, src, dst):
     return ONLY is None or f'{kind}:{src}>{dst}' in ONLY
-
-
-def uai(protocol, role):
-    return ['matrix', protocol, role]
-
-
-def device_topic(protocol, role):
-    return f'devices/matrix/{protocol}/{role}'
-
-
-def roles(kind, src, dst):
-    """Which role of each party a path uses: our side's device at the source and at the target."""
-    if kind == 'telemetry':
-        return ('served' if src == '2030.5' else 'client'), ('client' if dst == '2030.5' else 'served')
-    return ('client' if src == '2030.5' else 'served'), ('served' if dst == '2030.5' else 'client')
-
-
-def bridge_name(kind, src, dst):
-    return f'{kind}_{src}_{dst}'.replace('.', '_')
-
-
-def openfmb_alias(protocol, role, kind):
-    """The OpenFMB alias UAI (and topic) of a device: its reading or control profile."""
-    family = OPENFMB_FAMILY[protocol]
-    return ['openfmb', f'{family}module', f'{PROFILE[family]}{"Reading" if kind == "reading" else "Control"}Profile', MRID[(protocol, role)]]
 
 
 def openfmb_root(family):

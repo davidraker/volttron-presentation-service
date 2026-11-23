@@ -8,8 +8,8 @@ another. The platform is a black box.
 | Role | Implementation | Where |
 |---|---|---|
 | Platform | volttron-core (ZMQ, auth on), platform driver, presentation service, Resource Bridge, Message Bus Adapter | `volttron_platform.py`, configured by `configs.py` through the config store |
-| SunSpec inverter and SunSpec master | uModbus (not the pymodbus the proxy uses) | `external/sunspec_device.py` |
-| DNP3 outstation and DNP3 master | IEEE 1815.2 test tool reference binaries (Rust, Step Function `dnp3` crate), from its cargo-cache volume, in its backend image on the host network | `external/dnp3_tool.py` |
+| SunSpec inverter and SunSpec master | uModbus (not the pymodbus the proxy uses) | `protocol_proxy.protocol.modbus.testing` (the Modbus proxy, `testing` extra) |
+| DNP3 outstation and DNP3 master | IEEE 1815.2 test tool reference binaries (Rust, Step Function `dnp3` crate), from its cargo-cache volume, in its backend image on the host network | `protocol_proxy.protocol.dnp3.testing` (the DNP3 proxy) |
 | 2030.5 utility server | GridAPPS-D Go `sep2server` (`sep2server:e2e`, traffic capture on) | `external/sep2.py` |
 | 2030.5 DER client | GridAPPS-D Go `inverterclient` (`inverterclient:e2e`, built from the client repo with a two-stage Dockerfile) | `external/sep2.py` |
 | OpenFMB broker and participant | `eclipse-mosquitto:2`, paho-mqtt with the protobuf bindings | `external/openfmb_party.py` |
